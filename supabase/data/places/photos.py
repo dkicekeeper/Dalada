@@ -351,8 +351,11 @@ def accept() -> None:
     rows = read_csv(TABLE)
     existing = {(r["place_id"], r["file"]) for r in rows}
     added = 0
-    for c in read_csv(CANDIDATES):
-        if c["include"].strip().lower() != "yes" or (c["place_id"], c["file"]) in existing:
+    # include: «yes» или номер — порядок фото у места (1 — обложка).
+    chosen = [c for c in read_csv(CANDIDATES) if c["include"].strip().lower() == "yes" or c["include"].strip().isdigit()]
+    chosen.sort(key=lambda c: int(c["include"]) if c["include"].strip().isdigit() else 1 << 20)
+    for c in chosen:
+        if (c["place_id"], c["file"]) in existing:
             continue
         position = 1 + max((int(r["position"]) for r in rows if r["place_id"] == c["place_id"]), default=0)
         rows.append({

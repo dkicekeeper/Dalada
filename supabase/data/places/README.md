@@ -72,12 +72,12 @@ python3 supabase/data/places/places.py check       # то же проверяе�
 | Файл | Что |
 |------|-----|
 | `photos.csv` | **Принятые фото** — единственный источник: место, файл Commons, автор, лицензия, размер, порядок |
-| `photo_candidates.csv` | Кандидаты: найденные рядом с местом и по тегам OSM (`wikidata`, `wikimedia_commons`, `image`); `include` — `yes` взять, `no` нет |
+| `photo_candidates.csv` | Кандидаты: найденные рядом с местом и по тегам OSM (`wikidata`, `wikimedia_commons`, `image`); `include` — номер по порядку (1 — обложка) или `yes` взять, `no` нет |
 | `photos.py` | Поиск кандидатов, перенос принятых в `photos.csv`, сборка миграции, скачивание файлов для R2 |
 
 ```bash
 python3 supabase/data/places/photos.py candidates --sheets /tmp/sheets   # кандидаты + листы превью
-# в photo_candidates.csv поставить yes нужным строкам (не больше 5 фото на место)
+# в photo_candidates.csv: include — 1, 2, 3… (порядок, 1 — обложка) или yes; не больше 5 фото на место
 python3 supabase/data/places/photos.py accept                            # → photos.csv
 python3 supabase/data/places/photos.py migration                         # → …_editorial_photos.sql
 ```
