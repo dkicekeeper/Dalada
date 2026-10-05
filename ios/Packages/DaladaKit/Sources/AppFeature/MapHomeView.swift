@@ -9,7 +9,8 @@ struct RuleZoneSelection: Identifiable, Hashable {
 }
 
 /// Вкладка «Карта»: места в видимой области, карточка по тапу, новое место долгим нажатием
-/// или кнопкой «Место», зоны запретов (цвет — действует сейчас, скоро или нет), «Начать поездку».
+/// или кнопкой «Место», слои — зоны запретов (цвет — действует сейчас, скоро или нет), нацпарки и
+/// заповедники, погранзона; «Начать поездку».
 struct MapHomeView: View {
     let environment: AppEnvironment
 
@@ -17,9 +18,13 @@ struct MapHomeView: View {
     @Environment(RulesStore.self) private var rules
     @Environment(TripRecorder.self) private var recorder
     @AppStorage("map.showsRules") private var showsRules = true
+    @AppStorage("map.showsParks") private var showsParks = true
+    @AppStorage("map.showsBorder") private var showsBorder = false
     @State private var model: MapScreenModel
     @State private var showsSignInHint = false
     @State private var selectedZone: RuleZoneSelection?
+    /// Нацпарк, заповедник или погранзона, открытые с карты.
+    @State private var selectedArea: RuleZoneSelection?
 
     init(environment: AppEnvironment) {
         self.environment = environment
@@ -33,29 +38,50 @@ struct MapHomeView: View {
             initialZoom: 8,
             places: model.mapPlaces,
             draftPin: model.newPlace?.coordinate,
-            ruleAreas: showsRules ? rules.mapAreas() : [],
+            // Слои снизу вверх: погранзона, нацпарки, зоны запретов.
+            ruleAreas: rules.mapLayerAreas(parks: showsParks, border: showsBorder) + (showsRules ? rules.mapAreas() : []),
             onRegionChange: { model.visibleAreaChanged($0, viewer: session.profile?.id) },
             onPlaceTap: { model.selectedPlace = PlaceSelection(id: $0) },
-            onRuleAreaTap: { selectedZone = RuleZoneSelection(id: $0) },
+            onRuleAreaTap: { id in
+                if id.hasPrefix(RulesStore.areaPrefix) {
+                    selectedArea = RuleZoneSelection(id: String(id.dropFirst(RulesStore.areaPrefix.count)))
+                } else {
+                    selectedZone = RuleZoneSelection(id: id)
+                }
+            },
             onLongPress: { startNewPlace(at: $0) }
         )
         // Карта — на весь экран, под панелью вкладок; кнопки поверх — в безопасной области.
         .ignoresSafeArea()
         .overlay(alignment: .topLeading) {
-            Button {
-                showsRules.toggle()
+            // Слои карты: запреты, нацпарки и заповедники, погранзона.
+            Menu {
+                Toggle(isOn: $showsRules) {
+                    Label("map.rules", systemImage: "exclamationmark.shield")
+                }
+                Toggle(isOn: $showsParks) {
+                    Label("map.layers.parks", systemImage: "tree")
+                }
+                Toggle(isOn: $showsBorder) {
+                    Label("map.layers.border", systemImage: "flag")
+                }
             } label: {
-                Label("map.rules", systemImage: showsRules ? "exclamationmark.shield.fill" : "exclamationmark.shield")
+                Label("map.layers", systemImage: "square.3.layers.3d")
                     .font(AppTypography.bodyEmphasis)
             }
             .secondaryButton()
-            .accessibilityAddTraits(showsRules ? .isSelected : [])
             .padding(.leading, AppSpacing.lg)
             .padding(.top, AppSpacing.sm)
         }
         .sheet(item: $selectedZone) { selection in
             NavigationStack {
                 RuleZoneView(zoneID: selection.id, environment: environment)
+            }
+            .presentationDetents([.medium, .large])
+        }
+        .sheet(item: $selectedArea) { selection in
+            NavigationStack {
+                MapAreaView(areaID: selection.id)
             }
             .presentationDetents([.medium, .large])
         }

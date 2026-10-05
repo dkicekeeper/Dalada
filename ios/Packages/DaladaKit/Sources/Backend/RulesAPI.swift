@@ -27,4 +27,22 @@ extension BackendClient {
             regulations: regulations.compactMap(\.value)
         )
     }
+
+    /// Нацпарки, заповедник, погранзона и МРП (справочник для всех). Незнакомые записи пропускаются.
+    public func mapAreasPack() async throws -> MapAreasPack {
+        async let areas: [Lenient<MapArea>] = supabase
+            .from("map_areas")
+            .select(
+                "id,kind,name_ru,name_kk,name_en,info_ru,info_kk,info_en,fee_person_mrp,fee_car_mrp," +
+                "fee_fishing_mrp,website_url,tickets_url,source_title,source_url,verified_on,sort_order,geom"
+            )
+            .execute()
+            .value
+        async let mrp: [MRPValue] = supabase
+            .from("mrp_values")
+            .select("year,tenge")
+            .execute()
+            .value
+        return try await MapAreasPack(areas: areas.compactMap(\.value), mrp: mrp)
+    }
 }

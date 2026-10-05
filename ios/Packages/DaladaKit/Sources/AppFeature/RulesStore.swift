@@ -11,6 +11,8 @@ import Persistence
 @Observable
 final class RulesStore {
     private(set) var pack: RulesPack?
+    /// Слои карты: нацпарки, заповедник, погранзона (и МРП для тарифов).
+    private(set) var areas: MapAreasPack?
     private let backend: BackendClient?
     private let cache: CacheStore?
     private var isLoading = false
@@ -25,15 +27,46 @@ final class RulesStore {
         if pack == nil, let cached = try? await cache?.load(RulesPack.self, for: .rules), !cached.isEmpty {
             pack = cached
         }
+        if areas == nil, let cached = try? await cache?.load(MapAreasPack.self, for: .mapAreas), !cached.areas.isEmpty {
+            areas = cached
+        }
         guard let backend, !isLoading else { return }
         if let refreshedAt, Date().timeIntervalSince(refreshedAt) < 3600 { return }
         isLoading = true
         defer { isLoading = false }
-        if let loaded = try? await backend.rulesPack(), !loaded.isEmpty {
+        async let loadedRules = try? backend.rulesPack()
+        async let loadedAreas = try? backend.mapAreasPack()
+        if let loaded = await loadedRules, !loaded.isEmpty {
             pack = loaded
             refreshedAt = Date()
             try? await cache?.save(loaded, for: .rules)
         }
+        if let loaded = await loadedAreas, !loaded.areas.isEmpty {
+            areas = loaded
+            try? await cache?.save(loaded, for: .mapAreas)
+        }
+    }
+
+    /// Префикс id слоёв карты среди зон на карте: нажатие открывает карточку нацпарка или погранзоны.
+    nonisolated static let areaPrefix = "area:"
+
+    /// Нацпарки и заповедники и (или) погранзона для карты — под зонами правил: сначала погранзона,
+    /// потом парки, чтобы нажатие внутри парка открывало парк.
+    func mapLayerAreas(parks: Bool, border: Bool) -> [MapRuleArea] {
+        guard let areas, parks || border else { return [] }
+        let shown = areas.areas.filter { $0.kind.isBorder ? border : parks }
+        return shown
+            .sorted { ($0.kind.isBorder ? 0 : 1, $0.sortOrder) < ($1.kind.isBorder ? 0 : 1, $1.sortOrder) }
+            .compactMap { area in
+                guard !area.polygons.isEmpty else { return nil }
+                let state: MapRuleArea.State = switch area.kind {
+                case .nationalPark: .park
+                case .natureReserve: .reserve
+                case .borderStrip: .borderStrip
+                case .borderZone: .borderZone
+                }
+                return MapRuleArea(id: Self.areaPrefix + area.id, polygons: area.polygons.map(\.rings), state: state)
+            }
     }
 
     /// Сегодня по времени Алматы: сроки в приказах — календарные дни.

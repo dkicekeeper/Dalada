@@ -301,6 +301,7 @@ struct PlaceCardView: View {
 
                 // Запреты и промысловая мера в этой точке (работает без сети).
                 PlaceRulesSection(coordinate: place.coordinate, environment: environment)
+                PlaceParksSection(coordinate: place.coordinate)
 
                 reportsSection
 

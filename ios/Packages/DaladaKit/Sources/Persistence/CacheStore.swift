@@ -54,6 +54,9 @@ public struct CacheKey: Hashable, Sendable {
     /// Правила и запреты (зоны с границами) — общие для всех, нужны без сети.
     public static let rules = CacheKey(rawValue: "shared/rules")
 
+    /// Нацпарки, заповедник, погранзона и МРП — общие для всех, нужны без сети.
+    public static let mapAreas = CacheKey(rawValue: "shared/map_areas")
+
     /// Шаблоны чеклистов редакции — общие для всех, нужны без сети.
     public static let checklistTemplates = CacheKey(rawValue: "shared/checklist_templates")
 

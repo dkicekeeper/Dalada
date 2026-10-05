@@ -28,6 +28,18 @@ struct MapLayersTests {
         #expect(layer.identifier == "test-color")
     }
 
+    @Test func zoneExpressionsCoverEveryKind() {
+        let source = MLNShapeSource(identifier: "test-zones", shape: nil, options: nil)
+        let layer = MLNFillStyleLayer(identifier: "test-zones", source: source)
+        layer.fillColor = DaladaMapView.Coordinator.ruleAreaColor()
+        layer.fillOpacity = DaladaMapView.Coordinator.ruleAreaOpacity()
+        let areas = MapRuleArea.State.allCases.map { state in
+            MapRuleArea(id: state.rawValue, polygons: [[[.almaty, GeoPoint(latitude: 43.3, longitude: 76.9), GeoPoint(latitude: 43.3, longitude: 77.0)]]], state: state)
+        }
+        let features = DaladaMapView.Coordinator.ruleFeatures(areas)
+        #expect(features.compactMap { $0.attribute(forKey: "state") as? String } == MapRuleArea.State.allCases.map(\.rawValue))
+    }
+
     @Test func iconsForEveryType() {
         for type in PlaceType.allCases {
             for own in [false, true] {

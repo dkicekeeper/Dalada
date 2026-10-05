@@ -34,15 +34,24 @@ public struct MapPlace: Hashable, Sendable, Identifiable {
     }
 }
 
-/// Зона правил на карте: многоугольники (внешний контур и отверстия) и состояние запрета.
+/// Зона на карте: многоугольники (внешний контур и отверстия) и вид — состояние запрета для зон
+/// правил, нацпарк, заповедник или погранзона для слоёв карты.
 public struct MapRuleArea: Hashable, Sendable, Identifiable {
-    public enum State: String, Hashable, Sendable {
+    public enum State: String, Hashable, Sendable, CaseIterable {
         /// Запрет действует.
         case active
         /// Скоро начнётся.
         case soon
         /// Запрета сейчас нет.
         case none
+        /// Национальный парк.
+        case park
+        /// Заповедник.
+        case reserve
+        /// Пограничная полоса (вход по пропуску).
+        case borderStrip
+        /// Пограничная зона.
+        case borderZone
     }
 
     public let id: String
@@ -264,6 +273,37 @@ public struct DaladaMapView: UIViewRepresentable {
             }
         }
 
+        /// Цвет зоны по виду. Функции MapLibre — только конструкторами (см. MapPlaceIcons.colorExpression).
+        static func ruleAreaColor() -> NSExpression {
+            let colors: [MapRuleArea.State: UIColor] = [
+                .active: .systemRed,
+                .soon: .systemOrange,
+                .none: .systemGray,
+                .park: .systemGreen,
+                .reserve: UIColor(red: 0.05, green: 0.45, blue: 0.3, alpha: 1),
+                .borderStrip: .systemPurple,
+                .borderZone: .systemPurple,
+            ]
+            return match(colors.mapValues { NSExpression(forConstantValue: $0) }, default: NSExpression(forConstantValue: UIColor.systemGray))
+        }
+
+        /// Прозрачность заливки: запрет и погранполоса заметнее, нацпарки и погранзона — фоном.
+        static func ruleAreaOpacity() -> NSExpression {
+            let opacity: [MapRuleArea.State: Double] = [
+                .active: 0.25, .soon: 0.2, .none: 0.08,
+                .park: 0.12, .reserve: 0.2, .borderStrip: 0.3, .borderZone: 0.08,
+            ]
+            return match(opacity.mapValues { NSExpression(forConstantValue: $0) }, default: NSExpression(forConstantValue: 0.08))
+        }
+
+        private static func match(_ values: [MapRuleArea.State: NSExpression], default fallback: NSExpression) -> NSExpression {
+            var options: [NSExpression: NSExpression] = [:]
+            for (state, value) in values {
+                options[NSExpression(forConstantValue: state.rawValue)] = value
+            }
+            return NSExpression(forMLNMatchingKey: NSExpression(forKeyPath: "state"), in: options, default: fallback)
+        }
+
         static func ruleFeatures(_ areas: [MapRuleArea]) -> [MLNShape & MLNFeature] {
             areas.compactMap { area -> (MLNShape & MLNFeature)? in
                 let polygons: [MLNPolygon] = area.polygons.compactMap { rings in
@@ -286,15 +326,10 @@ public struct DaladaMapView: UIViewRepresentable {
             // Зоны правил — ниже трека и мест.
             let ruleSource = MLNShapeSource(identifier: Layer.ruleSource, shape: nil, options: nil)
             style.addSource(ruleSource)
-            let stateColor = NSExpression(
-                format: "TERNARY(state == 'active', %@, TERNARY(state == 'soon', %@, %@))",
-                UIColor.systemRed,
-                UIColor.systemOrange,
-                UIColor.systemGray
-            )
+            let stateColor = Self.ruleAreaColor()
             let ruleFill = MLNFillStyleLayer(identifier: Layer.ruleFill, source: ruleSource)
             ruleFill.fillColor = stateColor
-            ruleFill.fillOpacity = NSExpression(format: "TERNARY(state == 'active', 0.25, TERNARY(state == 'soon', 0.2, 0.08))")
+            ruleFill.fillOpacity = Self.ruleAreaOpacity()
             style.addLayer(ruleFill)
             let ruleLine = MLNLineStyleLayer(identifier: Layer.ruleLine, source: ruleSource)
             ruleLine.lineColor = stateColor
