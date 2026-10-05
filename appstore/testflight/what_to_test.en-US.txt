@@ -1,6 +1,11 @@
 Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, post a report with a catch and a photo (I’m here on a place card), record a trip (Start a trip on the map), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
 New:
+• Weather at a place: the place card shows temperature, wind and pressure (and where it went over the day); tap it for a 3-day pressure chart, the forecast, sunrise and sunset. Reports save the weather by themselves.
+• Show friends where I am: while recording a trip, pick friends — they see you on Home under Out right now, with a map and Route. It stops at the finish or after 12 hours; inside a privacy zone the point is hidden.
+• Close friends visibility: Profile → the gear → Close friends — pick friends, and posts set to Close friends are shown only to them.
+• Place keeper: whoever has the most verified reports at a place in 60 days, in the Reports tab, with a star on their reports. Below are Place records — the heaviest catch of each species with a photo.
+• Shared packing: Tips → Shared packing → “+” — share your packing with friends; everyone marks I'll bring and Packed and adds their own items.
 • Easier navigation: Profile has Trips · Catches · Places · Photos chips; a trip shows its note on top and tighter stats; bigger buttons under posts and Reply on discussions; map Layers is a sheet; a hint that a long press adds a place; Tips is split into Before the trip and Know-how and articles; empty place tabs say what to do next.
 • The place card opens to full height when you pick a tab (Reports, Reviews, Discussions, Info). Your catches in Profile → Catches have a “…” button to edit or delete them.
 • A shorter place card: the essentials and bans on top; Reports, Reviews, Discussions and Info open from chips, with a line saying what each one is. Trip pages have a clear Comments button, “…” on your own trip edits or deletes it, and “…” on your report now has Edit report. A My location button on the map and a settings gear in Profile.
@@ -17,10 +22,5 @@ New:
 • Map layers: Layers on the map → National parks and reserves, Border zone. Tap a park for entry rules, fees in MCI and tenge (Kolsai, Zhongar-Alatau), Buy a ticket and Park website. A place inside a park says so on its card. Works offline.
 • Tag friends in a trip: “Who was with you” on the finish screen or “Tag friends” on the trip page. They get an invitation — after “Accept” the trip appears in their trips.
 • Personal records: Profile → Catches → All — the heaviest and longest catch of each species. Beat a record and you get a congratulation right after the report.
-• Auto-pause: stand still for 10 minutes and recording pauses, then resumes when you move; distance no longer grows at a stop. Set the time in profile settings.
-• Map: zoom in and dots turn into icons by place type (lake, spring, campsite…), closer still — place names. The map now fills the whole screen, under the tab bar.
-• Achievements: Profile → Achievements at the bottom — 10 badges for trips, catches, places and contributions, each showing how far you are. New badges come with a congratulations screen.
-• Notifications: Profile → the gear → Notifications — choose what to get (replies, friends, comments, bans near your places, reviews and reports at your places) and set quiet hours.
-• Pictures for Stories and Telegram: Share on your trip page, on a catch in My catches and on a public place card. Stories or post format.
 
 Feedback: the Send Beta Feedback button in TestFlight or dakacom@gmail.com.
