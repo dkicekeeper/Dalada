@@ -94,6 +94,10 @@ struct PlaceFormView: View {
             String(localized: "place.form.footer.friends")
         case (.friends, true):
             String(localized: "place.form.footer.friendsApproximate")
+        case (.closeFriends, false):
+            String(localized: "place.form.footer.closeFriends")
+        case (.closeFriends, true):
+            String(localized: "place.form.footer.closeFriendsApproximate")
         case (.public, false):
             String(localized: "place.form.footer.public")
         case (.public, true):

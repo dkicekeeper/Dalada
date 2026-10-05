@@ -11918,6 +11918,52 @@
         }
       }
     },
+    "place.form.footer.closeFriends" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your close friends will see the exact spot."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жақын достарыңыз орынды нақты нүктесімен көреді."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Близкие друзья увидят место с точной точкой."
+          }
+        }
+      }
+    },
+    "place.form.footer.closeFriendsApproximate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close friends will see a ~1 km circle instead of the exact spot."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жақын достарыңыз нақты нүктені емес, ~1 км радиустағы шеңберді көреді."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Близкие друзья увидят круг радиусом ~1 км, а не точную точку."
+          }
+        }
+      }
+    },
     "place.form.footer.friends" : {
       "extractionState" : "manual",
       "localizations" : {
