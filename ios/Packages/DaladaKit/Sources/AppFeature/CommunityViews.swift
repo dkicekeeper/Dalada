@@ -640,6 +640,8 @@ struct ThreadView: View {
     @State private var confirmsDeleteThread = false
     /// Подписка на ответы: `nil` — гость или ещё не загружена.
     @State private var isSubscribed: Bool?
+    /// Профиль по нажатию на @username.
+    @State private var mentioned: MentionedUser?
     @FocusState private var isReplyFocused: Bool
 
     var body: some View {
@@ -704,6 +706,15 @@ struct ThreadView: View {
                 }
             }
         }
+        // @username в тексте — профиль здесь же, в обсуждении.
+        .environment(\.openURL, OpenURLAction { url in
+            guard let username = InviteLink.username(from: url) else { return .systemAction }
+            mentioned = MentionedUser(username: username)
+            return .handled
+        })
+        .navigationDestination(item: $mentioned) { user in
+            UserProfileView(username: user.username, environment: environment)
+        }
         .confirmationDialog("threads.deleteConfirm", isPresented: $confirmsDeleteThread, titleVisibility: .visible) {
             Button("threads.delete", role: .destructive) {
                 Task { await deleteThread() }
@@ -727,7 +738,7 @@ struct ThreadView: View {
                     }
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
-                    Text(verbatim: thread.body)
+                    Text(MentionText.attributed(thread.body))
                         .font(AppTypography.body)
                         .textSelection(.enabled)
                 }
@@ -991,7 +1002,7 @@ struct PostRow: View {
                     }
                     .fixedSize(horizontal: false, vertical: true)
                 }
-                Text(verbatim: post.body)
+                Text(MentionText.attributed(post.body))
                     .font(AppTypography.bodySmall)
                     .textSelection(.enabled)
                 HStack(spacing: AppSpacing.lg) {

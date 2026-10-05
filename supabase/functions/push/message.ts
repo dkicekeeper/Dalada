@@ -22,6 +22,8 @@ export type PushRow = {
     username?: string;
     thread_id?: string;
     title?: string;
+    // Ответ или вопрос с упоминанием @username получателя.
+    mention?: boolean;
     snippet?: string;
     // Комментарий и пост друга: что за пост (trip, checkin, review) и его id; у отчёта — место.
     target_kind?: string;
@@ -58,7 +60,10 @@ function day(value?: string): string {
 
 const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; body: string }>> = {
   ru: {
-    thread_reply: (p) => ({ title: `Ответ: ${p.title ?? "обсуждение"}`, body: `${p.actor}: ${p.snippet ?? ""}` }),
+    thread_reply: (p) => ({
+      title: p.mention ? `Вас упомянули: ${p.title ?? "обсуждение"}` : `Ответ: ${p.title ?? "обсуждение"}`,
+      body: `${p.actor}: ${p.snippet ?? ""}`,
+    }),
     friend_request: (p) => ({ title: "Запрос в друзья", body: `${p.actor} хочет добавить вас в друзья` }),
     friend_accept: (p) => ({ title: "Новый друг", body: `${p.actor} теперь у вас в друзьях` }),
     comment: (p) => ({ title: "Новый комментарий", body: `${p.actor}: ${p.snippet ?? ""}` }),
@@ -97,7 +102,10 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
     test: () => ({ title: "Dalada", body: "Уведомления работают — это проверка." }),
   },
   kk: {
-    thread_reply: (p) => ({ title: `Жауап: ${p.title ?? "талқылау"}`, body: `${p.actor}: ${p.snippet ?? ""}` }),
+    thread_reply: (p) => ({
+      title: p.mention ? `Сізді атап өтті: ${p.title ?? "талқылау"}` : `Жауап: ${p.title ?? "талқылау"}`,
+      body: `${p.actor}: ${p.snippet ?? ""}`,
+    }),
     friend_request: (p) => ({ title: "Достық сұрауы", body: `${p.actor} сізді достарға қосқысы келеді` }),
     friend_accept: (p) => ({ title: "Жаңа дос", body: `${p.actor} енді сіздің досыңыз` }),
     comment: (p) => ({ title: "Жаңа түсініктеме", body: `${p.actor}: ${p.snippet ?? ""}` }),
@@ -136,7 +144,10 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
     test: () => ({ title: "Dalada", body: "Хабарландырулар жұмыс істейді — бұл тексеру." }),
   },
   en: {
-    thread_reply: (p) => ({ title: `Reply: ${p.title ?? "discussion"}`, body: `${p.actor}: ${p.snippet ?? ""}` }),
+    thread_reply: (p) => ({
+      title: p.mention ? `You were mentioned: ${p.title ?? "discussion"}` : `Reply: ${p.title ?? "discussion"}`,
+      body: `${p.actor}: ${p.snippet ?? ""}`,
+    }),
     friend_request: (p) => ({ title: "Friend request", body: `${p.actor} wants to add you as a friend` }),
     friend_accept: (p) => ({ title: "New friend", body: `${p.actor} is now your friend` }),
     comment: (p) => ({ title: "New comment", body: `${p.actor}: ${p.snippet ?? ""}` }),

@@ -167,3 +167,14 @@ Deno.test("реакция — к записи: поездка, отчёт, от�
   assertEquals(post.body, "«Дорога» талқылауындағы жауабыңызға құрмет");
   assertEquals(post.url, "dalada://thread/dddddddd-0000-0000-0000-000000000001");
 });
+
+Deno.test("упоминание в обсуждении — «Вас упомянули», ведёт в обсуждение", () => {
+  const payload = { actor: "@bob", username: "bob", thread_id: "dddddddd-0000-0000-0000-000000000001", title: "Дорога", snippet: "@aaa, посмотрите", mention: true };
+  assertEquals(buildMessage({ ...reply, kind: "thread_reply", payload }), {
+    title: "Вас упомянули: Дорога",
+    body: "@bob: @aaa, посмотрите",
+    url: "dalada://thread/dddddddd-0000-0000-0000-000000000001",
+  });
+  assertEquals(buildMessage({ ...reply, kind: "thread_reply", language: "kk", payload }).title, "Сізді атап өтті: Дорога");
+  assertEquals(buildMessage({ ...reply, kind: "thread_reply", language: "en", payload }).title, "You were mentioned: Дорога");
+});
