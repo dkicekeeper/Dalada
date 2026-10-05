@@ -1,6 +1,7 @@
 Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, check in with a catch and a photo, record a trip (Start a trip on the map), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
 New:
+• Fixed: build 124 closed when opening the Map tab.
 • Photos for editorial places: Kolsai, Big Almaty Lake, Issyk, Charyn, waterfalls and more — in the place card and as the cover in Places, with author and licence.
 • Map: zoom in and dots turn into icons by place type (lake, spring, campsite…), closer still — place names. The map now fills the whole screen, under the tab bar.
 • Achievements: Profile → Achievements at the bottom — 10 badges for trips, catches, places and contributions, each showing how far you are. New badges come with a congratulations screen.
