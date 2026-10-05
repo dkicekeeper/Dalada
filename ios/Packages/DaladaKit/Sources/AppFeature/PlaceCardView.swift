@@ -28,6 +28,8 @@ struct PlaceCardView: View {
     @State private var photoURLs: [String: URL] = [:]
     /// Фото посетителей для шапки (первые 12).
     @State private var placePhotos: [PlacePhoto] = []
+    /// Фото редакции — первыми в шапке.
+    @State private var editorialPhotos: [EditorialPhoto] = []
     @State private var showsCheckin = false
     /// Показана сохранённая копия — сервер недоступен.
     @State private var isShowingSavedCopy = false
@@ -217,9 +219,9 @@ struct PlaceCardView: View {
     private func content(_ place: PlaceDetails) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
-                if !placePhotos.isEmpty && !isShowingSavedCopy {
+                if !(placePhotos.isEmpty && editorialPhotos.isEmpty) && !isShowingSavedCopy {
                     PlacePhotosHeader(
-                        photos: placePhotos,
+                        photos: PlaceGalleryPhoto.gallery(editorial: editorialPhotos, visitors: placePhotos),
                         urls: photoURLs,
                         placeID: place.id,
                         placeName: place.name,
@@ -399,11 +401,14 @@ struct PlaceCardView: View {
               let loaded = try? await backend.placeReports(placeID: placeID, limit: Self.reportsLimit)
         else { return }
         let photos = (try? await backend.placePhotos(placeID: placeID, limit: 12)) ?? []
+        let editorial = (try? await backend.placeEditorialPhotos(placeID: placeID)) ?? []
         let paths = loaded.prefix(Self.reportsShown).flatMap { report in report.media.flatMap { [$0.thumbnailPath, $0.path] } }
             + photos.flatMap { [$0.thumbnailPath, $0.path] }
+            + editorial.flatMap { [$0.thumbnailPath, $0.path] }
         let urls = (try? await backend.signedMediaURLs(paths: paths)) ?? [:]
         photoURLs = urls
         placePhotos = photos
+        editorialPhotos = editorial
         reports = loaded
         await reactions.load(loaded.prefix(Self.reportsShown).map { ReactionKey(.checkin, $0.id) })
         try? await cache.save(loaded, for: .reports(placeID, viewer: viewerID))

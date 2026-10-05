@@ -11646,6 +11646,29 @@
         }
       }
     },
+    "place.photos.editorial.author %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo: %@"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Фото: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фото: %@"
+          }
+        }
+      }
+    },
     "place.photos.empty.description" : {
       "extractionState" : "manual",
       "localizations" : {

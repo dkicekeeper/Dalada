@@ -63,6 +63,30 @@ python3 supabase/data/places/places.py check       # то же проверяе�
 миграцию применяет GitHub-интеграция Supabase — места появятся в приложении сразу. CI падает, если
 `places.csv` изменена, а миграция не собрана.
 
+## Фото мест (M14)
+
+Фото мест редакции — с [Wikimedia Commons](https://commons.wikimedia.org), только под свободными
+лицензиями (CC0, CC BY, CC BY-SA, общественное достояние). Под фото приложение показывает автора,
+лицензию (ссылкой) и ссылку на файл на Commons — это условие лицензий.
+
+| Файл | Что |
+|------|-----|
+| `photos.csv` | **Принятые фото** — единственный источник: место, файл Commons, автор, лицензия, размер, порядок |
+| `photo_candidates.csv` | Кандидаты: найденные рядом с местом и по тегам OSM (`wikidata`, `wikimedia_commons`, `image`); `include` — `yes` взять, `no` нет |
+| `photos.py` | Поиск кандидатов, перенос принятых в `photos.csv`, сборка миграции, скачивание файлов для R2 |
+
+```bash
+python3 supabase/data/places/photos.py candidates --sheets /tmp/sheets   # кандидаты + листы превью
+# в photo_candidates.csv поставить yes нужным строкам (не больше 5 фото на место)
+python3 supabase/data/places/photos.py accept                            # → photos.csv
+python3 supabase/data/places/photos.py migration                         # → …_editorial_photos.sql
+```
+
+Порядок фото места — колонка `position` в `photos.csv` (первое — обложка в списках «Мест»). Убрать фото —
+удалить строку и собрать миграцию. Файлы на R2 (`photos/places/<id>.jpg` и `_thumb.jpg`) копирует
+workflow **Editorial photos** после изменения `photos.csv` в `main`; CI проверяет, что миграция
+собрана.
+
 ## Первая выборка (M6e)
 
 165 мест из OpenStreetMap (данные на 30.09.2026): 86 водоёмов (озёра и водохранилища с названием,

@@ -21,6 +21,10 @@ jobs:
       - name: Check editorial places
         run: python3 supabase/data/places/places.py check
 
+      # photos.csv (фото мест редакции) и миграция с ними совпадают.
+      - name: Editorial photos table
+        run: python3 supabase/data/places/photos.py check
+
       # Версия закреплена: с `latest` установщик спрашивает GitHub API без токена и иногда
       # упирается в лимит запросов. Та же версия, что в облачном контейнере разработки.
       - uses: supabase/setup-cli@v1

@@ -23,10 +23,13 @@ public final class BackendClient: Sendable {
     public static let oauthRedirectURL = URL(string: "dalada://auth-callback")!
 
     let supabase: SupabaseClient
+    /// Откуда открывать публичные файлы (`photos/…`) — там же, где карта.
+    let publicFilesBaseURL: URL
 
     /// `nil`, если в конфигурации нет адреса или ключа Supabase.
     public init?(config: AppConfig) {
         guard let url = config.supabaseURL, let key = config.supabaseKey else { return nil }
+        publicFilesBaseURL = config.mapBaseURL
         supabase = SupabaseClient(
             supabaseURL: url,
             supabaseKey: key,

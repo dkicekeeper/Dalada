@@ -39,7 +39,8 @@ struct MapHomeView: View {
             onRuleAreaTap: { selectedZone = RuleZoneSelection(id: $0) },
             onLongPress: { startNewPlace(at: $0) }
         )
-        .ignoresSafeArea(edges: .top)
+        // Карта — на весь экран, под панелью вкладок; кнопки поверх — в безопасной области.
+        .ignoresSafeArea()
         .overlay(alignment: .topLeading) {
             Button {
                 showsRules.toggle()

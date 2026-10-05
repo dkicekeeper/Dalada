@@ -53,15 +53,18 @@ extension BackendClient {
         try await insertIgnoringDuplicates(into: "media", rows)
     }
 
-    /// Подписанные ссылки на файлы бакета `media` (путь → ссылка). Файлы, которые зритель не
-    /// видит, в ответ не попадают.
+    /// Подписанные ссылки на файлы бакета `media` (путь → ссылка); публичные файлы `photos/…` — прямой
+    /// ссылкой. Файлы, которые зритель не видит, в ответ не попадают.
     public func signedMediaURLs(paths: [String], expiresIn: Int = 3600) async throws -> [String: URL] {
-        let unique = Array(Set(paths))
-        guard !unique.isEmpty else { return [:] }
+        var urls: [String: URL] = [:]
+        for path in Set(paths) where MediaPath.isPublicFile(path) {
+            urls[path] = publicFilesBaseURL.appending(path: path)
+        }
+        let unique = Array(Set(paths).filter { !MediaPath.isPublicFile($0) })
+        guard !unique.isEmpty else { return urls }
         let results = try await supabase.storage
             .from(MediaPath.bucket)
             .createSignedURLs(paths: unique, expiresIn: expiresIn)
-        var urls: [String: URL] = [:]
         for result in results {
             if let url = result.signedURL {
                 urls[result.path] = url

@@ -154,6 +154,14 @@ extension BackendClient {
             .execute()
             .value
     }
+
+    /// Фото места от редакции (RPC `place_editorial_photos`) — с автором и лицензией.
+    public func placeEditorialPhotos(placeID: UUID) async throws -> [EditorialPhoto] {
+        try await supabase
+            .rpc("place_editorial_photos", params: ["p_place": placeID])
+            .execute()
+            .value
+    }
 }
 
 struct PlacePhotosParams: Encodable, Sendable {

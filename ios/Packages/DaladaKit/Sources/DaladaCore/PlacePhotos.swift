@@ -110,3 +110,87 @@ public struct PlacePhoto: Codable, Identifiable, Hashable, Sendable {
         return author.username.map { "@" + $0 } ?? ""
     }
 }
+
+// MARK: - Фото редакции
+
+/// Фото места редакции с Wikimedia Commons — строка `place_editorial_photos`. Под фото обязательно
+/// показываем автора и лицензию (условие свободных лицензий).
+public struct EditorialPhoto: Codable, Identifiable, Hashable, Sendable {
+    public let id: UUID
+    /// Публичный путь `photos/places/<id>.jpg` (см. `MediaPath.isPublicFile`).
+    public let path: String
+    public let thumbnailPath: String
+    public let width: Int?
+    public let height: Int?
+    public let author: String
+    /// Короткое название лицензии: «CC BY-SA 4.0», «CC0».
+    public let license: String
+    public let licenseURL: URL?
+    /// Страница файла на Wikimedia Commons.
+    public let sourceURL: URL?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case path
+        case thumbnailPath = "thumb_path"
+        case width
+        case height
+        case author
+        case license
+        case licenseURL = "license_url"
+        case sourceURL = "source_url"
+    }
+
+    public init(
+        id: UUID,
+        path: String,
+        thumbnailPath: String,
+        width: Int? = nil,
+        height: Int? = nil,
+        author: String,
+        license: String,
+        licenseURL: URL? = nil,
+        sourceURL: URL? = nil
+    ) {
+        self.id = id
+        self.path = path
+        self.thumbnailPath = thumbnailPath
+        self.width = width
+        self.height = height
+        self.author = author
+        self.license = license
+        self.licenseURL = licenseURL
+        self.sourceURL = sourceURL
+    }
+}
+
+/// Фото в галерее места: сначала фото редакции, потом посетителей.
+public enum PlaceGalleryPhoto: Identifiable, Hashable, Sendable {
+    case editorial(EditorialPhoto)
+    case visitor(PlacePhoto)
+
+    public var id: UUID {
+        switch self {
+        case .editorial(let photo): photo.id
+        case .visitor(let photo): photo.id
+        }
+    }
+
+    public var path: String {
+        switch self {
+        case .editorial(let photo): photo.path
+        case .visitor(let photo): photo.path
+        }
+    }
+
+    public var thumbnailPath: String {
+        switch self {
+        case .editorial(let photo): photo.thumbnailPath
+        case .visitor(let photo): photo.thumbnailPath
+        }
+    }
+
+    public static func gallery(editorial: [EditorialPhoto], visitors: [PlacePhoto]) -> [PlaceGalleryPhoto] {
+        editorial.map(PlaceGalleryPhoto.editorial) + visitors.map(PlaceGalleryPhoto.visitor)
+    }
+}

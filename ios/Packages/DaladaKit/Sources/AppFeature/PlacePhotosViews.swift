@@ -4,16 +4,16 @@ import DesignComponents
 import DesignTokens
 import SwiftUI
 
-/// Фото посетителей в шапке карточки места: ряд превью и «Все фото». Фото и ссылки загружает
-/// карточка места (вместе с отчётами).
+/// Фото в шапке карточки места: сначала фото редакции, потом посетителей; ряд превью и «Все фото».
+/// Фото и ссылки загружает карточка места (вместе с отчётами).
 struct PlacePhotosHeader: View {
-    let photos: [PlacePhoto]
+    let photos: [PlaceGalleryPhoto]
     let urls: [String: URL]
     let placeID: UUID
     let placeName: String
     let environment: AppEnvironment
 
-    @State private var opened: PlacePhoto?
+    @State private var opened: PlaceGalleryPhoto?
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
@@ -46,19 +46,25 @@ struct PlacePhotosHeader: View {
     }
 }
 
-/// «Все фото» места: фильтр (все, уловы, место), сетка превью, подгрузка при прокрутке.
+/// «Все фото» места: фильтр (все, уловы, место), сетка превью, подгрузка при прокрутке. Фото
+/// редакции — первыми (кроме фильтра «Уловы»).
 struct PlacePhotosGrid: View {
     let placeID: UUID
     let placeName: String
     let environment: AppEnvironment
 
     @State private var kind: PlacePhotoKind = .all
+    @State private var editorial: [EditorialPhoto] = []
     @State private var photos: [PlacePhoto] = []
     @State private var urls: [String: URL] = [:]
     @State private var isLoading = false
     @State private var hasMore = true
     @State private var loadError: String?
-    @State private var opened: PlacePhoto?
+    @State private var opened: PlaceGalleryPhoto?
+
+    private var gallery: [PlaceGalleryPhoto] {
+        PlaceGalleryPhoto.gallery(editorial: kind == .catches ? [] : editorial, visitors: photos)
+    }
 
     private static let pageSize = 60
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 3)
@@ -76,7 +82,7 @@ struct PlacePhotosGrid: View {
                 .pickerStyle(.segmented)
                 .screenPadding()
 
-                if photos.isEmpty {
+                if gallery.isEmpty {
                     if isLoading {
                         ProgressView()
                             .padding(.top, AppSpacing.xl)
@@ -89,7 +95,7 @@ struct PlacePhotosGrid: View {
                     }
                 } else {
                     LazyVGrid(columns: columns, spacing: 2) {
-                        ForEach(photos) { photo in
+                        ForEach(gallery) { photo in
                             Button {
                                 opened = photo
                             } label: {
@@ -104,7 +110,7 @@ struct PlacePhotosGrid: View {
                             .buttonStyle(.plain)
                             .accessibilityLabel(Text("photo.open"))
                             .onAppear {
-                                if photo.id == photos.last?.id {
+                                if photo.id == gallery.last?.id {
                                     Task { await loadMore() }
                                 }
                             }
@@ -119,7 +125,7 @@ struct PlacePhotosGrid: View {
         .task(id: kind) { await reload() }
         .refreshable { await reload() }
         .fullScreenCover(item: $opened) { photo in
-            PlacePhotoViewer(photos: photos, urls: urls, selection: photo.id, environment: environment)
+            PlacePhotoViewer(photos: gallery, urls: urls, selection: photo.id, environment: environment)
         }
     }
 
@@ -127,6 +133,12 @@ struct PlacePhotosGrid: View {
         photos = []
         hasMore = true
         loadError = nil
+        if editorial.isEmpty, let backend = environment.backend,
+           let loaded = try? await backend.placeEditorialPhotos(placeID: placeID) {
+            let signed = (try? await backend.signedMediaURLs(paths: loaded.flatMap { [$0.thumbnailPath, $0.path] })) ?? [:]
+            urls.merge(signed) { _, new in new }
+            editorial = loaded
+        }
         await loadMore()
     }
 
@@ -152,23 +164,24 @@ struct PlacePhotosGrid: View {
     }
 }
 
-/// Фото места на весь экран: листание, автор, дата, улов или отчёт; пожаловаться на чужое.
+/// Фото места на весь экран: листание; у фото посетителя — автор, дата, улов или отчёт и «Пожаловаться»,
+/// у фото редакции — автор, лицензия и ссылка на Wikimedia Commons.
 struct PlacePhotoViewer: View {
-    let photos: [PlacePhoto]
+    let photos: [PlaceGalleryPhoto]
     let urls: [String: URL]
     let environment: AppEnvironment
 
     @Environment(\.dismiss) private var dismiss
     @State private var selection: UUID
 
-    init(photos: [PlacePhoto], urls: [String: URL], selection: UUID, environment: AppEnvironment) {
+    init(photos: [PlaceGalleryPhoto], urls: [String: URL], selection: UUID, environment: AppEnvironment) {
         self.photos = photos
         self.urls = urls
         self.environment = environment
         _selection = State(initialValue: selection)
     }
 
-    private var current: PlacePhoto? { photos.first { $0.id == selection } }
+    private var current: PlaceGalleryPhoto? { photos.first { $0.id == selection } }
 
     var body: some View {
         NavigationStack {
@@ -195,7 +208,7 @@ struct PlacePhotoViewer: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("common.close", systemImage: "xmark") { dismiss() }
                 }
-                if let photo = current, !photo.isOwn {
+                if case .visitor(let photo) = current, !photo.isOwn {
                     ToolbarItem(placement: .topBarTrailing) {
                         // Жалоба — на отчёт с этим фото; блокировка — автора.
                         ModerationMenu(target: .checkin, targetID: photo.checkinID, author: photo.author, isToolbar: true) {
@@ -208,21 +221,26 @@ struct PlacePhotoViewer: View {
         .preferredColorScheme(.dark)
     }
 
-    private func caption(_ photo: PlacePhoto) -> some View {
+    private func caption(_ item: PlaceGalleryPhoto) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-            Text(verbatim: photo.authorName)
-                .font(AppTypography.bodyEmphasis)
-            HStack(spacing: AppSpacing.xs) {
-                Text(photo.at, format: .dateTime.day().month(.wide).year())
-                Text(verbatim: "·")
-                Label(
-                    LocalizedStringKey(photo.isCatch ? "place.photos.source.catch" : "place.photos.source.report"),
-                    systemImage: photo.isCatch ? "fish" : "mappin.circle"
-                )
+            switch item {
+            case .visitor(let photo):
+                Text(verbatim: photo.authorName)
+                    .font(AppTypography.bodyEmphasis)
+                HStack(spacing: AppSpacing.xs) {
+                    Text(photo.at, format: .dateTime.day().month(.wide).year())
+                    Text(verbatim: "·")
+                    Label(
+                        LocalizedStringKey(photo.isCatch ? "place.photos.source.catch" : "place.photos.source.report"),
+                        systemImage: photo.isCatch ? "fish" : "mappin.circle"
+                    )
+                }
+                .font(AppTypography.caption)
+                .foregroundStyle(.white.opacity(0.8))
+            case .editorial(let photo):
+                EditorialPhotoCredit(photo: photo)
             }
-            .font(AppTypography.caption)
-            .foregroundStyle(.white.opacity(0.8))
-            if photos.count > 1, let index = photos.firstIndex(where: { $0.id == photo.id }) {
+            if photos.count > 1, let index = photos.firstIndex(where: { $0.id == item.id }) {
                 Text(verbatim: "\(index + 1) / \(photos.count)")
                     .font(AppTypography.caption)
                     .foregroundStyle(.white.opacity(0.6))
@@ -232,5 +250,32 @@ struct PlacePhotoViewer: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.md)
         .background(.black.opacity(0.45))
+    }
+}
+
+/// Подпись фото редакции: автор, лицензия (ссылкой) и источник — Wikimedia Commons.
+private struct EditorialPhotoCredit: View {
+    let photo: EditorialPhoto
+
+    var body: some View {
+        Text("place.photos.editorial.author \(photo.author)")
+            .font(AppTypography.bodyEmphasis)
+            .lineLimit(2)
+        HStack(spacing: AppSpacing.xs) {
+            if let licenseURL = photo.licenseURL {
+                Link(destination: licenseURL) { Text(verbatim: photo.license).underline() }
+            } else {
+                Text(verbatim: photo.license)
+            }
+            Text(verbatim: "·")
+            if let sourceURL = photo.sourceURL {
+                Link(destination: sourceURL) { Text(verbatim: "Wikimedia Commons").underline() }
+            } else {
+                Text(verbatim: "Wikimedia Commons")
+            }
+        }
+        .font(AppTypography.caption)
+        .foregroundStyle(.white.opacity(0.8))
+        .tint(.white)
     }
 }

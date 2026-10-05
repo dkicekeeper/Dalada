@@ -31,6 +31,12 @@ public enum MediaPath {
     public static func thumbnail(owner: UUID, media: UUID) -> String {
         "\(owner.uuidString.lowercased())/\(media.uuidString.lowercased())_thumb.jpg"
     }
+
+    /// Публичные файлы (фото мест редакции) лежат не в бакете, а рядом с картой: `photos/…`.
+    /// Их открывают напрямую, без подписанной ссылки.
+    public static func isPublicFile(_ path: String) -> Bool {
+        path.hasPrefix("photos/")
+    }
 }
 
 /// Фото в отчёте места (`place_reports.media`).

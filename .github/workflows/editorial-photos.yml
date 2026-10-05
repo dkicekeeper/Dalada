@@ -1,0 +1,61 @@
+name: Editorial photos
+
+# Фото мест редакции (supabase/data/places/photos.csv) — копии с Wikimedia Commons на R2 рядом с картой:
+# photos/places/<id>.jpg (до 1280 px) и <id>_thumb.jpg (превью). Строки в базе — миграцией из той же
+# таблицы (photos.py migration); здесь — только файлы, которых на R2 ещё нет.
+# Секреты — те же, что у карты: R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY; бакет — переменная R2_BUCKET.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/data/places/photos.csv"
+      - "supabase/data/places/photos.py"
+      - ".github/workflows/editorial-photos.yml"
+
+concurrency:
+  group: editorial-photos
+  cancel-in-progress: false
+
+env:
+  R2_BUCKET: ${{ vars.R2_BUCKET || 'dalada-tiles' }}
+  RCLONE_CONFIG_R2_TYPE: s3
+  RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+  RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+
+jobs:
+  upload:
+    name: Copy photos to R2
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: R2 access
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+        run: bash map/r2_env.sh
+
+      - name: Tools
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq rclone python3-pil > /dev/null
+
+      - name: Check table
+        run: python3 supabase/data/places/photos.py check
+
+      - name: Download missing photos
+        run: |
+          rclone lsf "r2:$R2_BUCKET/photos/places" --files-only > "$RUNNER_TEMP/existing.txt" 2>/dev/null || true
+          python3 supabase/data/places/photos.py fetch public/photos/places --existing "$RUNNER_TEMP/existing.txt"
+
+      - name: Upload
+        run: |
+          if [ -z "$(ls -A public/photos/places)" ]; then echo "Новых фото нет"; exit 0; fi
+          rclone copy public/photos/places "r2:$R2_BUCKET/photos/places" --checksum --transfers 16 \
+            --header-upload "Cache-Control: public, max-age=31536000, immutable" \
+            --header-upload "Content-Type: image/jpeg"
+          base=$(python3 -c "import json; print(json.load(open('map/config.json'))['public_base'])")
+          first=$(ls public/photos/places | head -1)
+          code=$(curl -s -o /dev/null -w "%{http_code}" "$base/photos/places/$first")
+          echo "$base/photos/places/$first → $code"
+          [ "$code" = 200 ] || { echo "::error::Фото не открывается по публичному адресу"; exit 1; }

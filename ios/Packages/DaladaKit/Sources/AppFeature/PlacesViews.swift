@@ -620,7 +620,9 @@ struct PlaceListScreen: View {
                     id: $0.id,
                     coordinate: $0.coordinate,
                     isOwn: $0.isOwn,
-                    approximateRadiusM: $0.isApproximate ? $0.radiusM : nil
+                    approximateRadiusM: $0.isApproximate ? $0.radiusM : nil,
+                    type: $0.type,
+                    name: $0.name
                 )
             },
             onPlaceTap: { selected = PlaceSelection(id: $0) }
