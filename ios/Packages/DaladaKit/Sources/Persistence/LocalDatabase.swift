@@ -128,6 +128,12 @@ public final class LocalDatabase: Sendable {
                 t.primaryKey(["account", "kind"])
             }
         }
+        migrator.registerMigration("v4-trip-participants") { db in
+            // Друзья, отмеченные на финише (JSON-массив id): уходят на сервер вместе с поездкой.
+            try db.alter(table: "outbox_trip") { t in
+                t.add(column: "participants", .jsonText)
+            }
+        }
         return migrator
     }
 }

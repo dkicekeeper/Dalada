@@ -27,6 +27,8 @@ struct HomeView: View {
     @State private var loadError: String?
     @State private var selectedPlace: PlaceSelection?
     @State private var showsFindPeople = false
+    /// Растёт при каждом обновлении «Главной»: приглашения в поездки загружаются заново.
+    @State private var refreshCount = 0
 
     var body: some View {
         NavigationStack {
@@ -35,6 +37,8 @@ struct HomeView: View {
                     if session.state == .guest {
                         SignInCard()
                     }
+                    // «Вас отметили в поездке» — пока нет ответа.
+                    TripInvitationsSection(environment: environment, refreshID: refreshCount)
                     feed
                 }
                 .screenPadding()
@@ -59,7 +63,10 @@ struct HomeView: View {
             .navigationDestination(isPresented: $showsFindPeople) {
                 FindPeopleView(environment: environment)
             }
-            .refreshable { await reload() }
+            .refreshable {
+                refreshCount += 1
+                await reload()
+            }
             // Лента своя у каждого аккаунта: перезагружаем при входе и выходе.
             .task(id: viewerKey) { await reload() }
             .task { await speciesStore.loadIfNeeded() }

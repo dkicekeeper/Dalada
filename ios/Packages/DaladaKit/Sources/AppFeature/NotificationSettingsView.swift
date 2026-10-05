@@ -20,6 +20,7 @@ struct NotificationSettingsView: View {
                     Toggle("notifications.kind.friendRequests", isOn: binding(\.friendRequests))
                     Toggle("notifications.kind.comments", isOn: binding(\.comments))
                     Toggle("notifications.kind.friendPosts", isOn: binding(\.friendPosts))
+                    Toggle("notifications.kind.tripTags", isOn: binding(\.tripTags))
                 } header: {
                     Text("notifications.section.people")
                 } footer: {

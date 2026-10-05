@@ -73,6 +73,7 @@ public struct TripStore: Sendable {
         visibility: Visibility,
         activity: TripActivity,
         endedAt: Date,
+        participants: [UUID] = [],
         now: Date
     ) async throws {
         try await writer.write { db in
@@ -89,7 +90,8 @@ public struct TripStore: Sendable {
                 status: OutboxStatus.pending.rawValue,
                 attempts: 0,
                 nextAttemptAt: now,
-                lastError: nil
+                lastError: nil,
+                participants: OutboxTripRecord.encodeParticipants(participants)
             ).insert(db)
             try ActiveTripRecord.deleteAll(db)
         }
@@ -194,6 +196,8 @@ struct OutboxTripRecord: Codable, FetchableRecord, PersistableRecord, Sendable {
     var attempts: Int
     var nextAttemptAt: Date
     var lastError: String?
+    /// JSON-массив id отмеченных друзей; `nil` — никого.
+    var participants: String?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -208,6 +212,17 @@ struct OutboxTripRecord: Codable, FetchableRecord, PersistableRecord, Sendable {
         case attempts
         case nextAttemptAt = "next_attempt_at"
         case lastError = "last_error"
+        case participants
+    }
+
+    static func encodeParticipants(_ ids: [UUID]) -> String? {
+        guard !ids.isEmpty, let data = try? JSONEncoder().encode(ids) else { return nil }
+        return String(decoding: data, as: UTF8.self)
+    }
+
+    var participantIDs: [UUID] {
+        guard let participants else { return [] }
+        return (try? JSONDecoder().decode([UUID].self, from: Data(participants.utf8))) ?? []
     }
 
     func draft(points: [TrackPoint]) -> TripDraft {
@@ -219,7 +234,8 @@ struct OutboxTripRecord: Codable, FetchableRecord, PersistableRecord, Sendable {
             visibility: Visibility(rawValue: visibility) ?? .private,
             startedAt: startedAt,
             endedAt: endedAt,
-            points: points
+            points: points,
+            participantIDs: participantIDs
         )
     }
 

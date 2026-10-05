@@ -13,6 +13,15 @@ extension BackendClient: OutboxSending {
 
     public func send(_ trip: TripDraft) async throws {
         try await createTrip(trip)
+        guard !trip.participantIDs.isEmpty else { return }
+        do {
+            try await tagTripFriends(tripID: trip.id, userIDs: trip.participantIDs)
+        } catch {
+            // Поездка уже на сервере. Отметки, которые сервер не принял (лимит, поездку удалили), не
+            // повторяем; без сети или при временной ошибке — повторим вместе с поездкой (дубля не будет).
+            if case .rejected = Self.sendFailure(for: error) { return }
+            throw error
+        }
     }
 
     /// Что делать с ошибкой отправки: ждать сеть, повторить позже, сдаться или ждать входа.

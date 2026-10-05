@@ -25,6 +25,13 @@ public struct CacheStore: Sendable {
         return try? JSONDecoder().decode(T.self, from: data)
     }
 
+    /// Стирает одну запись (например, поездку, которая перестала быть видна).
+    public func remove(_ key: CacheKey) async throws {
+        try await writer.write { db in
+            try db.execute(sql: "DELETE FROM cache_entry WHERE key = ?", arguments: [key.rawValue])
+        }
+    }
+
     /// Стирает всё, что закэшировано для пользователя (при выходе из аккаунта).
     public func removeUserData(_ userID: UUID) async throws {
         let prefix = CacheKey.userPrefix(userID)
@@ -71,6 +78,21 @@ public struct CacheKey: Hashable, Sendable {
 
     public static func myTrips(_ user: UUID) -> CacheKey {
         CacheKey(rawValue: userPrefix(user) + "my_trips")
+    }
+
+    /// Чужие поездки, где я участник.
+    public static func joinedTrips(_ user: UUID) -> CacheKey {
+        CacheKey(rawValue: userPrefix(user) + "joined_trips")
+    }
+
+    /// Друзья — чтобы отметить их на финише поездки без сети.
+    public static func friends(_ user: UUID) -> CacheKey {
+        CacheKey(rawValue: userPrefix(user) + "friends")
+    }
+
+    /// Личные рекорды — для поздравления с новым рекордом без сети.
+    public static func myRecords(_ user: UUID) -> CacheKey {
+        CacheKey(rawValue: userPrefix(user) + "my_records")
     }
 
     /// Значки профиля.

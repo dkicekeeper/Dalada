@@ -186,7 +186,7 @@ struct TripRecordingView: View {
             .padding(AppSpacing.lg)
         }
         .sheet(item: $finishing) { request in
-            TripFinishView(endedAt: request.endedAt) { didClose in
+            TripFinishView(endedAt: request.endedAt, environment: environment) { didClose in
                 if didClose { dismiss() }
             }
             .interactiveDismissDisabled()
@@ -213,7 +213,16 @@ struct TripRecordingView: View {
                     Label("trip.paused", systemImage: "pause.circle.fill")
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColors.warning)
+                } else if recorder.isAutoPaused {
+                    Label("trip.autoPaused", systemImage: "pause.circle")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.warning)
                 }
+            }
+            if recorder.isAutoPaused {
+                Text("trip.autoPaused.hint")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textSecondary)
             }
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 StatTile(
@@ -266,6 +275,7 @@ struct TripRecordingView: View {
 /// Итоги и сохранение: название, вид, заметка, видимость. Или «Удалить поездку».
 struct TripFinishView: View {
     let endedAt: Date
+    let environment: AppEnvironment
     /// `true` — поездка сохранена или удалена, экран записи тоже закрывается.
     let onClose: @MainActor (Bool) -> Void
 
@@ -277,6 +287,8 @@ struct TripFinishView: View {
     @State private var note = ""
     @State private var activity: TripActivity = .fishing
     @State private var visibility: DaladaCore.Visibility = .friends
+    /// Друзья, которые были в поездке: им придёт приглашение.
+    @State private var participants: Set<UUID> = []
     @State private var isSaving = false
     @State private var saveError: String?
     @State private var confirmsDiscard = false
@@ -310,6 +322,26 @@ struct TripFinishView: View {
                 Section("checkin.form.note") {
                     TextField("trip.finish.notePlaceholder", text: $note, axis: .vertical)
                         .lineLimit(2...6)
+                }
+
+                if let userID = session.profile?.id {
+                    Section {
+                        NavigationLink {
+                            FriendPickerView(environment: environment, userID: userID, selection: $participants)
+                        } label: {
+                            LabeledContent {
+                                if participants.isEmpty {
+                                    Text("trip.participants.none")
+                                } else {
+                                    Text(verbatim: "\(participants.count)")
+                                }
+                            } label: {
+                                Label("trip.participants.with", systemImage: "person.2")
+                            }
+                        }
+                    } footer: {
+                        Text("trip.participants.finishFooter")
+                    }
                 }
 
                 Section {
@@ -394,7 +426,8 @@ struct TripFinishView: View {
                 note: note.trimmingCharacters(in: .whitespacesAndNewlines),
                 visibility: visibility,
                 activity: activity,
-                endedAt: endedAt
+                endedAt: endedAt,
+                participants: Array(participants)
             )
             await sync.enqueued()
             onClose(true)
@@ -418,9 +451,9 @@ struct TripMiniPlayer: View {
             onOpen()
         } label: {
             HStack(spacing: AppSpacing.md) {
-                Image(systemName: recorder.phase == .paused ? "pause.circle.fill" : "record.circle")
-                    .foregroundStyle(recorder.phase == .paused ? AppColors.warning : AppColors.destructive)
-                    .symbolEffect(.pulse, isActive: recorder.phase == .recording)
+                Image(systemName: isPaused ? "pause.circle.fill" : "record.circle")
+                    .foregroundStyle(isPaused ? AppColors.warning : AppColors.destructive)
+                    .symbolEffect(.pulse, isActive: !isPaused)
                 TimelineView(.periodic(from: .now, by: 1)) { context in
                     Text(verbatim: TripFormat.clock(context.date.timeIntervalSince(recorder.startedAt ?? context.date)))
                         .monospacedDigit()
@@ -438,6 +471,9 @@ struct TripMiniPlayer: View {
         .buttonStyle(.plain)
         .accessibilityLabel(Text("trip.miniPlayer"))
     }
+
+    /// Пауза — ручная или автопауза на стоянке.
+    private var isPaused: Bool { recorder.phase == .paused || recorder.isAutoPaused }
 }
 
 /// Мини-плеер в `tabViewBottomAccessory`, пока идёт запись (iOS 26.1+). На iOS 26.0 к записи
@@ -467,6 +503,8 @@ struct TripAccessoryModifier: ViewModifier {
 /// Строка поездки: вид, название, дата, дистанция и время в движении.
 struct TripRow: View {
     let trip: TripSummary
+    /// Автор чужой поездки, где я участник: «с @автор».
+    var host: TripOwner?
 
     var body: some View {
         HStack(spacing: AppSpacing.md) {
@@ -487,6 +525,15 @@ struct TripRow: View {
                 ].joined(separator: " · "))
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColors.textSecondary)
+                if let host {
+                    Label {
+                        Text("trips.joined.with \(host.username.map { "@" + $0 } ?? host.displayName ?? "")")
+                    } icon: {
+                        Image(systemName: "person.2")
+                    }
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textTertiary)
+                }
             }
             Spacer(minLength: 0)
             DisclosureChevron()
@@ -501,7 +548,7 @@ struct MyTripsSection: View {
     let userID: UUID
 
     @Environment(SyncEngine.self) private var sync
-    @State private var trips: [TripSummary] = []
+    @State private var trips: [TripListEntry] = []
     @State private var isLoaded = false
 
     var body: some View {
@@ -513,11 +560,11 @@ struct MyTripsSection: View {
             TripsListView(environment: environment, userID: userID)
         } content: {
             if !trips.isEmpty {
-                ForEach(trips.prefix(3)) { trip in
+                ForEach(trips.prefix(3)) { entry in
                     NavigationLink {
-                        TripDetailView(tripID: trip.id, environment: environment)
+                        TripDetailView(tripID: entry.id, environment: environment)
                     } label: {
-                        TripRow(trip: trip)
+                        TripRow(trip: entry.summary, host: entry.host)
                     }
                     .buttonStyle(.plain)
                 }
@@ -547,7 +594,7 @@ struct TripsListView: View {
     let environment: AppEnvironment
     let userID: UUID
 
-    @State private var trips: [TripSummary] = []
+    @State private var trips: [TripListEntry] = []
     @State private var isLoaded = false
 
     var body: some View {
@@ -559,11 +606,11 @@ struct TripsListView: View {
                     description: String(localized: "trips.empty.description")
                 )
             } else {
-                List(trips) { trip in
+                List(trips) { entry in
                     NavigationLink {
-                        TripDetailView(tripID: trip.id, environment: environment)
+                        TripDetailView(tripID: entry.id, environment: environment)
                     } label: {
-                        TripRow(trip: trip)
+                        TripRow(trip: entry.summary, host: entry.host)
                     }
                 }
             }
@@ -579,18 +626,33 @@ struct TripsListView: View {
     }
 }
 
-/// Список поездок: сеть, при ошибке — кэш.
+/// Список поездок — свои и чужие, где я участник: сеть, при ошибке — кэш.
 struct TripsLoader {
     let environment: AppEnvironment
     let userID: UUID
 
-    func load(limit: Int) async -> [TripSummary] {
+    func load(limit: Int) async -> [TripListEntry] {
+        async let own = loadOwn(limit: limit)
+        async let joined = loadJoined(limit: limit)
+        return TripListEntry.merged(own: await own, joined: await joined)
+    }
+
+    private func loadOwn(limit: Int) async -> [TripSummary] {
         let key = CacheKey.myTrips(userID)
         if let backend = environment.backend, let trips = try? await backend.myTrips(limit: limit) {
             try? await environment.cache.save(trips, for: key)
             return trips
         }
         return (try? await environment.cache.load([TripSummary].self, for: key)) ?? []
+    }
+
+    private func loadJoined(limit: Int) async -> [JoinedTrip] {
+        let key = CacheKey.joinedTrips(userID)
+        if let backend = environment.backend, let trips = try? await backend.myJoinedTrips(limit: limit) {
+            try? await environment.cache.save(trips, for: key)
+            return trips
+        }
+        return (try? await environment.cache.load([JoinedTrip].self, for: key)) ?? []
     }
 }
 
@@ -602,6 +664,7 @@ struct TripDetailView: View {
     let tripID: UUID
     let environment: AppEnvironment
 
+    @Environment(\.dismiss) private var dismiss
     @Environment(SessionStore.self) private var session
     @Environment(SpeciesStore.self) private var speciesStore
     @Environment(ReactionStore.self) private var reactions
@@ -752,6 +815,14 @@ struct TripDetailView: View {
                 }
                 .cardContentPadding()
                 .cardStyle()
+
+                if session.profile != nil {
+                    // Участники: отметить друзей (автор), принять или выйти (отмеченный).
+                    TripParticipantsSection(tripID: trip.summary.id, isOwn: trip.isOwn, environment: environment) {
+                        try? await environment.cache.remove(CacheKey.trip(tripID, viewer: session.profile?.id))
+                        dismiss()
+                    }
+                }
 
                 if let note = trip.summary.note, !note.isEmpty {
                     Text(verbatim: note)

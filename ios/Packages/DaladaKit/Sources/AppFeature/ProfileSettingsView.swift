@@ -19,6 +19,8 @@ struct ProfileSettingsView: View {
     @State private var photoItem: PhotosPickerItem?
     @State private var isSavingPhoto = false
     @State private var photoError: String?
+    /// Автопауза записи поездки, минуты (0 — выключена). Настройка телефона.
+    @AppStorage(AutoPauseSetting.storageKey) private var autoPauseMinutes = AutoPauseSetting.defaultMinutes
 
     var body: some View {
         List {
@@ -92,6 +94,24 @@ struct ProfileSettingsView: View {
                 }
             } footer: {
                 Text("notifications.settings.footer")
+            }
+
+            Section {
+                Picker(selection: $autoPauseMinutes) {
+                    ForEach(AutoPauseSetting.options, id: \.self) { minutes in
+                        if minutes == 0 {
+                            Text("settings.autoPause.off").tag(minutes)
+                        } else {
+                            Text("settings.autoPause.minutes \(minutes)").tag(minutes)
+                        }
+                    }
+                } label: {
+                    Label("settings.autoPause", systemImage: "pause.circle")
+                }
+            } header: {
+                Text("settings.recording.title")
+            } footer: {
+                Text("settings.autoPause.footer")
             }
 
             Section {

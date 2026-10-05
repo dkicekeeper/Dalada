@@ -149,6 +149,8 @@ public struct TripDraft: Identifiable, Equatable, Sendable {
     public var startedAt: Date
     public var endedAt: Date
     public var points: [TrackPoint]
+    /// Друзья, отмеченные на финише: отметки уходят на сервер вместе с поездкой.
+    public var participantIDs: [UUID]
 
     public init(
         id: UUID = UUID(),
@@ -158,7 +160,8 @@ public struct TripDraft: Identifiable, Equatable, Sendable {
         visibility: Visibility = .private,
         startedAt: Date,
         endedAt: Date,
-        points: [TrackPoint] = []
+        points: [TrackPoint] = [],
+        participantIDs: [UUID] = []
     ) {
         self.id = id
         self.activity = activity
@@ -168,6 +171,7 @@ public struct TripDraft: Identifiable, Equatable, Sendable {
         self.startedAt = startedAt
         self.endedAt = endedAt
         self.points = points
+        self.participantIDs = participantIDs
     }
 
     public var stats: TrackStats { TrackStats(points: points) }

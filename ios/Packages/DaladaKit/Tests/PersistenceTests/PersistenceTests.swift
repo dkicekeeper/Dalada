@@ -209,6 +209,27 @@ struct TripStoreTests {
         #expect(active.points == [point(0), point(30, altitude: nil), point(90, startsSegment: true)])
     }
 
+    @Test func taggedFriendsTravelWithTheTrip() async throws {
+        let database = try LocalDatabase.inMemory()
+        let id = UUID()
+        let friends = [UUID(), UUID()]
+        try await database.trips.start(id: id, activity: .fishing, at: start)
+        try await database.trips.append(point(0), to: id)
+        try await database.trips.finishActive(owner: owner, title: "Втроём", note: "", visibility: .private,
+                                              activity: .fishing, endedAt: start.addingTimeInterval(600),
+                                              participants: friends, now: start)
+        let due = try #require(try await database.outbox.dueTrips(owner: owner, now: start).first)
+        #expect(due.participantIDs == friends)
+
+        // Без отметок — пусто.
+        let other = UUID()
+        try await database.trips.start(id: other, activity: .fishing, at: start)
+        try await database.trips.finishActive(owner: owner, title: "Один", note: "", visibility: .private,
+                                              activity: .fishing, endedAt: start.addingTimeInterval(600), now: start)
+        let alone = try #require(try await database.outbox.dueTrips(owner: owner, now: start, limit: 10).first { $0.id == other })
+        #expect(alone.participantIDs.isEmpty)
+    }
+
     @Test func finishMovesTripToOutboxWithPoints() async throws {
         let database = try LocalDatabase.inMemory()
         let id = UUID()

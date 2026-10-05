@@ -30,6 +30,8 @@ final class TripRecorder {
     private(set) var currentAltitude: Double?
     /// Нет разрешения на геопозицию — запись идёт без точек.
     private(set) var isLocationDenied = false
+    /// Автопауза: стоим на месте дольше заданного — точки не пишутся, пока не начнём двигаться.
+    private(set) var isAutoPaused = false
 
     var isActive: Bool { phase != .idle }
 
@@ -42,6 +44,9 @@ final class TripRecorder {
     @ObservationIgnored private var lastAccepted: TrackPoint?
     /// Следующая точка — после паузы: от предыдущей дистанцию не считаем.
     @ObservationIgnored private var nextStartsSegment = false
+    @ObservationIgnored private var autoPause = AutoPauseDetector(delay: 0)
+    /// Раз в 15 секунд: стоянку видно и тогда, когда GPS молчит.
+    @ObservationIgnored private var autoPauseTask: Task<Void, Never>?
 
     init(store: TripStore) {
         self.store = store
@@ -73,6 +78,7 @@ final class TripRecorder {
     func pause() async {
         guard phase == .recording else { return }
         phase = .paused
+        isAutoPaused = false
         stopUpdates()
         nextStartsSegment = true
         liveActivity.update(distanceM: stats.distanceM, isPaused: true, force: true)
@@ -88,7 +94,15 @@ final class TripRecorder {
     }
 
     /// Финиш: поездка уходит в очередь отправки. Запись на этот момент должна быть на паузе.
-    func finish(owner: UUID, title: String, note: String, visibility: Visibility, activity: TripActivity, endedAt: Date) async throws {
+    func finish(
+        owner: UUID,
+        title: String,
+        note: String,
+        visibility: Visibility,
+        activity: TripActivity,
+        endedAt: Date,
+        participants: [UUID]
+    ) async throws {
         stopUpdates()
         try await store.finishActive(
             owner: owner,
@@ -97,6 +111,7 @@ final class TripRecorder {
             visibility: visibility,
             activity: activity,
             endedAt: endedAt,
+            participants: participants,
             now: Date()
         )
         liveActivity.end()
@@ -146,12 +161,27 @@ final class TripRecorder {
         currentAltitude = nil
         lastAccepted = nil
         nextStartsSegment = false
+        isAutoPaused = false
     }
 
     // MARK: - Геопозиция
 
     private func beginUpdates() {
         stopUpdates()
+        isAutoPaused = false
+        let minutes = UserDefaults.standard.object(forKey: AutoPauseSetting.storageKey) as? Int
+        autoPause = AutoPauseDetector(delay: AutoPauseSetting.delay(minutes: minutes))
+        if autoPause.isEnabled {
+            autoPauseTask = Task { [weak self] in
+                while !Task.isCancelled {
+                    try? await Task.sleep(for: .seconds(15))
+                    guard let self, !Task.isCancelled else { return }
+                    if self.autoPause.tick(now: Date()) == .paused {
+                        self.enterAutoPause()
+                    }
+                }
+            }
+        }
         serviceSession = CLServiceSession(authorization: .whenInUse)
         backgroundSession = CLBackgroundActivitySession()
         let configuration: CLLocationUpdate.LiveConfiguration = activity == .hiking ? .fitness : .otherNavigation
@@ -170,6 +200,8 @@ final class TripRecorder {
     private func stopUpdates() {
         updatesTask?.cancel()
         updatesTask = nil
+        autoPauseTask?.cancel()
+        autoPauseTask = nil
         backgroundSession?.invalidate()
         backgroundSession = nil
         serviceSession?.invalidate()
@@ -194,9 +226,24 @@ final class TripRecorder {
             speed: location.speed >= 0 ? location.speed : nil,
             timestamp: location.timestamp
         )
-        // После паузы или долгого перерыва (приложение было выгружено) — новый отрезок.
+        let resumed: Bool
+        switch autoPause.observe(point) {
+        case .paused:
+            enterAutoPause()
+            return
+        case .resumed:
+            resumed = true
+            isAutoPaused = false
+            liveActivity.update(distanceM: stats.distanceM, isPaused: false, force: true)
+        case .none:
+            resumed = false
+            // На стоянке точки не пишем: это «дрожание» GPS, а не движение.
+            if isAutoPaused { return }
+        }
+        // После паузы или долгого перерыва (приложение было выгружено) — новый отрезок. После
+        // автопаузы линия продолжается: человек ушёл с того же места, где стоял.
         let longGap = lastAccepted.map { point.timestamp.timeIntervalSince($0.timestamp) > TrackStats.maxMovingGap } ?? false
-        point.startsSegment = nextStartsSegment || longGap
+        point.startsSegment = nextStartsSegment || (longGap && !resumed)
         guard filter.accepts(point, after: lastAccepted) else { return }
 
         nextStartsSegment = false
@@ -205,5 +252,12 @@ final class TripRecorder {
         track.append(point.coordinate)
         liveActivity.update(distanceM: stats.distanceM, isPaused: false)
         try? await store.append(point, to: tripID)
+    }
+
+    private func enterAutoPause() {
+        guard phase == .recording, !isAutoPaused else { return }
+        isAutoPaused = true
+        currentSpeed = nil
+        liveActivity.update(distanceM: stats.distanceM, isPaused: true, force: true)
     }
 }

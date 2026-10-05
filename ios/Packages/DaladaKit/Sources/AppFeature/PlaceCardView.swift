@@ -147,7 +147,12 @@ struct PlaceCardView: View {
         }
         .sheet(isPresented: $showsCheckin) {
             if case .loaded(let place) = state {
-                CheckinFormView(placeID: place.id, placeName: place.name, coordinate: place.coordinate) {}
+                CheckinFormView(
+                    placeID: place.id,
+                    placeName: place.name,
+                    coordinate: place.coordinate,
+                    records: session.profile.map { RecordsLoader(environment: environment, userID: $0.id) }
+                ) {}
                     .environment(speciesStore)
                     .environment(sync)
                     .environment(rules)

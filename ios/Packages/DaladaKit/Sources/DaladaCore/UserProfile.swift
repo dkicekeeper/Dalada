@@ -18,6 +18,7 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
     public var notifyComments: Bool?
     public var notifyBans: Bool?
     public var notifyPlaceActivity: Bool?
+    public var notifyTripTags: Bool?
     public var quietFrom: Int?
     public var quietTo: Int?
 
@@ -60,6 +61,7 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
         case notifyComments = "notify_comments"
         case notifyBans = "notify_bans"
         case notifyPlaceActivity = "notify_place_activity"
+        case notifyTripTags = "notify_trip_tags"
         case quietFrom = "quiet_from"
         case quietTo = "quiet_to"
     }
@@ -73,6 +75,7 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
             friendPosts: notifyFriendPosts ?? true,
             bans: notifyBans ?? true,
             placeActivity: notifyPlaceActivity ?? true,
+            tripTags: notifyTripTags ?? true,
             quietHours: quietFrom.flatMap { from in quietTo.map { QuietHours(from: from, to: $0) } }
         )
     }
@@ -120,6 +123,8 @@ public struct NotificationSettings: Equatable, Sendable {
     public var friendPosts: Bool
     public var bans: Bool
     public var placeActivity: Bool
+    /// Меня отметили в поездке.
+    public var tripTags: Bool
     /// `nil` — без тихих часов.
     public var quietHours: QuietHours?
 
@@ -130,6 +135,7 @@ public struct NotificationSettings: Equatable, Sendable {
         friendPosts: Bool = true,
         bans: Bool = true,
         placeActivity: Bool = true,
+        tripTags: Bool = true,
         quietHours: QuietHours? = nil
     ) {
         self.replies = replies
@@ -138,6 +144,7 @@ public struct NotificationSettings: Equatable, Sendable {
         self.friendPosts = friendPosts
         self.bans = bans
         self.placeActivity = placeActivity
+        self.tripTags = tripTags
         self.quietHours = quietHours
     }
 }
@@ -170,6 +177,7 @@ extension NotificationSettings: Encodable {
         case friendPosts = "notify_friend_posts"
         case bans = "notify_bans"
         case placeActivity = "notify_place_activity"
+        case tripTags = "notify_trip_tags"
         case quietFrom = "quiet_from"
         case quietTo = "quiet_to"
     }
@@ -183,6 +191,7 @@ extension NotificationSettings: Encodable {
         try c.encode(friendPosts, forKey: .friendPosts)
         try c.encode(bans, forKey: .bans)
         try c.encode(placeActivity, forKey: .placeActivity)
+        try c.encode(tripTags, forKey: .tripTags)
         try c.encode(quietHours?.from, forKey: .quietFrom)
         try c.encode(quietHours?.to, forKey: .quietTo)
     }

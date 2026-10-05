@@ -12,6 +12,8 @@ struct CheckinFormView: View {
     let placeName: String
     /// Точка места — для подсказок о запретах и промысловой мере.
     let coordinate: GeoPoint?
+    /// Рекорды автора: после сохранения — поздравление с новым рекордом (`nil` — гость).
+    let records: RecordsLoader?
     let onSaved: @MainActor () -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -26,6 +28,9 @@ struct CheckinFormView: View {
     @State private var pickerItems: [PhotosPickerItem] = []
     @State private var isProcessingPhotos = false
     @State private var photoFailed = false
+    /// Отчёт сохранён и побил рекорды: поздравление, потом форма закрывается.
+    @State private var newRecords: [NewRecord] = []
+    @State private var showsNewRecords = false
 
     enum LocationState: Equatable {
         case locating
@@ -33,9 +38,16 @@ struct CheckinFormView: View {
         case unavailable
     }
 
-    init(placeID: UUID, placeName: String, coordinate: GeoPoint? = nil, onSaved: @escaping @MainActor () -> Void) {
+    init(
+        placeID: UUID,
+        placeName: String,
+        coordinate: GeoPoint? = nil,
+        records: RecordsLoader? = nil,
+        onSaved: @escaping @MainActor () -> Void
+    ) {
         self.placeName = placeName
         self.coordinate = coordinate
+        self.records = records
         self.onSaved = onSaved
         _draft = State(initialValue: CheckinDraft(placeID: placeID))
     }
@@ -169,7 +181,7 @@ struct CheckinFormView: View {
                         Button("checkin.form.save") {
                             Task { await save() }
                         }
-                        .disabled(!draft.isValid || isProcessingPhotos)
+                        .disabled(!draft.isValid || isProcessingPhotos || showsNewRecords)
                     }
                 }
             }
@@ -187,7 +199,12 @@ struct CheckinFormView: View {
                 guard !items.isEmpty else { return }
                 Task { await addPhotos(items) }
             }
-            .interactiveDismissDisabled(isSaving)
+            .alert("records.new.title", isPresented: $showsNewRecords) {
+                Button("common.ok") { close() }
+            } message: {
+                Text(verbatim: NewRecordText.lines(newRecords, species: speciesStore))
+            }
+            .interactiveDismissDisabled(isSaving || showsNewRecords)
             .task { await locate() }
             .task { await speciesStore.loadIfNeeded() }
         }
@@ -238,13 +255,25 @@ struct CheckinFormView: View {
         do {
             // Сохраняется на телефоне сразу; на сервер — когда получится.
             try await sync.submit(checkin, placeName: placeName)
-            onSaved()
-            dismiss()
-            // Первый чекин — момент первой пользы: объясним, зачем уведомления.
-            Task { await NotificationPrimer.shared.offer() }
         } catch {
             saveError = String(localized: "checkin.save.failed")
+            return
         }
+        // Новый личный рекорд — поздравление, форма закроется после «OK».
+        let found = await records?.check(checkin.catches, at: checkin.at) ?? []
+        if !found.isEmpty {
+            newRecords = found
+            showsNewRecords = true
+            return
+        }
+        close()
+    }
+
+    private func close() {
+        onSaved()
+        dismiss()
+        // Первый чекин — момент первой пользы: объясним, зачем уведомления.
+        Task { await NotificationPrimer.shared.offer() }
     }
 }
 
@@ -293,16 +322,27 @@ struct CatchSummaryRow: View {
     private var summary: String {
         var parts = [count > 1 ? "\(speciesName) ×\(count)" : speciesName]
         if let weightGrams {
-            parts.append(Measurement(value: Double(weightGrams) / 1000, unit: UnitMass.kilograms)
-                .formatted(.measurement(width: .abbreviated, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0...2)))))
+            parts.append(CatchFormat.weight(grams: weightGrams))
         }
         if let lengthMillimeters {
-            parts.append(Measurement(value: Double(lengthMillimeters) / 10, unit: UnitLength.centimeters)
-                .formatted(.measurement(width: .abbreviated, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0...1)))))
+            parts.append(CatchFormat.length(millimeters: lengthMillimeters))
         }
         if released {
             parts.append(String(localized: "catch.released"))
         }
         return parts.joined(separator: " · ")
+    }
+}
+
+/// Вес и длина улова: «2,5 кг», «65 см».
+enum CatchFormat {
+    static func weight(grams: Int) -> String {
+        Measurement(value: Double(grams) / 1000, unit: UnitMass.kilograms)
+            .formatted(.measurement(width: .abbreviated, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0...2))))
+    }
+
+    static func length(millimeters: Int) -> String {
+        Measurement(value: Double(millimeters) / 10, unit: UnitLength.centimeters)
+            .formatted(.measurement(width: .abbreviated, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0...1))))
     }
 }

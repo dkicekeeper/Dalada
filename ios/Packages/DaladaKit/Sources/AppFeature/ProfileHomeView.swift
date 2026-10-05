@@ -255,6 +255,8 @@ struct MyFriendsSection: View {
         guard let backend = environment.backend else { return }
         if let loaded = try? await backend.myFriends() {
             friends = loaded
+            // Сохраняем — чтобы отметить друзей на финише поездки без сети.
+            try? await environment.cache.save(loaded, for: CacheKey.friends(userID))
         }
         if let requests = try? await backend.myFriendRequests() {
             incomingCount = requests.filter { $0.direction == .incoming }.count
@@ -297,12 +299,13 @@ struct MyCatchesSection: View {
     }
 }
 
-/// Все свои уловы.
+/// Все свои уловы, сверху — личные рекорды по видам.
 struct MyCatchesView: View {
     let environment: AppEnvironment
     let userID: UUID
 
     @State private var catches: [MyCatch] = []
+    @State private var records: [PersonalRecord] = []
     @State private var isLoaded = false
 
     var body: some View {
@@ -314,14 +317,27 @@ struct MyCatchesView: View {
                     description: String(localized: "profile.catches.empty")
                 )
             } else {
-                List(catches) { item in
-                    MyCatchRow(item: item)
+                List {
+                    if !records.isEmpty {
+                        PersonalRecordsSection(records: records)
+                    }
+                    Section {
+                        ForEach(catches) { item in
+                            MyCatchRow(item: item)
+                        }
+                    } header: {
+                        if !records.isEmpty {
+                            Text("records.allCatches")
+                        }
+                    }
                 }
             }
         }
         .navigationTitle("profile.catches.title")
         .task {
-            catches = await MyCatchesLoader(environment: environment, userID: userID).load(limit: 200)
+            async let loadedCatches = MyCatchesLoader(environment: environment, userID: userID).load(limit: 200)
+            async let loadedRecords = RecordsLoader(environment: environment, userID: userID).load()
+            (catches, records) = await (loadedCatches, loadedRecords)
             isLoaded = true
         }
     }
