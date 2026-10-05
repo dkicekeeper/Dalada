@@ -24,6 +24,9 @@ struct PlaceCardView: View {
     @Environment(PlacesStore.self) private var places: PlacesStore?
     @State private var state: LoadState = .loading
     @State private var reports: [PlaceReport] = []
+    /// Смотритель и рекорды — только у публичных мест (сервер для остальных отдаёт пусто).
+    @State private var steward: PlaceSteward?
+    @State private var records: [PlaceRecord] = []
     /// Подписанные ссылки на фото отчётов: путь в хранилище → ссылка (действует час).
     @State private var photoURLs: [String: URL] = [:]
     /// Фото посетителей для шапки (первые 12).
@@ -503,6 +506,12 @@ struct PlaceCardView: View {
             if let summary = PlaceReportsSummary.make(reports, limit: Self.reportsLimit) {
                 PlaceReportsSummaryView(summary: summary)
             }
+            if let steward, !isShowingSavedCopy {
+                PlaceStewardRow(steward: steward, environment: environment)
+            }
+            if !records.isEmpty && !isShowingSavedCopy {
+                PlaceRecordsView(records: records, photoURLs: photoURLs)
+            }
             ForEach(pendingHere) { item in
                 PendingReportRow(item: item)
             }
@@ -521,6 +530,7 @@ struct PlaceCardView: View {
                     ReportRow(
                         report: report,
                         photoURLs: photoURLs,
+                        isSteward: report.authorID == steward?.userID,
                         onBlocked: { blocked in
                             reports.removeAll { $0.authorID == blocked }
                         },
@@ -585,9 +595,12 @@ struct PlaceCardView: View {
         else { return }
         let photos = (try? await backend.placePhotos(placeID: placeID, limit: 12)) ?? []
         let editorial = (try? await backend.placeEditorialPhotos(placeID: placeID)) ?? []
+        steward = try? await backend.placeSteward(placeID: placeID)
+        records = (try? await backend.placeRecords(placeID: placeID)) ?? []
         let paths = loaded.prefix(Self.reportsShown).flatMap { report in report.media.flatMap { [$0.thumbnailPath, $0.path] } }
             + photos.flatMap { [$0.thumbnailPath, $0.path] }
             + editorial.flatMap { [$0.thumbnailPath, $0.path] }
+            + records.map(\.photoThumbPath)
         let urls = (try? await backend.signedMediaURLs(paths: paths)) ?? [:]
         photoURLs = urls
         placePhotos = photos
@@ -673,6 +686,8 @@ struct PlaceCardView: View {
 struct ReportRow: View {
     let report: PlaceReport
     let photoURLs: [String: URL]
+    /// Автор — смотритель места: звёздочка у имени.
+    var isSteward = false
     /// Автора заблокировали — убрать его отчёты с экрана.
     var onBlocked: (@MainActor (UUID) -> Void)?
     /// Свой отчёт: «Изменить отчёт».
@@ -687,6 +702,11 @@ struct ReportRow: View {
             HStack(spacing: AppSpacing.xs) {
                 Text(verbatim: author)
                     .font(AppTypography.bodyEmphasis)
+                if isSteward {
+                    Image(systemName: "star.circle.fill")
+                        .foregroundStyle(AppColors.accent)
+                        .accessibilityLabel(Text("steward.title"))
+                }
                 if report.verified {
                     Image(systemName: "checkmark.seal.fill")
                         .foregroundStyle(AppColors.success)

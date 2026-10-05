@@ -16464,6 +16464,52 @@
         }
       }
     },
+    "records.place.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The heaviest catch of each species with a photo from a verified report."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Әр түрдің расталған есептегі фотосы бар ең ауыр олжасы."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Самый тяжёлый улов каждого вида с фото из подтверждённого отчёта."
+          }
+        }
+      }
+    },
+    "records.place.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Place records"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Орын рекордтары"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рекорды места"
+          }
+        }
+      }
+    },
     "records.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -18549,6 +18595,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "поездок"
+          }
+        }
+      }
+    },
+    "steward.count %lld %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verified reports in the last %2$lld days: %1$lld"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Соңғы %2$lld күндегі расталған есептер: %1$lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подтверждённых отчётов за %2$lld дней: %1$lld"
+          }
+        }
+      }
+    },
+    "steward.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Place keeper"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Орын қараушысы"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Смотритель места"
           }
         }
       }
