@@ -4,6 +4,13 @@ import Testing
 
 @Suite("Place")
 struct PlaceTests {
+    @Test func closeFriendsVisibility() throws {
+        let decoded = try JSONDecoder().decode(Visibility.self, from: Data(#""close_friends""#.utf8))
+        #expect(decoded == .closeFriends)
+        #expect(decoded.titleKey == "visibility.close_friends")
+        #expect(Visibility.allCases == [.public, .friends, .closeFriends, .private])
+    }
+
     @Test func decodesPlacesInBoundingBoxRow() throws {
         let json = """
         [{"id": "aaaaaaaa-0000-0000-0000-000000000002", "owner_id": "11111111-1111-1111-1111-111111111111",

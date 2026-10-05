@@ -88,6 +88,16 @@ struct ProfileSettingsView: View {
 
             Section {
                 NavigationLink {
+                    CloseFriendsView(environment: environment)
+                } label: {
+                    Label("closeFriends.title", systemImage: "star.circle")
+                }
+            } footer: {
+                Text("closeFriends.settingsFooter")
+            }
+
+            Section {
+                NavigationLink {
                     NotificationSettingsView()
                 } label: {
                     Label("notifications.title", systemImage: "bell")

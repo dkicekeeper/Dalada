@@ -3447,6 +3447,121 @@
         }
       }
     },
+    "closeFriends.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only friends can be added to Close friends. Find them in Profile → Friends."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "«Жақындарға» тек достарды қосуға болады. Оларды «Профиль» → «Достар» бөлімінен табыңыз."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В «Близкие» можно добавить только друзей. Найдите их в «Профиль» → «Друзья»."
+          }
+        }
+      }
+    },
+    "closeFriends.empty.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No friends yet"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Әзірге достар жоқ"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пока нет друзей"
+          }
+        }
+      }
+    },
+    "closeFriends.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anything marked Close friends is visible only to these friends. Only you see the list — people aren’t told they’re on it."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "«Жақындар» деп белгіленгенді тек осы достар көреді. Тізімді тек сіз көресіз — адамдар оның ішінде екенін білмейді."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отмеченное «Близкие» видят только эти друзья. Список видите только вы — люди не узнают, что в нём."
+          }
+        }
+      }
+    },
+    "closeFriends.settingsFooter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For Close friends visibility: reports, places and trips for just some of your friends."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "«Жақындар» көрінуі үшін: есептер, орындар мен сапарлар достардың бір бөлігіне ғана."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Для видимости «Близкие»: отчёты, места и поездки только для части друзей."
+          }
+        }
+      }
+    },
+    "closeFriends.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close friends"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жақын достар"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Близкие друзья"
+          }
+        }
+      }
+    },
     "comments.accessibility %lld" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -20757,6 +20872,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Мои поездки"
+          }
+        }
+      }
+    },
+    "visibility.close_friends" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close friends"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жақындар"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Близкие"
           }
         }
       }

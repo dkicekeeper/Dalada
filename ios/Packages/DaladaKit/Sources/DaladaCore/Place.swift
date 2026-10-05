@@ -36,6 +36,8 @@ public enum PlaceType: String, Codable, CaseIterable, Sendable, Identifiable {
 public enum Visibility: String, Codable, CaseIterable, Sendable, Identifiable {
     case `public`
     case friends
+    /// Только друзья из своего списка «Близкие» (настройки профиля).
+    case closeFriends = "close_friends"
     case `private`
 
     public var id: String { rawValue }
@@ -45,6 +47,7 @@ public enum Visibility: String, Codable, CaseIterable, Sendable, Identifiable {
         switch self {
         case .public: "globe"
         case .friends: "person.2"
+        case .closeFriends: "star.circle"
         case .private: "lock"
         }
     }
