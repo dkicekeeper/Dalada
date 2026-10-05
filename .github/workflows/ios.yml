@@ -69,4 +69,23 @@ jobs:
             -scheme "$SCHEME" \
             -destination "id=$DEVICE_ID" \
             -derivedDataPath build \
+            -resultBundlePath "$RUNNER_TEMP/PackageTests.xcresult" \
             -quiet
+
+      # С -quiet видно только имена упавших тестов. Здесь — тексты ошибок и причина падения процесса
+      # (исключение, нет библиотеки), если тест уронил весь процесс.
+      - name: Test failures
+        if: failure()
+        run: |
+          RESULT="$RUNNER_TEMP/PackageTests.xcresult"
+          [ -d "$RESULT" ] || { echo "Результатов тестов нет"; exit 0; }
+          xcrun xcresulttool get test-results summary --path "$RESULT" --format json | python3 -c '
+          import json, sys
+          summary = json.load(sys.stdin)
+          for failure in summary.get("testFailures", []):
+              print("✘", failure.get("targetName", ""), failure.get("testName", ""))
+              print("  ", failure.get("failureText", "").replace("\n", "\n   "))
+          ' || true
+          xcrun xcresulttool export diagnostics --path "$RESULT" --output-path "$RUNNER_TEMP/diagnostics" > /dev/null 2>&1 || true
+          grep -rhE -A4 "uncaught exception|Termination Reason|Library not loaded|Exception Type|Fatal error" \
+            "$RUNNER_TEMP/diagnostics" 2>/dev/null | head -80 || true
