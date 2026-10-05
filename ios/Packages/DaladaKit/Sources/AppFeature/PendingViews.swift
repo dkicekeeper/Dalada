@@ -4,7 +4,8 @@ import DesignTokens
 import SwiftUI
 import Sync
 
-/// Условия одной строкой: «Клёв: хороший · Людей: немного · Вода: мутная».
+/// Условия одной строкой: «Клёв: хороший · Людей: немного · Вода: мутная · +18° · 3 м/с СВ · 689 мм»
+/// (погоду в отчёт подставляет телефон).
 enum ConditionsText {
     static func make(_ conditions: CheckinConditions) -> String? {
         let pairs: [(String, String?)] = [
@@ -20,7 +21,8 @@ enum ConditionsText {
             let valueTitle = String(localized: String.LocalizationValue(value)).lowercased()
             return categoryTitle + ": " + valueTitle
         }
-        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+        let all = parts + [conditions.weather.flatMap(WeatherText.summary)].compactMap { $0 }
+        return all.isEmpty ? nil : all.joined(separator: " · ")
     }
 }
 

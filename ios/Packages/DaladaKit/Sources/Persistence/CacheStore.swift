@@ -1,3 +1,4 @@
+import DaladaCore
 import Foundation
 import GRDB
 
@@ -62,6 +63,12 @@ public struct CacheKey: Hashable, Sendable {
 
     /// Статьи редакции — общие для всех, читаются без сети.
     public static let articles = CacheKey(rawValue: "shared/articles")
+
+    /// Погода у точки (координаты округлены до 0,01°, как в запросе) — общая для всех.
+    public static func weather(_ point: GeoPoint) -> CacheKey {
+        let rounded = OpenMeteo.roundedCoordinate(point)
+        return CacheKey(rawValue: "shared/weather/\(rounded.latitude),\(rounded.longitude)")
+    }
 
     public static func profile(_ user: UUID) -> CacheKey {
         CacheKey(rawValue: userPrefix(user) + "profile")

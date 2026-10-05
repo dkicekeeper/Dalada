@@ -81,14 +81,18 @@ public struct CheckinConditions: Codable, Equatable, Sendable {
     public var crowd: Crowd?
     public var water: Water?
     public var road: Road?
+    /// Погода у места в момент отчёта — телефон подставляет сам (Open-Meteo).
+    public var weather: WeatherSnapshot?
 
-    public init(bite: Bite? = nil, crowd: Crowd? = nil, water: Water? = nil, road: Road? = nil) {
+    public init(bite: Bite? = nil, crowd: Crowd? = nil, water: Water? = nil, road: Road? = nil, weather: WeatherSnapshot? = nil) {
         self.bite = bite
         self.crowd = crowd
         self.water = water
         self.road = road
+        self.weather = weather
     }
 
+    /// Человек ничего не отметил (погода не в счёт — её добавляет телефон).
     public var isEmpty: Bool { bite == nil && crowd == nil && water == nil && road == nil }
 
     /// Неизвестные значения (новые варианты с сервера) не ломают разбор — поле просто пустое.
@@ -98,10 +102,11 @@ public struct CheckinConditions: Codable, Equatable, Sendable {
         crowd = try? c.decodeIfPresent(Crowd.self, forKey: .crowd)
         water = try? c.decodeIfPresent(Water.self, forKey: .water)
         road = try? c.decodeIfPresent(Road.self, forKey: .road)
+        weather = (try? c.decodeIfPresent(WeatherSnapshot.self, forKey: .weather)).flatMap { $0.isEmpty ? nil : $0 }
     }
 
     enum CodingKeys: String, CodingKey {
-        case bite, crowd, water, road
+        case bite, crowd, water, road, weather
     }
 }
 

@@ -180,7 +180,8 @@ struct PlaceCardView: View {
                     placeID: place.id,
                     placeName: place.name,
                     coordinate: place.coordinate,
-                    records: session.profile.map { RecordsLoader(environment: environment, userID: $0.id) }
+                    records: session.profile.map { RecordsLoader(environment: environment, userID: $0.id) },
+                    weatherCache: environment.cache
                 ) {}
                     .environment(speciesStore)
                     .environment(sync)
@@ -335,6 +336,9 @@ struct PlaceCardView: View {
                         RouteButton(destination: destination)
                     }
                 }
+
+                // Погода у места: строка, подробно — по нажатию (без сети — сохранённый прогноз).
+                PlaceWeatherRow(coordinate: place.coordinate, environment: environment)
 
                 // Запреты и промысловая мера в этой точке (работает без сети) — всегда на виду.
                 PlaceRulesSection(coordinate: place.coordinate, environment: environment)

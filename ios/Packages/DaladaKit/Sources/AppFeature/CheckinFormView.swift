@@ -1,6 +1,7 @@
 import DaladaCore
 import DesignComponents
 import DesignTokens
+import Persistence
 import PhotosUI
 import SwiftUI
 import Sync
@@ -14,6 +15,8 @@ struct CheckinFormView: View {
     let coordinate: GeoPoint?
     /// Рекорды автора: после сохранения — поздравление с новым рекордом (`nil` — гость).
     let records: RecordsLoader?
+    /// Погода у места подставляется в отчёт сама (`nil` — без погоды).
+    let weatherCache: CacheStore?
     let onSaved: @MainActor () -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -43,11 +46,13 @@ struct CheckinFormView: View {
         placeName: String,
         coordinate: GeoPoint? = nil,
         records: RecordsLoader? = nil,
+        weatherCache: CacheStore? = nil,
         onSaved: @escaping @MainActor () -> Void
     ) {
         self.placeName = placeName
         self.coordinate = coordinate
         self.records = records
+        self.weatherCache = weatherCache
         self.onSaved = onSaved
         _draft = State(initialValue: CheckinDraft(placeID: placeID))
     }
@@ -88,6 +93,10 @@ struct CheckinFormView: View {
                     ChipPicker(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $draft.conditions.road) { $0.title }
                 } header: {
                     Text("checkin.form.conditions")
+                } footer: {
+                    if let weather = draft.conditions.weather, let summary = WeatherText.summary(weather) {
+                        Label("weather.inReport \(summary)", systemImage: WeatherKind(code: weather.code)?.systemImage ?? "thermometer.medium")
+                    }
                 }
 
                 Section("checkin.form.catches") {
@@ -206,6 +215,7 @@ struct CheckinFormView: View {
             }
             .interactiveDismissDisabled(isSaving || showsNewRecords)
             .task { await locate() }
+            .task { await loadWeather() }
             .task { await speciesStore.loadIfNeeded() }
         }
     }
@@ -220,6 +230,16 @@ struct CheckinFormView: View {
         case .unavailable:
             Label("checkin.location.unavailable", systemImage: "location.slash")
         }
+    }
+
+    /// Погода у места сейчас — в отчёт. Без сети — сохранённый прогноз не старше трёх часов, иначе без погоды.
+    private func loadWeather() async {
+        guard let weatherCache, let coordinate,
+              let forecast = await PlaceWeatherLoader(cache: weatherCache).load(at: coordinate, maxStale: 3 * 3600)
+        else { return }
+        let snapshot = forecast.current.forReport
+        guard !snapshot.isEmpty else { return }
+        draft.conditions.weather = snapshot
     }
 
     private func locate() async {
