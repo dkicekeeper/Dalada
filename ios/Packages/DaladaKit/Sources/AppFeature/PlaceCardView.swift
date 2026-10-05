@@ -402,7 +402,7 @@ struct PlaceCardView: View {
                         onBlocked: { blocked in
                             reports.removeAll { $0.authorID == blocked }
                         },
-                        onDelete: isShowingSavedCopy ? nil : { reportToDelete = report }
+                        onDelete: deleteAction(for: report)
                     )
                 }
             }
@@ -472,6 +472,12 @@ struct PlaceCardView: View {
         reports = loaded
         await reactions.load(loaded.prefix(Self.reportsShown).map { ReactionKey(.checkin, $0.id) })
         try? await cache.save(loaded, for: .reports(placeID, viewer: viewerID))
+    }
+
+    /// «Удалить отчёт» — только у своего и не у сохранённой копии (без сети).
+    private func deleteAction(for report: PlaceReport) -> (@MainActor () -> Void)? {
+        guard report.isOwn, !isShowingSavedCopy else { return nil }
+        return { reportToDelete = report }
     }
 
     private func deletePlace() async {
