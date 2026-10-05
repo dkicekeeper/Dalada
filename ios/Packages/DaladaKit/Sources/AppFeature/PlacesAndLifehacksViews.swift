@@ -102,6 +102,16 @@ struct LifehacksHomeView: View {
                             subtitle: String(localized: "checklists.summary \(lists.packingLists.count) \(lists.ownLists.count)")
                         )
                     }
+                    // Общие сборы с друзьями: кто что берёт.
+                    NavigationLink {
+                        SharedPackingsView(environment: environment)
+                    } label: {
+                        LifehackRow(
+                            titleKey: "sharedPacking.title",
+                            systemImage: "person.2.badge.gearshape",
+                            subtitle: String(localized: "sharedPacking.subtitle")
+                        )
+                    }
                     NavigationLink {
                         GearListView()
                     } label: {
