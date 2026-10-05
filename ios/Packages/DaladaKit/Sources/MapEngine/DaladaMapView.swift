@@ -407,14 +407,20 @@ public struct DaladaMapView: UIViewRepresentable {
         }
 
         static func stylePoints(_ layer: MLNCircleStyleLayer, color: NSExpression) {
-            layer.circleRadius = NSExpression(forConstantValue: 6)
+            // Растёт с масштабом: область целиком — 7 pt, к смене на значки (масштаб 10) — почти как значок.
+            layer.circleRadius = NSExpression(
+                forMLNInterpolating: NSExpression(forVariable: "zoomLevel"),
+                curveType: .linear,
+                parameters: nil,
+                stops: NSExpression(forConstantValue: [5.0: 7.0, MapPlaceIcons.minZoom: 10.0])
+            )
             layer.circleColor = color
             layer.circleStrokeColor = NSExpression(
                 format: "TERNARY(own == YES, %@, %@)",
                 UIColor.systemOrange,
                 UIColor.white
             )
-            layer.circleStrokeWidth = NSExpression(format: "TERNARY(own == YES, 2.5, 1.5)")
+            layer.circleStrokeWidth = NSExpression(format: "TERNARY(own == YES, 3, 2)")
         }
 
         static func features(places: [MapPlace], draft: GeoPoint?) -> [MLNShape & MLNFeature] {
