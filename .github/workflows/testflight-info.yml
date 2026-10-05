@@ -16,6 +16,10 @@ on:
         description: "Добавить во внешние группы и отправить на бета-проверку Apple"
         type: boolean
         default: false
+      crashes:
+        description: "Только показать отчёты о сбоях из TestFlight (тексты не трогать)"
+        type: boolean
+        default: false
   workflow_call:
     inputs:
       build:
@@ -55,6 +59,7 @@ jobs:
           BUILD: ${{ inputs.build }}
           WAIT: ${{ inputs.wait || 0 }}
           SUBMIT: ${{ inputs.submit && 'yes' || '' }}
+          CRASHES: ${{ inputs.crashes && 'yes' || '' }}
         run: |
           if [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY_P8" ]; then
             echo "::error::Нет секретов ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8 (docs/04-beta/testflight.md)"
@@ -68,6 +73,7 @@ jobs:
           args=(--wait "$WAIT")
           if [ -n "$BUILD" ]; then args+=(--build "$BUILD"); fi
           if [ -n "$SUBMIT" ]; then args+=(--submit); fi
+          if [ -n "$CRASHES" ]; then args+=(--crashes); fi
           "$RUNNER_TEMP/ascenv/bin/python" appstore/testflight_info.py "${args[@]}"
 
       - name: Remove API key

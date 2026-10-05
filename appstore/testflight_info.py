@@ -13,6 +13,8 @@
 
 --wait N    — ждать до N минут, пока сборка появится и обработается (после загрузки).
 --submit    — добавить сборку во внешние группы и отправить на бета-проверку Apple, если нужно.
+--crashes   — только показать последние отчёты о сбоях из TestFlight (тексты не трогает): тип
+              исключения и стек упавшего потока — без имени, почты и комментария тестировщика.
 
 Нужны ASC_KEY_ID, ASC_ISSUER_ID и ASC_KEY_PATH (файл .p8) — как в .github/workflows/testflight.yml.
 Контактные данные в лог не выводятся: логи Actions открытого репозитория видны всем.
@@ -224,6 +226,68 @@ def report(app_id: str) -> None:
             f.write("### Сборки в TestFlight\n\n" + "\n".join(lines) + "\n")
 
 
+# Отчёты о сбоях ---------------------------------------------------------------------------------
+
+# Строки шапки отчёта, которые могут указывать на устройство или человека, — не печатаем.
+PRIVATE_HEADER = ("Incident Identifier", "CrashReporter Key", "Beta Identifier", "Anonymized UUID",
+                  "Sleep/Wake UUID", "Report Version", "Coalition")
+
+
+def crash_excerpt(text: str, limit: int = 90) -> str:
+    """Тип исключения, причина и стек упавшего потока (или Last Exception Backtrace)."""
+    lines = text.splitlines()
+    keep = []
+    for line in lines[:60]:
+        if line.startswith(("Hardware Model", "OS Version", "Version:", "Exception Type", "Exception Codes",
+                            "Exception Note", "Termination Reason", "Triggered by Thread", "Crashed Thread")):
+            if not line.startswith(PRIVATE_HEADER):
+                keep.append(line)
+    start = None
+    for i, line in enumerate(lines):
+        if line.startswith("Last Exception Backtrace") or (" Crashed:" in line and line.startswith("Thread")):
+            start = i
+            break
+    if start is not None:
+        keep.append("")
+        keep.extend(lines[start:start + limit])
+    if not keep:
+        # Отчёт в формате JSON (.ips): показываем его начало без шапки.
+        keep = [line for line in lines[:limit] if not line.strip().startswith(tuple(f'"{h}' for h in PRIVATE_HEADER))]
+    return "\n".join(keep)
+
+
+def crashes(app_id: str, number: str | None) -> None:
+    try:
+        result = call("GET", f"/apps/{app_id}/betaFeedbackCrashSubmissions?" + urllib.parse.urlencode({
+            "limit": "10", "sort": "-createdDate", "include": "build",
+            "fields[betaFeedbackCrashSubmissions]": "createdDate,deviceModel,osVersion,build,crashLog",
+            "fields[builds]": "version",
+        }))
+    except ApiError as error:
+        sys.exit(f"::error::Отчёты о сбоях недоступны через API: {error}")
+    versions = {b["id"]: b["attributes"].get("version") for b in result.get("included", []) if b["type"] == "builds"}
+    submissions = result.get("data", [])
+    shown = 0
+    for item in submissions:
+        build_id = (item.get("relationships", {}).get("build", {}).get("data") or {}).get("id")
+        version = versions.get(build_id, "?")
+        if number and version != number:
+            continue
+        a = item.get("attributes", {})
+        print(f"### Сбой: сборка {version}, {a.get('createdDate', '')}, {a.get('deviceModel', '')}, iOS {a.get('osVersion', '')}")
+        try:
+            log = call("GET", f"/betaFeedbackCrashSubmissions/{item['id']}/crashLog")
+            text = log.get("data", {}).get("attributes", {}).get("logText", "")
+        except ApiError as error:
+            text = f"(отчёт недоступен: {error})"
+        print(crash_excerpt(text))
+        print()
+        shown += 1
+    if not shown:
+        print("Отчётов о сбоях нет" + (f" для сборки {number}" if number else "")
+              + " — они появляются, когда тестировщик отправляет отзыв о сбое из TestFlight.")
+
+
 def main(argv: list[str]) -> None:
     number = argv[argv.index("--build") + 1] if "--build" in argv else None
     wait = int(argv[argv.index("--wait") + 1]) if "--wait" in argv else 0
@@ -233,6 +297,10 @@ def main(argv: list[str]) -> None:
     if not apps:
         sys.exit(f"::error::Приложение {BUNDLE_ID} не найдено в App Store Connect")
     app_id = apps[0]["id"]
+
+    if "--crashes" in argv:
+        crashes(app_id, number)
+        return
 
     demo_ready = update_app_information(app_id)
     build = find_build(app_id, number, wait)
