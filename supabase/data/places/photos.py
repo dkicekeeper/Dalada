@@ -218,8 +218,17 @@ def meta_of(page: dict) -> dict | None:
         "thumb": ii.get("thumburl", ""),
         "license": plain(meta.get("LicenseShortName", {}).get("value", "")),
         "license_url": plain(meta.get("LicenseUrl", {}).get("value", "")),
-        "author": plain(meta.get("Artist", {}).get("value", "")),
+        "author": author_name(plain(meta.get("Artist", {}).get("value", ""))),
     }
+
+
+def author_name(text: str) -> str:
+    """Имя автора без служебного: «User:», телефонов и приписок о склейке панорам."""
+    text = re.sub(r"\+?\d[\d\s()-]{6,}\d", "", text)
+    text = re.sub(r"\bUser:", "", text)
+    text = re.sub(r"\s*This panoramic image was created.*$", "", text)
+    text = re.sub(r"\s+stitched by\s+", ", ", text)
+    return re.sub(r"\s+", " ", text).strip(" ,")
 
 
 def distance_m(a: tuple[float, float], b: tuple[float, float]) -> float:
