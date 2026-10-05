@@ -10,6 +10,7 @@ export type PushKind =
   | "ban_end"
   | "place_activity"
   | "moderation"
+  | "trip_tag"
   | "test";
 
 export type PushRow = {
@@ -81,6 +82,7 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
         : p.status === "resolved"
         ? { title: "Жалоба рассмотрена", body: "Спасибо! Мы приняли меры." }
         : { title: "Жалоба рассмотрена", body: "Нарушений не нашли." },
+    trip_tag: (p) => ({ title: "Вас отметили в поездке", body: `${p.actor}: «${p.title ?? "поездка"}». Примите или отклоните.` }),
     test: () => ({ title: "Dalada", body: "Уведомления работают — это проверка." }),
   },
   kk: {
@@ -109,6 +111,7 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
         : p.status === "resolved"
         ? { title: "Шағым қаралды", body: "Рақмет! Шара қолданылды." }
         : { title: "Шағым қаралды", body: "Бұзушылық табылмады." },
+    trip_tag: (p) => ({ title: "Сізді сапарда белгіледі", body: `${p.actor}: «${p.title ?? "сапар"}». Қабылдаңыз немесе бас тартыңыз.` }),
     test: () => ({ title: "Dalada", body: "Хабарландырулар жұмыс істейді — бұл тексеру." }),
   },
   en: {
@@ -137,12 +140,13 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
         : p.status === "resolved"
         ? { title: "Report reviewed", body: "Thanks! We took action." }
         : { title: "Report reviewed", body: "We found no violation." },
+    trip_tag: (p) => ({ title: "You were tagged in a trip", body: `${p.actor}: “${p.title ?? "a trip"}”. Accept or decline.` }),
     test: () => ({ title: "Dalada", body: "Notifications work — this is a test." }),
   },
 };
 
-/// Текст и ссылка для перехода по нажатию: обсуждение (dalada://thread/<id>), поездка
-/// (dalada://trip/<id>), место отчёта друга (dalada://place/<id>), комментарии к отчёту или отзыву
+/// Текст и ссылка для перехода по нажатию: обсуждение (dalada://thread/<id>), поездка — в том числе
+/// с отметкой (dalada://trip/<id>), место отчёта друга (dalada://place/<id>), комментарии к отчёту или отзыву
 /// (dalada://comments/<checkin|review>/<id>), иначе профиль автора (dalada://u/<username>).
 export function buildMessage(row: PushRow): Message {
   const p = row.payload;
@@ -153,7 +157,7 @@ export function buildMessage(row: PushRow): Message {
   let url: string | undefined;
   if (row.kind === "thread_reply" && p.thread_id) {
     url = `dalada://thread/${p.thread_id}`;
-  } else if ((row.kind === "comment" || row.kind === "friend_post") && p.target_kind === "trip" && p.target_id) {
+  } else if ((row.kind === "comment" || row.kind === "friend_post" || row.kind === "trip_tag") && p.target_kind === "trip" && p.target_id) {
     url = `dalada://trip/${p.target_id}`;
   } else if (
     (row.kind === "friend_post" || row.kind === "ban_start" || row.kind === "ban_end" ||

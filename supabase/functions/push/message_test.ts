@@ -119,3 +119,14 @@ Deno.test("решения модерации: правка — на место, 
   const report = buildMessage({ ...reply, kind: "moderation", payload: { topic: "report", status: "dismissed" } });
   assertEquals(report, { title: "Жалоба рассмотрена", body: "Нарушений не нашли.", url: undefined });
 });
+
+Deno.test("отметка в поездке — на поездку, на трёх языках", () => {
+  const payload = { actor: "@author", username: "author", target_kind: "trip", target_id: "99999999-0000-0000-0000-000000000001", title: "Рыбалка втроём" };
+  assertEquals(buildMessage({ ...reply, kind: "trip_tag", payload }), {
+    title: "Вас отметили в поездке",
+    body: "@author: «Рыбалка втроём». Примите или отклоните.",
+    url: "dalada://trip/99999999-0000-0000-0000-000000000001",
+  });
+  assertEquals(buildMessage({ ...reply, kind: "trip_tag", language: "kk", payload }).title, "Сізді сапарда белгіледі");
+  assertEquals(buildMessage({ ...reply, kind: "trip_tag", language: "en", payload }).body, "@author: “Рыбалка втроём”. Accept or decline.");
+});
