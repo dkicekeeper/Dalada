@@ -27,6 +27,7 @@ struct MyPhotosLoader {
 struct MyPhotosSection: View {
     let environment: AppEnvironment
     let userID: UUID
+    var showsTitle = true
 
     @Environment(SyncEngine.self) private var sync
     @State private var photos: [MyPhoto] = []
@@ -35,7 +36,7 @@ struct MyPhotosSection: View {
     @State private var opened: MyPhoto?
 
     var body: some View {
-        ProfileSection("profile.photos.title", systemImage: "photo.on.rectangle", showsAll: photos.count > 6) {
+        ProfileSection("profile.photos.title", systemImage: "photo.on.rectangle", showsAll: photos.count > 6, showsTitle: showsTitle) {
             MyPhotosView(environment: environment, userID: userID)
         } content: {
             if !photos.isEmpty {

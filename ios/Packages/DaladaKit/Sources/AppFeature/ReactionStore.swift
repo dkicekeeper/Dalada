@@ -122,6 +122,8 @@ struct ReactionButton: View {
                         Image(systemName: icon(filled: state.reacted))
                     }
                     .foregroundStyle(state.reacted ? AppColors.accent : AppColors.textSecondary)
+                    // Зона нажатия — не меньше 44 pt, как советует Apple.
+                    .frame(minWidth: 44, minHeight: 44, alignment: .leading)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.borderless)
@@ -129,7 +131,7 @@ struct ReactionButton: View {
                 .accessibilityAddTraits(state.reacted ? .isSelected : [])
             }
         }
-        .font(AppTypography.caption)
+        .font(AppTypography.bodySmall)
     }
 
     private func icon(filled: Bool) -> String {

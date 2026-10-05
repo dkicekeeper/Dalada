@@ -546,6 +546,7 @@ struct TripRow: View {
 struct MyTripsSection: View {
     let environment: AppEnvironment
     let userID: UUID
+    var showsTitle = true
 
     @Environment(SyncEngine.self) private var sync
     @State private var trips: [TripListEntry] = []
@@ -555,7 +556,8 @@ struct MyTripsSection: View {
         ProfileSection(
             "trips.title",
             systemImage: "point.topleft.down.to.point.bottomright.curvepath",
-            showsAll: trips.count > 3
+            showsAll: trips.count > 3,
+            showsTitle: showsTitle
         ) {
             TripsListView(environment: environment, userID: userID)
         } content: {
@@ -683,6 +685,7 @@ struct TripDetailView: View {
     @State private var selectedPlace: PlaceSelection?
     @State private var followed: FollowedRoute?
     @State private var showsEdit = false
+    @State private var showsPrivacyZones = false
     @State private var confirmsDelete = false
     @State private var ownActionError: String?
 
@@ -739,6 +742,9 @@ struct TripDetailView: View {
             Button("common.ok", role: .cancel) {}
         } message: {
             Text(verbatim: visibilityError ?? "")
+        }
+        .navigationDestination(isPresented: $showsPrivacyZones) {
+            PrivacyZonesView(environment: environment)
         }
         .sheet(isPresented: $showsEdit) {
             if let trip {
@@ -826,6 +832,11 @@ struct TripDetailView: View {
                     ReactionButton(key: ReactionKey(.trip, trip.summary.id), isOwn: trip.isOwn)
                 }
 
+                // Заметка — сразу под заголовком: это то, что автор хотел сказать о поездке.
+                if let note = trip.summary.note, !note.isEmpty {
+                    ExpandableText(note, lineLimit: 6)
+                }
+
                 VStack(spacing: AppSpacing.md) {
                     HStack(spacing: AppSpacing.md) {
                         StatTile(title: String(localized: "trip.stat.distance"), value: TripFormat.distance(Double(trip.summary.distanceM)))
@@ -835,10 +846,15 @@ struct TripDetailView: View {
                         StatTile(title: String(localized: "trip.stat.duration"), value: TripFormat.duration(trip.summary.duration))
                         StatTile(title: String(localized: "trip.stat.elevation"), value: TripFormat.elevation(Double(trip.summary.elevationGainM)))
                     }
-                    HStack(spacing: AppSpacing.md) {
-                        StatTile(title: String(localized: "trip.stat.maxSpeed"), value: TripFormat.speed(trip.summary.maxSpeedMps))
-                        Spacer(minLength: 0)
-                            .frame(maxWidth: .infinity)
+                    if trip.summary.maxSpeedMps != nil {
+                        HStack {
+                            Text("trip.stat.maxSpeed")
+                                .foregroundStyle(AppColors.textSecondary)
+                            Spacer(minLength: 0)
+                            Text(verbatim: TripFormat.speed(trip.summary.maxSpeedMps))
+                                .foregroundStyle(AppColors.textPrimary)
+                        }
+                        .font(AppTypography.bodySmall)
                     }
                 }
                 .cardContentPadding()
@@ -853,11 +869,6 @@ struct TripDetailView: View {
                         try? await environment.cache.remove(CacheKey.trip(tripID, viewer: session.profile?.id))
                         dismiss()
                     }
-                }
-
-                if let note = trip.summary.note, !note.isEmpty {
-                    Text(verbatim: note)
-                        .font(AppTypography.body)
                 }
 
                 if !checkins.isEmpty {
@@ -877,27 +888,14 @@ struct TripDetailView: View {
                         }
                     }
                 }
-
-                if trip.isOwn && trip.summary.visibility != .private {
-                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                        Text("trip.detail.sharedHint")
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
-                        NavigationLink {
-                            PrivacyZonesView(environment: environment)
-                        } label: {
-                            Label("privacyZones.title", systemImage: "house.circle")
-                                .font(AppTypography.bodySmall)
-                        }
-                    }
-                }
             }
             .screenPadding()
             .padding(.vertical, AppSpacing.lg)
         }
     }
 
-    /// Меню своей поездки: «Кто видит», «Изменить» (название, вид отдыха, заметка), «Удалить».
+    /// Меню своей поездки: «Изменить» (название, вид отдыха, заметка), «Кто видит» и зоны приватности
+    /// (что другие не видят в треке), «Удалить».
     private func ownMenu(_ trip: TripDetails) -> some View {
         Menu {
             Section {
@@ -915,6 +913,9 @@ struct TripDetailView: View {
                             systemImage: item == trip.summary.visibility ? "checkmark" : item.systemImage
                         )
                     }
+                }
+                Button("privacyZones.title", systemImage: "house.circle") {
+                    showsPrivacyZones = true
                 }
             }
             Section {

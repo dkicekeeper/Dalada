@@ -46,10 +46,12 @@ struct CommentsButton: View {
                         Image(systemName: "bubble.left")
                     }
                     .foregroundStyle(AppColors.textSecondary)
+                    // Зона нажатия — не меньше 44 pt, как советует Apple.
+                    .frame(minWidth: 44, minHeight: 44, alignment: .leading)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.borderless)
-                .font(AppTypography.caption)
+                .font(AppTypography.bodySmall)
             }
         }
         .accessibilityLabel(Text("comments.accessibility \(count)"))

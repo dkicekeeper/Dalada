@@ -110,22 +110,17 @@ struct TripParticipantsSection: View {
             if let mine = TripParticipants.mine(in: participants), mine.status == .pending {
                 invitation
             }
-            if isOwn || !visible.isEmpty {
+            if isOwn && visible.isEmpty {
+                // Никого не отметили — одна строка-кнопка вместо раздела с заголовком.
+                tagButton
+            } else if !visible.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
                     SectionHeaderView(String(localized: "trip.participants.title"), systemImage: "person.2")
                     ForEach(visible) { participant in
                         row(participant)
                     }
                     if isOwn {
-                        Button {
-                            picked = []
-                            showsPicker = true
-                        } label: {
-                            Label("trip.participants.tag", systemImage: "person.badge.plus")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .secondaryButton()
-                        .disabled(isWorking || participants.count >= TripParticipants.limit || environment.backend == nil)
+                        tagButton
                     } else if let mine = TripParticipants.mine(in: participants), mine.status == .accepted {
                         Button("trip.participants.leave", role: .destructive) {
                             confirmsLeave = true
@@ -178,6 +173,19 @@ struct TripParticipantsSection: View {
     /// Себя-ждущего показываем приглашением, а не строкой списка.
     private var visible: [TripParticipant] {
         participants.filter { !($0.isMe && $0.status == .pending) }
+    }
+
+    /// «Отметить друзей» — компактной кнопкой: это нечастое действие, не повод для большой кнопки.
+    private var tagButton: some View {
+        Button {
+            picked = []
+            showsPicker = true
+        } label: {
+            Label("trip.participants.tag", systemImage: "person.badge.plus")
+                .font(AppTypography.bodySmall)
+        }
+        .buttonStyle(.borderless)
+        .disabled(isWorking || participants.count >= TripParticipants.limit || environment.backend == nil)
     }
 
     private var invitation: some View {

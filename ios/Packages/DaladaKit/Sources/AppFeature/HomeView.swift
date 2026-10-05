@@ -460,13 +460,25 @@ struct FeedPostCard: View {
                 Spacer(minLength: 0)
             }
         } else if case .thread(let thread) = item.content {
-            Label {
-                Text("home.replies \(thread.postsCount)")
-            } icon: {
-                Image(systemName: "bubble.left")
+            HStack(spacing: AppSpacing.lg) {
+                Label {
+                    Text("home.replies \(thread.postsCount)")
+                } icon: {
+                    Image(systemName: "bubble.left")
+                }
+                .foregroundStyle(AppColors.textSecondary)
+                Spacer(minLength: 0)
+                // Ответить — сразу из ленты, а не искать, куда нажать.
+                NavigationLink {
+                    ThreadView(threadID: item.id, environment: environment)
+                } label: {
+                    Label("home.reply", systemImage: "arrowshape.turn.up.left")
+                        .frame(minHeight: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless)
             }
-            .font(AppTypography.caption)
-            .foregroundStyle(AppColors.textSecondary)
+            .font(AppTypography.bodySmall)
         }
     }
 }

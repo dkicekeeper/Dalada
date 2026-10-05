@@ -8,7 +8,8 @@ import SwiftUI
 import Sync
 
 /// Вкладка «Профиль»: шапка и шестерёнка в панели — настройки профиля, статистика, очередь отправки, мои друзья,
-/// уловы, места, поездки и достижения. Гостю — вход. Карточка сервера — только когда с ним проблема.
+/// поездки, уловы, места и фото по чипам, достижения. Гостю — вход. Карточка сервера — только когда
+/// с ним проблема.
 struct ProfileHomeView: View {
     let environment: AppEnvironment
 
@@ -84,10 +85,8 @@ struct ProfileHomeView: View {
                 ProfileStatsCard(environment: environment, userID: profile.id)
                 PendingQueueSection()
                 MyFriendsSection(environment: environment, userID: profile.id)
-                MyCatchesSection(environment: environment, userID: profile.id)
-                MyPlacesSection(environment: environment, userID: profile.id)
-                MyTripsSection(environment: environment, userID: profile.id)
-                MyPhotosSection(environment: environment, userID: profile.id)
+                // Поездки, уловы, места и фото — по чипам, а не четырьмя разделами подряд.
+                ProfileContentTabs(environment: environment, userID: profile.id)
                 AchievementsSection(environment: environment, userID: profile.id)
             } else {
                 historyPlaceholder
@@ -124,10 +123,12 @@ struct ProfileHomeView: View {
 // MARK: - Разделы профиля
 
 /// Раздел профиля: заголовок со значком, «Все» (если есть куда) и карточка с содержимым.
+/// Во вкладке профиля заголовок не нужен — его роль играет чип (`showsTitle: false`).
 struct ProfileSection<Content: View, Destination: View>: View {
     let titleKey: String.LocalizationValue
     let systemImage: String
     let showsAll: Bool
+    let showsTitle: Bool
     let destination: Destination
     let content: Content
 
@@ -135,27 +136,33 @@ struct ProfileSection<Content: View, Destination: View>: View {
         _ titleKey: String.LocalizationValue,
         systemImage: String,
         showsAll: Bool = true,
+        showsTitle: Bool = true,
         @ViewBuilder destination: () -> Destination,
         @ViewBuilder content: () -> Content
     ) {
         self.titleKey = titleKey
         self.systemImage = systemImage
         self.showsAll = showsAll
+        self.showsTitle = showsTitle
         self.destination = destination()
         self.content = content()
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
-            HStack {
-                SectionHeaderView(String(localized: titleKey), systemImage: systemImage)
-                Spacer(minLength: 0)
-                if showsAll {
-                    NavigationLink {
-                        destination
-                    } label: {
-                        Text("trips.all")
-                            .font(AppTypography.bodySmall)
+            if showsTitle || showsAll {
+                HStack {
+                    if showsTitle {
+                        SectionHeaderView(String(localized: titleKey), systemImage: systemImage)
+                    }
+                    Spacer(minLength: 0)
+                    if showsAll {
+                        NavigationLink {
+                            destination
+                        } label: {
+                            Text("trips.all")
+                                .font(AppTypography.bodySmall)
+                        }
                     }
                 }
             }
@@ -284,13 +291,14 @@ struct MyFriendsSection: View {
 struct MyCatchesSection: View {
     let environment: AppEnvironment
     let userID: UUID
+    var showsTitle = true
 
     @Environment(SyncEngine.self) private var sync
     @State private var catches: [MyCatch] = []
     @State private var isLoaded = false
 
     var body: some View {
-        ProfileSection("profile.catches.title", systemImage: "fish", showsAll: !catches.isEmpty) {
+        ProfileSection("profile.catches.title", systemImage: "fish", showsAll: !catches.isEmpty, showsTitle: showsTitle) {
             MyCatchesView(environment: environment, userID: userID)
         } content: {
             if !catches.isEmpty {
@@ -422,6 +430,7 @@ struct MyCatchesLoader {
 struct MyPlacesSection: View {
     let environment: AppEnvironment
     let userID: UUID
+    var showsTitle = true
 
     @Environment(SyncEngine.self) private var sync
     @State private var places: [PlaceSummary] = []
@@ -429,7 +438,7 @@ struct MyPlacesSection: View {
     @State private var selected: PlaceSelection?
 
     var body: some View {
-        ProfileSection("places.mine.title", systemImage: "mappin.and.ellipse", showsAll: places.count > 3) {
+        ProfileSection("places.mine.title", systemImage: "mappin.and.ellipse", showsAll: places.count > 3, showsTitle: showsTitle) {
             MyPlacesView(environment: environment)
         } content: {
             if !places.isEmpty {
