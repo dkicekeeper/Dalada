@@ -2393,6 +2393,29 @@
         }
       }
     },
+    "catch.ownMenu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Catch actions"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Олжамен әрекеттер"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Действия с уловом"
+          }
+        }
+      }
+    },
     "catch.released" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -9,8 +9,9 @@ extension Notification.Name {
     static let daladaPlaceDeleted = Notification.Name("dalada.placeDeleted")
 }
 
-/// «Изменить» и «Удалить» у своего улова: долгое нажатие и смахивание в списке. Правка — та же
-/// форма улова, без фото (фото улова здесь не меняется). После правки или удаления — `onChanged`.
+/// «Изменить» и «Удалить» у своего улова: кнопка «…» в строке, долгое нажатие и смахивание в списке.
+/// Правка — та же форма улова, без фото (фото улова здесь не меняется). После правки или удаления —
+/// `onChanged`.
 struct OwnCatchActions: ViewModifier {
     let catchID: UUID
     let environment: AppEnvironment
@@ -23,7 +24,21 @@ struct OwnCatchActions: ViewModifier {
     @State private var errorText: String?
 
     func body(content: Content) -> some View {
-        content
+        HStack(spacing: AppSpacing.xs) {
+            content
+            // Видимая кнопка: долгое нажатие и смахивание не все находят.
+            Menu {
+                editButton
+                deleteButton
+            } label: {
+                Image(systemName: "ellipsis")
+                    .foregroundStyle(AppColors.textSecondary)
+                    .frame(width: 32, height: 32)
+                    .contentShape(Rectangle())
+                    .accessibilityLabel(Text("catch.ownMenu"))
+            }
+            .buttonStyle(.borderless)
+        }
             .contextMenu {
                 editButton
                 deleteButton
