@@ -42,6 +42,26 @@ extension BackendClient {
         return rows.first(where: { $0.deletedAt == nil })?.draft
     }
 
+    /// Свой отчёт для правки: условия, заметка, видимость. `nil` — отчёта нет или он удалён.
+    public func ownReport(_ checkinID: UUID) async throws -> ReportEdit? {
+        let rows: [OwnReportRow] = try await supabase
+            .from("checkins")
+            .select("id,conditions,note,visibility,deleted_at")
+            .eq("id", value: checkinID)
+            .execute()
+            .value
+        return rows.first(where: { $0.deletedAt == nil })?.edit
+    }
+
+    /// Сохранить правку своего отчёта.
+    public func updateReport(_ edit: ReportEdit) async throws {
+        try await supabase
+            .from("checkins")
+            .update(ReportUpdate(edit))
+            .eq("id", value: edit.id)
+            .execute()
+    }
+
     /// Сохранить правку своего улова (фото улова здесь не меняется).
     public func updateCatch(_ draft: CatchDraft) async throws {
         try await supabase
@@ -122,5 +142,47 @@ struct CatchUpdate: Encodable, Sendable {
         try c.encode(bait.isEmpty ? nil : bait, forKey: .bait)
         try c.encode(draft.released, forKey: .released)
         try c.encode(draft.hideSize, forKey: .hideSize)
+    }
+}
+
+struct OwnReportRow: Decodable, Sendable {
+    let id: UUID
+    let conditions: CheckinConditions?
+    let note: String?
+    let visibility: Visibility
+    let deletedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case conditions
+        case note
+        case visibility
+        case deletedAt = "deleted_at"
+    }
+
+    var edit: ReportEdit {
+        ReportEdit(id: id, conditions: conditions ?? CheckinConditions(), note: note ?? "", visibility: visibility)
+    }
+}
+
+/// Поля отчёта для `update`: условия целиком, стёртая заметка — `null`.
+struct ReportUpdate: Encodable, Sendable {
+    let edit: ReportEdit
+
+    init(_ edit: ReportEdit) {
+        self.edit = edit
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case conditions
+        case note
+        case visibility
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(edit.conditions, forKey: .conditions)
+        try c.encode(edit.trimmedNote, forKey: .note)
+        try c.encode(edit.visibility, forKey: .visibility)
     }
 }

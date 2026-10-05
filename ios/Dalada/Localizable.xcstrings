@@ -15958,6 +15958,29 @@
         }
       }
     },
+    "report.edit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit report"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Есепті өзгерту"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изменить отчёт"
+          }
+        }
+      }
+    },
     "report.ownMenu" : {
       "extractionState" : "manual",
       "localizations" : {

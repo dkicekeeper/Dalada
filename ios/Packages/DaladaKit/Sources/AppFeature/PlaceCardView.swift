@@ -46,6 +46,7 @@ struct PlaceCardView: View {
     @State private var confirmsDeletePlace = false
     /// Свой отчёт, который просят удалить.
     @State private var reportToDelete: PlaceReport?
+    @State private var reportToEdit: ReportEdit?
     @State private var ownActionError: String?
 
     @Environment(\.dismiss) private var dismiss
@@ -219,6 +220,11 @@ struct PlaceCardView: View {
             if case .loaded(let place) = state {
                 PlaceSuggestView(place: place, kind: kind, environment: environment)
                     .environment(speciesStore)
+            }
+        }
+        .sheet(item: $reportToEdit) { edit in
+            ReportEditView(edit: edit, placeName: loadedPlaceName, environment: environment) {
+                Task { await loadReports() }
             }
         }
         .sheet(item: $nearbySelection) { selection in
@@ -501,6 +507,7 @@ struct PlaceCardView: View {
                         onBlocked: { blocked in
                             reports.removeAll { $0.authorID == blocked }
                         },
+                        onEdit: editAction(for: report),
                         onDelete: deleteAction(for: report)
                     )
                 }
@@ -579,6 +586,34 @@ struct PlaceCardView: View {
         return { reportToDelete = report }
     }
 
+    /// «Изменить отчёт» — там же, где «Удалить».
+    private func editAction(for report: PlaceReport) -> (@MainActor () -> Void)? {
+        guard report.isOwn, !isShowingSavedCopy else { return nil }
+        return { Task { await startEditing(report) } }
+    }
+
+    private var loadedPlaceName: String {
+        guard case .loaded(let place) = state else { return "" }
+        return place.name
+    }
+
+    /// Свежая версия своего отчёта с сервера — в форму правки.
+    private func startEditing(_ report: PlaceReport) async {
+        guard let backend else {
+            ownActionError = String(localized: "own.error.offline")
+            return
+        }
+        do {
+            if let edit = try await backend.ownReport(report.id) {
+                reportToEdit = edit
+            } else {
+                await loadReports()
+            }
+        } catch {
+            ownActionError = String(localized: "own.error.offline")
+        }
+    }
+
     private func deletePlace() async {
         guard let backend else {
             ownActionError = String(localized: "own.error.offline")
@@ -623,6 +658,8 @@ struct ReportRow: View {
     let photoURLs: [String: URL]
     /// Автора заблокировали — убрать его отчёты с экрана.
     var onBlocked: (@MainActor (UUID) -> Void)?
+    /// Свой отчёт: «Изменить отчёт».
+    var onEdit: (@MainActor () -> Void)?
     /// Свой отчёт: «Удалить отчёт» (подтверждение — у вызывающего).
     var onDelete: (@MainActor () -> Void)?
 
@@ -642,9 +679,14 @@ struct ReportRow: View {
                 Text(report.at, style: .relative)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textTertiary)
-                if report.isOwn, let onDelete {
+                if report.isOwn, onEdit != nil || onDelete != nil {
                     Menu {
-                        Button("report.delete", systemImage: "trash", role: .destructive, action: onDelete)
+                        if let onEdit {
+                            Button("report.edit", systemImage: "pencil", action: onEdit)
+                        }
+                        if let onDelete {
+                            Button("report.delete", systemImage: "trash", role: .destructive, action: onDelete)
+                        }
                     } label: {
                         Image(systemName: "ellipsis")
                             .foregroundStyle(AppColors.textSecondary)

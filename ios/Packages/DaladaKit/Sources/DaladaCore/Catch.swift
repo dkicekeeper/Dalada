@@ -155,6 +155,27 @@ public struct CatchDraft: Identifiable, Equatable, Sendable {
     }
 }
 
+/// Правка своего отчёта: условия, заметка, видимость. Уловы правятся отдельно, место и время — нет.
+public struct ReportEdit: Identifiable, Equatable, Sendable {
+    public let id: UUID
+    public var conditions: CheckinConditions
+    public var note: String
+    public var visibility: Visibility
+
+    public init(id: UUID, conditions: CheckinConditions = CheckinConditions(), note: String = "", visibility: Visibility) {
+        self.id = id
+        self.conditions = conditions
+        self.note = note
+        self.visibility = visibility
+    }
+
+    /// Заметка без пробелов по краям; пустая — `nil` (стёрли).
+    public var trimmedNote: String? {
+        let note = note.trimmingCharacters(in: .whitespacesAndNewlines)
+        return note.isEmpty ? nil : note
+    }
+}
+
 /// Черновик чекина: место, условия, заметка, уловы.
 public struct CheckinDraft: Equatable, Sendable {
     public static let noteLimit = 2000

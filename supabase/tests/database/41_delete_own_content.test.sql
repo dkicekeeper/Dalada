@@ -5,7 +5,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(13);
+select plan(15);
 
 create function pg_temp.act_as(uid uuid) returns void language plpgsql as $$
 begin
@@ -111,6 +111,24 @@ select is(
   (select count(*)::integer from public.my_catches()),
   0,
   'в «Моих уловах» удалённых нет'
+);
+
+-- Правка отчёта: условия, заметка, видимость — свои; чужой отчёт не меняется.
+select pg_temp.act_as('22222222-2222-2222-2222-222222222222');
+update public.checkins set note = 'Чужая правка' where id = 'cccccccc-0000-0000-0000-000000000002';
+select pg_temp.act_as('11111111-1111-1111-1111-111111111111');
+update public.checkins
+   set conditions = '{"bite": "good", "water": "clear"}', note = 'Клевало с утра', visibility = 'friends'
+ where id = 'cccccccc-0000-0000-0000-000000000002';
+select is(
+  (select row(conditions, note, visibility)::text from public.checkins where id = 'cccccccc-0000-0000-0000-000000000002'),
+  row('{"bite": "good", "water": "clear"}'::jsonb, 'Клевало с утра', 'friends'::public.visibility)::text,
+  'свой отчёт: условия, заметка и видимость меняются'
+);
+select is(
+  (select count(*)::integer from public.checkins where note = 'Чужая правка'),
+  0,
+  'чужой отчёт не меняется'
 );
 
 -- Место скрыл модератор — свой отчёт там всё равно удаляется.

@@ -48,6 +48,14 @@ struct CatchTests {
         #expect(catches.first?.placeName == nil)
     }
 
+    @Test func reportEditTrimsNote() {
+        var edit = ReportEdit(id: UUID(), note: "  Клевало с утра \n", visibility: .friends)
+        #expect(edit.trimmedNote == "Клевало с утра")
+        edit.note = "   "
+        #expect(edit.trimmedNote == nil)
+        #expect(edit.conditions.isEmpty)
+    }
+
     @Test func unknownConditionValuesAreIgnored() throws {
         let json = #"{"bite": "legendary", "water": "muddy", "wind": "strong"}"#
         let conditions = try JSONDecoder().decode(CheckinConditions.self, from: Data(json.utf8))
