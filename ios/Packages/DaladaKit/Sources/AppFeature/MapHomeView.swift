@@ -21,6 +21,10 @@ struct MapHomeView: View {
     @AppStorage("map.showsParks") private var showsParks = true
     @AppStorage("map.showsBorder") private var showsBorder = false
     @AppStorage("map.showsTracks") private var showsTracks = false
+    @AppStorage("map.showsOwnPlaces") private var showsOwnPlaces = true
+    @AppStorage("map.showsOtherPlaces") private var showsOtherPlaces = true
+    /// Скрытые типы мест: «campsite,base».
+    @AppStorage("map.hiddenTypes") private var hiddenTypesStorage = ""
     @State private var model: MapScreenModel
     @State private var tracks: MyTracksLayer
     @State private var showsSignInHint = false
@@ -39,7 +43,7 @@ struct MapHomeView: View {
             styleURL: environment.config.mapStyleURL,
             initialCenter: .almaty,
             initialZoom: 8,
-            places: model.mapPlaces,
+            places: model.mapPlaces.filter { placeFilter.includes(type: $0.type, isOwn: $0.isOwn) },
             draftPin: model.newPlace?.coordinate,
             historySegments: showsTracks && session.profile != nil ? tracks.segments : [],
             // Слои снизу вверх: погранзона, нацпарки, зоны запретов.
@@ -58,24 +62,50 @@ struct MapHomeView: View {
         // Карта — на весь экран, под панелью вкладок; кнопки поверх — в безопасной области.
         .ignoresSafeArea()
         .overlay(alignment: .topLeading) {
-            // Слои карты: запреты, нацпарки и заповедники, погранзона, мои треки (после входа).
+            // Слои карты: места (свои, остальные, типы), запреты, нацпарки и заповедники, погранзона,
+            // мои треки (после входа).
             Menu {
-                Toggle(isOn: $showsRules) {
-                    Label("map.rules", systemImage: "exclamationmark.shield")
+                Section("map.layers.places") {
+                    Toggle(isOn: $showsOwnPlaces) {
+                        Label("map.layers.ownPlaces", systemImage: "person.crop.circle")
+                    }
+                    Toggle(isOn: $showsOtherPlaces) {
+                        Label("map.layers.otherPlaces", systemImage: "mappin.and.ellipse")
+                    }
+                    Menu {
+                        ForEach(PlaceType.allCases) { type in
+                            Toggle(isOn: typeBinding(type)) {
+                                Label(LocalizedStringKey(type.titleKey), systemImage: type.systemImage)
+                            }
+                        }
+                        if !hiddenTypesStorage.isEmpty {
+                            Button("map.layers.allTypes", systemImage: "checklist.checked") {
+                                hiddenTypesStorage = ""
+                            }
+                        }
+                    } label: {
+                        Label("map.layers.types", systemImage: "line.3.horizontal.decrease.circle")
+                    }
                 }
-                Toggle(isOn: $showsParks) {
-                    Label("map.layers.parks", systemImage: "tree")
-                }
-                Toggle(isOn: $showsBorder) {
-                    Label("map.layers.border", systemImage: "flag")
-                }
-                if session.profile != nil {
-                    Toggle(isOn: $showsTracks) {
-                        Label("map.layers.tracks", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
+                Section {
+                    Toggle(isOn: $showsRules) {
+                        Label("map.rules", systemImage: "exclamationmark.shield")
+                    }
+                    Toggle(isOn: $showsParks) {
+                        Label("map.layers.parks", systemImage: "tree")
+                    }
+                    Toggle(isOn: $showsBorder) {
+                        Label("map.layers.border", systemImage: "flag")
+                    }
+                    if session.profile != nil {
+                        Toggle(isOn: $showsTracks) {
+                            Label("map.layers.tracks", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
+                        }
                     }
                 }
             } label: {
-                Label("map.layers", systemImage: "square.3.layers.3d")
+                // Скрыта часть мест — значок с заливкой.
+                Label("map.layers", systemImage: placeFilter.isActive ? "square.3.layers.3d.top.filled" : "square.3.layers.3d")
                     .font(AppTypography.bodyEmphasis)
             }
             .secondaryButton()
@@ -135,6 +165,25 @@ struct MapHomeView: View {
             Button("common.ok") {}
         } message: {
             Text("map.signInRequired.message")
+        }
+    }
+
+    private var placeFilter: MapPlaceFilter {
+        MapPlaceFilter(
+            showsOwn: showsOwnPlaces,
+            showsOthers: showsOtherPlaces,
+            hiddenTypes: MapPlaceFilter.types(from: hiddenTypesStorage)
+        )
+    }
+
+    /// Тип места виден на карте ↔ не в списке скрытых.
+    private func typeBinding(_ type: PlaceType) -> Binding<Bool> {
+        Binding {
+            !MapPlaceFilter.types(from: hiddenTypesStorage).contains(type)
+        } set: { isShown in
+            var hidden = MapPlaceFilter.types(from: hiddenTypesStorage)
+            if isShown { hidden.remove(type) } else { hidden.insert(type) }
+            hiddenTypesStorage = MapPlaceFilter.storage(hidden)
         }
     }
 

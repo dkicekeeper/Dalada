@@ -7065,6 +7065,29 @@
         }
       }
     },
+    "map.layers.allTypes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show all types"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Барлық түрлерді көрсету"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать все типы"
+          }
+        }
+      }
+    },
     "map.layers.border" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7084,6 +7107,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Погранзона"
+          }
+        }
+      }
+    },
+    "map.layers.otherPlaces" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other places"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Басқа орындар"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Остальные места"
+          }
+        }
+      }
+    },
+    "map.layers.ownPlaces" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My places"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Менің орындарым"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мои места"
           }
         }
       }
@@ -7111,6 +7180,29 @@
         }
       }
     },
+    "map.layers.places" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Places"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Орындар"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Места"
+          }
+        }
+      }
+    },
     "map.layers.tracks" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7130,6 +7222,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Мои треки"
+          }
+        }
+      }
+    },
+    "map.layers.types" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Place types"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Орын түрлері"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Типы мест"
           }
         }
       }
