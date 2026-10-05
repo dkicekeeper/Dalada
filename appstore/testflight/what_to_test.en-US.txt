@@ -1,6 +1,7 @@
 Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, check in with a catch and a photo, record a trip (Start a trip on the map), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
 New:
+• Map layers: Layers on the map → National parks and reserves, Border zone. Tap a park for entry rules, fees in MCI and tenge (Kolsai, Zhongar-Alatau), Buy a ticket and Park website. A place inside a park says so on its card. Works offline.
 • Tag friends in a trip: “Who was with you” on the finish screen or “Tag friends” on the trip page. They get an invitation — after “Accept” the trip appears in their trips.
 • Personal records: Profile → Catches → All — the heaviest and longest catch of each species. Beat a record and you get a congratulation right after the report.
 • Auto-pause: stand still for 10 minutes and recording pauses, then resumes when you move; distance no longer grows at a stop. Set the time in profile settings.
