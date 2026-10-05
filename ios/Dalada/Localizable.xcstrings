@@ -7117,19 +7117,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Know-how"
+            "value" : "Know-how and articles"
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Білім"
+            "value" : "Білім мен мақалалар"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Знания"
+            "value" : "Знания и статьи"
           }
         }
       }
@@ -7140,19 +7140,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Getting ready"
+            "value" : "Before the trip"
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Дайындық"
+            "value" : "Сапар алдында"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Подготовка"
+            "value" : "Перед поездкой"
           }
         }
       }
@@ -7295,6 +7295,29 @@
         }
       }
     },
+    "map.layers.overlays" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On the map"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Карта үстінде"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поверх карты"
+          }
+        }
+      }
+    },
     "map.layers.ownPlaces" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7429,6 +7452,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Где я"
+          }
+        }
+      }
+    },
+    "map.longPressHint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Press and hold on the map to put a new place right there."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Картаны басып тұрыңыз — жаңа орын дәл сол жерге қойылады."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удерживайте палец на карте — новое место встанет именно там."
           }
         }
       }
@@ -11073,19 +11119,42 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No reports yet. Be the first to tell how the fish are biting."
+            "value" : "Be the first to tell how the fish are biting."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Әзірге есеп жоқ. Бірінші болыңыз — балықтың қалай қабатынын айтыңыз."
+            "value" : "Бірінші болыңыз — балықтың қалай қабатынын айтыңыз."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Пока никто не отмечался. Будьте первым — расскажите, как клюёт."
+            "value" : "Будьте первым — расскажите, как клюёт."
+          }
+        }
+      }
+    },
+    "place.card.reports.empty.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No reports yet"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Әзірге есеп жоқ"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчётов пока нет"
           }
         }
       }
@@ -16420,19 +16489,42 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No reviews yet. Been here? Share your impression."
+            "value" : "Been here? Share your impression."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Әзірге пікірлер жоқ. Осында болдыңыз ба? Әсеріңізбен бөлісіңіз."
+            "value" : "Осында болдыңыз ба? Әсеріңізбен бөлісіңіз."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отзывов пока нет. Были здесь? Поделитесь впечатлением."
+            "value" : "Были здесь? Поделитесь впечатлением."
+          }
+        }
+      }
+    },
+    "reviews.empty.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No reviews yet"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Әзірге пікір жоқ"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отзывов пока нет"
           }
         }
       }
@@ -18306,19 +18398,42 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No questions yet. Ask — people who’ve been here will answer."
+            "value" : "Ask — people who’ve been here will answer."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Әзірге ешкім сұрамады. Сұрақ қойыңыз — осында болғандар жауап береді."
+            "value" : "Сұрақ қойыңыз — осында болғандар жауап береді."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Пока никто не спрашивал. Задайте вопрос — ответят те, кто здесь был."
+            "value" : "Задайте вопрос — ответят те, кто здесь был."
+          }
+        }
+      }
+    },
+    "threads.empty.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No questions yet"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Әзірге сұрақ жоқ"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вопросов пока нет"
           }
         }
       }

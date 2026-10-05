@@ -34,12 +34,21 @@ struct PlaceReviewsSection: View {
             if let summary {
                 if summary.reviewsCount > 0 {
                     ReviewSummaryView(summary: summary)
+                    reviewAction(summary)
                 } else {
-                    Text("reviews.empty")
-                        .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                    // Пусто — сразу и что делать: «Оставить отзыв», если уже можно.
+                    let canWrite = session.profile != nil && summary.myReview == nil && summary.canReview
+                    EmptyStateView(
+                        icon: "star.bubble",
+                        title: String(localized: "reviews.empty.title"),
+                        description: String(localized: "reviews.empty"),
+                        actionTitle: canWrite ? String(localized: "reviews.write") : nil,
+                        action: { showsForm = true }
+                    )
+                    if !canWrite {
+                        reviewAction(summary)
+                    }
                 }
-                reviewAction(summary)
             }
             ForEach(reviews) { review in
                 ReviewRow(review: review, environment: environment) { blocked in
@@ -482,9 +491,14 @@ struct PlaceThreadsSection: View {
                 }
             }
             if threads.isEmpty && isLoaded {
-                Text("threads.empty")
-                    .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                // Пусто — сразу и что делать: «Новое обсуждение» после входа.
+                EmptyStateView(
+                    icon: "bubble.left.and.bubble.right",
+                    title: String(localized: "threads.empty.title"),
+                    description: String(localized: "threads.empty"),
+                    actionTitle: session.profile != nil ? String(localized: "threads.new") : nil,
+                    action: { showsForm = true }
+                )
             }
             ForEach(threads.prefix(3)) { thread in
                 NavigationLink {
@@ -494,7 +508,7 @@ struct PlaceThreadsSection: View {
                 }
                 .buttonStyle(.plain)
             }
-            if session.profile != nil {
+            if session.profile != nil && !threads.isEmpty {
                 Button {
                     showsForm = true
                 } label: {

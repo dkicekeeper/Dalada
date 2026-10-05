@@ -503,9 +503,15 @@ struct PlaceCardView: View {
                 PendingReportRow(item: item)
             }
             if reports.isEmpty && pendingHere.isEmpty {
-                Text("place.card.reports.empty")
-                    .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                // Пусто — сразу и что делать: «Я здесь» (после входа и не у сохранённой копии).
+                EmptyStateView(
+                    icon: "mappin.circle",
+                    title: String(localized: "place.card.reports.empty.title"),
+                    description: String(localized: "place.card.reports.empty"),
+                    actionTitle: session.profile != nil && !isShowingSavedCopy
+                        ? String(localized: "place.card.checkin") : nil,
+                    action: { showsCheckin = true }
+                )
             } else {
                 ForEach(reports.prefix(Self.reportsShown)) { report in
                     ReportRow(

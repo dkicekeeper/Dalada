@@ -64,8 +64,8 @@ private struct LifehackRow: View {
     }
 }
 
-/// Вкладка «Лайфхаки»: сборы, чеклисты, экипировка, офлайн-карты; правила и запреты, справочник
-/// рыб; статьи.
+/// Вкладка «Лайфхаки»: «Перед поездкой» — сборы, чеклисты, экипировка, карты без сети, правила и
+/// запреты; «Знания и статьи» — справочник рыб и статьи.
 struct LifehacksHomeView: View {
     let environment: AppEnvironment
 
@@ -120,6 +120,12 @@ struct LifehacksHomeView: View {
                             subtitle: OfflineMapsFormat.summary(offlineMaps)
                         )
                     }
+                    // Запреты проверяют перед выездом — рядом со сборами, а не среди статей.
+                    NavigationLink {
+                        RulesListView(environment: environment)
+                    } label: {
+                        LifehackRow(titleKey: "rules.title", systemImage: "exclamationmark.shield", subtitle: rulesSummary)
+                    }
                 } header: {
                     Text("lifehacks.section.prep")
                 } footer: {
@@ -130,20 +136,10 @@ struct LifehacksHomeView: View {
 
                 Section {
                     NavigationLink {
-                        RulesListView(environment: environment)
-                    } label: {
-                        LifehackRow(titleKey: "rules.title", systemImage: "exclamationmark.shield", subtitle: rulesSummary)
-                    }
-                    NavigationLink {
                         FishGuideView()
                     } label: {
                         LifehackRow(titleKey: "fish.guide.title", systemImage: "fish")
                     }
-                } header: {
-                    Text("lifehacks.section.knowledge")
-                }
-
-                Section {
                     // Три последние статьи и ссылка на все.
                     ForEach(articles.articles.prefix(3)) { article in
                         NavigationLink {
@@ -164,7 +160,7 @@ struct LifehacksHomeView: View {
                         }
                     }
                 } header: {
-                    Text("articles.title")
+                    Text("lifehacks.section.knowledge")
                 }
             }
             .navigationTitle("tab.lifehacks")

@@ -31,6 +31,10 @@ struct MapHomeView: View {
     @State private var selectedZone: RuleZoneSelection?
     /// Нацпарк, заповедник или погранзона, открытые с карты.
     @State private var selectedArea: RuleZoneSelection?
+    @State private var showsLayers = false
+    /// Подсказка «долгое нажатие — новое место»: показываем, пока человек не поставил место или
+    /// не закрыл её.
+    @AppStorage("map.longPressHintSeen") private var longPressHintSeen = false
     /// «Где я»: каждое нажатие — новое значение, карта едет к пользователю.
     @State private var locateRequest = 0
 
@@ -65,47 +69,10 @@ struct MapHomeView: View {
         // Карта — на весь экран, под панелью вкладок; кнопки поверх — в безопасной области.
         .ignoresSafeArea()
         .overlay(alignment: .topLeading) {
-            // Слои карты: места (свои, остальные, типы), запреты, нацпарки и заповедники, погранзона,
-            // мои треки (после входа).
-            Menu {
-                Section("map.layers.places") {
-                    Toggle(isOn: $showsOwnPlaces) {
-                        Label("map.layers.ownPlaces", systemImage: "person.crop.circle")
-                    }
-                    Toggle(isOn: $showsOtherPlaces) {
-                        Label("map.layers.otherPlaces", systemImage: "mappin.and.ellipse")
-                    }
-                    Menu {
-                        ForEach(PlaceType.allCases) { type in
-                            Toggle(isOn: typeBinding(type)) {
-                                Label(LocalizedStringKey(type.titleKey), systemImage: type.systemImage)
-                            }
-                        }
-                        if !hiddenTypesStorage.isEmpty {
-                            Button("map.layers.allTypes", systemImage: "checklist.checked") {
-                                hiddenTypesStorage = ""
-                            }
-                        }
-                    } label: {
-                        Label("map.layers.types", systemImage: "line.3.horizontal.decrease.circle")
-                    }
-                }
-                Section {
-                    Toggle(isOn: $showsRules) {
-                        Label("map.rules", systemImage: "exclamationmark.shield")
-                    }
-                    Toggle(isOn: $showsParks) {
-                        Label("map.layers.parks", systemImage: "tree")
-                    }
-                    Toggle(isOn: $showsBorder) {
-                        Label("map.layers.border", systemImage: "flag")
-                    }
-                    if session.profile != nil {
-                        Toggle(isOn: $showsTracks) {
-                            Label("map.layers.tracks", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
-                        }
-                    }
-                }
+            // Слои карты — листом: места (свои, остальные, типы), запреты, нацпарки и заповедники,
+            // погранзона, мои треки (после входа).
+            Button {
+                showsLayers = true
             } label: {
                 // Скрыта часть мест — значок с заливкой.
                 Label("map.layers", systemImage: placeFilter.isActive ? "square.3.layers.3d.top.filled" : "square.3.layers.3d")
@@ -114,6 +81,9 @@ struct MapHomeView: View {
             .secondaryButton()
             .padding(.leading, AppSpacing.lg)
             .padding(.top, AppSpacing.sm)
+        }
+        .sheet(isPresented: $showsLayers) {
+            MapLayersSheet(isSignedIn: session.profile != nil)
         }
         .sheet(item: $selectedZone) { selection in
             NavigationStack {
@@ -149,6 +119,14 @@ struct MapHomeView: View {
             .secondaryButton()
             .padding(.trailing, AppSpacing.lg)
             .padding(.top, AppSpacing.sm)
+        }
+        .overlay(alignment: .top) {
+            if !longPressHintSeen && session.profile != nil {
+                longPressHint
+                    .padding(.top, 64)
+                    .screenPadding()
+                    .transition(.opacity)
+            }
         }
         .overlay(alignment: .bottomTrailing) {
             Button {
@@ -196,16 +174,6 @@ struct MapHomeView: View {
     }
 
     /// Тип места виден на карте ↔ не в списке скрытых.
-    private func typeBinding(_ type: PlaceType) -> Binding<Bool> {
-        Binding {
-            !MapPlaceFilter.types(from: hiddenTypesStorage).contains(type)
-        } set: { isShown in
-            var hidden = MapPlaceFilter.types(from: hiddenTypesStorage)
-            if isShown { hidden.remove(type) } else { hidden.insert(type) }
-            hiddenTypesStorage = MapPlaceFilter.storage(hidden)
-        }
-    }
-
     private struct TracksRequest: Equatable {
         let isOn: Bool
         let userID: UUID?
@@ -216,6 +184,31 @@ struct MapHomeView: View {
             showsSignInHint = true
             return
         }
+        longPressHintSeen = true
         model.newPlace = NewPlaceRequest(coordinate: coordinate)
+    }
+
+    /// Что место можно поставить долгим нажатием, иначе не узнать: кнопка «Место» ставит его в центр.
+    private var longPressHint: some View {
+        HStack(alignment: .top, spacing: AppSpacing.sm) {
+            Image(systemName: "hand.tap")
+                .foregroundStyle(AppColors.accent)
+            Text("map.longPressHint")
+                .font(AppTypography.bodySmall)
+                .foregroundStyle(AppColors.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Button {
+                withAnimation { longPressHintSeen = true }
+            } label: {
+                Image(systemName: "xmark")
+                    .foregroundStyle(AppColors.textSecondary)
+                    .frame(width: 28, height: 28)
+                    .contentShape(Rectangle())
+                    .accessibilityLabel(Text("common.close"))
+            }
+            .buttonStyle(.borderless)
+        }
+        .cardContentPadding()
+        .cardStyle()
     }
 }
