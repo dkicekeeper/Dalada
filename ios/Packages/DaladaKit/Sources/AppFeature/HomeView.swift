@@ -76,7 +76,6 @@ struct HomeView: View {
             }
             .sheet(item: $selectedPlace) { selection in
                 PlaceCardView(placeID: selection.id, environment: environment)
-                    .presentationDetents([.medium, .large])
             }
         }
     }

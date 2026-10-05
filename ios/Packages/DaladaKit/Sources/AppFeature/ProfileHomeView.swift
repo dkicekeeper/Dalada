@@ -454,7 +454,6 @@ struct MyPlacesSection: View {
         }
         .sheet(item: $selected, onDismiss: { Task { await load() } }) { selection in
             PlaceCardView(placeID: selection.id, environment: environment)
-                .presentationDetents([.medium, .large])
         }
     }
 

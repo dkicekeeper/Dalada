@@ -43,6 +43,9 @@ struct PlaceCardView: View {
     @State private var showsShareCard = false
     /// Выбранная вкладка карточки (`nil` — по умолчанию: отчёты или информация).
     @State private var selectedTab: PlaceTab?
+    /// Высота листа: открывается наполовину, выбор вкладки раскрывает до полной — содержимое
+    /// вкладки не оказывается под краем экрана.
+    @State private var detent: PresentationDetent = .medium
     @State private var confirmsDeletePlace = false
     /// Свой отчёт, который просят удалить.
     @State private var reportToDelete: PlaceReport?
@@ -164,6 +167,7 @@ struct PlaceCardView: View {
                 }
             }
         }
+        .presentationDetents([.medium, .large], selection: $detent)
         .task { await load() }
         .task { await speciesStore.loadIfNeeded() }
         // Чекин из очереди принят сервером — он появится среди обычных отчётов.
@@ -419,7 +423,10 @@ struct PlaceCardView: View {
                 options: tabs(place),
                 selection: Binding(
                     get: { Optional(currentTab(place)) },
-                    set: { if let tab = $0 { selectedTab = tab } }
+                    set: {
+                        if let tab = $0 { selectedTab = tab }
+                        detent = .large
+                    }
                 ),
                 systemImage: { $0.systemImage },
                 label: { tabLabel($0) }

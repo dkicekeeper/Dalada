@@ -765,7 +765,6 @@ struct TripDetailView: View {
         }
         .sheet(item: $selectedPlace) { selection in
             PlaceCardView(placeID: selection.id, environment: environment)
-                .presentationDetents([.medium, .large])
         }
         .fullScreenCover(item: $followed) { route in
             FollowRouteView(route: route, environment: environment)

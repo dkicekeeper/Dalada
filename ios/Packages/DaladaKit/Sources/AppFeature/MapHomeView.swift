@@ -174,7 +174,6 @@ struct MapHomeView: View {
         }
         .sheet(item: $model.selectedPlace) { selection in
             PlaceCardView(placeID: selection.id, environment: environment)
-                .presentationDetents([.medium, .large])
         }
         .sheet(item: $model.newPlace) { request in
             PlaceFormView(coordinate: request.coordinate) { draft in

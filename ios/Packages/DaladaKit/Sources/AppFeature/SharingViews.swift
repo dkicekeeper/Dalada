@@ -94,7 +94,6 @@ struct UserContentSections: View {
         .task(id: "\(userID)-\(isFriend)") { await load() }
         .sheet(item: $selectedPlace) { selection in
             PlaceCardView(placeID: selection.id, environment: environment)
-                .presentationDetents([.medium, .large])
         }
     }
 
@@ -203,7 +202,6 @@ struct UserPlacesListView: View {
         .navigationTitle("person.places")
         .sheet(item: $selectedPlace) { selection in
             PlaceCardView(placeID: selection.id, environment: environment)
-                .presentationDetents([.medium, .large])
         }
     }
 }

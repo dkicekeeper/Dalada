@@ -48,7 +48,6 @@ struct PlacesHomeView: View {
             .refreshable { await store.load(viewer: viewerID) }
             .sheet(item: $selected, onDismiss: { Task { await store.load(viewer: viewerID) } }) { selection in
                 PlaceCardView(placeID: selection.id, environment: environment)
-                    .presentationDetents([.medium, .large])
             }
         }
     }
@@ -534,7 +533,6 @@ struct PlaceListScreen: View {
         .task(id: LoadKey(route: route, types: types, sort: sort, viewer: session.profile?.id)) { await load() }
         .sheet(item: $selected, onDismiss: { Task { await load() } }) { selection in
             PlaceCardView(placeID: selection.id, environment: environment)
-                .presentationDetents([.medium, .large])
         }
     }
 
@@ -693,7 +691,6 @@ struct MyPlacesView: View {
             .refreshable { await load() }
             .sheet(item: $selected, onDismiss: { Task { await load() } }) { selection in
                 PlaceCardView(placeID: selection.id, environment: environment)
-                    .presentationDetents([.medium, .large])
             }
     }
 
