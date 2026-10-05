@@ -73,6 +73,7 @@ struct ProfileHomeView: View {
                 MyCatchesSection(environment: environment, userID: profile.id)
                 MyPlacesSection(environment: environment, userID: profile.id)
                 MyTripsSection(environment: environment, userID: profile.id)
+                MyPhotosSection(environment: environment, userID: profile.id)
                 AchievementsSection(environment: environment, userID: profile.id)
             } else {
                 historyPlaceholder

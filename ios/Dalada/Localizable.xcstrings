@@ -14831,6 +14831,52 @@
         }
       }
     },
+    "profile.photos.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photos from your reports, catches and reviews will appear here."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Мұнда есептеріңіздің, ауланған балықтарыңыздың және пікірлеріңіздің фотолары болады."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Здесь будут фото из ваших отчётов, уловов и отзывов."
+          }
+        }
+      }
+    },
+    "profile.photos.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photos"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Фото"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фото"
+          }
+        }
+      }
+    },
     "profile.settings.privacyZonesFooter" : {
       "extractionState" : "manual",
       "localizations" : {

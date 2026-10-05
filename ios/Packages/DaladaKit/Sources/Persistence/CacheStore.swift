@@ -93,6 +93,11 @@ public struct CacheKey: Hashable, Sendable {
         CacheKey(rawValue: userPrefix(user) + "friends")
     }
 
+    /// Первая страница своих фото — раздел «Фото» в профиле без сети.
+    public static func myPhotos(_ user: UUID) -> CacheKey {
+        CacheKey(rawValue: userPrefix(user) + "my_photos")
+    }
+
     /// Треки своих поездок — слой «Мои треки» на карте без сети.
     public static func myTracks(_ user: UUID) -> CacheKey {
         CacheKey(rawValue: userPrefix(user) + "my_tracks")
