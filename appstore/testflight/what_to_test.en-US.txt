@@ -1,6 +1,8 @@
 Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, check in with a catch and a photo, record a trip (Start a trip on the map), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
 New:
+• You can now edit and delete your own place, report and catch: the “…” menu on your place card (edit or delete the place), “…” → Delete report on your report, and a long press on a catch in Profile → Catches.
+• Layers → Places: show only your places or only others, hide place types you don't need.
 • Photos in reviews: up to 5 pictures in a place review.
 • Profile → Photos: your latest pictures from reports, catches and reviews, and All photos by month.
 • Map → Layers → My tracks: all your trips on the map.
@@ -18,7 +20,6 @@ New:
 • Achievements: Profile → Achievements at the bottom — 10 badges for trips, catches, places and contributions, each showing how far you are. New badges come with a congratulations screen.
 • Notifications: Profile → tap the header with your name → Notifications — choose what to get (replies, friends, comments, bans near your places, reviews and reports at your places) and set quiet hours.
 • Pictures for Stories and Telegram: Share on your trip page, on a catch in My catches and on a public place card. Stories or post format.
-• Comments on trips, reports and reviews — the speech-bubble button under a post. Notifications about comments and about friends’ new trips and reports.
 • Home — a feed of posts: your and your friends’ trips with the track, reports with photos, new places and reviews, fresh discussions.
 • Tabs: Home, Map, Places, Tips, Profile. The “+” tab is gone: start a trip with the button on the map, add a place on the map, check in from a place card.
 • Place card: a 7-day summary and an Info block (fish, access, price, amenities, season) — Edit on your place, Suggest an edit and Report a problem on others; Nearby at the bottom and Share in the toolbar.
