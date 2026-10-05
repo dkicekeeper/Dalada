@@ -2,7 +2,8 @@
 """Фото мест редакции: Wikimedia Commons → photos.csv → миграция; файлы — на R2 (workflow Editorial photos).
 
     python3 supabase/data/places/photos.py check                    # проверить таблицу и миграцию (CI)
-    python3 supabase/data/places/photos.py candidates [--sheets DIR] # найти кандидатов → photo_candidates.csv
+    python3 supabase/data/places/photos.py candidates [--sheets DIR] [--progress F]  # кандидаты → photo_candidates.csv
+    python3 supabase/data/places/photos.py sheets DIR               # листы превью кандидатов для просмотра
     python3 supabase/data/places/photos.py accept                   # include=yes из кандидатов → photos.csv
     python3 supabase/data/places/photos.py migration                # записать миграцию из photos.csv
     python3 supabase/data/places/photos.py fetch DIR [--existing F] # скачать недостающие файлы для R2 (CI)
@@ -193,7 +194,7 @@ def tokens(*names: str) -> set[str]:
 
 
 IMAGE_INFO = {
-    "prop": "imageinfo|coordinates", "iiprop": "url|size|mime|extmetadata", "iiurlwidth": "320",
+    "prop": "imageinfo|coordinates", "iiprop": "url|size|mime|extmetadata", "iiurlwidth": "330",
     "iiextmetadatafilter": "LicenseShortName|LicenseUrl|Artist", "colimit": "max",
 }
 
@@ -275,11 +276,16 @@ def plain(text: str) -> str:
     return re.sub(r"\s+", " ", html.unescape(text)).strip()
 
 
-def find_candidates(sheets: Path | None, only: set[str] | None) -> None:
+def find_candidates(sheets: Path | None, only: set[str] | None, progress: Path | None) -> None:
+    """Ищет кандидатов и сохраняет таблицу после каждого места; с progress — продолжает с места остановки."""
     places = [p for p in read_csv(PLACES) if not only or p["id"] in only]
-    previous = {(r["place_id"], r["file"]): r["include"] for r in read_csv(CANDIDATES)}
-    rows = []
+    order = {p["id"]: i for i, p in enumerate(read_csv(PLACES))}
+    done = set(progress.read_text().split()) if progress and progress.exists() else set()
+    current = read_csv(CANDIDATES)
+    previous = {(r["place_id"], r["file"]): r["include"] for r in current}
     for n, place in enumerate(places, start=1):
+        if place["id"] in done:
+            continue
         print(f"[{n}/{len(places)}] {place['name']}", file=sys.stderr)
         tags = osm_tags(place["source"])
         found = candidates_for(place, tags)
@@ -291,24 +297,26 @@ def find_candidates(sheets: Path | None, only: set[str] | None) -> None:
                 continue
             usable.append((score, title, reason, meta))
         usable.sort(key=lambda x: -x[0])
-        for score, title, reason, meta in usable[:12]:
-            rows.append({
-                "include": previous.get((place["id"], title), ""),
-                "place_id": place["id"], "place": place["name"], "type": place["type"], "file": title,
-                "score": f"{score:.2f}", "reason": reason, "author": meta["author"][:200],
-                "license": meta["license"], "license_url": meta["license_url"],
-                "width": meta["width"], "height": meta["height"], "page": meta["page"], "thumb": meta["thumb"],
-            })
-    if only:
-        rows = [r for r in read_csv(CANDIDATES) if r["place_id"] not in only] + rows
-    write_csv(CANDIDATES, CANDIDATE_FIELDS, rows)
-    print(f"записано {CANDIDATES.name}: {len(rows)} кандидатов у {len({r['place_id'] for r in rows})} мест")
+        place_rows = [{
+            "include": previous.get((place["id"], title), ""),
+            "place_id": place["id"], "place": place["name"], "type": place["type"], "file": title,
+            "score": f"{score:.2f}", "reason": reason, "author": meta["author"][:200],
+            "license": meta["license"], "license_url": meta["license_url"],
+            "width": meta["width"], "height": meta["height"], "page": meta["page"], "thumb": meta["thumb"],
+        } for score, title, reason, meta in usable[:12]]
+        current = [r for r in current if r["place_id"] != place["id"]] + place_rows
+        current.sort(key=lambda r: order.get(r["place_id"], 1 << 30))
+        write_csv(CANDIDATES, CANDIDATE_FIELDS, current)
+        if progress:
+            with progress.open("a") as f:
+                f.write(place["id"] + "\n")
+    print(f"записано {CANDIDATES.name}: {len(current)} кандидатов у {len({r['place_id'] for r in current})} мест")
     if sheets:
-        contact_sheets(rows, sheets)
+        contact_sheets(current, sheets)
 
 
 def contact_sheets(rows: list[dict], folder: Path) -> None:
-    """Листы превью для просмотра: по месту — ряд пронумерованных превью."""
+    """Листы превью для просмотра: по месту — пронумерованные превью (готовые листы не пересобираются)."""
     from PIL import Image, ImageDraw
 
     folder.mkdir(parents=True, exist_ok=True)
@@ -317,21 +325,24 @@ def contact_sheets(rows: list[dict], folder: Path) -> None:
         by_place.setdefault(r["place_id"], []).append(r)
     size = 220
     for place_id, items in by_place.items():
+        target = folder / f"{place_id}.jpg"
+        if target.exists():
+            continue
         sheet = Image.new("RGB", (size * min(len(items), 6), (size + 20) * math.ceil(len(items) / 6)), "white")
         draw = ImageDraw.Draw(sheet)
         for i, r in enumerate(items):
-            request = urllib.request.Request(r["thumb"], headers={"User-Agent": USER_AGENT})
+            # Превью стандартной ширины Commons — нестандартные он отдаёт неохотно.
+            url = re.sub(r"/\d+px-", "/330px-", r["thumb"])
             try:
-                time.sleep(0.1)
-                with urllib.request.urlopen(request, timeout=60) as response:
-                    image = Image.open(io.BytesIO(response.read())).convert("RGB")
-            except Exception:  # noqa: BLE001
+                image = Image.open(io.BytesIO(get_bytes(url, retries=4))).convert("RGB")
+            except Exception:  # noqa: BLE001 — без превью: пустая клетка
                 continue
             image.thumbnail((size - 6, size - 6))
             x, y = (i % 6) * size, (i // 6) * (size + 20)
             sheet.paste(image, (x + 3, y + 3))
             draw.text((x + 4, y + size), f"{i + 1}. {r['score']} {r['reason']}", fill="black")
-        sheet.save(folder / f"{place_id}.jpg", quality=80)
+        sheet.save(target, quality=80)
+        print(f"лист {target.name}: {items[0]['place']}", file=sys.stderr)
 
 
 # Принятые кандидаты → photos.csv ---------------------------------------------------------------
@@ -506,7 +517,10 @@ def main(argv: list[str]) -> None:
     elif argv[:1] == ["candidates"]:
         sheets = Path(argv[argv.index("--sheets") + 1]) if "--sheets" in argv else None
         only = set(argv[argv.index("--place") + 1].split(",")) if "--place" in argv else None
-        find_candidates(sheets, only)
+        progress = Path(argv[argv.index("--progress") + 1]) if "--progress" in argv else None
+        find_candidates(sheets, only, progress)
+    elif argv[:1] == ["sheets"] and len(argv) >= 2:
+        contact_sheets(read_csv(CANDIDATES), Path(argv[1]))
     elif argv[:1] == ["accept"]:
         accept()
     elif argv[:1] == ["migration"]:
