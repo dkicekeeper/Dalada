@@ -38,6 +38,36 @@ extension BackendClient {
     public func deleteReview(_ reviewID: UUID) async throws {
         try await supabase.rpc("delete_review", params: ["p_review": reviewID]).execute()
     }
+
+    /// Фото к своему отзыву: сначала файлы, потом строки `media`. Повтор безопасен — уже
+    /// загруженные файлы и строки пропускаются. Больше 5 фото к отзыву база не примет (54000).
+    public func addReviewPhotos(_ photos: [PhotoDraft], reviewID: UUID) async throws {
+        guard !photos.isEmpty else { return }
+        guard let owner = supabase.auth.currentUser?.id else { throw AuthError.sessionMissing }
+        for photo in photos {
+            try await uploadPhoto(photo, owner: owner)
+        }
+        let rows = photos.map { ReviewMediaInsert(id: $0.id, reviewID: reviewID, width: $0.width, height: $0.height) }
+        do {
+            try await supabase.from("media").insert(rows, returning: .minimal).execute()
+        } catch let error as PostgrestError where error.code == "23505" {
+            return
+        }
+    }
+}
+
+struct ReviewMediaInsert: Encodable, Sendable {
+    let id: UUID
+    let reviewID: UUID
+    let width: Int
+    let height: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case reviewID = "review_id"
+        case width
+        case height
+    }
 }
 
 struct PlaceReviewsParams: Encodable, Sendable {

@@ -15724,6 +15724,75 @@
         }
       }
     },
+    "reviews.form.addPhotos" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add photos"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Фото қосу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить фото"
+          }
+        }
+      }
+    },
+    "reviews.form.photos" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photos"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Фото"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фото"
+          }
+        }
+      }
+    },
+    "reviews.form.photosFooter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Up to 5 photos: the place, the water, the access road. Everyone who sees the review sees them."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "5 фотоға дейін: орын, су, кіреберіс. Оларды пікірді көретіндердің бәрі көреді."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "До 5 фото: место, вода, подъезд. Их видят все, кто видит отзыв."
+          }
+        }
+      }
+    },
     "reviews.form.placeholder" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -15812,6 +15881,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Когда были"
+          }
+        }
+      }
+    },
+    "reviews.photos.tooMany" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A review can have at most 5 photos."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Пікірге 5 фотодан артық емес."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "К отзыву — не больше 5 фото."
           }
         }
       }

@@ -26,6 +26,23 @@ struct CommunityTests {
         #expect(String(decoding: json, as: UTF8.self) == #"{"visited_on":"2026-09-27"}"#)
     }
 
+    @Test func decodesReviewPhotos() throws {
+        let json = """
+        {"review_id": "aaaaaaaa-0000-0000-0000-000000000001", "author_id": "11111111-1111-1111-1111-111111111111",
+         "rating": 5, "created_at": "2026-09-28T10:00:00Z",
+         "media": [{"id": "eeeeeeee-0000-0000-0000-000000000001",
+                    "path": "11111111-1111-1111-1111-111111111111/eeeeeeee-0000-0000-0000-000000000001.jpg",
+                    "thumb_path": "11111111-1111-1111-1111-111111111111/eeeeeeee-0000-0000-0000-000000000001_thumb.jpg",
+                    "width": 1600, "height": 1200}]}
+        """
+        let review = try decoder.decode(PlaceReview.self, from: Data(json.utf8))
+        #expect(review.media.count == 1)
+        #expect(review.media.first?.catchID == nil)
+        #expect(review.media.first?.thumbnailPath.hasSuffix("_thumb.jpg") == true)
+        #expect(CommunityRefusal(rawValue: "54000")?.messageKey == "reviews.photos.tooMany")
+        #expect(ReviewDraft.photoLimit == 5)
+    }
+
     @Test func decodesReviewsAndSummary() throws {
         let json = """
         [{"review_id": "aaaaaaaa-0000-0000-0000-000000000001", "author_id": "11111111-1111-1111-1111-111111111111",
@@ -41,6 +58,7 @@ struct CommunityTests {
         #expect(!review.isOwn, "у гостя null — не своё")
         #expect(review.helpful == ReactionState(count: 3, reacted: true))
         #expect(review.editedAt != nil)
+        #expect(review.media.isEmpty, "старый сервер — без фото")
         let cached = try decoder.decode(PlaceReview.self, from: {
             let encoder = JSONEncoder()
             encoder.dateEncodingStrategy = .iso8601

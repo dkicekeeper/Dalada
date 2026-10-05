@@ -142,6 +142,8 @@ public struct PlaceReview: Codable, Identifiable, Hashable, Sendable {
     public let editedAt: Date?
     public let isOwn: Bool
     public let helpful: ReactionState
+    /// Фото отзыва (до 5); в ответах старого сервера — нет.
+    public let media: [ReportMedia]
 
     enum CodingKeys: String, CodingKey {
         case id = "review_id"
@@ -157,6 +159,7 @@ public struct PlaceReview: Codable, Identifiable, Hashable, Sendable {
         case isOwn = "is_own"
         case helpfulCount = "helpful_count"
         case markedHelpful = "marked_helpful"
+        case media
     }
 
     public init(from decoder: any Decoder) throws {
@@ -178,6 +181,7 @@ public struct PlaceReview: Codable, Identifiable, Hashable, Sendable {
             count: try c.decodeIfPresent(Int.self, forKey: .helpfulCount) ?? 0,
             reacted: try c.decodeIfPresent(Bool.self, forKey: .markedHelpful) ?? false
         )
+        media = try c.decodeIfPresent([ReportMedia].self, forKey: .media) ?? []
     }
 
     public func encode(to encoder: any Encoder) throws {
@@ -195,6 +199,7 @@ public struct PlaceReview: Codable, Identifiable, Hashable, Sendable {
         try c.encode(isOwn, forKey: .isOwn)
         try c.encode(helpful.count, forKey: .helpfulCount)
         try c.encode(helpful.reacted, forKey: .markedHelpful)
+        try c.encode(media, forKey: .media)
     }
 }
 
@@ -257,6 +262,8 @@ public struct ReviewSummary: Decodable, Hashable, Sendable {
 /// Отзыв из формы.
 public struct ReviewDraft: Equatable, Sendable {
     public static let bodyLimit = 2000
+    /// Фото к отзыву — не больше (так же проверяет база).
+    public static let photoLimit = 5
 
     public let placeID: UUID
     /// 0 — оценка ещё не выбрана.
@@ -514,6 +521,8 @@ public enum CommunityRefusal: String, Sendable {
     case tooOften = "DL003"
     /// В тексте грубые слова.
     case badWords = "DL005"
+    /// Больше 5 фото к отзыву.
+    case tooManyPhotos = "54000"
 
     public var messageKey: String {
         switch self {
@@ -521,6 +530,7 @@ public enum CommunityRefusal: String, Sendable {
         case .publicPlacesOnly: "community.error.publicOnly"
         case .tooOften: "community.error.tooOften"
         case .badWords: "moderation.error.badWords"
+        case .tooManyPhotos: "reviews.photos.tooMany"
         }
     }
 }

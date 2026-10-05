@@ -3,6 +3,7 @@ import DaladaCore
 import DaladaUI
 import DesignComponents
 import DesignTokens
+import PhotosUI
 import SwiftUI
 import Sync
 
@@ -37,7 +38,7 @@ struct PlaceReviewsSection: View {
                 reviewAction(summary)
             }
             ForEach(reviews) { review in
-                ReviewRow(review: review) { blocked in
+                ReviewRow(review: review, environment: environment) { blocked in
                     reviews.removeAll { $0.author.id == blocked }
                 }
             }
@@ -135,8 +136,12 @@ struct ReviewSummaryView: View {
 /// Отзыв: автор, звёзды, когда был, текст, «Полезно».
 struct ReviewRow: View {
     let review: PlaceReview
+    /// Для ссылок на фото отзыва.
+    var environment: AppEnvironment?
     /// Автора заблокировали — убрать его отзывы с экрана.
     var onBlocked: (@MainActor (UUID) -> Void)?
+
+    @State private var photoURLs: [String: URL] = [:]
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
@@ -164,6 +169,10 @@ struct ReviewRow: View {
             if let body = review.body, !body.isEmpty {
                 ExpandableText(body, lineLimit: 4, font: AppTypography.bodySmall)
             }
+            if !review.media.isEmpty {
+                ReportPhotoStrip(media: review.media, urls: photoURLs)
+                    .task(id: review.media.map(\.id)) { await loadPhotoURLs() }
+            }
             HStack(spacing: AppSpacing.md) {
                 ReactionButton(key: ReactionKey(.review, review.id), isOwn: review.isOwn, style: .helpful)
                 CommentsButton(key: ReactionKey(.review, review.id))
@@ -177,6 +186,12 @@ struct ReviewRow: View {
         }
         .cardContentPadding()
         .cardStyle()
+    }
+
+    private func loadPhotoURLs() async {
+        guard let backend = environment?.backend else { return }
+        let paths = review.media.flatMap { [$0.thumbnailPath, $0.path] }
+        photoURLs = (try? await backend.signedMediaURLs(paths: paths)) ?? [:]
     }
 }
 
@@ -204,7 +219,7 @@ struct ReviewsListView: View {
                 .pickerStyle(.segmented)
             }
             ForEach(reviews) { review in
-                ReviewRow(review: review) { blocked in
+                ReviewRow(review: review, environment: environment) { blocked in
                     reviews.removeAll { $0.author.id == blocked }
                 }
                     .listRowSeparator(.hidden)
@@ -262,6 +277,11 @@ struct ReviewFormView: View {
     @State private var saveError: String?
     @State private var confirmsDelete = false
     @State private var isPrepared = false
+    /// Новые фото к отзыву (уже загруженные остаются).
+    @State private var photos: [PhotoDraft] = []
+    @State private var pickerItems: [PhotosPickerItem] = []
+    @State private var isProcessingPhotos = false
+    @State private var photoFailed = false
 
     var body: some View {
         NavigationStack {
@@ -286,6 +306,34 @@ struct ReviewFormView: View {
 
                 Section {
                     DatePicker("reviews.form.visitedOn", selection: $visitedDate, in: ...Date(), displayedComponents: .date)
+                }
+
+                Section {
+                    if !photos.isEmpty {
+                        PhotoDraftStrip(photos: photos) { id in
+                            photos.removeAll { $0.id == id }
+                        }
+                    }
+                    if isProcessingPhotos {
+                        ProgressView()
+                    } else if photos.count < ReviewDraft.photoLimit {
+                        PhotosPicker(
+                            selection: $pickerItems,
+                            maxSelectionCount: ReviewDraft.photoLimit - photos.count,
+                            matching: .images
+                        ) {
+                            Label("reviews.form.addPhotos", systemImage: "photo.on.rectangle.angled")
+                        }
+                    }
+                } header: {
+                    Text("reviews.form.photos")
+                } footer: {
+                    if photoFailed {
+                        Text("photo.failed")
+                            .foregroundStyle(AppColors.destructive)
+                    } else {
+                        Text("reviews.form.photosFooter")
+                    }
                 }
 
                 if let saveError {
@@ -325,6 +373,10 @@ struct ReviewFormView: View {
                     Task { await delete() }
                 }
             }
+            .onChange(of: pickerItems) { _, items in
+                guard !items.isEmpty else { return }
+                Task { await addPhotos(items) }
+            }
             .onAppear {
                 guard !isPrepared else { return }
                 isPrepared = true
@@ -349,10 +401,28 @@ struct ReviewFormView: View {
         isSaving = true
         defer { isSaving = false }
         do {
-            try await backend.saveReview(draft)
+            let reviewID = try await backend.saveReview(draft)
+            // Не загрузились фото — отзыв уже сохранён; «Сохранить» ещё раз догрузит их.
+            try await backend.addReviewPhotos(photos, reviewID: reviewID)
             dismiss()
         } catch {
             saveError = CommunityMessage.text(for: error)
+        }
+    }
+
+    /// Сжимает выбранные фото по одному (не больше лимита).
+    private func addPhotos(_ items: [PhotosPickerItem]) async {
+        pickerItems = []
+        isProcessingPhotos = true
+        photoFailed = false
+        defer { isProcessingPhotos = false }
+        for item in items {
+            guard photos.count < ReviewDraft.photoLimit else { break }
+            if let photo = await PhotoCompressor.draft(from: item) {
+                photos.append(photo)
+            } else {
+                photoFailed = true
+            }
         }
     }
 

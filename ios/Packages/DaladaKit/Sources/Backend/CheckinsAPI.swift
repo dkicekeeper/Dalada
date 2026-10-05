@@ -73,7 +73,7 @@ extension BackendClient {
         return urls
     }
 
-    private func uploadPhoto(_ photo: PhotoDraft, owner: UUID) async throws {
+    func uploadPhoto(_ photo: PhotoDraft, owner: UUID) async throws {
         let files = [
             (MediaPath.full(owner: owner, media: photo.id), photo.full),
             (MediaPath.thumbnail(owner: owner, media: photo.id), photo.thumbnail),
