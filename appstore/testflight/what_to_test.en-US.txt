@@ -1,6 +1,9 @@
 Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, check in with a catch and a photo, record a trip (Start a trip on the map), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
 New:
+• Discussion subscriptions: the bell in a discussion — Get notified of replies, or stop. Replies now reach the author, everyone who replied and anyone who subscribed.
+• 9 new articles in Tips: tents, a first aid kit, storms and mudflows, a clean shore, keeping the catch fresh, ukha, the float rod, carp, spinning lures.
+• 121 new places on the map: recreation bases at Alakol, Chundzha, Kolsai and Kapshagay, huts and campsites in the mountains.
 • Map layers: Layers on the map → National parks and reserves, Border zone. Tap a park for entry rules, fees in MCI and tenge (Kolsai, Zhongar-Alatau), Buy a ticket and Park website. A place inside a park says so on its card. Works offline.
 • Tag friends in a trip: “Who was with you” on the finish screen or “Tag friends” on the trip page. They get an invitation — after “Accept” the trip appears in their trips.
 • Personal records: Profile → Catches → All — the heaviest and longest catch of each species. Beat a record and you get a congratulation right after the report.
@@ -17,7 +20,5 @@ New:
 • Tabs: Home, Map, Places, Tips, Profile. The “+” tab is gone: start a trip with the button on the map, add a place on the map, check in from a place card.
 • Profile: tap the header with your name for Profile settings (name, privacy zones, notifications, account); below are friends, catches, places and trips.
 • Place card: a 7-day summary and an Info block (fish, access, price, amenities, season) — Edit on your place, Suggest an edit and Report a problem on others; Nearby at the bottom and Share in the toolbar.
-• Visitor photos on a place card: a photo row, All photos and a full-screen viewer.
-• The Places tab: search, sections (nearby, popular, editors’ picks) and saved places — the bookmark on a place card.
 
 Feedback: the Send Beta Feedback button in TestFlight or dakacom@gmail.com.
