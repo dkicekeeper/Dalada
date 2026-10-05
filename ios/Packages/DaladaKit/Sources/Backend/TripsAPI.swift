@@ -47,6 +47,25 @@ extension BackendClient {
             .execute()
     }
 
+    /// Название, вид отдыха и заметка своей поездки; пустая заметка — `null` (стёрли).
+    public func updateTrip(_ tripID: UUID, title: String, activity: TripActivity, note: String?) async throws {
+        try await supabase
+            .from("trips")
+            .update(TripUpdate(title: title, activity: activity, note: note))
+            .eq("id", value: tripID)
+            .execute()
+    }
+
+    /// Удалить свою поездку: она пропадает из списков, ленты, статистики и у отмеченных друзей.
+    /// Отчёты и уловы за время поездки остаются.
+    public func deleteTrip(_ tripID: UUID) async throws {
+        try await supabase
+            .from("trips")
+            .update(["deleted_at": PostgresTimestamp.string(Date())])
+            .eq("id", value: tripID)
+            .execute()
+    }
+
     /// Статистика профиля (RPC `my_stats`).
     public func myStats() async throws -> UserStats? {
         let rows: [UserStats] = try await supabase.rpc("my_stats").execute().value
@@ -103,5 +122,26 @@ struct TripInsert: Encodable, Sendable {
         try c.encode(stats.maxSpeedMps > 0 ? stats.maxSpeedMps : nil, forKey: .maxSpeedMps)
         try c.encode(TrackEncoding.ewkt(draft.points), forKey: .track)
         try c.encode(draft.visibility, forKey: .visibility)
+    }
+}
+
+/// Поля поездки для `update`: заметка явным `null`, если её стёрли.
+struct TripUpdate: Encodable, Sendable {
+    let title: String
+    let activity: TripActivity
+    let note: String?
+
+    enum CodingKeys: String, CodingKey {
+        case title
+        case activity
+        case note
+    }
+
+    func encode(to encoder: any Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(title.trimmingCharacters(in: .whitespacesAndNewlines), forKey: .title)
+        try c.encode(activity, forKey: .activity)
+        let note = note?.trimmingCharacters(in: .whitespacesAndNewlines)
+        try c.encode(note?.isEmpty == false ? note : nil, forKey: .note)
     }
 }

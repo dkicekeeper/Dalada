@@ -95,6 +95,8 @@ public struct DaladaMapView: UIViewRepresentable {
     /// Слой «Мои треки»: прошлые поездки — тонкой линией под маршрутом и треком.
     let historySegments: [[GeoPoint]]
     let cameraMode: MapCameraMode
+    /// «Где я»: каждое новое значение — показать пользователя на карте (дальше карта снова свободна).
+    let locateRequest: Int
     /// Зоны правил (запреты) — под местами и треком.
     let ruleAreas: [MapRuleArea]
     let onRegionChange: @MainActor (GeoBoundingBox) -> Void
@@ -113,6 +115,7 @@ public struct DaladaMapView: UIViewRepresentable {
         routeSegments: [[GeoPoint]] = [],
         historySegments: [[GeoPoint]] = [],
         cameraMode: MapCameraMode = .free,
+        locateRequest: Int = 0,
         ruleAreas: [MapRuleArea] = [],
         onRegionChange: @escaping @MainActor (GeoBoundingBox) -> Void = { _ in },
         onPlaceTap: @escaping @MainActor (UUID) -> Void = { _ in },
@@ -129,6 +132,7 @@ public struct DaladaMapView: UIViewRepresentable {
         self.routeSegments = routeSegments
         self.historySegments = historySegments
         self.cameraMode = cameraMode
+        self.locateRequest = locateRequest
         self.ruleAreas = ruleAreas
         self.onRegionChange = onRegionChange
         self.onPlaceTap = onPlaceTap
@@ -172,6 +176,7 @@ public struct DaladaMapView: UIViewRepresentable {
         context.coordinator.parent = self
         context.coordinator.render()
         context.coordinator.applyCamera()
+        context.coordinator.applyLocate()
     }
 
     // MARK: - Coordinator
@@ -192,10 +197,12 @@ public struct DaladaMapView: UIViewRepresentable {
         private var renderedDraft: GeoPoint?
         private var renderedTrack: [[GeoPoint]]?
         private var appliedCamera: MapCameraMode?
+        private var appliedLocate: Int
         private var isStyleLoaded = false
 
         init(parent: DaladaMapView) {
             self.parent = parent
+            appliedLocate = parent.locateRequest
         }
 
         enum Layer {
@@ -270,6 +277,19 @@ public struct DaladaMapView: UIViewRepresentable {
                 )
             }
             appliedCamera = parent.cameraMode
+        }
+
+        /// «Где я»: к точке пользователя, не мельче 13-го масштаба. Пока точки нет — режим следования:
+        /// MapLibre сам подведёт карту, когда она появится, и отпустит, как только карту сдвинут.
+        func applyLocate() {
+            guard let mapView, parent.locateRequest != appliedLocate else { return }
+            appliedLocate = parent.locateRequest
+            mapView.showsUserLocation = true
+            if let location = mapView.userLocation?.location {
+                mapView.setCenter(location.coordinate, zoomLevel: max(mapView.zoomLevel, 13), animated: true)
+            } else {
+                mapView.setUserTrackingMode(.follow, animated: true, completionHandler: nil)
+            }
         }
 
         static func trackShape(_ segments: [[GeoPoint]]) -> MLNShape? {

@@ -581,6 +581,9 @@ struct MyTripsSection: View {
         .onChange(of: sync.sentCount) { _, _ in
             Task { await load() }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .daladaTripChanged)) { _ in
+            Task { await load() }
+        }
     }
 
     private func load() async {
@@ -622,6 +625,9 @@ struct TripsListView: View {
         }
         .refreshable {
             trips = await TripsLoader(environment: environment, userID: userID).load(limit: 200)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .daladaTripChanged)) { _ in
+            Task { trips = await TripsLoader(environment: environment, userID: userID).load(limit: 200) }
         }
     }
 }
@@ -676,6 +682,9 @@ struct TripDetailView: View {
     @State private var showsVisibilityError = false
     @State private var selectedPlace: PlaceSelection?
     @State private var followed: FollowedRoute?
+    @State private var showsEdit = false
+    @State private var confirmsDelete = false
+    @State private var ownActionError: String?
 
     var body: some View {
         Group {
@@ -711,7 +720,7 @@ struct TripDetailView: View {
                     TripShareCardButton(tripID: trip.summary.id, environment: environment)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    visibilityMenu(trip)
+                    ownMenu(trip)
                 }
             } else if let trip {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -730,6 +739,29 @@ struct TripDetailView: View {
             Button("common.ok", role: .cancel) {}
         } message: {
             Text(verbatim: visibilityError ?? "")
+        }
+        .sheet(isPresented: $showsEdit) {
+            if let trip {
+                TripEditView(trip: trip, environment: environment) { edited in
+                    self.trip = edited
+                    Task { try? await environment.cache.save(edited, for: CacheKey.trip(tripID, viewer: session.profile?.id)) }
+                }
+            }
+        }
+        .confirmationDialog("trip.delete.confirm", isPresented: $confirmsDelete, titleVisibility: .visible) {
+            Button("trip.delete", role: .destructive) {
+                Task { await deleteTrip() }
+            }
+        } message: {
+            Text("trip.delete.message")
+        }
+        .alert(
+            "own.error.title",
+            isPresented: Binding(get: { ownActionError != nil }, set: { if !$0 { ownActionError = nil } })
+        ) {
+            Button("common.ok") {}
+        } message: {
+            Text(verbatim: ownActionError ?? "")
         }
         .sheet(item: $selectedPlace) { selection in
             PlaceCardView(placeID: selection.id, environment: environment)
@@ -792,10 +824,7 @@ struct TripDetailView: View {
                             .font(AppTypography.caption)
                             .foregroundStyle(AppColors.textSecondary)
                     }
-                    HStack(spacing: AppSpacing.lg) {
-                        ReactionButton(key: ReactionKey(.trip, trip.summary.id), isOwn: trip.isOwn)
-                        CommentsButton(key: ReactionKey(.trip, trip.summary.id))
-                    }
+                    ReactionButton(key: ReactionKey(.trip, trip.summary.id), isOwn: trip.isOwn)
                 }
 
                 VStack(spacing: AppSpacing.md) {
@@ -815,6 +844,9 @@ struct TripDetailView: View {
                 }
                 .cardContentPadding()
                 .cardStyle()
+
+                // Комментарии — заметной кнопкой сразу под цифрами, а не значком в подписи.
+                CommentsButton(key: ReactionKey(.trip, trip.summary.id), isProminent: true)
 
                 if session.profile != nil {
                     // Участники: отметить друзей (автор), принять или выйти (отмеченный).
@@ -866,9 +898,14 @@ struct TripDetailView: View {
         }
     }
 
-    /// «Кто видит» своей поездки.
-    private func visibilityMenu(_ trip: TripDetails) -> some View {
+    /// Меню своей поездки: «Кто видит», «Изменить» (название, вид отдыха, заметка), «Удалить».
+    private func ownMenu(_ trip: TripDetails) -> some View {
         Menu {
+            Section {
+                Button("trip.edit.title", systemImage: "pencil") {
+                    showsEdit = true
+                }
+            }
             Section("place.form.visibility") {
                 ForEach(DaladaCore.Visibility.allCases) { item in
                     Button {
@@ -881,9 +918,30 @@ struct TripDetailView: View {
                     }
                 }
             }
+            Section {
+                Button("trip.delete", systemImage: "trash", role: .destructive) {
+                    confirmsDelete = true
+                }
+            }
         } label: {
-            Image(systemName: trip.summary.visibility.systemImage)
-                .accessibilityLabel(Text("place.form.visibility"))
+            Image(systemName: "ellipsis")
+                .accessibilityLabel(Text("trip.ownMenu"))
+        }
+    }
+
+    /// Удалить свою поездку: из списков, ленты и статистики; отчёты за время поездки остаются.
+    private func deleteTrip() async {
+        guard let backend = environment.backend else {
+            ownActionError = String(localized: "own.error.offline")
+            return
+        }
+        do {
+            try await backend.deleteTrip(tripID)
+            try? await environment.cache.remove(CacheKey.trip(tripID, viewer: session.profile?.id))
+            NotificationCenter.default.post(name: .daladaTripChanged, object: tripID)
+            dismiss()
+        } catch {
+            ownActionError = error.localizedDescription
         }
     }
 

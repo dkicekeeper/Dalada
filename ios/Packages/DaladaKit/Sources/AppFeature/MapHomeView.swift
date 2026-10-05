@@ -31,6 +31,8 @@ struct MapHomeView: View {
     @State private var selectedZone: RuleZoneSelection?
     /// Нацпарк, заповедник или погранзона, открытые с карты.
     @State private var selectedArea: RuleZoneSelection?
+    /// «Где я»: каждое нажатие — новое значение, карта едет к пользователю.
+    @State private var locateRequest = 0
 
     init(environment: AppEnvironment) {
         self.environment = environment
@@ -46,6 +48,7 @@ struct MapHomeView: View {
             places: model.mapPlaces.filter { placeFilter.includes(type: $0.type, isOwn: $0.isOwn) },
             draftPin: model.newPlace?.coordinate,
             historySegments: showsTracks && session.profile != nil ? tracks.segments : [],
+            locateRequest: locateRequest,
             // Слои снизу вверх: погранзона, нацпарки, зоны запретов.
             ruleAreas: rules.mapLayerAreas(parks: showsParks, border: showsBorder) + (showsRules ? rules.mapAreas() : []),
             onRegionChange: { model.visibleAreaChanged($0, viewer: session.profile?.id) },
@@ -146,6 +149,19 @@ struct MapHomeView: View {
             .secondaryButton()
             .padding(.trailing, AppSpacing.lg)
             .padding(.top, AppSpacing.sm)
+        }
+        .overlay(alignment: .bottomTrailing) {
+            Button {
+                locateRequest += 1
+            } label: {
+                Image(systemName: "location")
+                    .font(AppTypography.bodyEmphasis)
+                    .accessibilityLabel(Text("map.locate"))
+            }
+            .secondaryButton()
+            .buttonBorderShape(.circle)
+            .padding(.trailing, AppSpacing.lg)
+            .padding(.bottom, AppSpacing.lg)
         }
         // Во время записи вместо кнопки — мини-плеер над вкладками (где он есть).
         .overlay(alignment: .bottom) {

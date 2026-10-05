@@ -4,30 +4,54 @@ import DesignComponents
 import DesignTokens
 import SwiftUI
 
-/// Кнопка «Комментарии» под постом: значок и число; открывает комментарии листом.
+/// Кнопка «Комментарии» под постом: значок и число (пока комментариев нет — «Комментировать»);
+/// открывает комментарии листом. `isProminent` — кнопка во всю ширину для экрана самого поста.
 struct CommentsButton: View {
     let key: ReactionKey
+    var isProminent = false
 
     @Environment(ReactionStore.self) private var reactions
     @State private var showsComments = false
 
     var body: some View {
         let count = reactions.commentCount(for: key)
-        Button {
-            showsComments = true
-        } label: {
-            Label {
-                if count > 0 {
-                    Text(verbatim: "\(count)")
+        Group {
+            if isProminent {
+                Button {
+                    showsComments = true
+                } label: {
+                    Label {
+                        if count > 0 {
+                            Text("comments.button \(count)")
+                        } else {
+                            Text("comments.button.zero")
+                        }
+                    } icon: {
+                        Image(systemName: "bubble.left.and.bubble.right")
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-            } icon: {
-                Image(systemName: "bubble.left")
+                .secondaryButton()
+            } else {
+                Button {
+                    showsComments = true
+                } label: {
+                    Label {
+                        if count > 0 {
+                            Text(verbatim: "\(count)")
+                        } else {
+                            Text("comments.button.zero")
+                        }
+                    } icon: {
+                        Image(systemName: "bubble.left")
+                    }
+                    .foregroundStyle(AppColors.textSecondary)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.borderless)
+                .font(AppTypography.caption)
             }
-            .foregroundStyle(AppColors.textSecondary)
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.borderless)
-        .font(AppTypography.caption)
         .accessibilityLabel(Text("comments.accessibility \(count)"))
         .sheet(isPresented: $showsComments) {
             NavigationStack {

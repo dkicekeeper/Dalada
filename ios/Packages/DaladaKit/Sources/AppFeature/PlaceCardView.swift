@@ -41,6 +41,8 @@ struct PlaceCardView: View {
     @State private var nearbySelection: PlaceSelection?
     /// Картинка места для Stories и Telegram.
     @State private var showsShareCard = false
+    /// Выбранная вкладка карточки (`nil` — по умолчанию: отчёты или информация).
+    @State private var selectedTab: PlaceTab?
     @State private var confirmsDeletePlace = false
     /// Свой отчёт, который просят удалить.
     @State private var reportToDelete: PlaceReport?
@@ -296,6 +298,9 @@ struct PlaceCardView: View {
                         Label("place.status.pending", systemImage: "hourglass")
                             .foregroundStyle(AppColors.warning)
                     }
+                    if place.isApproximate {
+                        Label("place.card.approximateShort", systemImage: "circle.dashed")
+                    }
                 }
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColors.textSecondary)
@@ -304,33 +309,6 @@ struct PlaceCardView: View {
                     Label("offline.savedCopy", systemImage: "icloud.slash")
                         .font(AppTypography.caption)
                         .foregroundStyle(AppColors.textSecondary)
-                }
-
-                if place.isApproximate {
-                    RecommendationBox(
-                        text: String(localized: "place.card.approximate"),
-                        color: AppColors.accent,
-                        icon: "circle.dashed"
-                    )
-                }
-
-                if let description = place.description {
-                    ExpandableText(description, lineLimit: 5)
-                }
-
-                if place.isEditorial {
-                    Label("place.card.editorial", systemImage: "checkmark.seal")
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
-                } else if let username = place.ownerUsername, !place.isOwn {
-                    Text(verbatim: "@" + username)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
-                }
-                if place.source == .osm {
-                    Text("place.card.osm")
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
                 }
 
                 HStack(spacing: AppSpacing.md) {
@@ -348,26 +326,13 @@ struct PlaceCardView: View {
                     }
                 }
 
-                // Запреты и промысловая мера в этой точке (работает без сети).
+                // Запреты и промысловая мера в этой точке (работает без сети) — всегда на виду.
                 PlaceRulesSection(coordinate: place.coordinate, environment: environment)
                 PlaceParksSection(coordinate: place.coordinate)
 
-                reportsSection
-
-                PlaceInfoSection(
-                    place: place,
-                    canEdit: place.isOwn && !isShowingSavedCopy,
-                    canSuggest: canSuggest(place),
-                    pendingSuggestions: pendingSuggestions,
-                    onEdit: { showsEdit = true },
-                    onSuggest: { suggestion = $0 }
-                )
-
-                // Отзывы и обсуждения — только у публичных опубликованных мест.
-                if place.visibility == .public && place.status == .published && !isShowingSavedCopy {
-                    PlaceReviewsSection(place: place, environment: environment)
-                    PlaceThreadsSection(place: place, environment: environment)
-                }
+                // Остальное — по вкладкам: отчёты, отзывы, обсуждения, информация.
+                tabPicker(place)
+                tabContent(place)
 
                 if !isShowingSavedCopy {
                     NearbyPlacesSection(place: place, environment: environment) { id in
@@ -380,10 +345,144 @@ struct PlaceCardView: View {
         }
     }
 
+    // MARK: - Вкладки
+
+    /// Вкладки карточки: что видно у места. Отзывы и обсуждения — только у публичных опубликованных.
+    enum PlaceTab: String, CaseIterable, Identifiable {
+        case reports
+        case reviews
+        case threads
+        case info
+
+        var id: String { rawValue }
+
+        var titleKey: String.LocalizationValue {
+            switch self {
+            case .reports: "place.tab.reports"
+            case .reviews: "reviews.title"
+            case .threads: "threads.title"
+            case .info: "place.info.title"
+            }
+        }
+
+        var systemImage: String {
+            switch self {
+            case .reports: "clock"
+            case .reviews: "star.bubble"
+            case .threads: "bubble.left.and.bubble.right"
+            case .info: "info.circle"
+            }
+        }
+
+        /// Что это — одной строкой под вкладками (чем отчёт отличается от отзыва и обсуждения).
+        var hintKey: String.LocalizationValue? {
+            switch self {
+            case .reports: "place.tab.reports.hint"
+            case .reviews: "place.tab.reviews.hint"
+            case .threads: "place.tab.threads.hint"
+            case .info: nil
+            }
+        }
+    }
+
+    private func tabs(_ place: PlaceDetails) -> [PlaceTab] {
+        var tabs: [PlaceTab] = [.reports]
+        if place.visibility == .public && place.status == .published && !isShowingSavedCopy {
+            tabs += [.reviews, .threads]
+        }
+        tabs.append(.info)
+        return tabs
+    }
+
+    /// Выбранная вкладка; пока не выбирали — отчёты, а если их нет — информация.
+    private func currentTab(_ place: PlaceDetails) -> PlaceTab {
+        if let selectedTab, tabs(place).contains(selectedTab) { return selectedTab }
+        return reports.isEmpty && pendingHere.isEmpty ? .info : .reports
+    }
+
+    private func tabLabel(_ tab: PlaceTab) -> String {
+        let title = String(localized: tab.titleKey)
+        guard tab == .reports, !reports.isEmpty else { return title }
+        let count = reports.count >= Self.reportsLimit ? "\(Self.reportsLimit)+" : "\(reports.count)"
+        return title + " · " + count
+    }
+
+    private func tabPicker(_ place: PlaceDetails) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            ChipPicker(
+                options: tabs(place),
+                selection: Binding(
+                    get: { Optional(currentTab(place)) },
+                    set: { if let tab = $0 { selectedTab = tab } }
+                ),
+                systemImage: { $0.systemImage },
+                label: { tabLabel($0) }
+            )
+            if let hint = currentTab(place).hintKey {
+                Text(String(localized: hint))
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func tabContent(_ place: PlaceDetails) -> some View {
+        switch currentTab(place) {
+        case .reports:
+            reportsSection
+        case .reviews:
+            PlaceReviewsSection(place: place, environment: environment, showsHeader: false)
+        case .threads:
+            PlaceThreadsSection(place: place, environment: environment, showsHeader: false)
+        case .info:
+            infoTab(place)
+        }
+    }
+
+    /// «Информация»: описание, точность точки, атрибуты (правка — у своего, предложение — у чужого),
+    /// автор и источник.
+    private func infoTab(_ place: PlaceDetails) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+            if let description = place.description {
+                ExpandableText(description, lineLimit: 8)
+            }
+            if place.isApproximate {
+                RecommendationBox(
+                    text: String(localized: "place.card.approximate"),
+                    color: AppColors.accent,
+                    icon: "circle.dashed"
+                )
+            }
+            PlaceInfoSection(
+                place: place,
+                canEdit: place.isOwn && !isShowingSavedCopy,
+                canSuggest: canSuggest(place),
+                pendingSuggestions: pendingSuggestions,
+                onEdit: { showsEdit = true },
+                onSuggest: { suggestion = $0 },
+                showsHeader: false
+            )
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                if place.isEditorial {
+                    Label("place.card.editorial", systemImage: "checkmark.seal")
+                        .foregroundStyle(AppColors.textSecondary)
+                } else if let username = place.ownerUsername, !place.isOwn {
+                    Text("place.card.addedBy \(username)")
+                        .foregroundStyle(AppColors.textTertiary)
+                }
+                if place.source == .osm {
+                    Text("place.card.osm")
+                        .foregroundStyle(AppColors.textTertiary)
+                }
+            }
+            .font(AppTypography.caption)
+        }
+    }
+
     @ViewBuilder
     private var reportsSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
-            SectionHeaderView(String(localized: "place.card.reports"), systemImage: "clock")
             if let summary = PlaceReportsSummary.make(reports, limit: Self.reportsLimit) {
                 PlaceReportsSummaryView(summary: summary)
             }

@@ -45,6 +45,12 @@ struct SharingTests {
         #expect(trip.isOwn)
         #expect(trip.segments.count == 1)
         #expect(trip.with(visibility: .friends).summary.visibility == .friends)
+        let edited = trip.with(title: "  Утро на Кок-Жайляу ", activity: .fishing, note: "  ")
+        #expect(edited.summary.title == "Утро на Кок-Жайляу")
+        #expect(edited.summary.activity == .fishing)
+        #expect(edited.summary.note == nil)
+        #expect(edited.summary.visibility == .private)
+        #expect(edited.segments == trip.segments)
 
         let hidden = own
             .replacingOccurrences(of: #""is_own": true"#, with: #""is_own": false"#)

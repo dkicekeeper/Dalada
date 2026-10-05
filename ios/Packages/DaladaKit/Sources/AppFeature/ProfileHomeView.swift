@@ -7,7 +7,7 @@ import Persistence
 import SwiftUI
 import Sync
 
-/// Вкладка «Профиль»: шапка (нажатие — настройки профиля), статистика, очередь отправки, мои друзья,
+/// Вкладка «Профиль»: шапка и шестерёнка в панели — настройки профиля, статистика, очередь отправки, мои друзья,
 /// уловы, места, поездки и достижения. Гостю — вход. Карточка сервера — только когда с ним проблема.
 struct ProfileHomeView: View {
     let environment: AppEnvironment
@@ -15,6 +15,7 @@ struct ProfileHomeView: View {
     @Environment(SessionStore.self) private var session
     @State private var connection: ConnectionState = .checking
     @State private var showsAbout = false
+    @State private var showsSettings = false
 
     var body: some View {
         NavigationStack {
@@ -32,6 +33,9 @@ struct ProfileHomeView: View {
             .navigationDestination(isPresented: $showsAbout) {
                 AboutView()
             }
+            .navigationDestination(isPresented: $showsSettings) {
+                ProfileSettingsView(environment: environment)
+            }
             .task { await checkConnection() }
             .toolbar {
                 if session.profile == nil {
@@ -42,6 +46,16 @@ struct ProfileHomeView: View {
                         } label: {
                             Image(systemName: "info.circle")
                                 .accessibilityLabel(Text("about.title"))
+                        }
+                    }
+                } else {
+                    // Настройки — на привычном месте, а не только по нажатию на шапку.
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showsSettings = true
+                        } label: {
+                            Image(systemName: "gearshape")
+                                .accessibilityLabel(Text("profile.settings.title"))
                         }
                     }
                 }

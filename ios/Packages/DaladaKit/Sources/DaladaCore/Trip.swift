@@ -337,10 +337,21 @@ public struct TripDetails: Codable, Hashable, Sendable {
 
     /// Та же поездка с другой видимостью (после изменения автором).
     public func with(visibility: Visibility) -> TripDetails {
+        with(title: summary.title, activity: summary.activity, note: summary.note, visibility: visibility)
+    }
+
+    /// Та же поездка после правки названия, вида отдыха и заметки (пустая заметка — `nil`).
+    public func with(title: String, activity: TripActivity, note: String?) -> TripDetails {
+        with(title: title, activity: activity, note: note, visibility: summary.visibility)
+    }
+
+    private func with(title: String, activity: TripActivity, note: String?, visibility: Visibility) -> TripDetails {
         let s = summary
+        let note = note?.trimmingCharacters(in: .whitespacesAndNewlines)
         return TripDetails(
             summary: TripSummary(
-                id: s.id, activity: s.activity, title: s.title, note: s.note, startedAt: s.startedAt,
+                id: s.id, activity: activity, title: title.trimmingCharacters(in: .whitespacesAndNewlines),
+                note: note?.isEmpty == false ? note : nil, startedAt: s.startedAt,
                 endedAt: s.endedAt, movingSeconds: s.movingSeconds, distanceM: s.distanceM,
                 elevationGainM: s.elevationGainM, maxSpeedMps: s.maxSpeedMps, visibility: visibility
             ),

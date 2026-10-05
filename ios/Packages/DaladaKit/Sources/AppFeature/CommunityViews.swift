@@ -16,6 +16,8 @@ import Sync
 struct PlaceReviewsSection: View {
     let place: PlaceDetails
     let environment: AppEnvironment
+    /// Во вкладке карточки места заголовок — сам чип.
+    var showsHeader = true
 
     @Environment(SessionStore.self) private var session
     @Environment(SyncEngine.self) private var sync
@@ -26,7 +28,9 @@ struct PlaceReviewsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
-            SectionHeaderView(String(localized: "reviews.title"), systemImage: "star.bubble")
+            if showsHeader {
+                SectionHeaderView(String(localized: "reviews.title"), systemImage: "star.bubble")
+            }
             if let summary {
                 if summary.reviewsCount > 0 {
                     ReviewSummaryView(summary: summary)
@@ -453,6 +457,8 @@ enum CommunityMessage {
 struct PlaceThreadsSection: View {
     let place: PlaceDetails
     let environment: AppEnvironment
+    /// Во вкладке карточки места заголовок — сам чип.
+    var showsHeader = true
 
     @Environment(SessionStore.self) private var session
     @State private var threads: [ThreadSummary] = []
@@ -462,7 +468,9 @@ struct PlaceThreadsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             HStack {
-                SectionHeaderView(String(localized: "threads.title"), systemImage: "bubble.left.and.bubble.right")
+                if showsHeader {
+                    SectionHeaderView(String(localized: "threads.title"), systemImage: "bubble.left.and.bubble.right")
+                }
                 Spacer(minLength: 0)
                 if threads.count > 3 {
                     NavigationLink {

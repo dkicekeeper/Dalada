@@ -41,6 +41,8 @@ struct PlaceInfoSection: View {
     let pendingSuggestions: Set<PlaceSuggestionKind>
     let onEdit: () -> Void
     let onSuggest: (PlaceSuggestionKind) -> Void
+    /// Во вкладке карточки места заголовок — сам чип.
+    var showsHeader = true
 
     @Environment(SpeciesStore.self) private var speciesStore
 
@@ -49,7 +51,9 @@ struct PlaceInfoSection: View {
     var body: some View {
         if !info.isEmpty || canEdit || canSuggest {
             VStack(alignment: .leading, spacing: AppSpacing.md) {
-                SectionHeaderView(String(localized: "place.info.title"), systemImage: "info.circle")
+                if showsHeader {
+                    SectionHeaderView(String(localized: "place.info.title"), systemImage: "info.circle")
+                }
                 if info.isEmpty {
                     Text(LocalizedStringKey(canEdit ? "place.info.empty.own" : "place.info.empty"))
                         .font(AppTypography.bodySmall)

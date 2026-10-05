@@ -122,19 +122,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Your profile, places, check-ins and catches with photos, trips, reviews, discussions, friends, gear and checklists will be deleted from the server and this phone. This can't be undone."
+            "value" : "Your profile, places, reports and catches with photos, trips, reviews, discussions, friends, gear and checklists will be deleted from the server and this phone. This can't be undone."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Профиль, орындар, белгілер мен фотолы олжалар, сапарлар, пікірлер, талқылаулар, достар, жабдық пен чеклистер серверден және осы телефоннан жойылады. Қалпына келтіру мүмкін емес."
+            "value" : "Профиль, орындар, есептер мен фотолы олжалар, сапарлар, пікірлер, талқылаулар, достар, жабдық пен чеклистер серверден және осы телефоннан жойылады. Қалпына келтіру мүмкін емес."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Удалятся профиль, места, чекины и уловы с фото, поездки, отзывы, обсуждения, друзья, экипировка и чеклисты — на сервере и на этом телефоне. Восстановить нельзя."
+            "value" : "Удалятся профиль, места, отчёты и уловы с фото, поездки, отзывы, обсуждения, друзья, экипировка и чеклисты — на сервере и на этом телефоне. Восстановить нельзя."
           }
         }
       }
@@ -2606,19 +2606,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Check in"
+            "value" : "Post report"
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Белгілену"
+            "value" : "Есепті жіберу"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отметиться"
+            "value" : "Отправить отчёт"
           }
         }
       }
@@ -2629,19 +2629,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Location found: the check-in is verified if you are within 500 m of the place."
+            "value" : "Location found: the report is verified if you are within 500 m of the place."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Орныңыз анықталды: орыннан 500 м ішінде болсаңыз, чекин расталады."
+            "value" : "Орныңыз анықталды: орыннан 500 м ішінде болсаңыз, есеп расталады."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Геопозиция получена: чекин подтвердится, если вы не дальше 500 м от места."
+            "value" : "Геопозиция получена: отчёт будет подтверждён, если вы не дальше 500 м от места."
           }
         }
       }
@@ -2675,19 +2675,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Location unavailable: the check-in will be saved unverified."
+            "value" : "Location unavailable: the report will be saved unverified."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Орныңыз белгісіз: чекин растаусыз сақталады."
+            "value" : "Орныңыз белгісіз: есеп растаусыз сақталады."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Геопозиция недоступна: чекин сохранится без подтверждения."
+            "value" : "Геопозиция недоступна: отчёт сохранится без подтверждения."
           }
         }
       }
@@ -2698,19 +2698,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Couldn’t save the check-in. Please try again."
+            "value" : "Couldn’t save the report. Please try again."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Чекинді сақтау мүмкін болмады. Қайта көріңіз."
+            "value" : "Есепті сақтау мүмкін болмады. Қайта көріңіз."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Не удалось сохранить чекин. Попробуйте ещё раз."
+            "value" : "Не удалось сохранить отчёт. Попробуйте ещё раз."
           }
         }
       }
@@ -3489,6 +3489,52 @@
         }
       }
     },
+    "comments.button %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comments · %lld"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Түсініктемелер · %lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Комментарии · %lld"
+          }
+        }
+      }
+    },
+    "comments.button.zero" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comment"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Түсініктеме жазу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Комментировать"
+          }
+        }
+      }
+    },
     "comments.delete" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3817,19 +3863,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Check in at this place first: reviews need a check-in."
+            "value" : "Post a report here first with “I’m here”: reviews need a report."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Алдымен осы орында белгі қойыңыз: пікір тек белгіден кейін қалдырылады."
+            "value" : "Алдымен осында «Мен осындамын» батырмасымен белгі қойыңыз: пікір тек есептен кейін қалдырылады."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Сначала отметьтесь в этом месте: отзыв можно оставить только после чекина."
+            "value" : "Сначала отметьтесь здесь кнопкой «Я здесь»: отзыв можно оставить только после отчёта."
           }
         }
       }
@@ -4277,19 +4323,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dalada stores your profile, places, check-ins, catches, photos and trips on a Supabase server in Germany, outside Kazakhstan. You choose who sees what: everyone, friends or only you. Reviews and discussions of public places are visible to everyone; we remove anything that breaks the community rules."
+            "value" : "Dalada stores your profile, places, reports, catches, photos and trips on a Supabase server in Germany, outside Kazakhstan. You choose who sees what: everyone, friends or only you. Reviews and discussions of public places are visible to everyone; we remove anything that breaks the community rules."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Dalada профиліңізді, орындарыңызды, белгілеріңізді, олжаңызды, фотоларыңызды және сапарларыңызды Германиядағы Supabase серверінде — Қазақстаннан тыс жерде сақтайды. Кім нені көретінін өзіңіз таңдайсыз: «барлығы», «достар» немесе «тек мен». Жария орындардың пікірлері мен талқылауларын барлығы көреді; қауымдастық ережелерін бұзатынын жоямыз."
+            "value" : "Dalada профиліңізді, орындарыңызды, есептеріңізді, олжаңызды, фотоларыңызды және сапарларыңызды Германиядағы Supabase серверінде — Қазақстаннан тыс жерде сақтайды. Кім нені көретінін өзіңіз таңдайсыз: «барлығы», «достар» немесе «тек мен». Жария орындардың пікірлері мен талқылауларын барлығы көреді; қауымдастық ережелерін бұзатынын жоямыз."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dalada хранит ваш профиль, места, чекины, уловы, фото и поездки на сервере Supabase в Германии — за пределами Казахстана. Кто что видит, вы выбираете сами: «все», «друзья» или «только я». Отзывы и обсуждения публичных мест видят все; то, что нарушает правила сообщества, мы удаляем."
+            "value" : "Dalada хранит ваш профиль, места, отчёты, уловы, фото и поездки на сервере Supabase в Германии — за пределами Казахстана. Кто что видит, вы выбираете сами: «все», «друзья» или «только я». Отзывы и обсуждения публичных мест видят все; то, что нарушает правила сообщества, мы удаляем."
           }
         }
       }
@@ -6289,19 +6335,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Location lets us show places nearby, confirm check-ins and record tracks. No one sees where you are right now."
+            "value" : "Location lets us show places nearby, confirm reports and record tracks. No one sees where you are right now."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Геолокация жақын орындарды көрсету, белгіні растау және трек жазу үшін қажет. Қазір қайда екеніңізді ешкім көрмейді."
+            "value" : "Геолокация жақын орындарды көрсету, есепті растау және трек жазу үшін қажет. Қазір қайда екеніңізді ешкім көрмейді."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Геопозиция нужна, чтобы показать места рядом, подтвердить чекин и записать трек. Где вы сейчас, никто не видит."
+            "value" : "Геопозиция нужна, чтобы показать места рядом, подтвердить отчёт и записать трек. Где вы сейчас, никто не видит."
           }
         }
       }
@@ -7314,6 +7360,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Типы мест"
+          }
+        }
+      }
+    },
+    "map.locate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My location"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Мен қайдамын"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Где я"
           }
         }
       }
@@ -10061,19 +10130,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Delete this check-in? It won’t reach the server."
+            "value" : "Delete this report? It won’t reach the server."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Чекинді өшіру керек пе? Ол серверге жетпейді."
+            "value" : "Есепті өшіру керек пе? Ол серверге жетпейді."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Удалить чекин? Он не попадёт на сервер."
+            "value" : "Удалить отчёт? Он не попадёт на сервер."
           }
         }
       }
@@ -10745,6 +10814,29 @@
         }
       }
     },
+    "place.card.addedBy %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Added by @%@"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Авторы: @%@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Автор: @%@"
+          }
+        }
+      }
+    },
     "place.card.approximate" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10764,6 +10856,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Место показано приблизительно: настоящая точка — где-то в круге радиусом ~1 км."
+          }
+        }
+      }
+    },
+    "place.card.approximateShort" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Approximate"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Шамамен"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Примерно"
           }
         }
       }
@@ -10906,42 +11021,19 @@
         }
       }
     },
-    "place.card.reports" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recent reports"
-          }
-        },
-        "kk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Соңғы есептер"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Свежие отчёты"
-          }
-        }
-      }
-    },
     "place.card.reports.empty" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No check-ins yet. Be the first to tell how the fish are biting."
+            "value" : "No reports yet. Be the first to tell how the fish are biting."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Әзірге ешкім белгіленбеді. Бірінші болыңыз — балықтың қалай қабатынын айтыңыз."
+            "value" : "Әзірге есеп жоқ. Бірінші болыңыз — балықтың қалай қабатынын айтыңыз."
           }
         },
         "ru" : {
@@ -13589,6 +13681,98 @@
         }
       }
     },
+    "place.tab.reports" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reports"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Есептер"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчёты"
+          }
+        }
+      }
+    },
+    "place.tab.reports.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reports — who was here and what they saw: bite, water, catch. Add yours with “I’m here”."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Есептер — мұнда кім болды және не көрді: қабу, су, олжа. Өзіңіздікі — «Мен осындамын» батырмасымен."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отчёты — кто был здесь и что увидел: клёв, вода, улов. Свой — кнопкой «Я здесь»."
+          }
+        }
+      }
+    },
+    "place.tab.reviews.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reviews — a 1–5 rating of the place. One per person, and you can change it."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Пікірлер — орынға 1–5 баға. Әр адамнан біреу, оны өзгертуге болады."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отзывы — оценка места 1–5. Один от человека, его можно изменить."
+          }
+        }
+      }
+    },
+    "place.tab.threads.hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discussions — questions about the place: the road, bait, where to set up. Anyone can answer."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Талқылаулар — орын туралы сұрақтар: жол, жем, қай жерге тұру. Барлығы жауап бере алады."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Обсуждения — вопросы о месте: дорога, наживка, где встать. Отвечают все."
+          }
+        }
+      }
+    },
     "place.type.base" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -15987,19 +16171,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You can review this place after checking in here (“I’m here”)."
+            "value" : "You can review this place after posting a report here (“I’m here”)."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Пікірді осы орында белгі қойғаннан кейін қалдыруға болады («Мен осындамын»)."
+            "value" : "Пікірді осы орында есеп қалдырғаннан кейін жазуға болады («Мен осындамын»)."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отзыв можно оставить после чекина в этом месте («Я здесь»)."
+            "value" : "Отзыв можно оставить после отчёта в этом месте («Я здесь»)."
           }
         }
       }
@@ -18622,25 +18806,94 @@
         }
       }
     },
+    "trip.delete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete trip"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сапарды жою"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить поездку"
+          }
+        }
+      }
+    },
+    "trip.delete.confirm" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete this trip?"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сапарды жою керек пе?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить поездку?"
+          }
+        }
+      }
+    },
+    "trip.delete.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The trip and its track will disappear from your profile, the feed and stats, and for tagged friends too. Reports and catches from that time stay."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Трегі бар сапар профильден, таспадан және статистикадан, белгіленген достардан да жойылады. Осы уақыттағы есептер мен олжалар қалады."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поездка с треком пропадёт из профиля, ленты и статистики, и у отмеченных друзей тоже. Отчёты и уловы за это время останутся."
+          }
+        }
+      }
+    },
     "trip.detail.checkins" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Check-ins on this trip"
+            "value" : "Reports on this trip"
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Сапардағы чекиндер"
+            "value" : "Сапардағы есептер"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Чекины в поездке"
+            "value" : "Отчёты в поездке"
           }
         }
       }
@@ -18779,6 +19032,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Трек скрыт целиком"
+          }
+        }
+      }
+    },
+    "trip.edit.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit trip"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сапарды өзгерту"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Изменить поездку"
           }
         }
       }
@@ -19193,6 +19469,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Свернуть"
+          }
+        }
+      }
+    },
+    "trip.ownMenu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trip actions"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сапармен әрекеттер"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Действия с поездкой"
           }
         }
       }
