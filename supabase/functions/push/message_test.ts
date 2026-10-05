@@ -130,3 +130,40 @@ Deno.test("отметка в поездке — на поездку, на трё
   assertEquals(buildMessage({ ...reply, kind: "trip_tag", language: "kk", payload }).title, "Сізді сапарда белгіледі");
   assertEquals(buildMessage({ ...reply, kind: "trip_tag", language: "en", payload }).body, "@author: “Рыбалка втроём”. Accept or decline.");
 });
+
+Deno.test("реакция — к записи: поездка, отчёт, отзыв, ответ в обсуждении", () => {
+  const base = { actor: "@bob", username: "bob" };
+  const trip = buildMessage({
+    ...reply,
+    kind: "reaction",
+    payload: { ...base, target_kind: "trip", target_id: "99999999-0000-0000-0000-000000000001", title: "Капшагай" },
+  });
+  assertEquals(trip, {
+    title: "👍 @bob",
+    body: "Респект вашей поездке «Капшагай»",
+    url: "dalada://trip/99999999-0000-0000-0000-000000000001",
+  });
+  const report = buildMessage({
+    ...reply,
+    kind: "reaction",
+    payload: { ...base, target_kind: "checkin", target_id: "cccccccc-0000-0000-0000-000000000001", title: "Залив", place_id: "aaaaaaaa-0000-0000-0000-000000000001" },
+  });
+  assertEquals(report.url, "dalada://comments/checkin/cccccccc-0000-0000-0000-000000000001");
+  assertEquals(report.body, "Респект вашему отчёту: Залив");
+  const review = buildMessage({
+    ...reply,
+    kind: "reaction",
+    language: "en",
+    payload: { ...base, target_kind: "review", target_id: "eeeeeeee-0000-0000-0000-000000000001", title: "Залив" },
+  });
+  assertEquals(review.body, "Your review of “Залив” was marked helpful");
+  assertEquals(review.url, "dalada://comments/review/eeeeeeee-0000-0000-0000-000000000001");
+  const post = buildMessage({
+    ...reply,
+    kind: "reaction",
+    language: "kk",
+    payload: { ...base, target_kind: "post", target_id: "ffffffff-0000-0000-0000-000000000001", title: "Дорога", thread_id: "dddddddd-0000-0000-0000-000000000001" },
+  });
+  assertEquals(post.body, "«Дорога» талқылауындағы жауабыңызға құрмет");
+  assertEquals(post.url, "dalada://thread/dddddddd-0000-0000-0000-000000000001");
+});

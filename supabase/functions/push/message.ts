@@ -11,6 +11,7 @@ export type PushKind =
   | "place_activity"
   | "moderation"
   | "trip_tag"
+  | "reaction"
   | "test";
 
 export type PushRow = {
@@ -83,6 +84,16 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
         ? { title: "Жалоба рассмотрена", body: "Спасибо! Мы приняли меры." }
         : { title: "Жалоба рассмотрена", body: "Нарушений не нашли." },
     trip_tag: (p) => ({ title: "Вас отметили в поездке", body: `${p.actor}: «${p.title ?? "поездка"}». Примите или отклоните.` }),
+    reaction: (p) => ({
+      title: `👍 ${p.actor}`,
+      body: p.target_kind === "review"
+        ? `Ваш отзыв о месте «${p.title ?? "место"}» назвали полезным`
+        : p.target_kind === "checkin"
+        ? `Респект вашему отчёту: ${p.title ?? "место"}`
+        : p.target_kind === "post"
+        ? `Респект вашему ответу в обсуждении «${p.title ?? "обсуждение"}»`
+        : `Респект вашей поездке «${p.title ?? "поездка"}»`,
+    }),
     test: () => ({ title: "Dalada", body: "Уведомления работают — это проверка." }),
   },
   kk: {
@@ -112,6 +123,16 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
         ? { title: "Шағым қаралды", body: "Рақмет! Шара қолданылды." }
         : { title: "Шағым қаралды", body: "Бұзушылық табылмады." },
     trip_tag: (p) => ({ title: "Сізді сапарда белгіледі", body: `${p.actor}: «${p.title ?? "сапар"}». Қабылдаңыз немесе бас тартыңыз.` }),
+    reaction: (p) => ({
+      title: `👍 ${p.actor}`,
+      body: p.target_kind === "review"
+        ? `«${p.title ?? "орын"}» туралы пікіріңізді пайдалы деп белгіледі`
+        : p.target_kind === "checkin"
+        ? `Есебіңізге құрмет: ${p.title ?? "орын"}`
+        : p.target_kind === "post"
+        ? `«${p.title ?? "талқылау"}» талқылауындағы жауабыңызға құрмет`
+        : `«${p.title ?? "сапар"}» сапарыңызға құрмет`,
+    }),
     test: () => ({ title: "Dalada", body: "Хабарландырулар жұмыс істейді — бұл тексеру." }),
   },
   en: {
@@ -141,13 +162,24 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
         ? { title: "Report reviewed", body: "Thanks! We took action." }
         : { title: "Report reviewed", body: "We found no violation." },
     trip_tag: (p) => ({ title: "You were tagged in a trip", body: `${p.actor}: “${p.title ?? "a trip"}”. Accept or decline.` }),
+    reaction: (p) => ({
+      title: `👍 ${p.actor}`,
+      body: p.target_kind === "review"
+        ? `Your review of “${p.title ?? "a place"}” was marked helpful`
+        : p.target_kind === "checkin"
+        ? `Respect for your report: ${p.title ?? "a place"}`
+        : p.target_kind === "post"
+        ? `Respect for your reply in “${p.title ?? "a discussion"}”`
+        : `Respect for your trip “${p.title ?? "a trip"}”`,
+    }),
     test: () => ({ title: "Dalada", body: "Notifications work — this is a test." }),
   },
 };
 
 /// Текст и ссылка для перехода по нажатию: обсуждение (dalada://thread/<id>), поездка — в том числе
 /// с отметкой (dalada://trip/<id>), место отчёта друга (dalada://place/<id>), комментарии к отчёту или отзыву
-/// (dalada://comments/<checkin|review>/<id>), иначе профиль автора (dalada://u/<username>).
+/// (dalada://comments/<checkin|review>/<id>), иначе профиль автора (dalada://u/<username>). Реакция ведёт
+/// к записи: поездке, обсуждению или комментариям отчёта и отзыва.
 export function buildMessage(row: PushRow): Message {
   const p = row.payload;
   const language = texts[row.language] ? row.language : "ru";
@@ -155,16 +187,19 @@ export function buildMessage(row: PushRow): Message {
   const payload = { ...p, actor: p.actor ?? "Dalada", zone: zones[language] ?? p.zone_ru ?? "" };
   const { title, body } = texts[language][row.kind](payload);
   let url: string | undefined;
-  if (row.kind === "thread_reply" && p.thread_id) {
+  if ((row.kind === "thread_reply" || (row.kind === "reaction" && p.target_kind === "post")) && p.thread_id) {
     url = `dalada://thread/${p.thread_id}`;
-  } else if ((row.kind === "comment" || row.kind === "friend_post" || row.kind === "trip_tag") && p.target_kind === "trip" && p.target_id) {
+  } else if (
+    (row.kind === "comment" || row.kind === "friend_post" || row.kind === "trip_tag" || row.kind === "reaction") &&
+    p.target_kind === "trip" && p.target_id
+  ) {
     url = `dalada://trip/${p.target_id}`;
   } else if (
     (row.kind === "friend_post" || row.kind === "ban_start" || row.kind === "ban_end" ||
       row.kind === "place_activity" || (row.kind === "moderation" && p.topic === "suggestion")) && p.place_id
   ) {
     url = `dalada://place/${p.place_id}`;
-  } else if (row.kind === "comment" && p.target_kind && p.target_id) {
+  } else if ((row.kind === "comment" || row.kind === "reaction") && p.target_kind && p.target_id) {
     url = `dalada://comments/${p.target_kind}/${p.target_id}`;
   } else if (p.username && row.kind !== "moderation") {
     url = `dalada://u/${p.username}`;

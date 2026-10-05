@@ -8330,6 +8330,29 @@
         }
       }
     },
+    "notifications.kind.reactions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respect and “Helpful” on my posts"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жазбаларыма құрмет және «Пайдалы»"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Респекты и «Полезно» к моим записям"
+          }
+        }
+      }
+    },
     "notifications.kind.replies" : {
       "extractionState" : "manual",
       "localizations" : {
