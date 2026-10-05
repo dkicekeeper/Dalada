@@ -87,5 +87,5 @@ jobs:
               print("  ", failure.get("failureText", "").replace("\n", "\n   "))
           ' || true
           xcrun xcresulttool export diagnostics --path "$RESULT" --output-path "$RUNNER_TEMP/diagnostics" > /dev/null 2>&1 || true
-          grep -rhE -A4 "uncaught exception|Termination Reason|Library not loaded|Exception Type|Fatal error" \
+          grep -rhIE -A4 "uncaught exception|Termination Reason|Library not loaded|Exception Type|Fatal error" \
             "$RUNNER_TEMP/diagnostics" 2>/dev/null | head -80 || true

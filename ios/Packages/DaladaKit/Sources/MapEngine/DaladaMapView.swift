@@ -372,9 +372,12 @@ public struct DaladaMapView: UIViewRepresentable {
             icons.predicate = NSPredicate(format: "kind == 'place'")
             icons.minimumZoomLevel = Float(MapPlaceIcons.minZoom)
             icons.iconImageName = NSExpression(forKeyPath: "icon")
+            // Функции MapLibre — только конструкторами, не строкой формата (см. MapPlaceIcons.colorExpression).
             icons.iconScale = NSExpression(
-                format: "mgl_interpolate:withCurveType:parameters:stops:($zoomLevel, 'linear', nil, %@)",
-                [MapPlaceIcons.minZoom: 0.75, MapPlaceIcons.minZoom + 3: 1.0] as NSDictionary
+                forMLNInterpolating: NSExpression(forVariable: "zoomLevel"),
+                curveType: .linear,
+                parameters: nil,
+                stops: NSExpression(forConstantValue: [MapPlaceIcons.minZoom: 0.75, MapPlaceIcons.minZoom + 3: 1.0])
             )
             icons.iconAllowsOverlap = NSExpression(forConstantValue: true)
             icons.iconIgnoresPlacement = NSExpression(forConstantValue: true)

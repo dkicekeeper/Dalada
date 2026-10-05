@@ -1,5 +1,6 @@
 import DaladaCore
 import Foundation
+import MapLibre
 import UIKit
 
 /// Значки мест на карте: круг цвета типа с белым символом типа; у своих мест — оранжевая обводка.
@@ -31,19 +32,19 @@ enum MapPlaceIcons {
         }
     }
 
-    /// Цвет точки по атрибуту `type` фичи. В MapLibre 6 функция — `MLN_MATCH` (`MGL_MATCH` из Mapbox
-    /// бросает исключение при разборе — так падала сборка 124).
+    /// Цвет точки по атрибуту `type` фичи. Только конструктором MapLibre: на iOS 26
+    /// `NSExpression(format:)` не разбирает функции MapLibre (`MLN_MATCH`, `mgl_…`) и бросает
+    /// исключение — так падала сборка 124 при открытии карты.
     static func colorExpression() -> NSExpression {
-        var format = "MLN_MATCH(type"
-        var arguments: [Any] = []
+        var colors: [NSExpression: NSExpression] = [:]
         for type in PlaceType.allCases {
-            format += ", %@, %@"
-            arguments.append(type.rawValue)
-            arguments.append(color(for: type))
+            colors[NSExpression(forConstantValue: type.rawValue)] = NSExpression(forConstantValue: color(for: type))
         }
-        format += ", %@)"
-        arguments.append(UIColor.systemIndigo)
-        return NSExpression(format: format, argumentArray: arguments)
+        return NSExpression(
+            forMLNMatchingKey: NSExpression(forKeyPath: "type"),
+            in: colors,
+            default: NSExpression(forConstantValue: UIColor.systemIndigo)
+        )
     }
 
     /// Круг с символом типа, тенью и обводкой (белой; у своих мест — оранжевой).
