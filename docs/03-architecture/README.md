@@ -84,7 +84,7 @@ flowchart LR
 | D9 | Архитектура iOS | SwiftUI, `@Observable` MVVM, SPM-модули по фичам, Swift 6, supabase-swift | Предложено |
 | D10 | Хостинг | **Сейчас:** Supabase Cloud Free (Франкфурт) + Cloudflare Free — $0. **К публичному запуску:** self-hosted Supabase в РК | Предложено |
 | D11 | Админка | React + Refine с провайдером данных Supabase; статический хостинг Cloudflare Pages | Предложено |
-| D12 | Ошибки и аналитика | Xcode Organizer + MetricKit; аналитика — анонимные события (TelemetryDeck, бесплатный план) или таблица в Supabase | Предложено |
+| D12 | Ошибки и аналитика | Xcode Organizer + MetricKit; метрики продукта — SQL-функции по данным в базе, без событий ([M17](../04-beta/M17-metrics.md)); анонимные события (TelemetryDeck или таблица в Supabase) — только по решению владельца: политика обещает «без аналитики поведения» | Метрики сделаны, события — предложено |
 | D13 | CI/CD | GitHub Actions: миграции и тесты БД (Supabase CLI, pgTAP), Edge Functions, админка, тайлы; Xcode Cloud: iOS → TestFlight | Предложено |
 | D14 | Роутинг (1.1) | Valhalla — нужен сервер, решим к 1.1 | Отложено |
 
