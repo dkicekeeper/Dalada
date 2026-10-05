@@ -276,12 +276,15 @@ struct MyCatchesSection: View {
     @State private var isLoaded = false
 
     var body: some View {
-        ProfileSection("profile.catches.title", systemImage: "fish", showsAll: catches.count > 3) {
+        ProfileSection("profile.catches.title", systemImage: "fish", showsAll: !catches.isEmpty) {
             MyCatchesView(environment: environment, userID: userID)
         } content: {
             if !catches.isEmpty {
                 ForEach(catches.prefix(3)) { item in
                     MyCatchRow(item: item)
+                        .ownCatchActions(catchID: item.id, environment: environment) {
+                            Task { catches = await MyCatchesLoader(environment: environment, userID: userID).load() }
+                        }
                 }
             } else if isLoaded {
                 ProfileSectionHint(text: String(localized: "profile.catches.empty"))
@@ -325,6 +328,9 @@ struct MyCatchesView: View {
                     Section {
                         ForEach(catches) { item in
                             MyCatchRow(item: item)
+                                .ownCatchActions(catchID: item.id, environment: environment, inList: true) {
+                                    Task { await load() }
+                                }
                         }
                     } header: {
                         if !records.isEmpty {
@@ -335,12 +341,14 @@ struct MyCatchesView: View {
             }
         }
         .navigationTitle("profile.catches.title")
-        .task {
-            async let loadedCatches = MyCatchesLoader(environment: environment, userID: userID).load(limit: 200)
-            async let loadedRecords = RecordsLoader(environment: environment, userID: userID).load()
-            (catches, records) = await (loadedCatches, loadedRecords)
-            isLoaded = true
-        }
+        .task { await load() }
+    }
+
+    private func load() async {
+        async let loadedCatches = MyCatchesLoader(environment: environment, userID: userID).load(limit: 200)
+        async let loadedRecords = RecordsLoader(environment: environment, userID: userID).load()
+        (catches, records) = await (loadedCatches, loadedRecords)
+        isLoaded = true
     }
 }
 

@@ -125,6 +125,10 @@ struct MapHomeView: View {
             .presentationDetents([.medium, .large])
         }
         .task { await rules.loadIfNeeded() }
+        // Своё место удалили из карточки — убрать его с карты.
+        .onReceive(NotificationCenter.default.publisher(for: .daladaPlaceDeleted)) { _ in
+            Task { await model.reload() }
+        }
         // Треки — когда слой включён: при включении, смене аккаунта и возвращении на вкладку.
         .task(id: TracksRequest(isOn: showsTracks, userID: session.profile?.id)) {
             if showsTracks { await tracks.load(for: session.profile?.id) }

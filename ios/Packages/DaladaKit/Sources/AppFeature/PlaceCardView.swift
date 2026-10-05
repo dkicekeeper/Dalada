@@ -41,6 +41,12 @@ struct PlaceCardView: View {
     @State private var nearbySelection: PlaceSelection?
     /// Картинка места для Stories и Telegram.
     @State private var showsShareCard = false
+    @State private var confirmsDeletePlace = false
+    /// Свой отчёт, который просят удалить.
+    @State private var reportToDelete: PlaceReport?
+    @State private var ownActionError: String?
+
+    @Environment(\.dismiss) private var dismiss
 
     /// Отчётов загружаем больше, чем показываем, — для сводки за 7 дней.
     private static let reportsLimit = 50
@@ -115,6 +121,22 @@ struct PlaceCardView: View {
                         }
                     }
                 }
+                // Своё место: изменить или удалить.
+                if case .loaded(let place) = state, place.isOwn, !isShowingSavedCopy {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            Button("place.edit.title", systemImage: "pencil") {
+                                showsEdit = true
+                            }
+                            Button("place.delete", systemImage: "trash", role: .destructive) {
+                                confirmsDeletePlace = true
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis.circle")
+                                .accessibilityLabel(Text("place.ownMenu"))
+                        }
+                    }
+                }
                 // Сохранить место (закладка) — после входа.
                 if case .loaded(let place) = state, session.profile != nil, !place.isOwn {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -157,6 +179,33 @@ struct PlaceCardView: View {
                     .environment(sync)
                     .environment(rules)
             }
+        }
+        .confirmationDialog("place.delete.confirm", isPresented: $confirmsDeletePlace, titleVisibility: .visible) {
+            Button("place.delete", role: .destructive) {
+                Task { await deletePlace() }
+            }
+        } message: {
+            Text("place.delete.message")
+        }
+        .confirmationDialog(
+            "report.delete.confirm",
+            isPresented: Binding(get: { reportToDelete != nil }, set: { if !$0 { reportToDelete = nil } }),
+            titleVisibility: .visible,
+            presenting: reportToDelete
+        ) { report in
+            Button("report.delete", role: .destructive) {
+                Task { await deleteReport(report) }
+            }
+        } message: { _ in
+            Text("report.delete.message")
+        }
+        .alert(
+            "own.error.title",
+            isPresented: Binding(get: { ownActionError != nil }, set: { if !$0 { ownActionError = nil } })
+        ) {
+            Button("common.ok") {}
+        } message: {
+            Text(verbatim: ownActionError ?? "")
         }
         .sheet(isPresented: $showsEdit) {
             PlaceEditView(placeID: placeID, environment: environment) {
@@ -347,9 +396,14 @@ struct PlaceCardView: View {
                     .foregroundStyle(AppColors.textSecondary)
             } else {
                 ForEach(reports.prefix(Self.reportsShown)) { report in
-                    ReportRow(report: report, photoURLs: photoURLs) { blocked in
-                        reports.removeAll { $0.authorID == blocked }
-                    }
+                    ReportRow(
+                        report: report,
+                        photoURLs: photoURLs,
+                        onBlocked: { blocked in
+                            reports.removeAll { $0.authorID == blocked }
+                        },
+                        onDelete: isShowingSavedCopy ? nil : { reportToDelete = report }
+                    )
                 }
             }
         }
@@ -420,6 +474,35 @@ struct PlaceCardView: View {
         try? await cache.save(loaded, for: .reports(placeID, viewer: viewerID))
     }
 
+    private func deletePlace() async {
+        guard let backend else {
+            ownActionError = String(localized: "own.error.offline")
+            return
+        }
+        do {
+            try await backend.deletePlace(placeID)
+            try? await cache.remove(.place(placeID, viewer: viewerID))
+            NotificationCenter.default.post(name: .daladaPlaceDeleted, object: placeID)
+            dismiss()
+        } catch {
+            ownActionError = error.localizedDescription
+        }
+    }
+
+    private func deleteReport(_ report: PlaceReport) async {
+        guard let backend else {
+            ownActionError = String(localized: "own.error.offline")
+            return
+        }
+        do {
+            try await backend.deleteReport(report.id)
+            reports.removeAll { $0.id == report.id }
+            await loadReports()
+        } catch {
+            ownActionError = error.localizedDescription
+        }
+    }
+
     /// Мои открытые предложения к месту — чтобы показать «на проверке».
     private func loadSuggestions() async {
         guard let backend, case .loaded(let place) = state, canSuggest(place),
@@ -435,6 +518,8 @@ struct ReportRow: View {
     let photoURLs: [String: URL]
     /// Автора заблокировали — убрать его отчёты с экрана.
     var onBlocked: (@MainActor (UUID) -> Void)?
+    /// Свой отчёт: «Удалить отчёт» (подтверждение — у вызывающего).
+    var onDelete: (@MainActor () -> Void)?
 
     @Environment(SpeciesStore.self) private var speciesStore
 
@@ -452,6 +537,17 @@ struct ReportRow: View {
                 Text(report.at, style: .relative)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textTertiary)
+                if report.isOwn, let onDelete {
+                    Menu {
+                        Button("report.delete", systemImage: "trash", role: .destructive, action: onDelete)
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .foregroundStyle(AppColors.textSecondary)
+                            .frame(width: 28, height: 28)
+                            .contentShape(Rectangle())
+                            .accessibilityLabel(Text("report.ownMenu"))
+                    }
+                }
                 if !report.isOwn {
                     ModerationMenu(
                         target: .checkin,

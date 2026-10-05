@@ -8,6 +8,8 @@ import SwiftUI
 struct CatchFormView: View {
     /// Промысловая мера в месте улова: вид → см (подсказка, без блокировки).
     let minSizes: [String: Int]
+    /// Правка сохранённого улова — фото здесь не меняется.
+    let allowsPhoto: Bool
     let onDone: @MainActor (CatchDraft) -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -17,8 +19,14 @@ struct CatchFormView: View {
     @State private var isProcessingPhoto = false
     @State private var photoFailed = false
 
-    init(draft: CatchDraft, minSizes: [String: Int] = [:], onDone: @escaping @MainActor (CatchDraft) -> Void) {
+    init(
+        draft: CatchDraft,
+        minSizes: [String: Int] = [:],
+        allowsPhoto: Bool = true,
+        onDone: @escaping @MainActor (CatchDraft) -> Void
+    ) {
         self.minSizes = minSizes
+        self.allowsPhoto = allowsPhoto
         self.onDone = onDone
         _draft = State(initialValue: draft)
     }
@@ -79,6 +87,7 @@ struct CatchFormView: View {
                     .listRowBackground(Color.clear)
                 }
 
+                if allowsPhoto {
                 Section {
                     if let photo = draft.photo {
                         HStack(spacing: AppSpacing.md) {
@@ -103,6 +112,7 @@ struct CatchFormView: View {
                         Text("photo.failed")
                             .foregroundStyle(AppColors.destructive)
                     }
+                }
                 }
 
                 Section {
