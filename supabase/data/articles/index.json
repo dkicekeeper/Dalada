@@ -4,5 +4,14 @@
   {"id": "fish_release", "category": "rules_ethics", "sort_order": 30, "published_on": "2026-09-30"},
   {"id": "feeder_basics", "category": "tackle", "sort_order": 40, "published_on": "2026-09-30"},
   {"id": "three_knots", "category": "knots", "sort_order": 50, "published_on": "2026-09-30"},
-  {"id": "fish_on_coals", "category": "cooking", "sort_order": 60, "published_on": "2026-09-30"}
+  {"id": "fish_on_coals", "category": "cooking", "sort_order": 60, "published_on": "2026-09-30"},
+  {"id": "camp_site", "category": "places_seasons", "sort_order": 70, "published_on": "2026-10-05"},
+  {"id": "first_aid_kit", "category": "safety", "sort_order": 80, "published_on": "2026-10-05"},
+  {"id": "mountain_storms", "category": "safety", "sort_order": 90, "published_on": "2026-10-05"},
+  {"id": "clean_shore", "category": "rules_ethics", "sort_order": 100, "published_on": "2026-10-05"},
+  {"id": "fresh_catch", "category": "cooking", "sort_order": 110, "published_on": "2026-10-05"},
+  {"id": "ukha", "category": "cooking", "sort_order": 120, "published_on": "2026-10-05"},
+  {"id": "float_rod", "category": "tackle", "sort_order": 130, "published_on": "2026-10-05"},
+  {"id": "carp_basics", "category": "technique", "sort_order": 140, "published_on": "2026-10-05"},
+  {"id": "spinning_lures", "category": "tackle", "sort_order": 150, "published_on": "2026-10-05"}
 ]

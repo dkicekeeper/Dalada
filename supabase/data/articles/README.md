@@ -30,7 +30,8 @@ summary: Одна-две фразы для списка статей.
 ## Как добавить или поправить статью
 
 ```bash
-python3 supabase/data/articles/build_sql.py > /tmp/articles.sql
+python3 supabase/data/articles/build_sql.py > /tmp/articles.sql          # все статьи
+python3 supabase/data/articles/build_sql.py camp_site > /tmp/new.sql     # только новые
 ```
 
 Новая статья — новой миграцией с `insert` (уже применённые миграции не редактируем), правка —

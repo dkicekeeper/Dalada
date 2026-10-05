@@ -10,6 +10,7 @@
 приложение (см. README.md). Проверяет разметку и печатает SQL в stdout.
 
     python3 supabase/data/articles/build_sql.py > /tmp/articles.sql
+    python3 supabase/data/articles/build_sql.py camp_site first_aid > /tmp/new.sql  # только эти
 """
 import json
 import re
@@ -53,6 +54,12 @@ def quote(text: str) -> str:
 
 def main() -> None:
     index = json.loads((HERE / "index.json").read_text(encoding="utf-8"))
+    only = set(sys.argv[1:])
+    unknown = only - {article["id"] for article in index}
+    if unknown:
+        sys.exit(f"нет в index.json: {', '.join(sorted(unknown))}")
+    if only:
+        index = [article for article in index if article["id"] in only]
     rows = []
     for article in index:
         if article["category"] not in CATEGORIES:
