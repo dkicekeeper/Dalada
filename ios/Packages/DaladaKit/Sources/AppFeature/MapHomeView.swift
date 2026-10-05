@@ -10,7 +10,7 @@ struct RuleZoneSelection: Identifiable, Hashable {
 
 /// Вкладка «Карта»: места в видимой области, карточка по тапу, новое место долгим нажатием
 /// или кнопкой «Место», слои — зоны запретов (цвет — действует сейчас, скоро или нет), нацпарки и
-/// заповедники, погранзона; «Начать поездку».
+/// заповедники, погранзона, мои треки; «Начать поездку».
 struct MapHomeView: View {
     let environment: AppEnvironment
 
@@ -20,7 +20,9 @@ struct MapHomeView: View {
     @AppStorage("map.showsRules") private var showsRules = true
     @AppStorage("map.showsParks") private var showsParks = true
     @AppStorage("map.showsBorder") private var showsBorder = false
+    @AppStorage("map.showsTracks") private var showsTracks = false
     @State private var model: MapScreenModel
+    @State private var tracks: MyTracksLayer
     @State private var showsSignInHint = false
     @State private var selectedZone: RuleZoneSelection?
     /// Нацпарк, заповедник или погранзона, открытые с карты.
@@ -29,6 +31,7 @@ struct MapHomeView: View {
     init(environment: AppEnvironment) {
         self.environment = environment
         _model = State(initialValue: MapScreenModel(backend: environment.backend, cache: environment.cache))
+        _tracks = State(initialValue: MyTracksLayer(backend: environment.backend, cache: environment.cache))
     }
 
     var body: some View {
@@ -38,6 +41,7 @@ struct MapHomeView: View {
             initialZoom: 8,
             places: model.mapPlaces,
             draftPin: model.newPlace?.coordinate,
+            historySegments: showsTracks && session.profile != nil ? tracks.segments : [],
             // Слои снизу вверх: погранзона, нацпарки, зоны запретов.
             ruleAreas: rules.mapLayerAreas(parks: showsParks, border: showsBorder) + (showsRules ? rules.mapAreas() : []),
             onRegionChange: { model.visibleAreaChanged($0, viewer: session.profile?.id) },
@@ -54,7 +58,7 @@ struct MapHomeView: View {
         // Карта — на весь экран, под панелью вкладок; кнопки поверх — в безопасной области.
         .ignoresSafeArea()
         .overlay(alignment: .topLeading) {
-            // Слои карты: запреты, нацпарки и заповедники, погранзона.
+            // Слои карты: запреты, нацпарки и заповедники, погранзона, мои треки (после входа).
             Menu {
                 Toggle(isOn: $showsRules) {
                     Label("map.rules", systemImage: "exclamationmark.shield")
@@ -64,6 +68,11 @@ struct MapHomeView: View {
                 }
                 Toggle(isOn: $showsBorder) {
                     Label("map.layers.border", systemImage: "flag")
+                }
+                if session.profile != nil {
+                    Toggle(isOn: $showsTracks) {
+                        Label("map.layers.tracks", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
+                    }
                 }
             } label: {
                 Label("map.layers", systemImage: "square.3.layers.3d")
@@ -86,6 +95,13 @@ struct MapHomeView: View {
             .presentationDetents([.medium, .large])
         }
         .task { await rules.loadIfNeeded() }
+        // Треки — когда слой включён: при включении, смене аккаунта и возвращении на вкладку.
+        .task(id: TracksRequest(isOn: showsTracks, userID: session.profile?.id)) {
+            if showsTracks { await tracks.load(for: session.profile?.id) }
+        }
+        .onAppear {
+            if showsTracks { Task { await tracks.load(for: session.profile?.id) } }
+        }
         .overlay(alignment: .topTrailing) {
             Button {
                 startNewPlace(at: model.visibleCenter)
@@ -120,6 +136,11 @@ struct MapHomeView: View {
         } message: {
             Text("map.signInRequired.message")
         }
+    }
+
+    private struct TracksRequest: Equatable {
+        let isOn: Bool
+        let userID: UUID?
     }
 
     private func startNewPlace(at coordinate: GeoPoint) {

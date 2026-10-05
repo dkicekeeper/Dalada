@@ -40,6 +40,17 @@ struct MapLayersTests {
         #expect(features.compactMap { $0.attribute(forKey: "state") as? String } == MapRuleArea.State.allCases.map(\.rawValue))
     }
 
+    @Test func historyLayerBuilds() {
+        let source = MLNShapeSource(identifier: "test-history", shape: nil, options: nil)
+        let layer = DaladaMapView.Coordinator.historyLayer(source: source)
+        #expect(layer.identifier == "dalada-history-line")
+        let shape = DaladaMapView.Coordinator.trackShape([
+            [.almaty, GeoPoint(latitude: 43.3, longitude: 76.9)],
+            [GeoPoint(latitude: 43.4, longitude: 77.0), GeoPoint(latitude: 43.5, longitude: 77.1)],
+        ])
+        #expect(shape is MLNMultiPolylineFeature)
+    }
+
     @Test func iconsForEveryType() {
         for type in PlaceType.allCases {
             for own in [false, true] {

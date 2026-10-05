@@ -92,6 +92,8 @@ public struct DaladaMapView: UIViewRepresentable {
     let trackSegments: [[GeoPoint]]
     /// Маршрут, по которому человек идёт (следование), — широкой полупрозрачной линией под треком.
     let routeSegments: [[GeoPoint]]
+    /// Слой «Мои треки»: прошлые поездки — тонкой линией под маршрутом и треком.
+    let historySegments: [[GeoPoint]]
     let cameraMode: MapCameraMode
     /// Зоны правил (запреты) — под местами и треком.
     let ruleAreas: [MapRuleArea]
@@ -109,6 +111,7 @@ public struct DaladaMapView: UIViewRepresentable {
         draftPin: GeoPoint? = nil,
         trackSegments: [[GeoPoint]] = [],
         routeSegments: [[GeoPoint]] = [],
+        historySegments: [[GeoPoint]] = [],
         cameraMode: MapCameraMode = .free,
         ruleAreas: [MapRuleArea] = [],
         onRegionChange: @escaping @MainActor (GeoBoundingBox) -> Void = { _ in },
@@ -124,6 +127,7 @@ public struct DaladaMapView: UIViewRepresentable {
         self.draftPin = draftPin
         self.trackSegments = trackSegments
         self.routeSegments = routeSegments
+        self.historySegments = historySegments
         self.cameraMode = cameraMode
         self.ruleAreas = ruleAreas
         self.onRegionChange = onRegionChange
@@ -180,6 +184,8 @@ public struct DaladaMapView: UIViewRepresentable {
         private var trackSource: MLNShapeSource?
         private var routeSource: MLNShapeSource?
         private var renderedRoute: [[GeoPoint]]?
+        private var historySource: MLNShapeSource?
+        private var renderedHistory: [[GeoPoint]]?
         private var ruleSource: MLNShapeSource?
         private var renderedRuleAreas: [MapRuleArea]?
         private var renderedPlaces: [MapPlace]?
@@ -205,6 +211,8 @@ public struct DaladaMapView: UIViewRepresentable {
             static let trackLine = "dalada-track-line"
             static let routeSource = "dalada-route"
             static let routeLine = "dalada-route-line"
+            static let historySource = "dalada-history"
+            static let historyLine = "dalada-history-line"
             static let ruleSource = "dalada-rules"
             static let ruleFill = "dalada-rules-fill"
             static let ruleLine = "dalada-rules-line"
@@ -216,6 +224,10 @@ public struct DaladaMapView: UIViewRepresentable {
             if let ruleSource, parent.ruleAreas != renderedRuleAreas {
                 renderedRuleAreas = parent.ruleAreas
                 ruleSource.shape = MLNShapeCollectionFeature(shapes: Self.ruleFeatures(parent.ruleAreas))
+            }
+            if let historySource, parent.historySegments != renderedHistory {
+                renderedHistory = parent.historySegments
+                historySource.shape = Self.trackShape(parent.historySegments)
             }
             if let routeSource, parent.routeSegments != renderedRoute {
                 renderedRoute = parent.routeSegments
@@ -339,6 +351,13 @@ public struct DaladaMapView: UIViewRepresentable {
             self.ruleSource = ruleSource
             renderedRuleAreas = nil
 
+            // Мои прошлые треки — над зонами, под маршрутом и треком.
+            let historySource = MLNShapeSource(identifier: Layer.historySource, shape: nil, options: nil)
+            style.addSource(historySource)
+            style.addLayer(Self.historyLayer(source: historySource))
+            self.historySource = historySource
+            renderedHistory = nil
+
             // Маршрут для следования — под треком.
             let routeSource = MLNShapeSource(identifier: Layer.routeSource, shape: nil, options: nil)
             style.addSource(routeSource)
@@ -378,6 +397,22 @@ public struct DaladaMapView: UIViewRepresentable {
             self.source = source
             renderedPlaces = nil
             render()
+        }
+
+        /// Линия слоя «Мои треки»: тонкая, полупрозрачная, чтобы десятки поездок не закрывали карту.
+        static func historyLayer(source: MLNSource) -> MLNLineStyleLayer {
+            let line = MLNLineStyleLayer(identifier: Layer.historyLine, source: source)
+            line.lineColor = NSExpression(forConstantValue: UIColor.systemPurple)
+            line.lineWidth = NSExpression(
+                forMLNInterpolating: NSExpression(forVariable: "zoomLevel"),
+                curveType: .linear,
+                parameters: nil,
+                stops: NSExpression(forConstantValue: [8.0: 1.5, 14.0: 3.0])
+            )
+            line.lineOpacity = NSExpression(forConstantValue: 0.6)
+            line.lineCap = NSExpression(forConstantValue: "round")
+            line.lineJoin = NSExpression(forConstantValue: "round")
+            return line
         }
 
         /// Слои мест снизу вверх: круги приблизительных мест, точки (мелкий масштаб), точки без типа,

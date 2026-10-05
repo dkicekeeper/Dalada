@@ -7111,6 +7111,29 @@
         }
       }
     },
+    "map.layers.tracks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My tracks"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Менің тректерім"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мои треки"
+          }
+        }
+      }
+    },
     "map.rules" : {
       "extractionState" : "manual",
       "localizations" : {
