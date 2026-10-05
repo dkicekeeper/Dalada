@@ -37,6 +37,8 @@ struct HomeView: View {
                     if session.state == .guest {
                         SignInCard()
                     }
+                    // Друзья, которые сейчас показывают мне, где они.
+                    FriendsLiveSection(environment: environment)
                     // «Вас отметили в поездке» — пока нет ответа.
                     TripInvitationsSection(environment: environment, refreshID: refreshCount)
                     feed

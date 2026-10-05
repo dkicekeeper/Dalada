@@ -47,6 +47,10 @@ final class TripRecorder {
     @ObservationIgnored private var autoPause = AutoPauseDetector(delay: 0)
     /// Раз в 15 секунд: стоянку видно и тогда, когда GPS молчит.
     @ObservationIgnored private var autoPauseTask: Task<Void, Never>?
+    /// Каждая точка GPS во время записи (и на стоянке) — для трансляции геопозиции друзьям.
+    @ObservationIgnored var onLocation: (@MainActor (GeoPoint, Double?, Date) -> Void)?
+    /// Поездка закончена или удалена — трансляцию пора выключить.
+    @ObservationIgnored var onEnd: (@MainActor () -> Void)?
 
     init(store: TripStore) {
         self.store = store
@@ -116,6 +120,7 @@ final class TripRecorder {
         )
         liveActivity.end()
         reset()
+        onEnd?()
     }
 
     /// «Удалить поездку»: запись и точки стираются.
@@ -124,6 +129,7 @@ final class TripRecorder {
         try? await store.discardActive()
         liveActivity.end()
         reset()
+        onEnd?()
     }
 
     /// После запуска приложения: продолжить незаконченную запись.
@@ -215,6 +221,11 @@ final class TripRecorder {
         }
         guard phase == .recording, let tripID, let location = update.location else { return }
         isLocationDenied = false
+        onLocation?(
+            GeoPoint(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude),
+            location.horizontalAccuracy >= 0 ? location.horizontalAccuracy : nil,
+            location.timestamp
+        )
         currentSpeed = location.speed >= 0 ? location.speed : nil
         currentAltitude = location.verticalAccuracy >= 0 ? location.altitude : nil
 

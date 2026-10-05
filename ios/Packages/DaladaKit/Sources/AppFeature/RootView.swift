@@ -14,6 +14,7 @@ public struct RootView: View {
     @State private var species: SpeciesStore
     @State private var sync: SyncEngine
     @State private var recorder: TripRecorder
+    @State private var liveShare: LiveShareController
     @State private var reactions: ReactionStore
     @State private var rules: RulesStore
     @State private var lists: ListsStore
@@ -44,7 +45,18 @@ public struct RootView: View {
         ))
         _species = State(initialValue: SpeciesStore(backend: environment.backend, cache: environment.cache))
         _sync = State(initialValue: background.engine)
-        _recorder = State(initialValue: TripRecorder(store: environment.database.trips))
+        // Трансляция геопозиции друзьям получает точки записи и выключается на финише.
+        let recorder = TripRecorder(store: environment.database.trips)
+        let live = LiveShareController(backend: environment.backend)
+        recorder.onLocation = { [weak live] point, accuracy, date in
+            live?.didRecord(point, accuracy: accuracy, at: date)
+        }
+        recorder.onEnd = { [weak live] in
+            guard let live else { return }
+            Task { await live.stop() }
+        }
+        _recorder = State(initialValue: recorder)
+        _liveShare = State(initialValue: live)
         _reactions = State(initialValue: ReactionStore(backend: environment.backend))
         _rules = State(initialValue: RulesStore(backend: environment.backend, cache: environment.cache))
         _lists = State(initialValue: ListsStore(
@@ -93,6 +105,7 @@ public struct RootView: View {
         .fullScreenCover(isPresented: $router.showsRecording) {
             TripRecordingView(environment: environment)
                 .environment(recorder)
+                .environment(liveShare)
                 .environment(session)
                 .environment(sync)
                 .environment(species)
@@ -187,6 +200,7 @@ public struct RootView: View {
         .environment(species)
         .environment(sync)
         .environment(recorder)
+        .environment(liveShare)
         .environment(reactions)
         .environment(rules)
         .environment(lists)
@@ -196,7 +210,14 @@ public struct RootView: View {
         // Правила нужны без сети (карта, форма улова): сохранённая копия и обновление.
         .task { await rules.loadIfNeeded() }
         // Незаконченная запись поездки (приложение закрыли или система выгрузила) продолжается.
-        .task { await recorder.restore() }
+        .task {
+            await recorder.restore()
+            // Трансляция переживает выгрузку приложения, пока идёт запись; без записи — выключаем.
+            await liveShare.restore()
+            if !recorder.isActive && liveShare.isSharing {
+                await liveShare.stop()
+            }
+        }
         // Офлайн-очередь: отправляем при появлении сети, возврате в приложение и входе.
         .task {
             for await _ in NetworkMonitor.becameAvailable() {

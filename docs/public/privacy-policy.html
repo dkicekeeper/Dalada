@@ -69,6 +69,7 @@
   <li><strong>OpenFreeMap</strong> — картографическая подложка: запросы карты содержат показываемую область и ваш IP-адрес, данные аккаунта не передаются.</li>
   <li><strong>Open-Meteo</strong> — погода у места: запрос содержит координаты места, округлённые примерно до километра, и ваш IP-адрес; данные аккаунта не передаются. Снимок погоды сохраняется в вашем отчёте и виден тем, кто видит отчёт.</li>
 </ul>
+<p>Трансляция геопозиции включается только вами во время записи поездки и видна только выбранным друзьям: сервер хранит одну последнюю точку, пока идёт трансляция (не дольше 12 часов), и стирает её после конца. Внутри ваших зон приватности точка друзьям не показывается.</p>
 <p>Уведомления (ответы в обсуждениях, запросы в друзья, комментарии, новые поездки и отчёты друзей, отзывы и отчёты в ваших публичных местах, решения редакции по вашим правкам и жалобам, запреты рядом с вашими местами) приходят через Apple Push Notification service: для этого мы храним токен устройства и язык телефона. Для уведомлений о запретах сервер сверяет координаты ваших и сохранённых мест с зонами запретов; эти координаты никому не передаются. Виды уведомлений и «тихие часы» настраиваются в профиле и хранятся вместе с ним. Напоминания о сборах — локальные уведомления, их создаёт сам телефон.</p>
 
 <h2>7. Сколько храним и как удалить</h2>
@@ -126,6 +127,7 @@
   <li><strong>OpenFreeMap</strong> — карта негізі: карта сұрауларында көрсетілетін аймақ пен IP-мекенжайыңыз болады, аккаунт деректері берілмейді.</li>
   <li><strong>Open-Meteo</strong> — орындағы ауа райы: сұрауда шамамен бір километрге дейін дөңгелектенген орын координаттары мен IP-мекенжайыңыз болады; аккаунт деректері берілмейді. Ауа райының көрінісі есебіңізде сақталады және есепті көретіндерге көрінеді.</li>
 </ul>
+<p>Геолокацияны көрсетуді сапар жазылып жатқанда тек өзіңіз қосасыз және оны тек таңдалған достар көреді: көрсету жүріп жатқанда (12 сағаттан аспай) сервер бір соңғы нүктені сақтайды және аяқталған соң өшіреді. Құпиялық аймақтарыңыздың ішінде нүкте достарға көрсетілмейді.</p>
 <p>Хабарландырулар (талқылаудағы жауаптар, достық сұраулары, түсініктемелер, достардың жаңа сапарлары мен есептері, жария орындарыңыздағы пікірлер мен есептер, түзетулеріңіз бен шағымдарыңыз бойынша редакция шешімдері, орындарыңыз маңындағы тыйымдар) Apple Push Notification service арқылы келеді: ол үшін құрылғы токені мен телефон тілін сақтаймыз. Тыйымдар туралы хабарландырулар үшін сервер сіздің және сақталған орындарыңыздың координаттарын тыйым аймақтарымен салыстырады; бұл координаттар ешкімге берілмейді. Хабарландыру түрлері мен «тыныш сағаттар» профильде бапталады және онымен бірге сақталады. Жиналу туралы еске салулар — телефонның өзі жасайтын жергілікті хабарландырулар.</p>
 
 <h2>7. Қанша сақтаймыз және қалай жоюға болады</h2>
@@ -183,6 +185,7 @@
   <li><strong>OpenFreeMap</strong> — base map: map requests include the area shown and your IP address; no account data is sent.</li>
   <li><strong>Open-Meteo</strong> — weather at a place: the request includes the place coordinates rounded to about a kilometre and your IP address; no account data is sent. A weather snapshot is saved with your report and is visible to whoever can see the report.</li>
 </ul>
+<p>Live location sharing is turned on only by you while a trip is recording and is visible only to the friends you choose: the server keeps a single latest point while sharing is on (for up to 12 hours) and erases it afterwards. Inside your privacy zones the point is not shown to friends.</p>
 <p>Notifications (discussion replies, friend requests, comments, friends’ new trips and reports, reviews and reports at your public places, the team’s decisions on your suggested edits and reports, bans near your places) are delivered through the Apple Push Notification service; for this we store the device token and the phone’s language. For ban notifications the server matches the coordinates of your own and saved places against ban zones; these coordinates are not shared with anyone. Notification types and quiet hours are set in your profile and stored with it. Packing reminders are local notifications created by the phone itself.</p>
 
 <h2>7. Retention and deletion</h2>

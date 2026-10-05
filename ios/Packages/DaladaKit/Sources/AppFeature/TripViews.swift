@@ -224,6 +224,8 @@ struct TripRecordingView: View {
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
             }
+            // Показывать друзьям, где я, пока идёт запись.
+            LiveShareRow(environment: environment)
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 StatTile(
                     title: String(localized: "trip.stat.time"),
