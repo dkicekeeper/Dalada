@@ -31,9 +31,10 @@ enum MapPlaceIcons {
         }
     }
 
-    /// Цвет точки по атрибуту `type` фичи.
+    /// Цвет точки по атрибуту `type` фичи. В MapLibre 6 функция — `MLN_MATCH` (`MGL_MATCH` из Mapbox
+    /// бросает исключение при разборе — так падала сборка 124).
     static func colorExpression() -> NSExpression {
-        var format = "MGL_MATCH(type"
+        var format = "MLN_MATCH(type"
         var arguments: [Any] = []
         for type in PlaceType.allCases {
             format += ", %@, %@"

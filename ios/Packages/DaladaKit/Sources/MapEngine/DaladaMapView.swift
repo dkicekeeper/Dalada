@@ -331,34 +331,45 @@ public struct DaladaMapView: UIViewRepresentable {
 
             let source = MLNShapeSource(identifier: Layer.source, shape: nil, options: nil)
             style.addSource(source)
-
-            let areas = MLNFillStyleLayer(identifier: Layer.areas, source: source)
-            areas.predicate = NSPredicate(format: "kind == 'area'")
-            areas.fillColor = NSExpression(forConstantValue: UIColor.systemIndigo)
-            areas.fillOpacity = NSExpression(forConstantValue: 0.18)
-            areas.fillOutlineColor = NSExpression(forConstantValue: UIColor.systemIndigo)
-            style.addLayer(areas)
-
-            // Мелкий масштаб: точки цвета типа; свои — с оранжевой обводкой.
-            let points = MLNCircleStyleLayer(identifier: Layer.points, source: source)
-            points.predicate = NSPredicate(format: "kind == 'place' AND icon != nil")
-            points.maximumZoomLevel = Float(MapPlaceIcons.minZoom)
-            Self.stylePoints(points, color: MapPlaceIcons.colorExpression())
-            style.addLayer(points)
-
-            let plainPoints = MLNCircleStyleLayer(identifier: Layer.plainPoints, source: source)
-            plainPoints.predicate = NSPredicate(format: "kind == 'place' AND icon == nil")
-            Self.stylePoints(plainPoints, color: NSExpression(forConstantValue: UIColor.systemIndigo))
-            style.addLayer(plainPoints)
-
-            // Крупный масштаб: значок типа (свои — с оранжевой обводкой).
             for type in PlaceType.allCases {
                 for own in [false, true] {
                     style.setImage(MapPlaceIcons.image(for: type, own: own), forName: MapPlaceIcons.name(type, own: own))
                 }
             }
+            for layer in Self.placeLayers(source: source) {
+                style.addLayer(layer)
+            }
+
+            self.source = source
+            renderedPlaces = nil
+            render()
+        }
+
+        /// Слои мест снизу вверх: круги приблизительных мест, точки (мелкий масштаб), точки без типа,
+        /// значки типов, названия, метка нового места. Значки (`MapPlaceIcons`) добавляются в стиль отдельно.
+        /// Свойства переводятся в выражения MapLibre сразу — неверное выражение бросает исключение уже
+        /// здесь, поэтому функцию проверяет тест MapEngineTests.
+        static func placeLayers(source: MLNSource) -> [MLNStyleLayer] {
+            let areas = MLNFillStyleLayer(identifier: Layer.areas, source: source)
+            areas.predicate = NSPredicate(format: "kind == 'area'")
+            areas.fillColor = NSExpression(forConstantValue: UIColor.systemIndigo)
+            areas.fillOpacity = NSExpression(forConstantValue: 0.18)
+            areas.fillOutlineColor = NSExpression(forConstantValue: UIColor.systemIndigo)
+
+            // Мелкий масштаб: точки цвета типа; свои — с оранжевой обводкой.
+            let points = MLNCircleStyleLayer(identifier: Layer.points, source: source)
+            points.predicate = NSPredicate(format: "kind == 'place'")
+            points.maximumZoomLevel = Float(MapPlaceIcons.minZoom)
+            stylePoints(points, color: MapPlaceIcons.colorExpression())
+
+            // Точки без типа (центр зоны приватности) — при любом масштабе.
+            let plainPoints = MLNCircleStyleLayer(identifier: Layer.plainPoints, source: source)
+            plainPoints.predicate = NSPredicate(format: "kind == 'plain'")
+            stylePoints(plainPoints, color: NSExpression(forConstantValue: UIColor.systemIndigo))
+
+            // Крупный масштаб: значок типа (свои — с оранжевой обводкой).
             let icons = MLNSymbolStyleLayer(identifier: Layer.icons, source: source)
-            icons.predicate = NSPredicate(format: "kind == 'place' AND icon != nil")
+            icons.predicate = NSPredicate(format: "kind == 'place'")
             icons.minimumZoomLevel = Float(MapPlaceIcons.minZoom)
             icons.iconImageName = NSExpression(forKeyPath: "icon")
             icons.iconScale = NSExpression(
@@ -367,11 +378,10 @@ public struct DaladaMapView: UIViewRepresentable {
             )
             icons.iconAllowsOverlap = NSExpression(forConstantValue: true)
             icons.iconIgnoresPlacement = NSExpression(forConstantValue: true)
-            style.addLayer(icons)
 
             // Названия — ещё крупнее; не помещается — не показываем.
             let labels = MLNSymbolStyleLayer(identifier: Layer.labels, source: source)
-            labels.predicate = NSPredicate(format: "kind == 'place' AND icon != nil")
+            labels.predicate = NSPredicate(format: "kind == 'place'")
             labels.minimumZoomLevel = Float(MapPlaceIcons.labelZoom)
             labels.text = NSExpression(forKeyPath: "name")
             labels.textFontNames = NSExpression(forConstantValue: ["Noto Sans Regular"])
@@ -382,7 +392,6 @@ public struct DaladaMapView: UIViewRepresentable {
             labels.textAnchor = NSExpression(forConstantValue: "top")
             labels.textOffset = NSExpression(forConstantValue: NSValue(cgVector: CGVector(dx: 0, dy: 1.3)))
             labels.maximumTextWidth = NSExpression(forConstantValue: 9)
-            style.addLayer(labels)
 
             let draft = MLNCircleStyleLayer(identifier: Layer.draft, source: source)
             draft.predicate = NSPredicate(format: "kind == 'draft'")
@@ -390,11 +399,8 @@ public struct DaladaMapView: UIViewRepresentable {
             draft.circleColor = NSExpression(forConstantValue: UIColor.systemRed)
             draft.circleStrokeColor = NSExpression(forConstantValue: UIColor.white)
             draft.circleStrokeWidth = NSExpression(forConstantValue: 3)
-            style.addLayer(draft)
 
-            self.source = source
-            renderedPlaces = nil
-            render()
+            return [areas, points, plainPoints, icons, labels, draft]
         }
 
         static func stylePoints(_ layer: MLNCircleStyleLayer, color: NSExpression) {
@@ -419,8 +425,10 @@ public struct DaladaMapView: UIViewRepresentable {
                 }
                 let point = MLNPointFeature()
                 point.coordinate = place.coordinate.clCoordinate
-                var attributes: [String: Any] = ["kind": "place", "id": place.id.uuidString, "own": place.isOwn]
+                // «place» — место с типом (точка → значок), «plain» — точка без типа.
+                var attributes: [String: Any] = ["kind": "plain", "id": place.id.uuidString, "own": place.isOwn]
                 if let type = place.type {
+                    attributes["kind"] = "place"
                     attributes["type"] = type.rawValue
                     attributes["icon"] = MapPlaceIcons.name(type, own: place.isOwn)
                     attributes["name"] = place.name ?? ""
@@ -448,7 +456,7 @@ public struct DaladaMapView: UIViewRepresentable {
                 styleLayerIdentifiers: [Layer.icons, Layer.points, Layer.plainPoints, Layer.areas]
             )
             // Точка важнее круга: если попали в обе, открываем точку.
-            let hit = hits.first { ($0.attribute(forKey: "kind") as? String) == "place" } ?? hits.first
+            let hit = hits.first { ($0.attribute(forKey: "kind") as? String) != "area" } ?? hits.first
             if let idString = hit?.attribute(forKey: "id") as? String, let id = UUID(uuidString: idString) {
                 parent.onPlaceTap(id)
                 return

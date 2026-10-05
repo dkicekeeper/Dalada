@@ -95,6 +95,7 @@ let package = Package(
             dependencies: ["Persistence", .product(name: "GRDB", package: "GRDB.swift")]
         ),
         .testTarget(name: "SyncTests", dependencies: ["Sync", "Persistence"]),
+        .testTarget(name: "MapEngineTests", dependencies: ["MapEngine"]),
     ],
     swiftLanguageModes: [.v6]
 )
