@@ -1,6 +1,7 @@
 Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, post a report with a catch and a photo (I’m here on a place card), record a trip (Start a trip on the map), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
 New:
+• Easier navigation: Profile has Trips · Catches · Places · Photos chips; a trip shows its note on top and tighter stats; bigger buttons under posts and Reply on discussions; map Layers is a sheet; a hint that a long press adds a place; Tips is split into Before the trip and Know-how and articles; empty place tabs say what to do next.
 • The place card opens to full height when you pick a tab (Reports, Reviews, Discussions, Info). Your catches in Profile → Catches have a “…” button to edit or delete them.
 • A shorter place card: the essentials and bans on top; Reports, Reviews, Discussions and Info open from chips, with a line saying what each one is. Trip pages have a clear Comments button, “…” on your own trip edits or deletes it, and “…” on your report now has Edit report. A My location button on the map and a settings gear in Profile.
 • You can now edit and delete your own place, report and catch: the “…” menu on your place card (edit or delete the place), “…” → Delete report on your report, and the “…” button on a catch in Profile → Catches.
@@ -19,8 +20,7 @@ New:
 • Auto-pause: stand still for 10 minutes and recording pauses, then resumes when you move; distance no longer grows at a stop. Set the time in profile settings.
 • Map: zoom in and dots turn into icons by place type (lake, spring, campsite…), closer still — place names. The map now fills the whole screen, under the tab bar.
 • Achievements: Profile → Achievements at the bottom — 10 badges for trips, catches, places and contributions, each showing how far you are. New badges come with a congratulations screen.
-• Notifications: Profile → tap the header with your name → Notifications — choose what to get (replies, friends, comments, bans near your places, reviews and reports at your places) and set quiet hours.
+• Notifications: Profile → the gear → Notifications — choose what to get (replies, friends, comments, bans near your places, reviews and reports at your places) and set quiet hours.
 • Pictures for Stories and Telegram: Share on your trip page, on a catch in My catches and on a public place card. Stories or post format.
-• Home — a feed of posts: your and your friends’ trips with the track, reports with photos, new places and reviews, fresh discussions.
 
 Feedback: the Send Beta Feedback button in TestFlight or dakacom@gmail.com.
