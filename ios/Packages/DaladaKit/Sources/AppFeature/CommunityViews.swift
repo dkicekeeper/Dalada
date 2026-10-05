@@ -638,6 +638,8 @@ struct ThreadView: View {
     @State private var isSending = false
     @State private var sendError: String?
     @State private var confirmsDeleteThread = false
+    /// Подписка на ответы: `nil` — гость или ещё не загружена.
+    @State private var isSubscribed: Bool?
     @FocusState private var isReplyFocused: Bool
 
     var body: some View {
@@ -671,6 +673,17 @@ struct ThreadView: View {
         .navigationTitle(Text(verbatim: thread?.placeName ?? ""))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            if thread != nil, let isSubscribed {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Task { await setSubscribed(!isSubscribed) }
+                    } label: {
+                        Image(systemName: isSubscribed ? "bell.fill" : "bell")
+                    }
+                    .accessibilityLabel(Text(isSubscribed ? "threads.unsubscribe" : "threads.subscribe"))
+                    .sensoryFeedback(.selection, trigger: isSubscribed)
+                }
+            }
             if let thread {
                 ToolbarItem(placement: .topBarTrailing) {
                     if thread.isOwn {
@@ -845,8 +858,29 @@ struct ThreadView: View {
             hasMore = page.count >= Self.pageSize
             loadError = nil
             seed(page)
+            await loadSubscription()
         } catch {
             loadError = error.localizedDescription
+        }
+    }
+
+    private func loadSubscription() async {
+        guard session.profile != nil, let backend = environment.backend,
+              let state = try? await backend.threadSubscription(threadID)
+        else { return }
+        isSubscribed = state
+    }
+
+    private func setSubscribed(_ value: Bool) async {
+        guard let backend = environment.backend else { return }
+        let previous = isSubscribed
+        isSubscribed = value
+        do {
+            isSubscribed = try await backend.setThreadSubscription(threadID, subscribed: value)
+            if value { Task { await NotificationPrimer.shared.offer() } }
+        } catch {
+            isSubscribed = previous
+            sendError = CommunityMessage.text(for: error)
         }
     }
 
@@ -871,6 +905,8 @@ struct ThreadView: View {
             replyQuote = nil
             replyID = UUID()
             sendError = nil
+            // Ответивший подписан на ответы, если сам не отписывался.
+            await loadSubscription()
             // Новый ответ — последний: догружаем всё после последнего показанного.
             hasMore = true
             if posts.isEmpty {

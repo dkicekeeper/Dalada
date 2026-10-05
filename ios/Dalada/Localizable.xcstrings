@@ -17817,6 +17817,29 @@
         }
       }
     },
+    "threads.subscribe" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get notified of replies"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жауаптарға жазылу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подписаться на ответы"
+          }
+        }
+      }
+    },
     "threads.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17836,6 +17859,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Обсуждения"
+          }
+        }
+      }
+    },
+    "threads.unsubscribe" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop reply notifications"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жауаптардан бас тарту"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отписаться от ответов"
           }
         }
       }

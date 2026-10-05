@@ -143,6 +143,34 @@ extension BackendClient {
             .eq("id", value: postID)
             .execute()
     }
+
+    /// Приходят ли уведомления об ответах. По умолчанию — автору и всем, кто отвечал.
+    /// `nil` — обсуждение не видно.
+    public func threadSubscription(_ threadID: UUID) async throws -> Bool? {
+        try await supabase
+            .rpc("thread_subscription", params: ["p_thread": threadID])
+            .execute()
+            .value
+    }
+
+    /// Подписаться на ответы или отписаться; возвращает новое состояние.
+    @discardableResult
+    public func setThreadSubscription(_ threadID: UUID, subscribed: Bool) async throws -> Bool {
+        try await supabase
+            .rpc("set_thread_subscription", params: ThreadSubscriptionParams(thread: threadID, subscribed: subscribed))
+            .execute()
+            .value
+    }
+}
+
+struct ThreadSubscriptionParams: Encodable, Sendable {
+    let thread: UUID
+    let subscribed: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case thread = "p_thread"
+        case subscribed = "p_subscribed"
+    }
 }
 
 struct PlaceThreadsParams: Encodable, Sendable {
