@@ -1,8 +1,10 @@
 Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, check in with a catch and a photo, record a trip (Start a trip on the map), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
 New:
+• Tag friends in a trip: “Who was with you” on the finish screen or “Tag friends” on the trip page. They get an invitation — after “Accept” the trip appears in their trips.
+• Personal records: Profile → Catches → All — the heaviest and longest catch of each species. Beat a record and you get a congratulation right after the report.
+• Auto-pause: stand still for 10 minutes and recording pauses, then resumes when you move; distance no longer grows at a stop. Set the time in profile settings.
 • Place dots on the map are bigger and grow as you zoom in.
-• Fixed: build 124 closed when opening the Map tab.
 • Photos for editorial places: Kolsai, Big Almaty Lake, Issyk, Charyn, waterfalls and more — in the place card and as the cover in Places, with author and licence.
 • Map: zoom in and dots turn into icons by place type (lake, spring, campsite…), closer still — place names. The map now fills the whole screen, under the tab bar.
 • Achievements: Profile → Achievements at the bottom — 10 badges for trips, catches, places and contributions, each showing how far you are. New badges come with a congratulations screen.
