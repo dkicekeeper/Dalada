@@ -1,0 +1,130 @@
+[
+  {
+    "id": "ile_alatau",
+    "kind": "national_park",
+    "name": ["Иле-Алатауский национальный парк", "Іле Алатауы ұлттық паркі", "Ile-Alatau National Park"],
+    "info": [
+      "Въезд платный: оплата на КПП парка через Kaspi QR. Тариф — по приказу Министра экологии № 232, в МРП.",
+      "Кіру ақылы: саябақтың өткізу бекетінде Kaspi QR арқылы төленеді. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен.",
+      "Paid entry: pay at the park checkpoint with Kaspi QR. The fee is set in MCI by order No. 232 of the Minister of Ecology."
+    ],
+    "fees": {},
+    "website_url": "https://www.ile-alatau.kz/ru/",
+    "tickets_url": null,
+    "source_title": "Сайт парка: «Тарифы парка»",
+    "source_url": "https://www.ile-alatau.kz/ru/tarify-parka/",
+    "sort_order": 10
+  },
+  {
+    "id": "almaty_reserve",
+    "kind": "nature_reserve",
+    "name": ["Алматинский заповедник", "Алматы қорығы", "Almaty Nature Reserve"],
+    "info": [
+      "Государственный природный заповедник: свободного посещения нет, рыбалка и охота запрещены. Пройти можно только с разрешения администрации заповедника.",
+      "Мемлекеттік табиғи қорық: еркін кіруге болмайды, балық және аң аулауға тыйым салынған. Тек қорық әкімшілігінің рұқсатымен кіруге болады.",
+      "State nature reserve: no free access, fishing and hunting are banned. Entry only with permission from the reserve administration."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Закон РК «Об особо охраняемых природных территориях» от 7 июля 2006 года № 175",
+    "source_url": "https://adilet.zan.kz/rus/docs/Z060000175_",
+    "sort_order": 20
+  },
+  {
+    "id": "kolsai",
+    "kind": "national_park",
+    "name": ["Национальный парк «Кольсайские озёра»", "«Көлсай көлдері» ұлттық паркі", "Kolsai Lakes National Park"],
+    "info": [
+      "Въезд платный, билеты — на сайте парка и на КПП. Любительская рыбалка — отдельная плата: не больше 1 кг улова и одна удочка на человека в сутки.",
+      "Кіру ақылы, билеттер — саябақ сайтында және өткізу бекетінде. Әуесқой балық аулау — бөлек төлем: адамға тәулігіне 1 кг-нан аспайтын олжа және бір қармақ.",
+      "Paid entry, tickets on the park website and at the checkpoint. Amateur fishing is paid separately: up to 1 kg of catch and one rod per person per day."
+    ],
+    "fees": {"person": 0.2, "car": 0.7, "fishing": 0.3},
+    "website_url": "https://kolsai-koldery.kz/",
+    "tickets_url": "https://kolsai-koldery.kz/tickets/list",
+    "source_title": "Тарифы ГНПП «Көлсай көлдері» (приказ Министра экологии № 232)",
+    "source_url": "https://kolsai-koldery.kz/tickets/list",
+    "sort_order": 30
+  },
+  {
+    "id": "charyn",
+    "kind": "national_park",
+    "name": ["Чарынский национальный парк", "Шарын ұлттық паркі", "Charyn National Park"],
+    "info": [
+      "Въезд платный — на КПП парка. Тариф — по приказу Министра экологии № 232, в МРП.",
+      "Кіру ақылы — саябақтың өткізу бекетінде. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен.",
+      "Paid entry at the park checkpoint. The fee is set in MCI by order No. 232 of the Minister of Ecology."
+    ],
+    "fees": {},
+    "website_url": "https://charyn-park.kz/ru/",
+    "tickets_url": null,
+    "source_title": "Приказ Министра экологии и природных ресурсов РК от 2 октября 2024 года № 232",
+    "source_url": "https://adilet.zan.kz/rus/docs/V2400035202",
+    "sort_order": 40
+  },
+  {
+    "id": "altyn_emel",
+    "kind": "national_park",
+    "name": ["Национальный парк «Алтын-Эмель»", "«Алтынемел» ұлттық паркі", "Altyn-Emel National Park"],
+    "info": [
+      "Въезд платный — на КПП парка. Тариф — по приказу Министра экологии № 232, в МРП.",
+      "Кіру ақылы — саябақтың өткізу бекетінде. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен.",
+      "Paid entry at the park checkpoint. The fee is set in MCI by order No. 232 of the Minister of Ecology."
+    ],
+    "fees": {},
+    "website_url": "https://altyn-emel.kz/ru/",
+    "tickets_url": null,
+    "source_title": "Приказ Министра экологии и природных ресурсов РК от 2 октября 2024 года № 232",
+    "source_url": "https://adilet.zan.kz/rus/docs/V2400035202",
+    "sort_order": 50
+  },
+  {
+    "id": "zhongar_alatau",
+    "kind": "national_park",
+    "name": ["Жонгар-Алатауский национальный парк", "Жоңғар Алатауы ұлттық паркі", "Zhongar-Alatau National Park"],
+    "info": [
+      "Въезд платный — на КПП или на сайте парка («Приобретение билета»).",
+      "Кіру ақылы — өткізу бекетінде немесе саябақ сайтында («Билет сатып алу»).",
+      "Paid entry at the checkpoint or on the park website (“Buy a ticket”)."
+    ],
+    "fees": {"person": 0.2, "car": 0.6},
+    "website_url": "https://zhongar-alatau.kz/ru/",
+    "tickets_url": "https://zhongar-alatau.kz/ru/funkchii-priobreteniya-bileta/",
+    "source_title": "Тарифный план ГНПП «Жоңғар-Алатауы» (приказ Министра экологии № 232)",
+    "source_url": "https://zhongar-alatau.kz/ru/category/tarifnyi-plan/",
+    "sort_order": 60
+  },
+  {
+    "id": "border_strip_cn",
+    "kind": "border_strip",
+    "name": ["Пограничная полоса с Китаем", "Қытаймен шекара белдеуі", "Border strip with China"],
+    "info": [
+      "2 км от государственной границы. Вход — только с удостоверением личности и специальным пропуском Пограничной службы. Пограничная зона вдоль Китая шире (территории приграничных округов) и на карте не показана: иностранцам туда нужен пропуск МВД.",
+      "Мемлекеттік шекарадан 2 км. Тек жеке куәлікпен және Шекара қызметінің арнайы рұқсатнамасымен кіруге болады. Қытай бойындағы шекаралық аймақ кеңірек (шекара маңындағы округтер) және картада көрсетілмеген: шетелдіктерге ІІМ рұқсатнамасы керек.",
+      "2 km from the state border. Entry only with an ID and a special pass from the Border Service. The border zone along China is wider (border districts) and is not shown on the map: foreigners need a pass from the Ministry of Internal Affairs."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Постановление Правительства РК от 16 апреля 2014 года № 356",
+    "source_url": "https://adilet.zan.kz/rus/docs/P1400000356",
+    "sort_order": 70
+  },
+  {
+    "id": "border_zone_kg",
+    "kind": "border_zone",
+    "name": ["Пограничная зона с Кыргызстаном", "Қырғызстанмен шекаралық аймақ", "Border zone with Kyrgyzstan"],
+    "info": [
+      "До 25 км от пограничной полосы (на карте — приблизительно). Возьмите удостоверение личности; иностранцам нужен пропуск МВД. У самой границы — пограничная полоса 100 м: вход только по пропуску Пограничной службы. Часть мест (например, Кольсайские озёра, Шымбулак) — без режимных ограничений, перечень — в постановлении № 356.",
+      "Шекара белдеуінен 25 км-ге дейін (картада — шамамен). Жеке куәлікті алыңыз; шетелдіктерге ІІМ рұқсатнамасы керек. Шекараның өзінде — 100 м шекара белдеуі: тек Шекара қызметінің рұқсатнамасымен кіруге болады. Кейбір орындар (мысалы, Көлсай көлдері, Шымбұлақ) режимдік шектеусіз, тізімі — № 356 қаулыда.",
+      "Up to 25 km from the border strip (approximate on the map). Carry your ID; foreigners need a pass from the Ministry of Internal Affairs. Right at the border there is a 100 m border strip: entry only with a Border Service pass. Some places (for example, Kolsai Lakes and Shymbulak) have no regime restrictions; the list is in decree No. 356."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Постановление Правительства РК от 16 апреля 2014 года № 356",
+    "source_url": "https://adilet.zan.kz/rus/docs/P1400000356",
+    "sort_order": 80
+  }
+]
