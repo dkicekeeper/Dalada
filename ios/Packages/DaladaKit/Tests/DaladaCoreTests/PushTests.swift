@@ -38,4 +38,9 @@ struct PushTests {
         #expect(TripInviteLink.token(from: URL(string: "dalada://trip/" + token)!) == nil)
         #expect(WebLink.tripInvite(token).absoluteString == "https://dkicekeeper.github.io/Dalada/s/?invite=" + token)
     }
+
+    @Test func placeCommentsLink() throws {
+        let url = try #require(URL(string: "dalada://comments/place/aaaaaaaa-0000-0000-0000-000000000001"))
+        #expect(CommentsLink.key(from: url)?.kind == .place)
+    }
 }

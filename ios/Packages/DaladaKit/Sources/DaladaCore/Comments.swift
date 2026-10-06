@@ -67,10 +67,10 @@ public struct CommentDraft: Equatable, Sendable {
 
     public var isValid: Bool { !trimmedBody.isEmpty && trimmedBody.count <= Self.maxLength }
 
-    /// Комментировать можно поездку, отчёт и отзыв (как в базе).
+    /// Комментировать можно поездку, отчёт, отзыв и непубличное место (как в базе).
     public static func canComment(_ target: ReactionTarget) -> Bool {
         switch target {
-        case .trip, .checkin, .review: true
+        case .trip, .checkin, .review, .place: true
         case .post: false
         }
     }

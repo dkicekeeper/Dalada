@@ -14195,6 +14195,29 @@
         }
       }
     },
+    "place.notes.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No notes yet."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Әзірге жазба жоқ."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заметок пока нет."
+          }
+        }
+      }
+    },
     "place.ownMenu" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -15195,6 +15218,75 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "place.tab.notes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notes"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жазбалар"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заметки"
+          }
+        }
+      }
+    },
+    "place.tab.notes.hint.friends" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everyone who can see the place sees them: talk it over with friends, without public reviews."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Орынды көретіндер көреді: достармен талқылаңыз, барлығына арналған пікірсіз."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видят те, кому видно место: обсудите с друзьями, без отзывов для всех."
+          }
+        }
+      }
+    },
+    "place.tab.notes.hint.private" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only you see them — a diary for the place: bites, the road, what to bring next time."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Тек сіз көресіз — орын күнделігі: шабақ, жол, келесіде не алу керек."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видите только вы — дневник места: клёв, дорога, что взять в следующий раз."
           }
         }
       }

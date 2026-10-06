@@ -372,6 +372,8 @@ struct PlaceCardView: View {
         case reports
         case reviews
         case threads
+        /// Непубличное место: заметки (у «только я» — дневник, у «друзья» — разговор с друзьями).
+        case notes
         case info
 
         var id: String { rawValue }
@@ -381,6 +383,7 @@ struct PlaceCardView: View {
             case .reports: "place.tab.reports"
             case .reviews: "reviews.title"
             case .threads: "threads.title"
+            case .notes: "place.tab.notes"
             case .info: "place.info.title"
             }
         }
@@ -390,6 +393,7 @@ struct PlaceCardView: View {
             case .reports: "clock"
             case .reviews: "star.bubble"
             case .threads: "bubble.left.and.bubble.right"
+            case .notes: "note.text"
             case .info: "info.circle"
             }
         }
@@ -400,7 +404,7 @@ struct PlaceCardView: View {
             case .reports: "place.tab.reports.hint"
             case .reviews: "place.tab.reviews.hint"
             case .threads: "place.tab.threads.hint"
-            case .info: nil
+            case .notes, .info: nil
             }
         }
     }
@@ -409,6 +413,8 @@ struct PlaceCardView: View {
         var tabs: [PlaceTab] = [.reports]
         if place.visibility == .public && place.status == .published && !isShowingSavedCopy {
             tabs += [.reviews, .threads]
+        } else if place.visibility != .public && !isShowingSavedCopy && session.profile != nil {
+            tabs.append(.notes)
         }
         tabs.append(.info)
         return tabs
@@ -445,6 +451,11 @@ struct PlaceCardView: View {
                 Text(String(localized: hint))
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
+            } else if currentTab(place) == .notes {
+                // Кто увидит заметки — по видимости места.
+                Text(LocalizedStringKey(place.visibility == .private ? "place.tab.notes.hint.private" : "place.tab.notes.hint.friends"))
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textSecondary)
             }
         }
     }
@@ -458,6 +469,8 @@ struct PlaceCardView: View {
             PlaceReviewsSection(place: place, environment: environment, showsHeader: false)
         case .threads:
             PlaceThreadsSection(place: place, environment: environment, showsHeader: false)
+        case .notes:
+            PlaceNotesSection(placeID: place.id)
         case .info:
             infoTab(place)
         }
@@ -790,3 +803,24 @@ struct ReportRow: View {
         ConditionsText.make(report.conditions)
     }
 }
+
+/// Заметки непубличного места: сколько и «Открыть» (комментарии к месту).
+struct PlaceNotesSection: View {
+    let placeID: UUID
+
+    @Environment(ReactionStore.self) private var reactions
+
+    var body: some View {
+        let key = ReactionKey(.place, placeID)
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            if reactions.commentCount(for: key) == 0 {
+                Text("place.notes.empty")
+                    .font(AppTypography.bodySmall)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+            CommentsButton(key: key, isProminent: true)
+        }
+        .task(id: placeID) { await reactions.loadCommentCounts([key]) }
+    }
+}
+

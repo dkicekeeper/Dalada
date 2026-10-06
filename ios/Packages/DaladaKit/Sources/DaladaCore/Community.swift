@@ -67,6 +67,8 @@ public enum ReactionTarget: String, Codable, Sendable {
     case checkin
     case review
     case post
+    /// Непубличное место — только для комментариев (дневник места, разговор с друзьями).
+    case place
 }
 
 /// Объект реакции.

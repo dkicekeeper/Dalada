@@ -200,3 +200,12 @@ Deno.test("друг на выезде, общие сборы и смотрите
   assertEquals(steward.body, "«Залив»: 60 күндегі расталған есептер сізде ең көп.");
   assertEquals(steward.url, "dalada://place/aaaaaaaa-0000-0000-0000-000000000001");
 });
+
+Deno.test("комментарий в заметках места — к комментариям места", () => {
+  const message = buildMessage({
+    ...reply,
+    kind: "comment",
+    payload: { actor: "@bob", username: "bob", target_kind: "place", target_id: "aaaaaaaa-0000-0000-0000-000000000001", snippet: "Дорогу размыло" },
+  });
+  assertEquals(message.url, "dalada://comments/place/aaaaaaaa-0000-0000-0000-000000000001");
+});
