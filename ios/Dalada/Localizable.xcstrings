@@ -8629,6 +8629,29 @@
         }
       }
     },
+    "map.layers.photos" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My photos"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Менің фотоларым"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мои фото"
+          }
+        }
+      }
+    },
     "map.layers.places" : {
       "extractionState" : "manual",
       "localizations" : {

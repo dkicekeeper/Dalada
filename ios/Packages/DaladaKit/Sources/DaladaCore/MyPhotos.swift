@@ -71,3 +71,34 @@ public struct PhotoMonth: Identifiable, Hashable, Sendable {
         return months
     }
 }
+
+/// Своё фото с точкой — для слоя карты «Мои фото» (`my_photo_points`): точка отчёта, иначе места.
+public struct MyPhotoPoint: Codable, Identifiable, Hashable, Sendable {
+    public let photo: MyPhoto
+    public let coordinate: GeoPoint
+
+    public var id: UUID { photo.id }
+
+    public init(photo: MyPhoto, coordinate: GeoPoint) {
+        self.photo = photo
+        self.coordinate = coordinate
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case lon
+        case lat
+    }
+
+    public init(from decoder: any Decoder) throws {
+        photo = try MyPhoto(from: decoder)
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        coordinate = GeoPoint(latitude: try c.decode(Double.self, forKey: .lat), longitude: try c.decode(Double.self, forKey: .lon))
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        try photo.encode(to: encoder)
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(coordinate.longitude, forKey: .lon)
+        try c.encode(coordinate.latitude, forKey: .lat)
+    }
+}

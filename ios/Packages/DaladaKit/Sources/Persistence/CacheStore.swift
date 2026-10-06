@@ -111,6 +111,11 @@ public struct CacheKey: Hashable, Sendable {
     }
 
     /// Треки своих поездок — слой «Мои треки» на карте без сети.
+    /// Свои фото с точками — слой «Мои фото».
+    public static func myPhotoPoints(_ user: UUID) -> CacheKey {
+        CacheKey(rawValue: userPrefix(user) + "photo-points")
+    }
+
     public static func myTracks(_ user: UUID) -> CacheKey {
         CacheKey(rawValue: userPrefix(user) + "my_tracks")
     }

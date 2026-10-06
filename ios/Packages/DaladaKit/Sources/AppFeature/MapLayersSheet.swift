@@ -14,6 +14,7 @@ struct MapLayersSheet: View {
     @AppStorage("map.showsParks") private var showsParks = true
     @AppStorage("map.showsBorder") private var showsBorder = false
     @AppStorage("map.showsTracks") private var showsTracks = false
+    @AppStorage("map.showsPhotos") private var showsPhotos = false
     @AppStorage("map.showsOwnPlaces") private var showsOwnPlaces = true
     @AppStorage("map.showsOtherPlaces") private var showsOtherPlaces = true
     @AppStorage("map.hiddenTypes") private var hiddenTypesStorage = ""
@@ -54,6 +55,9 @@ struct MapLayersSheet: View {
                     if isSignedIn {
                         Toggle(isOn: $showsTracks) {
                             Label("map.layers.tracks", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
+                        }
+                        Toggle(isOn: $showsPhotos) {
+                            Label("map.layers.photos", systemImage: "camera")
                         }
                     }
                 }

@@ -27,3 +27,10 @@ struct MyPhotosParams: Encodable, Sendable {
         try c.encodeIfPresent(after?.id, forKey: .after)
     }
 }
+
+extension BackendClient {
+    /// Свои фото с точками — слой карты «Мои фото».
+    public func myPhotoPoints() async throws -> [MyPhotoPoint] {
+        try await supabase.rpc("my_photo_points").execute().value
+    }
+}

@@ -65,6 +65,17 @@ public struct MapRuleArea: Hashable, Sendable, Identifiable {
     }
 }
 
+/// Своё фото на карте (слой «Мои фото»): точка — где был отчёт или место.
+public struct MapPhoto: Hashable, Sendable, Identifiable {
+    public let id: UUID
+    public let coordinate: GeoPoint
+
+    public init(id: UUID, coordinate: GeoPoint) {
+        self.id = id
+        self.coordinate = coordinate
+    }
+}
+
 /// Как ведёт себя камера карты.
 public enum MapCameraMode: Hashable, Sendable {
     /// Пользователь двигает карту сам.
@@ -99,9 +110,12 @@ public struct DaladaMapView: UIViewRepresentable {
     let locateRequest: Int
     /// Зоны правил (запреты) — под местами и треком.
     let ruleAreas: [MapRuleArea]
+    /// Слой «Мои фото» — над местами.
+    let photos: [MapPhoto]
     let onRegionChange: @MainActor (GeoBoundingBox) -> Void
     let onPlaceTap: @MainActor (UUID) -> Void
     let onRuleAreaTap: @MainActor (String) -> Void
+    let onPhotoTap: @MainActor (UUID) -> Void
     let onLongPress: @MainActor (GeoPoint) -> Void
 
     public init(
@@ -117,9 +131,11 @@ public struct DaladaMapView: UIViewRepresentable {
         cameraMode: MapCameraMode = .free,
         locateRequest: Int = 0,
         ruleAreas: [MapRuleArea] = [],
+        photos: [MapPhoto] = [],
         onRegionChange: @escaping @MainActor (GeoBoundingBox) -> Void = { _ in },
         onPlaceTap: @escaping @MainActor (UUID) -> Void = { _ in },
         onRuleAreaTap: @escaping @MainActor (String) -> Void = { _ in },
+        onPhotoTap: @escaping @MainActor (UUID) -> Void = { _ in },
         onLongPress: @escaping @MainActor (GeoPoint) -> Void = { _ in }
     ) {
         self.styleURL = styleURL
@@ -134,9 +150,11 @@ public struct DaladaMapView: UIViewRepresentable {
         self.cameraMode = cameraMode
         self.locateRequest = locateRequest
         self.ruleAreas = ruleAreas
+        self.photos = photos
         self.onRegionChange = onRegionChange
         self.onPlaceTap = onPlaceTap
         self.onRuleAreaTap = onRuleAreaTap
+        self.onPhotoTap = onPhotoTap
         self.onLongPress = onLongPress
     }
 
@@ -194,6 +212,8 @@ public struct DaladaMapView: UIViewRepresentable {
         private var ruleSource: MLNShapeSource?
         private var renderedRuleAreas: [MapRuleArea]?
         private var renderedPlaces: [MapPlace]?
+        private var photoSource: MLNShapeSource?
+        private var renderedPhotos: [MapPhoto]?
         private var renderedDraft: GeoPoint?
         private var renderedTrack: [[GeoPoint]]?
         private var appliedCamera: MapCameraMode?
@@ -223,6 +243,10 @@ public struct DaladaMapView: UIViewRepresentable {
             static let ruleSource = "dalada-rules"
             static let ruleFill = "dalada-rules-fill"
             static let ruleLine = "dalada-rules-line"
+            static let photoSource = "dalada-photos"
+            static let photoPoints = "dalada-photo-points"
+            static let photoIcons = "dalada-photo-icons"
+            static let photoIcon = "dalada-photo-icon"
         }
 
         /// Обновляет источник мест, если данные изменились. До загрузки стиля — ничего не делает:
@@ -243,6 +267,10 @@ public struct DaladaMapView: UIViewRepresentable {
             if let trackSource, parent.trackSegments != renderedTrack {
                 renderedTrack = parent.trackSegments
                 trackSource.shape = Self.trackShape(parent.trackSegments)
+            }
+            if let photoSource, parent.photos != renderedPhotos {
+                renderedPhotos = parent.photos
+                photoSource.shape = MLNShapeCollectionFeature(shapes: Self.photoFeatures(parent.photos))
             }
             guard let source else { return }
             guard parent.places != renderedPlaces || parent.draftPin != renderedDraft else { return }
@@ -414,6 +442,27 @@ public struct DaladaMapView: UIViewRepresentable {
                 style.addLayer(layer)
             }
 
+            // «Мои фото» — над местами: кружок с фотоаппаратом.
+            let photoSource = MLNShapeSource(identifier: Layer.photoSource, shape: nil, options: nil)
+            style.addSource(photoSource)
+            if let icon = UIImage(systemName: "camera.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 10, weight: .semibold))?
+                .withTintColor(.white, renderingMode: .alwaysOriginal) {
+                style.setImage(icon, forName: Layer.photoIcon)
+            }
+            let photoPoints = MLNCircleStyleLayer(identifier: Layer.photoPoints, source: photoSource)
+            photoPoints.circleRadius = NSExpression(forConstantValue: 11)
+            photoPoints.circleColor = NSExpression(forConstantValue: UIColor.systemPink)
+            photoPoints.circleStrokeColor = NSExpression(forConstantValue: UIColor.white)
+            photoPoints.circleStrokeWidth = NSExpression(forConstantValue: 2)
+            style.addLayer(photoPoints)
+            let photoIcons = MLNSymbolStyleLayer(identifier: Layer.photoIcons, source: photoSource)
+            photoIcons.iconImageName = NSExpression(forConstantValue: Layer.photoIcon)
+            photoIcons.iconAllowsOverlap = NSExpression(forConstantValue: true)
+            photoIcons.iconIgnoresPlacement = NSExpression(forConstantValue: true)
+            style.addLayer(photoIcons)
+            self.photoSource = photoSource
+            renderedPhotos = nil
+
             self.source = source
             renderedPlaces = nil
             render()
@@ -544,12 +593,27 @@ public struct DaladaMapView: UIViewRepresentable {
             return features
         }
 
+        static func photoFeatures(_ photos: [MapPhoto]) -> [MLNShape & MLNFeature] {
+            photos.map { photo in
+                let point = MLNPointFeature()
+                point.coordinate = photo.coordinate.clCoordinate
+                point.attributes = ["photo": photo.id.uuidString]
+                return point
+            }
+        }
+
         // MARK: Жесты
 
         @objc func handleTap(_ recognizer: UITapGestureRecognizer) {
             guard recognizer.state == .ended, let mapView = recognizer.view as? MLNMapView else { return }
             let point = recognizer.location(in: mapView)
             let hitArea = CGRect(x: point.x - 16, y: point.y - 16, width: 32, height: 32)
+            // Фото — над местами: попали в фото — открываем его.
+            let photoHits = mapView.visibleFeatures(in: hitArea, styleLayerIdentifiers: [Layer.photoPoints, Layer.photoIcons])
+            if let idString = photoHits.first?.attribute(forKey: "photo") as? String, let id = UUID(uuidString: idString) {
+                parent.onPhotoTap(id)
+                return
+            }
             let hits = mapView.visibleFeatures(
                 in: hitArea,
                 styleLayerIdentifiers: [Layer.icons, Layer.points, Layer.plainPoints, Layer.areas]

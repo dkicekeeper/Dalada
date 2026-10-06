@@ -21,6 +21,9 @@ struct MapHomeView: View {
     @AppStorage("map.showsParks") private var showsParks = true
     @AppStorage("map.showsBorder") private var showsBorder = false
     @AppStorage("map.showsTracks") private var showsTracks = false
+    @AppStorage("map.showsPhotos") private var showsPhotos = false
+    @State private var photosLayer: MyPhotosLayer
+    @State private var openedPhoto: MyPhotoPoint?
     @AppStorage("map.showsOwnPlaces") private var showsOwnPlaces = true
     @AppStorage("map.showsOtherPlaces") private var showsOtherPlaces = true
     /// Скрытые типы мест: «campsite,base».
@@ -42,6 +45,7 @@ struct MapHomeView: View {
         self.environment = environment
         _model = State(initialValue: MapScreenModel(backend: environment.backend, cache: environment.cache))
         _tracks = State(initialValue: MyTracksLayer(backend: environment.backend, cache: environment.cache))
+        _photosLayer = State(initialValue: MyPhotosLayer(backend: environment.backend, cache: environment.cache))
     }
 
     var body: some View {
@@ -55,6 +59,7 @@ struct MapHomeView: View {
             locateRequest: locateRequest,
             // Слои снизу вверх: погранзона, нацпарки, зоны запретов.
             ruleAreas: rules.mapLayerAreas(parks: showsParks, border: showsBorder) + (showsRules ? rules.mapAreas() : []),
+            photos: showsPhotos && session.profile != nil ? photosLayer.mapPhotos : [],
             onRegionChange: { model.visibleAreaChanged($0, viewer: session.profile?.id) },
             onPlaceTap: { model.selectedPlace = PlaceSelection(id: $0) },
             onRuleAreaTap: { id in
@@ -64,6 +69,7 @@ struct MapHomeView: View {
                     selectedZone = RuleZoneSelection(id: id)
                 }
             },
+            onPhotoTap: { openedPhoto = photosLayer.point($0) },
             onLongPress: { startNewPlace(at: $0) }
         )
         // Карта — на весь экран, под панелью вкладок; кнопки поверх — в безопасной области.
@@ -108,6 +114,14 @@ struct MapHomeView: View {
         }
         .onAppear {
             if showsTracks { Task { await tracks.load(for: session.profile?.id) } }
+            if showsPhotos { Task { await photosLayer.load(for: session.profile?.id) } }
+        }
+        // «Мои фото» — так же, как треки.
+        .task(id: TracksRequest(isOn: showsPhotos, userID: session.profile?.id)) {
+            if showsPhotos { await photosLayer.load(for: session.profile?.id) }
+        }
+        .fullScreenCover(item: $openedPhoto) { point in
+            MapPhotoViewer(point: point, environment: environment)
         }
         .overlay(alignment: .topTrailing) {
             Button {
