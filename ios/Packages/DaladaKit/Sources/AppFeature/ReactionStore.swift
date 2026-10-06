@@ -1,5 +1,6 @@
 import Backend
 import DaladaCore
+import DesignComponents
 import DesignTokens
 import Observation
 import SwiftUI
@@ -93,45 +94,21 @@ struct ReactionButton: View {
 
     var body: some View {
         let state = reactions.state(for: key)
-        Group {
-            if isOwn || session.profile == nil {
-                if state.count > 0 {
-                    Label {
-                        Text(verbatim: "\(state.count)")
-                    } icon: {
-                        Image(systemName: icon(filled: false))
-                    }
-                    .foregroundStyle(AppColors.textSecondary)
-                    .accessibilityLabel(Text(accessibilityKey(count: state.count)))
-                }
-            } else {
-                Button {
-                    Task { await reactions.toggle(key) }
-                } label: {
-                    Label {
-                        if style == .helpful {
-                            if state.count > 0 {
-                                Text("reaction.helpful \(state.count)")
-                            } else {
-                                Text("reaction.helpful.zero")
-                            }
-                        } else if state.count > 0 {
-                            Text(verbatim: "\(state.count)")
-                        }
-                    } icon: {
-                        Image(systemName: icon(filled: state.reacted))
-                    }
-                    .foregroundStyle(state.reacted ? AppColors.accent : AppColors.textSecondary)
-                    // Зона нажатия — не меньше 44 pt, как советует Apple.
-                    .frame(minWidth: 44, minHeight: 44, alignment: .leading)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.borderless)
-                .accessibilityLabel(Text(accessibilityKey(count: state.count)))
-                .accessibilityAddTraits(state.reacted ? .isSelected : [])
-            }
-        }
-        .font(AppTypography.bodySmall)
+        let canReact = !isOwn && session.profile != nil
+        DesignComponents.ReactionButton(
+            systemImage: icon(filled: false),
+            selectedSystemImage: icon(filled: true),
+            count: state.count,
+            isSelected: state.reacted,
+            title: canReact && style == .helpful ? helpfulTitle(count: state.count) : nil,
+            accessibilityLabel: String(localized: accessibilityKey(count: state.count)),
+            action: canReact ? { Task { await reactions.toggle(key) } } : nil
+        )
+    }
+
+    /// «Полезно · 3» или «Полезно» у отзыва.
+    private func helpfulTitle(count: Int) -> String {
+        count > 0 ? String(localized: "reaction.helpful \(count)") : String(localized: "reaction.helpful.zero")
     }
 
     private func icon(filled: Bool) -> String {
@@ -141,7 +118,7 @@ struct ReactionButton: View {
         }
     }
 
-    private func accessibilityKey(count: Int) -> LocalizedStringKey {
+    private func accessibilityKey(count: Int) -> String.LocalizationValue {
         if style == .helpful {
             return "reaction.helpful.accessibility \(count)"
         }

@@ -157,48 +157,34 @@ struct ReviewRow: View {
     @State private var photoURLs: [String: URL] = [:]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            HStack(spacing: AppSpacing.sm) {
-                Text(verbatim: review.isOwn ? String(localized: "report.you") : review.author.label)
-                    .font(AppTypography.bodyEmphasis)
-                    .lineLimit(1)
-                RatingView(rating: Double(review.rating), size: 12)
-                Spacer(minLength: 0)
-                Text(verbatim: review.createdAt.formatted(.relative(presentation: .named)))
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
-                    .lineLimit(1)
-                if !review.isOwn {
-                    ModerationMenu(target: .review, targetID: review.id, author: review.author) {
-                        onBlocked?(review.author.id)
-                    }
+        ReviewCard(
+            author: review.isOwn ? String(localized: "report.you") : review.author.label,
+            rating: Double(review.rating),
+            date: review.createdAt,
+            subtitle: review.visitedOn.map {
+                String(localized: "reviews.visited \($0.date().formatted(.dateTime.day().month(.wide).year()))")
+            },
+            text: review.body
+        ) {
+            if !review.isOwn {
+                ModerationMenu(target: .review, targetID: review.id, author: review.author) {
+                    onBlocked?(review.author.id)
                 }
             }
-            if let visited = review.visitedOn {
-                Text("reviews.visited \(visited.date().formatted(.dateTime.day().month(.wide).year()))")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-            if let body = review.body, !body.isEmpty {
-                ExpandableText(body, lineLimit: 4, font: AppTypography.bodySmall)
-            }
+        } media: {
             if !review.media.isEmpty {
                 ReportPhotoStrip(media: review.media, urls: photoURLs)
                     .task(id: review.media.map(\.id)) { await loadPhotoURLs() }
             }
-            HStack(spacing: AppSpacing.md) {
-                ReactionButton(key: ReactionKey(.review, review.id), isOwn: review.isOwn, style: .helpful)
-                CommentsButton(key: ReactionKey(.review, review.id))
-                if review.editedAt != nil {
-                    Text("reviews.edited")
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
-                }
-                Spacer(minLength: 0)
+        } actions: {
+            ReactionButton(key: ReactionKey(.review, review.id), isOwn: review.isOwn, style: .helpful)
+            CommentsButton(key: ReactionKey(.review, review.id))
+            if review.editedAt != nil {
+                Text("reviews.edited")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textTertiary)
             }
         }
-        .cardContentPadding()
-        .cardStyle()
     }
 
     private func loadPhotoURLs() async {
@@ -536,36 +522,13 @@ struct ThreadRow: View {
     let thread: ThreadSummary
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            Text(verbatim: thread.title)
-                .font(AppTypography.bodyEmphasis)
-                .foregroundStyle(AppColors.textPrimary)
-                .lineLimit(2)
-            if !thread.bodyPreview.isEmpty {
-                Text(verbatim: thread.bodyPreview)
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-                    .lineLimit(2)
-            }
-            HStack(spacing: AppSpacing.sm) {
-                Label {
-                    Text(verbatim: "\(thread.postsCount)")
-                } icon: {
-                    Image(systemName: "bubble.left")
-                }
-                Text(verbatim: thread.author.label)
-                    .lineLimit(1)
-                Spacer(minLength: 0)
-                Text(verbatim: thread.lastActivityAt.formatted(.relative(presentation: .named)))
-                    .lineLimit(1)
-            }
-            .font(AppTypography.caption)
-            .foregroundStyle(AppColors.textTertiary)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .cardContentPadding()
-        .cardStyle()
-        .contentShape(Rectangle())
+        ThreadCard(
+            title: thread.title,
+            preview: thread.bodyPreview,
+            repliesCount: thread.postsCount,
+            author: thread.author.label,
+            lastActivity: thread.lastActivityAt
+        )
     }
 }
 
@@ -756,10 +719,11 @@ struct ThreadView: View {
                     style: .error
                 )
             } else {
-                VStack(spacing: 0) {
-                    ForEach(0..<4, id: \.self) { _ in SkeletonRow() }
+                VStack(spacing: AppSpacing.lg) {
+                    ForEach(0..<4, id: \.self) { _ in CommentRowSkeleton() }
                 }
                 .screenPadding()
+                .padding(.vertical, AppSpacing.lg)
                 .frame(maxHeight: .infinity, alignment: .top)
                 .skeletonLoadingLabel()
             }
@@ -858,70 +822,32 @@ struct ThreadView: View {
             .padding(.vertical, AppSpacing.lg)
         }
         .refreshable { await load() }
-        .safeAreaInset(edge: .bottom) {
+        .safeAreaBar(edge: .bottom) {
             if session.profile != nil {
                 composer
             }
         }
     }
 
+    /// Поле ответа из DesignKit: стекло над обсуждением, цитата того, на что отвечают, кнопка
+    /// отправки внутри.
     private var composer: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            if let replyQuote {
-                HStack(spacing: AppSpacing.sm) {
-                    Rectangle()
-                        .fill(AppColors.accent)
-                        .frame(width: 3)
-                    VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                        Text("threads.replyingTo \(quoteAuthor(replyQuote))")
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.accent)
-                        Text(verbatim: replyQuote.body)
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
-                            .lineLimit(1)
-                    }
-                    Spacer(minLength: 0)
-                    Button {
-                        self.replyQuote = nil
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(AppColors.textTertiary)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(Text("threads.cancelQuote"))
-                }
-                .fixedSize(horizontal: false, vertical: true)
-            }
-            if let sendError {
-                Text(verbatim: sendError)
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.destructive)
-            }
-            HStack(alignment: .bottom, spacing: AppSpacing.sm) {
-                TextField("threads.replyPlaceholder", text: $replyText, axis: .vertical)
-                    .lineLimit(1...5)
-                    .focused($isReplyFocused)
-                    .textFieldStyle(.roundedBorder)
-                if isSending {
-                    ProgressView()
-                } else {
-                    Button {
-                        Task { await send() }
-                    } label: {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .font(.system(size: 30))
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(AppColors.accent)
-                    .disabled(!replyDraft.isValid)
-                    .accessibilityLabel(Text("threads.send"))
-                }
-            }
+        MessageComposer(
+            text: $replyText,
+            placeholder: String(localized: "threads.replyPlaceholder"),
+            quote: replyQuote.map {
+                MessageQuote(title: String(localized: "threads.replyingTo \(quoteAuthor($0))"), text: $0.body)
+            },
+            isSending: isSending,
+            canSend: replyDraft.isValid,
+            errorMessage: sendError,
+            focus: $isReplyFocused,
+            onCancelQuote: { replyQuote = nil }
+        ) {
+            Task { await send() }
         }
-        .padding(.horizontal, AppSpacing.lg)
-        .padding(.vertical, AppSpacing.sm)
-        .background(.bar)
+        .screenPadding()
+        .padding(.bottom, AppSpacing.sm)
     }
 
     private var replyDraft: PostDraft {
@@ -1061,61 +987,38 @@ struct PostRow: View {
     @State private var confirmsDelete = false
 
     var body: some View {
-        HStack(alignment: .top, spacing: AppSpacing.md) {
-            PersonAvatar(name: post.author.displayName ?? post.author.username, path: post.author.avatarPath, size: 32)
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                HStack(spacing: AppSpacing.xs) {
-                    Text(verbatim: post.isOwn ? String(localized: "report.you") : post.author.label)
-                        .font(AppTypography.bodyEmphasis)
-                        .lineLimit(1)
-                    Spacer(minLength: 0)
-                    Text(verbatim: post.createdAt.formatted(.relative(presentation: .named)))
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
-                        .lineLimit(1)
-                    if !post.isOwn {
-                        ModerationMenu(target: .post, targetID: post.id, author: post.author, onBlocked: onBlocked)
-                    }
-                }
-                if let quote = post.quote {
-                    HStack(spacing: AppSpacing.sm) {
-                        Rectangle()
-                            .fill(AppColors.textTertiary)
-                            .frame(width: 3)
-                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                            Text(verbatim: quote.authorDisplayName ?? quote.authorUsername.map { "@" + $0 } ?? "")
-                                .font(AppTypography.caption)
-                                .foregroundStyle(AppColors.textSecondary)
-                            Text(verbatim: quote.body)
-                                .font(AppTypography.caption)
-                                .foregroundStyle(AppColors.textSecondary)
-                                .lineLimit(3)
-                        }
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                }
-                Text(MentionText.attributed(post.body))
-                    .font(AppTypography.bodySmall)
-                    .textSelection(.enabled)
-                HStack(spacing: AppSpacing.lg) {
-                    ReactionButton(key: ReactionKey(.post, post.id), isOwn: post.isOwn)
-                    if canReply {
-                        Button("threads.reply") { onReply() }
-                            .buttonStyle(.borderless)
-                            .font(AppTypography.caption)
-                    }
-                    if post.isOwn {
-                        Button("threads.deletePost", role: .destructive) { confirmsDelete = true }
-                            .buttonStyle(.borderless)
-                            .font(AppTypography.caption)
-                    }
-                    if post.editedAt != nil {
-                        Text("reviews.edited")
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textTertiary)
-                    }
-                    Spacer(minLength: 0)
-                }
+        CommentRow(
+            author: post.isOwn ? String(localized: "report.you") : post.author.label,
+            date: post.createdAt,
+            text: MentionText.attributed(post.body),
+            quote: post.quote.map { quote in
+                MessageQuote(
+                    title: quote.authorDisplayName ?? quote.authorUsername.map { "@" + $0 } ?? "",
+                    text: quote.body
+                )
+            },
+            avatar: PersonAvatar(
+                name: post.author.displayName ?? post.author.username,
+                path: post.author.avatarPath,
+                size: CommentRowMetrics.avatarSize
+            )
+        ) {
+            if !post.isOwn {
+                ModerationMenu(target: .post, targetID: post.id, author: post.author, onBlocked: onBlocked)
+            }
+        } actions: {
+            ReactionButton(key: ReactionKey(.post, post.id), isOwn: post.isOwn)
+            if canReply {
+                Button("threads.reply") { onReply() }
+                    .buttonStyle(.borderless)
+            }
+            if post.isOwn {
+                Button("threads.deletePost", role: .destructive) { confirmsDelete = true }
+                    .buttonStyle(.borderless)
+            }
+            if post.editedAt != nil {
+                Text("reviews.edited")
+                    .foregroundStyle(AppColors.textTertiary)
             }
         }
         .confirmationDialog("threads.deletePostConfirm", isPresented: $confirmsDelete, titleVisibility: .visible) {

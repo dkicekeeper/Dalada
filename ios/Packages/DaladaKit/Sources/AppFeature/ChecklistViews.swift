@@ -37,40 +37,15 @@ struct ChecklistSummaryRow: View {
     let checklist: Checklist
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            HStack(spacing: AppSpacing.xs) {
-                Text(verbatim: checklist.title)
-                    .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
-                Spacer(minLength: 0)
-                if checklist.isComplete {
-                    Image(systemName: "checkmark.seal.fill")
-                        .foregroundStyle(AppColors.success)
-                        .accessibilityLabel(Text("packing.complete"))
-                }
-            }
-            if let day = checklist.tripDate {
-                Label(PackingFormat.tripDay(day), systemImage: "calendar")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-            if checklist.items.isEmpty {
-                Text("checklist.empty")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-            } else {
-                LinearProgressBar(
-                    value: checklist.progress,
-                    color: checklist.isComplete ? AppColors.success : AppColors.accent,
-                    height: 6,
-                    animatesOnAppear: false
-                )
-                Text("packing.progress \(checklist.checkedCount) \(checklist.items.count)")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-        }
-        .padding(.vertical, AppSpacing.xxs)
+        DesignComponents.ChecklistSummaryRow(
+            title: checklist.title,
+            subtitle: checklist.tripDate.map { PackingFormat.tripDay($0) },
+            checked: checklist.checkedCount,
+            total: checklist.items.count,
+            progressText: String(localized: "packing.progress \(checklist.checkedCount) \(checklist.items.count)"),
+            emptyText: String(localized: "checklist.empty"),
+            completeLabel: String(localized: "packing.complete")
+        )
     }
 }
 
@@ -80,25 +55,14 @@ struct ChecklistItemRow: View {
     let onToggle: @MainActor () -> Void
 
     var body: some View {
-        Button(action: onToggle) {
-            HStack(spacing: AppSpacing.md) {
-                SelectionIndicator(isSelected: item.isChecked, tint: AppColors.success)
-                Text(verbatim: item.title)
-                    .font(AppTypography.body)
-                    .strikethrough(item.isChecked)
-                    .foregroundStyle(item.isChecked ? AppColors.textSecondary : AppColors.textPrimary)
-                Spacer(minLength: 0)
-                if item.gearID != nil {
-                    Image(systemName: "backpack")
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
-                        .accessibilityLabel(Text("checklist.fromGear"))
-                }
-            }
-            .contentShape(Rectangle())
+        ChecklistRow(
+            item.title,
+            isChecked: item.isChecked,
+            accessorySystemImage: item.gearID != nil ? "backpack" : nil,
+            accessoryLabel: item.gearID != nil ? String(localized: "checklist.fromGear") : nil
+        ) {
+            onToggle()
         }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(item.isChecked ? .isSelected : [])
     }
 }
 

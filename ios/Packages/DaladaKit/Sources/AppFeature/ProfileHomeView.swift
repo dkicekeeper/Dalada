@@ -237,8 +237,18 @@ struct MyFriendsSection: View {
                 }
                 .secondaryButton()
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
+                // Аватары друзей той же формы, пока грузятся.
+                HStack(alignment: .top, spacing: AppSpacing.lg) {
+                    ForEach(0..<4, id: \.self) { _ in
+                        VStack(spacing: AppSpacing.xs) {
+                            SkeletonView.circle(AppIconSize.xxxl)
+                            SkeletonText(AppTypography.caption, width: AppIconSize.xxxl)
+                        }
+                        .frame(width: AppIconSize.ultra)
+                    }
+                }
+                .shimmer()
+                .skeletonLoadingLabel()
             }
         }
         .task(id: userID) { await load() }
@@ -313,8 +323,7 @@ struct MyCatchesSection: View {
             } else if isLoaded {
                 ProfileSectionHint(text: String(localized: "profile.catches.empty"))
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
+                ForEach(0..<2, id: \.self) { _ in SkeletonRow(showsIcon: false) }
             }
         }
         .task(id: userID) {
@@ -455,8 +464,7 @@ struct MyPlacesSection: View {
             } else if isLoaded {
                 ProfileSectionHint(text: String(localized: "places.mine.empty.description"))
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
+                ForEach(0..<2, id: \.self) { _ in SkeletonRow() }
             }
         }
         .task(id: userID) { await load() }
@@ -488,21 +496,22 @@ struct ProfileStatsCard: View {
 
     @Environment(SyncEngine.self) private var sync
     @State private var stats: UserStats?
+    @State private var isLoaded = false
 
     var body: some View {
         Group {
             if let stats {
-                HStack(alignment: .top, spacing: AppSpacing.sm) {
-                    counter(String(stats.daysOutdoors), titleKey: "stats.days")
-                    counter(String(stats.tripsCount), titleKey: "stats.trips")
-                    counter(
-                        (Double(stats.distanceM) / 1000).formatted(.number.precision(.fractionLength(0))),
-                        titleKey: "stats.km"
-                    )
-                    counter(String(stats.catchesCount), titleKey: "stats.catches")
-                }
-                .cardContentPadding()
-                .cardStyle()
+                StatsStrip(items: [
+                    .init(value: String(stats.daysOutdoors), title: String(localized: "stats.days")),
+                    .init(value: String(stats.tripsCount), title: String(localized: "stats.trips")),
+                    .init(
+                        value: (Double(stats.distanceM) / 1000).formatted(.number.precision(.fractionLength(0))),
+                        title: String(localized: "stats.km")
+                    ),
+                    .init(value: String(stats.catchesCount), title: String(localized: "stats.catches")),
+                ])
+            } else if !isLoaded {
+                StatsStripSkeleton(count: 4)
             }
         }
         .task(id: userID) { await load() }
@@ -511,23 +520,8 @@ struct ProfileStatsCard: View {
         }
     }
 
-    private func counter(_ value: String, titleKey: LocalizedStringKey) -> some View {
-        VStack(spacing: AppSpacing.xxs) {
-            Text(verbatim: value)
-                .font(AppTypography.h4)
-                .monospacedDigit()
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-            Text(titleKey)
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-        }
-        .frame(maxWidth: .infinity)
-    }
-
     private func load() async {
+        defer { isLoaded = true }
         let key = CacheKey.stats(userID)
         if let backend = environment.backend, let loaded = try? await backend.myStats() {
             stats = loaded
@@ -546,35 +540,23 @@ struct StreakCard: View {
 
     @Environment(SyncEngine.self) private var sync
     @State private var streak: Streak?
+    @State private var isLoaded = false
 
     var body: some View {
         Group {
-            if let streak, streak.bestWeeks > 0 {
-                HStack(spacing: AppSpacing.md) {
-                    Image(systemName: streak.freeze != nil && !streak.thisWeekDone ? "snowflake" : "flame.fill")
-                        .font(.system(size: AppIconSize.lg))
-                        .foregroundStyle(streak.currentWeeks > 0 ? AppColors.accent : AppColors.textTertiary)
-                        .frame(width: AppIconSize.avatar)
-                    VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                        Text("streak.current \(streak.currentWeeks)")
-                            .font(AppTypography.bodyEmphasis)
-                        Text(LocalizedStringKey(streak.hintKey))
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
-                    }
-                    Spacer(minLength: 0)
-                    VStack(alignment: .trailing, spacing: AppSpacing.xxs) {
-                        Text(verbatim: String(streak.bestWeeks))
-                            .font(AppTypography.bodyEmphasis)
-                            .monospacedDigit()
-                        Text("streak.best")
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
-                    }
+            if let streak {
+                if streak.bestWeeks > 0 {
+                    DesignComponents.StreakCard(
+                        systemImage: streak.freeze != nil && !streak.thisWeekDone ? "snowflake" : "flame.fill",
+                        isActive: streak.currentWeeks > 0,
+                        title: String(localized: "streak.current \(streak.currentWeeks)"),
+                        subtitle: String(localized: String.LocalizationValue(streak.hintKey)),
+                        value: String(streak.bestWeeks),
+                        valueCaption: String(localized: "streak.best")
+                    )
                 }
-                .cardContentPadding()
-                .cardStyle()
-                .accessibilityElement(children: .combine)
+            } else if !isLoaded {
+                StreakCardSkeleton()
             }
         }
         .task(id: userID) { await load() }
@@ -584,6 +566,7 @@ struct StreakCard: View {
     }
 
     private func load() async {
+        defer { isLoaded = true }
         let key = CacheKey.streak(userID)
         if let backend = environment.backend, let loaded = try? await backend.myStreak() {
             streak = loaded

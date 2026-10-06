@@ -514,7 +514,7 @@ struct TripRow: View {
                 .font(.system(size: AppIconSize.md))
                 .foregroundStyle(AppColors.accent)
                 .frame(width: AppIconSize.avatar, height: AppIconSize.avatar)
-                .background(AppColors.accent.opacity(0.12), in: Circle())
+                .background(AppColors.pale(AppColors.accent), in: Circle())
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: trip.title)
                     .font(AppTypography.bodyEmphasis)

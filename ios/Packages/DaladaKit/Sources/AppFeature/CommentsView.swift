@@ -86,9 +86,10 @@ struct CommentsView: View {
         List {
             if comments.isEmpty {
                 if !isLoaded {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .listRowSeparator(.hidden)
+                    ForEach(0..<3, id: \.self) { _ in
+                        CommentRowSkeleton()
+                            .listRowSeparator(.hidden)
+                    }
                 } else {
                     Text(verbatim: loadError ?? String(localized: "comments.empty"))
                         .font(AppTypography.bodySmall)
@@ -97,23 +98,21 @@ struct CommentsView: View {
                 }
             }
             ForEach(comments) { comment in
-                CommentRow(comment: comment, isOwn: comment.author.id == session.profile?.id) {
-                    Task { await load() }
-                }
-                .swipeActions(edge: .trailing) {
-                    if comment.canDelete {
-                        Button("comments.delete", systemImage: "trash", role: .destructive) {
-                            Task { await delete(comment) }
+                commentRow(comment)
+                    .swipeActions(edge: .trailing) {
+                        if comment.canDelete {
+                            Button("comments.delete", systemImage: "trash", role: .destructive) {
+                                Task { await delete(comment) }
+                            }
                         }
                     }
-                }
-                .contextMenu {
-                    if comment.canDelete {
-                        Button("comments.delete", systemImage: "trash", role: .destructive) {
-                            Task { await delete(comment) }
+                    .contextMenu {
+                        if comment.canDelete {
+                            Button("comments.delete", systemImage: "trash", role: .destructive) {
+                                Task { await delete(comment) }
+                            }
                         }
                     }
-                }
             }
         }
         .listStyle(.plain)
@@ -126,7 +125,7 @@ struct CommentsView: View {
         }
         .task { await load() }
         .refreshable { await load() }
-        .safeAreaInset(edge: .bottom) {
+        .safeAreaBar(edge: .bottom) {
             composer
         }
         .alert("comments.deleteFailed", isPresented: Binding(
@@ -139,45 +138,50 @@ struct CommentsView: View {
         }
     }
 
+    /// Поле комментария из DesignKit: стекло над списком, кнопка отправки внутри. Гостю — то же
+    /// поле, выключенное, с подсказкой войти.
     @ViewBuilder
     private var composer: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+        Group {
             if session.profile == nil {
-                Text("comments.signIn")
-                    .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                MessageComposer(text: .constant(""), placeholder: String(localized: "comments.signIn")) {}
+                    .disabled(true)
             } else {
-                if let sendError {
-                    Text(verbatim: sendError)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.destructive)
-                }
-                HStack(alignment: .bottom, spacing: AppSpacing.sm) {
-                    TextField("comments.placeholder", text: $text, axis: .vertical)
-                        .lineLimit(1...5)
-                        .focused($isFocused)
-                        .textFieldStyle(.roundedBorder)
-                    if isSending {
-                        ProgressView()
-                    } else {
-                        Button {
-                            Task { await send() }
-                        } label: {
-                            Image(systemName: "arrow.up.circle.fill")
-                                .font(.system(size: 30))
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(AppColors.accent)
-                        .disabled(!draft.isValid)
-                        .accessibilityLabel(Text("comments.send"))
-                    }
+                MessageComposer(
+                    text: $text,
+                    placeholder: String(localized: "comments.placeholder"),
+                    isSending: isSending,
+                    canSend: draft.isValid,
+                    errorMessage: sendError,
+                    focus: $isFocused
+                ) {
+                    Task { await send() }
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, AppSpacing.lg)
-        .padding(.vertical, AppSpacing.sm)
-        .background(.bar)
+        .screenPadding()
+        .padding(.bottom, AppSpacing.sm)
+    }
+
+    /// Комментарий: строка DesignKit, аватар и меню «Пожаловаться» / «Заблокировать» — свои.
+    private func commentRow(_ comment: PostComment) -> some View {
+        let isOwn = comment.author.id == session.profile?.id
+        return CommentRow(
+            author: isOwn ? String(localized: "report.you") : comment.author.label,
+            date: comment.createdAt,
+            text: AttributedString(comment.body),
+            avatar: PersonAvatar(
+                name: comment.author.displayName ?? comment.author.username,
+                path: comment.author.avatarPath,
+                size: CommentRowMetrics.avatarSize
+            )
+        ) {
+            if !isOwn {
+                ModerationMenu(target: .comment, targetID: comment.id, author: comment.author) {
+                    Task { await load() }
+                }
+            }
+        }
     }
 
     private var draft: CommentDraft {
@@ -223,37 +227,6 @@ struct CommentsView: View {
             await load()
         } catch {
             deleteError = CommunityMessage.text(for: error)
-        }
-    }
-}
-
-/// Комментарий: аватар, имя, время, текст; у чужого — «…» (пожаловаться, заблокировать).
-private struct CommentRow: View {
-    let comment: PostComment
-    let isOwn: Bool
-    let onBlocked: @MainActor () -> Void
-
-    var body: some View {
-        HStack(alignment: .top, spacing: AppSpacing.md) {
-            PersonAvatar(name: comment.author.displayName ?? comment.author.username, path: comment.author.avatarPath, size: 32)
-            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                HStack(spacing: AppSpacing.xs) {
-                    Text(verbatim: isOwn ? String(localized: "report.you") : comment.author.label)
-                        .font(AppTypography.bodyEmphasis)
-                        .lineLimit(1)
-                    Text(verbatim: comment.createdAt.formatted(.relative(presentation: .named)))
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
-                        .lineLimit(1)
-                    Spacer(minLength: 0)
-                    if !isOwn {
-                        ModerationMenu(target: .comment, targetID: comment.id, author: comment.author, onBlocked: onBlocked)
-                    }
-                }
-                Text(verbatim: comment.body)
-                    .font(AppTypography.bodySmall)
-                    .textSelection(.enabled)
-            }
         }
     }
 }

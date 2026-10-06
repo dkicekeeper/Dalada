@@ -28,23 +28,13 @@ struct PersonRow<Trailing: View>: View {
     }
 
     var body: some View {
-        HStack(spacing: AppSpacing.md) {
-            PersonAvatar(name: displayName ?? username, path: avatarPath)
-            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                Text(verbatim: displayName ?? username.map { "@" + $0 } ?? String(localized: "profile.noName"))
-                    .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
-                    .lineLimit(1)
-                if let username, displayName != nil {
-                    Text(verbatim: "@" + username)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
-            }
-            Spacer(minLength: 0)
+        DesignComponents.PersonRow(
+            name: displayName ?? username.map { "@" + $0 } ?? String(localized: "profile.noName"),
+            subtitle: displayName != nil ? username.map { "@" + $0 } : nil,
+            avatar: PersonAvatar(name: displayName ?? username, path: avatarPath)
+        ) {
             trailing
         }
-        .contentShape(Rectangle())
     }
 }
 
@@ -292,8 +282,18 @@ struct UserProfileView: View {
         Group {
             switch loadState {
             case .loading:
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // Шапка профиля той же формы, пока грузится: аватар, имя, @username.
+                VStack(spacing: AppSpacing.lg) {
+                    SkeletonView.circle(AppIconSize.mega)
+                    VStack(spacing: AppSpacing.xs) {
+                        SkeletonText(AppTypography.h3, width: 180)
+                        SkeletonText(AppTypography.bodySmall, width: 100)
+                    }
+                }
+                .shimmer()
+                .skeletonLoadingLabel()
+                .padding(.top, AppSpacing.xl)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             case .notFound:
                 EmptyStateView(
                     icon: "person.slash",
