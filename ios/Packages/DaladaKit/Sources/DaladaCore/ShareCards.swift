@@ -156,4 +156,9 @@ public enum WebLink {
     public static func catchPage(_ id: UUID) -> URL {
         URL(string: base.absoluteString + "s/?catch=" + id.uuidString.lowercased())!
     }
+
+    /// Приглашение в поездку: страница с «Открыть в Dalada» и «Как попасть в бету».
+    public static func tripInvite(_ token: String) -> URL {
+        URL(string: base.absoluteString + "s/?invite=" + token)!
+    }
 }

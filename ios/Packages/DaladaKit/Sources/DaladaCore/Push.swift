@@ -53,3 +53,24 @@ public enum LiveLink {
         url.scheme?.lowercased() == InviteLink.scheme && url.host?.lowercased() == host
     }
 }
+
+/// Приглашение в поездку по ссылке: в приложении — `dalada://trip-invite/<токен>`, в браузере —
+/// страница `…/s/?invite=<токен>` (`WebLink.tripInvite`). Токен — 32 шестнадцатеричные цифры.
+public enum TripInviteLink {
+    static let host = "trip-invite"
+
+    public static func url(token: String) -> URL {
+        URL(string: "\(InviteLink.scheme)://\(host)/\(token)")!
+    }
+
+    public static func token(from url: URL) -> String? {
+        guard url.scheme?.lowercased() == InviteLink.scheme, url.host?.lowercased() == host,
+              let token = url.pathComponents.dropFirst().first?.lowercased(), isValid(token)
+        else { return nil }
+        return token
+    }
+
+    public static func isValid(_ token: String) -> Bool {
+        token.count == 32 && token.allSatisfy { $0.isHexDigit && !$0.isUppercase }
+    }
+}

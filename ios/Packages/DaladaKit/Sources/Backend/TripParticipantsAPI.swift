@@ -75,3 +75,23 @@ private struct TripTagResponseParams: Encodable, Sendable {
         case accept = "p_accept"
     }
 }
+
+// MARK: - Приглашение по ссылке
+
+extension BackendClient {
+    /// Ссылка-приглашение в свою поездку (действующая или новая, 30 дней): токен.
+    public func tripInviteLink(_ tripID: UUID) async throws -> String {
+        try await supabase
+            .rpc("trip_invite_link", params: ["p_trip": tripID])
+            .execute()
+            .value
+    }
+
+    /// Принять приглашение по ссылке: участник и запрос в друзья автору. Возвращает поездку.
+    public func acceptTripInviteLink(_ token: String) async throws -> UUID {
+        try await supabase
+            .rpc("accept_trip_invite_link", params: ["p_token": token])
+            .execute()
+            .value
+    }
+}

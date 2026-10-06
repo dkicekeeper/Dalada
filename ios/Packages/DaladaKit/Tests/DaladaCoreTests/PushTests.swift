@@ -28,4 +28,14 @@ struct PushTests {
         #expect(!LiveLink.matches(url))
         #expect(InviteLink.username(from: LiveLink.url) == nil, "«на выезде» — не приглашение")
     }
+
+    @Test func tripInviteLinks() {
+        let token = "0123456789abcdef0123456789abcdef"
+        let url = TripInviteLink.url(token: token)
+        #expect(url.absoluteString == "dalada://trip-invite/" + token)
+        #expect(TripInviteLink.token(from: url) == token)
+        #expect(TripInviteLink.token(from: URL(string: "dalada://trip-invite/short")!) == nil)
+        #expect(TripInviteLink.token(from: URL(string: "dalada://trip/" + token)!) == nil)
+        #expect(WebLink.tripInvite(token).absoluteString == "https://dkicekeeper.github.io/Dalada/s/?invite=" + token)
+    }
 }

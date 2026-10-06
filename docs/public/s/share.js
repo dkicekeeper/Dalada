@@ -21,6 +21,8 @@
   var T = {
     ru: {
       open: "Открыть в Dalada", route: "Маршрут", getApp: "Как попасть в бету Dalada",
+      invite: "Вас зовут в поездку", inviteHint: "Установите Dalada, войдите и откройте эту ссылку в приложении — вы станете участником поездки.",
+      inviteJoin: "Присоединиться в Dalada",
       notFound: "Запись недоступна", notFoundHint: "Её удалили или она видна не всем. Откройте ссылку в приложении Dalada.",
       failed: "Не удалось загрузить", failedHint: "Проверьте интернет и обновите страницу.",
       approximate: "Место показано приблизительно — в радиусе около километра.",
@@ -33,6 +35,8 @@
     },
     kk: {
       open: "Dalada-да ашу", route: "Бағыт", getApp: "Dalada бетасына қалай қосылуға болады",
+      invite: "Сізді сапарға шақырады", inviteHint: "Dalada-ны орнатып, кіріңіз де, осы сілтемені қосымшада ашыңыз — сапарға қатысушы боласыз.",
+      inviteJoin: "Dalada-да қосылу",
       notFound: "Жазба қолжетімсіз", notFoundHint: "Ол жойылған немесе барлығына көрінбейді. Сілтемені Dalada қосымшасында ашыңыз.",
       failed: "Жүктеу мүмкін болмады", failedHint: "Интернетті тексеріп, бетті жаңартыңыз.",
       approximate: "Орын шамамен көрсетілген — шамамен бір шақырым радиуста.",
@@ -45,6 +49,8 @@
     },
     en: {
       open: "Open in Dalada", route: "Directions", getApp: "How to join the Dalada beta",
+      invite: "You’re invited on a trip", inviteHint: "Install Dalada, sign in and open this link in the app — you’ll join the trip.",
+      inviteJoin: "Join in Dalada",
       notFound: "Not available", notFoundHint: "It was deleted or isn’t visible to everyone. Open the link in the Dalada app.",
       failed: "Couldn’t load", failedHint: "Check your connection and reload the page.",
       approximate: "The place is shown approximately, within about a kilometre.",
@@ -63,6 +69,8 @@
     var match = location.pathname.match(/\/p\/([0-9a-f-]{36})\/?$/i);
     if (match && uuid.test(match[1])) return { kind: "place", id: match[1].toLowerCase() };
     var params = new URLSearchParams(location.search);
+    var invite = params.get("invite");
+    if (invite && /^[0-9a-f]{32}$/.test(invite)) return { kind: "invite", id: invite };
     var kinds = ["place", "trip", "catch"];
     for (var i = 0; i < kinds.length; i++) {
       var value = params.get(kinds[i]);
@@ -191,9 +199,15 @@
     return hours > 0 ? hours + " " + T.hours + " " + minutes + " " + T.minutes : minutes + " " + T.minutes;
   }
 
+  // Казахские названия месяцев есть не во всех браузерах — пишем сами: «2026 жылғы 6 қазан».
+  var monthsKK = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
+
   function day(value) {
+    var date = new Date(value);
+    if (isNaN(date.getTime())) return String(value).slice(0, 10);
+    if (lang === "kk") return date.getFullYear() + " жылғы " + date.getDate() + " " + monthsKK[date.getMonth()];
     try {
-      return new Date(value).toLocaleDateString(lang === "kk" ? "kk-KZ" : lang, { day: "numeric", month: "long", year: "numeric" });
+      return date.toLocaleDateString(lang, { day: "numeric", month: "long", year: "numeric" });
     } catch (e) { return String(value).slice(0, 10); }
   }
 
@@ -243,6 +257,22 @@
     show(nodes);
   }
 
+  // Приглашение в поездку: кто зовёт и куда; присоединиться — в приложении.
+  function renderInvite(row) {
+    setTitle(row.title);
+    var who = row.owner_name || (row.owner_username ? "@" + row.owner_username : "");
+    show([
+      el("p", { class: "sub", text: T.invite }),
+      el("h1", { text: row.title }),
+      el("p", { class: "sub", text: [T.activities[row.activity] || "", day(row.started_at), who].filter(Boolean).join(" · ") }),
+      el("p", { class: "desc", text: T.inviteHint }),
+      el("div", { class: "actions" }, [
+        el("a", { class: "button primary", href: "dalada://trip-invite/" + target.id, text: T.inviteJoin }),
+        el("a", { class: "button", href: base, text: T.getApp })
+      ])
+    ]);
+  }
+
   if (!target) {
     location.replace(base);
     return;
@@ -263,6 +293,11 @@
       var editorial = results[1];
       var photo = editorial && editorial.path && config.photos ? config.photos + "/" + editorial.path : null;
       renderPlace(place, photo);
+    });
+  } else if (target.kind === "invite") {
+    load = rpc("web_trip_invite", { p_token: target.id }).then(function (row) {
+      if (!row) return message(T.notFound, T.notFoundHint);
+      renderInvite(row);
     });
   } else if (target.kind === "trip") {
     load = rpc("web_trip", { p_trip: target.id }).then(function (trip) {

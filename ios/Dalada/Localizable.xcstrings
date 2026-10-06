@@ -21612,6 +21612,213 @@
         }
       }
     },
+    "trip.inviteLink.button" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invite by link"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сілтеме арқылы шақыру"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пригласить по ссылке"
+          }
+        }
+      }
+    },
+    "trip.inviteLink.failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t join the trip"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Қосылу мүмкін болмады"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не получилось присоединиться"
+          }
+        }
+      }
+    },
+    "trip.inviteLink.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The link works for 30 days. Whoever joins also sends you a friend request."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сілтеме 30 күн жарамды. Қосылған адамға сіздің достық сұрауыңыз да келеді."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ссылка действует 30 дней. Тому, кто присоединится, придёт и ваш запрос в друзья."
+          }
+        }
+      }
+    },
+    "trip.inviteLink.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send the link to the people you were with, even if they don’t have Dalada yet. Once they sign in and open it in the app, they join the trip."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сілтемені бірге болғандарға жіберіңіз — оларда Dalada әлі болмаса да. Кіргеннен кейін қосымшада ашса, сапарға қатысушы болады."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отправьте ссылку тем, с кем были, — даже если у них ещё нет Dalada. Откроют её в приложении после входа — станут участниками поездки."
+          }
+        }
+      }
+    },
+    "trip.inviteLink.send" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send the link"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сілтемені жіберу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отправить ссылку"
+          }
+        }
+      }
+    },
+    "trip.inviteLink.shareMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here’s our trip in Dalada:"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Бірге барайық — Dalada-дағы сапарымыз:"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поехали вместе — вот наша поездка в Dalada:"
+          }
+        }
+      }
+    },
+    "trip.inviteLink.signIn" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You’ve been invited on a trip. Sign in on the Profile tab and you’ll join it right away."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сізді сапарға шақырды. «Профильде» кіріңіз — бірден оған қатысушы боласыз."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вас пригласили в поездку. Войдите в «Профиле» — и вы сразу станете её участником."
+          }
+        }
+      }
+    },
+    "trip.inviteLink.signIn.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in to join"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Қосылу үшін кіріңіз"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Войдите, чтобы присоединиться"
+          }
+        }
+      }
+    },
+    "trip.inviteLink.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invite by link"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сілтеме арқылы шақыру"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Приглашение по ссылке"
+          }
+        }
+      }
+    },
     "trip.location.denied" : {
       "extractionState" : "manual",
       "localizations" : {

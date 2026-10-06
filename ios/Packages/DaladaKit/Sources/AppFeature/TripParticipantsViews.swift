@@ -104,6 +104,7 @@ struct TripParticipantsSection: View {
     @State private var actionError: String?
     @State private var showsActionError = false
     @State private var confirmsLeave = false
+    @State private var showsInviteLink = false
 
     var body: some View {
         Group {
@@ -176,13 +177,25 @@ struct TripParticipantsSection: View {
     }
 
     /// «Отметить друзей» — компактной кнопкой: это нечастое действие, не повод для большой кнопки.
+    /// «Отметить друзей» и «Пригласить по ссылке» — для тех, кого ещё нет в Dalada.
     private var tagButton: some View {
-        Button {
-            picked = []
-            showsPicker = true
-        } label: {
-            Label("trip.participants.tag", systemImage: "person.badge.plus")
-                .font(AppTypography.bodySmall)
+        HStack(spacing: AppSpacing.lg) {
+            Button {
+                picked = []
+                showsPicker = true
+            } label: {
+                Label("trip.participants.tag", systemImage: "person.badge.plus")
+                    .font(AppTypography.bodySmall)
+            }
+            Button {
+                showsInviteLink = true
+            } label: {
+                Label("trip.inviteLink.button", systemImage: "link")
+                    .font(AppTypography.bodySmall)
+            }
+            .sheet(isPresented: $showsInviteLink) {
+                TripInviteLinkSheet(tripID: tripID, environment: environment)
+            }
         }
         .buttonStyle(.borderless)
         .disabled(isWorking || participants.count >= TripParticipants.limit || environment.backend == nil)
@@ -349,6 +362,78 @@ struct TripInvitationsSection: View {
         }
         if let loaded = try? await backend.myTripInvitations() {
             invitations = loaded
+        }
+    }
+}
+
+// MARK: - Приглашение по ссылке
+
+/// «Пригласить по ссылке»: ссылка на страницу приглашения — для тех, у кого ещё нет Dalada. Открыл в
+/// приложении после входа — участник поездки, а вам — запрос в друзья. Ссылка живёт 30 дней.
+struct TripInviteLinkSheet: View {
+    let tripID: UUID
+    let environment: AppEnvironment
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var link: URL?
+    @State private var errorText: String?
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: AppSpacing.lg) {
+                Image(systemName: "link.badge.plus")
+                    .font(.system(size: AppIconSize.xxl))
+                    .foregroundStyle(AppColors.accent)
+                Text("trip.inviteLink.message")
+                    .font(AppTypography.body)
+                    .multilineTextAlignment(.center)
+                if let link {
+                    ShareLink(item: link, message: Text("trip.inviteLink.shareMessage")) {
+                        Label("trip.inviteLink.send", systemImage: "square.and.arrow.up")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .primaryButton()
+                } else if let errorText {
+                    Text(verbatim: errorText)
+                        .font(AppTypography.bodySmall)
+                        .foregroundStyle(AppColors.destructive)
+                        .multilineTextAlignment(.center)
+                    Button("common.retry") {
+                        Task { await load() }
+                    }
+                    .secondaryButton()
+                } else {
+                    ProgressView()
+                }
+                Text("trip.inviteLink.footer")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textTertiary)
+                    .multilineTextAlignment(.center)
+            }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.lg)
+            .navigationTitle("trip.inviteLink.title")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("common.close", systemImage: "xmark") { dismiss() }
+                }
+            }
+            .task { await load() }
+        }
+        .presentationDetents([.medium])
+    }
+
+    private func load() async {
+        errorText = nil
+        guard let backend = environment.backend else {
+            errorText = String(localized: "own.error.offline")
+            return
+        }
+        do {
+            link = WebLink.tripInvite(try await backend.tripInviteLink(tripID))
+        } catch {
+            errorText = CommunityMessage.text(for: error)
         }
     }
 }

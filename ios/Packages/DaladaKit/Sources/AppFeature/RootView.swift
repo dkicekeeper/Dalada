@@ -35,6 +35,10 @@ public struct RootView: View {
     /// Комментарии из пуша `dalada://comments/<вид>/<id>`.
     @State private var commentsLink: CommentsLinkItem?
     @State private var packingLink: PackingLinkItem?
+    /// Приглашение в поездку по ссылке `dalada://trip-invite/<токен>`: ждёт входа, если гость.
+    @AppStorage("tripInvite.pending") private var pendingTripInvite = ""
+    @State private var inviteError: String?
+    @State private var inviteNeedsSignIn = false
     /// Место по ссылке `dalada://place/<id>` («Поделиться»).
     @State private var placeLink: PlaceSelection?
 
@@ -131,7 +135,25 @@ public struct RootView: View {
             } else if LiveLink.matches(url) {
                 // «Сейчас на выезде» — на «Главной».
                 router.selection = .home
+            } else if let token = TripInviteLink.token(from: url) {
+                pendingTripInvite = token
+                Task { await acceptPendingTripInvite() }
             }
+        }
+        // Вошёл после ссылки-приглашения — принимаем.
+        .task(id: session.profile?.id) { await acceptPendingTripInvite() }
+        .alert(
+            "trip.inviteLink.failed",
+            isPresented: Binding(get: { inviteError != nil }, set: { if !$0 { inviteError = nil } })
+        ) {
+            Button("common.ok", role: .cancel) {}
+        } message: {
+            Text(verbatim: inviteError ?? "")
+        }
+        .alert("trip.inviteLink.signIn.title", isPresented: $inviteNeedsSignIn) {
+            Button("common.ok", role: .cancel) { router.selection = .profile }
+        } message: {
+            Text("trip.inviteLink.signIn")
         }
         .sheet(item: $packingLink) { link in
             NavigationStack {
@@ -267,6 +289,24 @@ public struct RootView: View {
 
     /// Запись начинается после закрытия листа: иначе полноэкранная запись
     /// не откроется поверх закрывающегося листа.
+    /// Приглашение в поездку по ссылке: после входа — участник, сразу открываем поездку. Гостю —
+    /// просьба войти (ссылка ждёт).
+    private func acceptPendingTripInvite() async {
+        guard !pendingTripInvite.isEmpty else { return }
+        guard session.profile != nil, let backend = environment.backend else {
+            if case .guest = session.state { inviteNeedsSignIn = true }
+            return
+        }
+        let token = pendingTripInvite
+        pendingTripInvite = ""
+        do {
+            let tripID = try await backend.acceptTripInviteLink(token)
+            tripLink = TripLinkItem(id: tripID)
+        } catch {
+            inviteError = CommunityMessage.text(for: error)
+        }
+    }
+
     private func runPendingTrip() {
         guard let activity = pendingTripActivity else { return }
         pendingTripActivity = nil
