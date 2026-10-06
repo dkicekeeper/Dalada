@@ -74,3 +74,8 @@ public enum AppBootstrap {
         MapCache.configure()
     }
 }
+
+extension EnvironmentValues {
+    /// Зависимости приложения для экранов, которые создаются без них (например, чеклист из списка).
+    @Entry var appEnvironment: AppEnvironment?
+}

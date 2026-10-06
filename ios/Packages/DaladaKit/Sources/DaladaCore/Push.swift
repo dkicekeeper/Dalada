@@ -28,3 +28,28 @@ public enum ThreadLink {
         return url.pathComponents.dropFirst().first.flatMap(UUID.init(uuidString:))
     }
 }
+
+/// Общие сборы (из пуша-приглашения): `dalada://packing/<id>`.
+public enum PackingLink {
+    static let host = "packing"
+
+    public static func url(packingID: UUID) -> URL {
+        URL(string: "\(InviteLink.scheme)://\(host)/\(packingID.uuidString.lowercased())")!
+    }
+
+    public static func packingID(from url: URL) -> UUID? {
+        guard url.scheme?.lowercased() == InviteLink.scheme, url.host?.lowercased() == host else { return nil }
+        return url.pathComponents.dropFirst().first.flatMap(UUID.init(uuidString:))
+    }
+}
+
+/// Друг показывает, где он (из пуша): `dalada://live` — «Главная» с «Сейчас на выезде».
+public enum LiveLink {
+    static let host = "live"
+
+    public static let url = URL(string: "\(InviteLink.scheme)://\(host)")!
+
+    public static func matches(_ url: URL) -> Bool {
+        url.scheme?.lowercased() == InviteLink.scheme && url.host?.lowercased() == host
+    }
+}

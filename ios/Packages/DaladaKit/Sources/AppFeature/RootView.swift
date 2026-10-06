@@ -34,6 +34,7 @@ public struct RootView: View {
     @State private var tripLink: TripLinkItem?
     /// Комментарии из пуша `dalada://comments/<вид>/<id>`.
     @State private var commentsLink: CommentsLinkItem?
+    @State private var packingLink: PackingLinkItem?
     /// Место по ссылке `dalada://place/<id>` («Поделиться»).
     @State private var placeLink: PlaceSelection?
 
@@ -125,7 +126,19 @@ public struct RootView: View {
                 tripLink = TripLinkItem(id: tripID)
             } else if let key = CommentsLink.key(from: url) {
                 commentsLink = CommentsLinkItem(key: key)
+            } else if let packingID = PackingLink.packingID(from: url) {
+                packingLink = PackingLinkItem(id: packingID)
+            } else if LiveLink.matches(url) {
+                // «Сейчас на выезде» — на «Главной».
+                router.selection = .home
             }
+        }
+        .sheet(item: $packingLink) { link in
+            NavigationStack {
+                SharedPackingView(packingID: link.id, environment: environment)
+            }
+            .environment(session)
+            .environment(avatars)
         }
         .sheet(item: $tripLink) { link in
             NavigationStack {
@@ -194,6 +207,7 @@ public struct RootView: View {
             }
             .environment(session)
         }
+        .environment(\.appEnvironment, environment)
         .environment(router)
         .environment(avatars)
         .environment(session)
@@ -274,6 +288,11 @@ struct ThreadLinkItem: Identifiable, Hashable {
 
 /// Поездка, открытая по ссылке из пуша.
 struct TripLinkItem: Identifiable, Hashable {
+    let id: UUID
+}
+
+/// Общие сборы, открытые по ссылке из пуша-приглашения.
+struct PackingLinkItem: Identifiable, Hashable {
     let id: UUID
 }
 

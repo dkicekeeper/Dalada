@@ -20,6 +20,8 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
     public var notifyPlaceActivity: Bool?
     public var notifyTripTags: Bool?
     public var notifyReactions: Bool?
+    public var notifyLiveShare: Bool?
+    public var notifySteward: Bool?
     public var quietFrom: Int?
     public var quietTo: Int?
 
@@ -64,6 +66,8 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
         case notifyPlaceActivity = "notify_place_activity"
         case notifyTripTags = "notify_trip_tags"
         case notifyReactions = "notify_reactions"
+        case notifyLiveShare = "notify_live_share"
+        case notifySteward = "notify_steward"
         case quietFrom = "quiet_from"
         case quietTo = "quiet_to"
     }
@@ -79,6 +83,8 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
             placeActivity: notifyPlaceActivity ?? true,
             tripTags: notifyTripTags ?? true,
             reactions: notifyReactions ?? true,
+            liveShare: notifyLiveShare ?? true,
+            steward: notifySteward ?? true,
             quietHours: quietFrom.flatMap { from in quietTo.map { QuietHours(from: from, to: $0) } }
         )
     }
@@ -130,6 +136,10 @@ public struct NotificationSettings: Equatable, Sendable {
     public var tripTags: Bool
     /// «Респект» моей поездке, отчёту или ответу, «полезно» отзыву.
     public var reactions: Bool
+    /// Друг начал показывать мне, где он.
+    public var liveShare: Bool
+    /// Я стал смотрителем места.
+    public var steward: Bool
     /// `nil` — без тихих часов.
     public var quietHours: QuietHours?
 
@@ -142,6 +152,8 @@ public struct NotificationSettings: Equatable, Sendable {
         placeActivity: Bool = true,
         tripTags: Bool = true,
         reactions: Bool = true,
+        liveShare: Bool = true,
+        steward: Bool = true,
         quietHours: QuietHours? = nil
     ) {
         self.replies = replies
@@ -152,6 +164,8 @@ public struct NotificationSettings: Equatable, Sendable {
         self.placeActivity = placeActivity
         self.tripTags = tripTags
         self.reactions = reactions
+        self.liveShare = liveShare
+        self.steward = steward
         self.quietHours = quietHours
     }
 }
@@ -186,6 +200,8 @@ extension NotificationSettings: Encodable {
         case placeActivity = "notify_place_activity"
         case tripTags = "notify_trip_tags"
         case reactions = "notify_reactions"
+        case liveShare = "notify_live_share"
+        case steward = "notify_steward"
         case quietFrom = "quiet_from"
         case quietTo = "quiet_to"
     }
@@ -201,6 +217,8 @@ extension NotificationSettings: Encodable {
         try c.encode(placeActivity, forKey: .placeActivity)
         try c.encode(tripTags, forKey: .tripTags)
         try c.encode(reactions, forKey: .reactions)
+        try c.encode(liveShare, forKey: .liveShare)
+        try c.encode(steward, forKey: .steward)
         try c.encode(quietHours?.from, forKey: .quietFrom)
         try c.encode(quietHours?.to, forKey: .quietTo)
     }

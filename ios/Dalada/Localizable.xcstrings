@@ -9135,6 +9135,29 @@
         }
       }
     },
+    "notifications.kind.liveShare" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Friends show where they are"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Достар қай жерде екенін көрсетеді"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Друзья показывают, где они"
+          }
+        }
+      }
+    },
     "notifications.kind.placeActivity" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9204,25 +9227,48 @@
         }
       }
     },
+    "notifications.kind.steward" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I became a place keeper"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Мен орын қараушысы болдым"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Я стал смотрителем места"
+          }
+        }
+      }
+    },
     "notifications.kind.tripTags" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trip tags"
+            "value" : "Trip tags and shared packing"
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Сапардағы белгілер"
+            "value" : "Сапардағы белгілер және ортақ жиналу"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отметки в поездках"
+            "value" : "Отметки в поездках и общие сборы"
           }
         }
       }
@@ -19193,6 +19239,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Общие сборы"
+          }
+        }
+      }
+    },
+    "sharedPacking.together" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pack together"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Бірге жиналу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Собираться вместе"
           }
         }
       }

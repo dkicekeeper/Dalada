@@ -22,6 +22,7 @@ struct NotificationSettingsView: View {
                     Toggle("notifications.kind.friendPosts", isOn: binding(\.friendPosts))
                     Toggle("notifications.kind.tripTags", isOn: binding(\.tripTags))
                     Toggle("notifications.kind.reactions", isOn: binding(\.reactions))
+                    Toggle("notifications.kind.liveShare", isOn: binding(\.liveShare))
                 } header: {
                     Text("notifications.section.people")
                 } footer: {
@@ -31,6 +32,7 @@ struct NotificationSettingsView: View {
                 Section {
                     Toggle("notifications.kind.bans", isOn: binding(\.bans))
                     Toggle("notifications.kind.placeActivity", isOn: binding(\.placeActivity))
+                    Toggle("notifications.kind.steward", isOn: binding(\.steward))
                 } header: {
                     Text("notifications.section.places")
                 } footer: {

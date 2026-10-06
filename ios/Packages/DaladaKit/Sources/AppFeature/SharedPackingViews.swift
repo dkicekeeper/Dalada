@@ -114,6 +114,13 @@ struct SharePackingSheet: View {
     @State private var isSharing = false
     @State private var errorText: String?
 
+    /// `preselected` — сразу эти сборы (из экрана чеклиста), без выбора списка.
+    init(environment: AppEnvironment, preselected: Checklist? = nil, onShared: @escaping @MainActor (UUID) -> Void) {
+        self.environment = environment
+        self.onShared = onShared
+        _chosen = State(initialValue: preselected)
+    }
+
     var body: some View {
         NavigationStack {
             Group {

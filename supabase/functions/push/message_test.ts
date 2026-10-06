@@ -178,3 +178,25 @@ Deno.test("упоминание в обсуждении — «Вас упомя�
   assertEquals(buildMessage({ ...reply, kind: "thread_reply", language: "kk", payload }).title, "Сізді атап өтті: Дорога");
   assertEquals(buildMessage({ ...reply, kind: "thread_reply", language: "en", payload }).title, "You were mentioned: Дорога");
 });
+
+Deno.test("друг на выезде, общие сборы и смотритель — тексты и ссылки", () => {
+  const live = buildMessage({ ...reply, kind: "live_share", payload: { actor: "@bob", username: "bob" } });
+  assertEquals(live.title, "Друг на выезде");
+  assertEquals(live.url, "dalada://live");
+  const packing = buildMessage({
+    ...reply,
+    kind: "packing_invite",
+    language: "en",
+    payload: { actor: "@bob", username: "bob", packing_id: "abababab-0000-0000-0000-000000000001", title: "Капшагай" },
+  });
+  assertEquals(packing.title, "Shared packing: Капшагай");
+  assertEquals(packing.url, "dalada://packing/abababab-0000-0000-0000-000000000001");
+  const steward = buildMessage({
+    ...reply,
+    kind: "steward",
+    language: "kk",
+    payload: { place_id: "aaaaaaaa-0000-0000-0000-000000000001", place_name: "Залив" },
+  });
+  assertEquals(steward.body, "«Залив»: 60 күндегі расталған есептер сізде ең көп.");
+  assertEquals(steward.url, "dalada://place/aaaaaaaa-0000-0000-0000-000000000001");
+});

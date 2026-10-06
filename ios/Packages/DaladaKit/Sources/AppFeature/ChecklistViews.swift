@@ -310,6 +310,10 @@ struct ChecklistDetailView: View {
     @State private var startsPacking = false
     @State private var confirmsDelete = false
     @State private var opened: UUID?
+    @State private var sharesPacking = false
+    @State private var sharedPacking: UUID?
+    @Environment(\.appEnvironment) private var appEnvironment
+    @Environment(SessionStore.self) private var session
 
     var body: some View {
         if let checklist = lists.checklist(checklistID) {
@@ -400,6 +404,14 @@ struct ChecklistDetailView: View {
                             Label("packing.startFromThis", systemImage: "bag.badge.plus")
                         }
                     }
+                    // Собираться вместе: копия пунктов у друзей, каждый отмечает, что возьмёт.
+                    if appEnvironment?.backend != nil, session.profile != nil, !checklist.items.isEmpty {
+                        Button {
+                            sharesPacking = true
+                        } label: {
+                            Label("sharedPacking.together", systemImage: "person.2.badge.gearshape")
+                        }
+                    }
                     Button {
                         lists.update(checklistID) { $0.resetChecks() }
                     } label: {
@@ -440,6 +452,18 @@ struct ChecklistDetailView: View {
         .sheet(isPresented: $startsPacking) {
             StartPackingView(source: .list(checklist.id)) { opened = $0.id }
                 .environment(lists)
+        }
+        .sheet(isPresented: $sharesPacking) {
+            if let appEnvironment {
+                SharePackingSheet(environment: appEnvironment, preselected: checklist) { sharedPacking = $0 }
+                    .environment(lists)
+                    .environment(session)
+            }
+        }
+        .navigationDestination(item: $sharedPacking) { id in
+            if let appEnvironment {
+                SharedPackingView(packingID: id, environment: appEnvironment)
+            }
         }
         .navigationDestination(item: $opened) { id in
             ChecklistDetailView(checklistID: id)

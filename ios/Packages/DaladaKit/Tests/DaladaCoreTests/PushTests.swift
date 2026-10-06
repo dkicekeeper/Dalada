@@ -17,4 +17,15 @@ struct PushTests {
         #expect(ThreadLink.threadID(from: URL(string: "dalada://thread/not-a-uuid")!) == nil)
         #expect(InviteLink.username(from: url) == nil, "ссылка на обсуждение — не приглашение")
     }
+
+    @Test func packingAndLiveLinks() throws {
+        let id = try #require(UUID(uuidString: "ABABABAB-0000-0000-0000-000000000001"))
+        let url = PackingLink.url(packingID: id)
+        #expect(url.absoluteString == "dalada://packing/abababab-0000-0000-0000-000000000001")
+        #expect(PackingLink.packingID(from: url) == id)
+        #expect(PackingLink.packingID(from: LiveLink.url) == nil)
+        #expect(LiveLink.matches(URL(string: "dalada://live")!))
+        #expect(!LiveLink.matches(url))
+        #expect(InviteLink.username(from: LiveLink.url) == nil, "«на выезде» — не приглашение")
+    }
 }

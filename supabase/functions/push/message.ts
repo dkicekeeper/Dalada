@@ -12,6 +12,9 @@ export type PushKind =
   | "moderation"
   | "trip_tag"
   | "reaction"
+  | "live_share"
+  | "packing_invite"
+  | "steward"
   | "test";
 
 export type PushRow = {
@@ -42,6 +45,8 @@ export type PushRow = {
     // Решение модерации: suggestion или report; accepted, rejected, resolved, dismissed.
     topic?: string;
     status?: string;
+    // Общие сборы, куда позвали.
+    packing_id?: string;
   };
   token: string;
   environment: "sandbox" | "production";
@@ -99,6 +104,15 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
         ? `Респект вашему ответу в обсуждении «${p.title ?? "обсуждение"}»`
         : `Респект вашей поездке «${p.title ?? "поездка"}»`,
     }),
+    live_share: (p) => ({ title: "Друг на выезде", body: `${p.actor} показывает вам, где сейчас находится. Откройте «Главную».` }),
+    packing_invite: (p) => ({
+      title: `Общие сборы: ${p.title ?? "поездка"}`,
+      body: `${p.actor} зовёт собираться вместе — отметьте, что возьмёте.`,
+    }),
+    steward: (p) => ({
+      title: "Вы — смотритель места",
+      body: `«${p.place_name ?? "место"}»: у вас больше всего подтверждённых отчётов за 60 дней.`,
+    }),
     test: () => ({ title: "Dalada", body: "Уведомления работают — это проверка." }),
   },
   kk: {
@@ -140,6 +154,15 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
         : p.target_kind === "post"
         ? `«${p.title ?? "талқылау"}» талқылауындағы жауабыңызға құрмет`
         : `«${p.title ?? "сапар"}» сапарыңызға құрмет`,
+    }),
+    live_share: (p) => ({ title: "Дос сапарда", body: `${p.actor} қазір қай жерде екенін сізге көрсетуде. «Басты бетті» ашыңыз.` }),
+    packing_invite: (p) => ({
+      title: `Ортақ жиналу: ${p.title ?? "сапар"}`,
+      body: `${p.actor} бірге жиналуға шақырады — не алатыныңызды белгілеңіз.`,
+    }),
+    steward: (p) => ({
+      title: "Сіз — орын қараушысысыз",
+      body: `«${p.place_name ?? "орын"}»: 60 күндегі расталған есептер сізде ең көп.`,
     }),
     test: () => ({ title: "Dalada", body: "Хабарландырулар жұмыс істейді — бұл тексеру." }),
   },
@@ -183,6 +206,15 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
         ? `Respect for your reply in “${p.title ?? "a discussion"}”`
         : `Respect for your trip “${p.title ?? "a trip"}”`,
     }),
+    live_share: (p) => ({ title: "Friend out on a trip", body: `${p.actor} is showing you where they are. Open Home.` }),
+    packing_invite: (p) => ({
+      title: `Shared packing: ${p.title ?? "a trip"}`,
+      body: `${p.actor} invites you to pack together — mark what you’ll bring.`,
+    }),
+    steward: (p) => ({
+      title: "You’re the place keeper",
+      body: `“${p.place_name ?? "a place"}”: you have the most verified reports in 60 days.`,
+    }),
     test: () => ({ title: "Dalada", body: "Notifications work — this is a test." }),
   },
 };
@@ -190,7 +222,8 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
 /// Текст и ссылка для перехода по нажатию: обсуждение (dalada://thread/<id>), поездка — в том числе
 /// с отметкой (dalada://trip/<id>), место отчёта друга (dalada://place/<id>), комментарии к отчёту или отзыву
 /// (dalada://comments/<checkin|review>/<id>), иначе профиль автора (dalada://u/<username>). Реакция ведёт
-/// к записи: поездке, обсуждению или комментариям отчёта и отзыва.
+/// к записи: поездке, обсуждению или комментариям отчёта и отзыва. Друг на выезде — «Главная»
+/// (dalada://live), общие сборы — dalada://packing/<id>, смотритель — место.
 export function buildMessage(row: PushRow): Message {
   const p = row.payload;
   const language = texts[row.language] ? row.language : "ru";
@@ -198,7 +231,11 @@ export function buildMessage(row: PushRow): Message {
   const payload = { ...p, actor: p.actor ?? "Dalada", zone: zones[language] ?? p.zone_ru ?? "" };
   const { title, body } = texts[language][row.kind](payload);
   let url: string | undefined;
-  if ((row.kind === "thread_reply" || (row.kind === "reaction" && p.target_kind === "post")) && p.thread_id) {
+  if (row.kind === "live_share") {
+    url = "dalada://live";
+  } else if (row.kind === "packing_invite" && p.packing_id) {
+    url = `dalada://packing/${p.packing_id}`;
+  } else if ((row.kind === "thread_reply" || (row.kind === "reaction" && p.target_kind === "post")) && p.thread_id) {
     url = `dalada://thread/${p.thread_id}`;
   } else if (
     (row.kind === "comment" || row.kind === "friend_post" || row.kind === "trip_tag" || row.kind === "reaction") &&
@@ -207,7 +244,8 @@ export function buildMessage(row: PushRow): Message {
     url = `dalada://trip/${p.target_id}`;
   } else if (
     (row.kind === "friend_post" || row.kind === "ban_start" || row.kind === "ban_end" ||
-      row.kind === "place_activity" || (row.kind === "moderation" && p.topic === "suggestion")) && p.place_id
+      row.kind === "place_activity" || row.kind === "steward" ||
+      (row.kind === "moderation" && p.topic === "suggestion")) && p.place_id
   ) {
     url = `dalada://place/${p.place_id}`;
   } else if ((row.kind === "comment" || row.kind === "reaction") && p.target_kind && p.target_id) {
