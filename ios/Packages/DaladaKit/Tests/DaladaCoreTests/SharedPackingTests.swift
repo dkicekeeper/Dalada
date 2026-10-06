@@ -36,6 +36,20 @@ struct SharedPackingTests {
         #expect(groups.last?.items.map(\.title) == ["Котелок"])
     }
 
+    /// Кэш без сети пишет и читает обычным `JSONEncoder` / `JSONDecoder`.
+    @Test func roundTripsForCache() throws {
+        let summary = SharedPackingSummary(
+            id: UUID(), ownerID: UUID(), ownerUsername: "arman", ownerDisplayName: nil, title: "Капшагай",
+            tripDate: CalendarDay(year: 2026, month: 10, day: 12), membersCount: 2, itemsCount: 3, doneCount: 1,
+            isOwn: true, updatedAt: Date(timeIntervalSince1970: 1_790_000_000)
+        )
+        let item = SharedPackingItem(id: UUID(), title: "Палатка", category: "camp", position: 1, assigneeID: UUID(), done: true, createdBy: nil)
+        let member = SharedPackingMember(userID: UUID(), username: nil, displayName: "Арман", avatarPath: nil, isOwner: true)
+        #expect(try JSONDecoder().decode([SharedPackingSummary].self, from: JSONEncoder().encode([summary])) == [summary])
+        #expect(try JSONDecoder().decode([SharedPackingItem].self, from: JSONEncoder().encode([item])) == [item])
+        #expect(try JSONDecoder().decode([SharedPackingMember].self, from: JSONEncoder().encode([member])) == [member])
+    }
+
     @Test func itemsFromChecklistDropChecks() {
         let checklist = Checklist(
             kind: .packing,

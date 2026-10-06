@@ -110,12 +110,12 @@ public struct CacheKey: Hashable, Sendable {
         CacheKey(rawValue: userPrefix(user) + "my_photos")
     }
 
-    /// Треки своих поездок — слой «Мои треки» на карте без сети.
     /// Свои фото с точками — слой «Мои фото».
     public static func myPhotoPoints(_ user: UUID) -> CacheKey {
         CacheKey(rawValue: userPrefix(user) + "photo-points")
     }
 
+    /// Треки своих поездок — слой «Мои треки» на карте без сети.
     public static func myTracks(_ user: UUID) -> CacheKey {
         CacheKey(rawValue: userPrefix(user) + "my_tracks")
     }
@@ -123,6 +123,16 @@ public struct CacheKey: Hashable, Sendable {
     /// Личные рекорды — для поздравления с новым рекордом без сети.
     public static func myRecords(_ user: UUID) -> CacheKey {
         CacheKey(rawValue: userPrefix(user) + "my_records")
+    }
+
+    /// Общие сборы — список, чтобы открыть их в дороге без сети.
+    public static func sharedPackings(_ user: UUID) -> CacheKey {
+        CacheKey(rawValue: userPrefix(user) + "shared_packings")
+    }
+
+    /// Пункты и участники одних общих сборов.
+    public static func sharedPacking(_ id: UUID, user: UUID) -> CacheKey {
+        CacheKey(rawValue: userPrefix(user) + "shared_packing/" + id.uuidString.lowercased())
     }
 
     /// Значки профиля.

@@ -2,6 +2,7 @@ import Backend
 import DaladaCore
 import DesignComponents
 import DesignTokens
+import Persistence
 import SwiftUI
 
 // MARK: - Список
@@ -61,11 +62,16 @@ struct SharedPackingsView: View {
         .refreshable { await load() }
     }
 
+    /// С сервера, а без сети — последний сохранённый список.
     private func load() async {
         defer { isLoaded = true }
-        guard session.profile != nil, let backend = environment.backend else { return }
-        if let loaded = try? await backend.mySharedPackings() {
+        guard let userID = session.profile?.id else { return }
+        let key = CacheKey.sharedPackings(userID)
+        if let backend = environment.backend, let loaded = try? await backend.mySharedPackings() {
             packings = loaded
+            try? await environment.cache.save(loaded, for: key)
+        } else if packings.isEmpty, let cached = try? await environment.cache.load([SharedPackingSummary].self, for: key) {
+            packings = cached
         }
     }
 }
@@ -225,6 +231,7 @@ struct SharePackingSheet: View {
 
 /// Общие сборы: по категориям; у пункта — «собрано» и кто берёт («Возьму»). Добавить пункт может
 /// любой участник; убрать — автор сборов или кто добавил. Обновляется раз в 30 секунд, пока открыт.
+/// Без сети — последнее, что загрузилось (только посмотреть: отметки меняются на сервере).
 struct SharedPackingView: View {
     let packingID: UUID
     let environment: AppEnvironment
@@ -329,6 +336,7 @@ struct SharedPackingView: View {
             Button(leaveTitle, role: .destructive) {
                 Task {
                     await act { [packingID] in try await $0.leaveSharedPacking(packingID) }
+                    if let me { try? await environment.cache.remove(CacheKey.sharedPacking(packingID, user: me)) }
                     dismiss()
                 }
             }
@@ -409,11 +417,24 @@ struct SharedPackingView: View {
 
     private func load() async {
         defer { isLoaded = true }
-        guard let backend = environment.backend else { return }
-        async let loadedItems = try? backend.sharedPackingItems(packingID)
-        async let loadedMembers = try? backend.sharedPackingMembers(packingID)
-        if let loadedItems = await loadedItems { items = loadedItems }
-        if let loadedMembers = await loadedMembers { members = loadedMembers }
+        let key = me.map { CacheKey.sharedPacking(packingID, user: $0) }
+        if let backend = environment.backend {
+            async let loadedItems = try? backend.sharedPackingItems(packingID)
+            async let loadedMembers = try? backend.sharedPackingMembers(packingID)
+            if let loadedItems = await loadedItems, let loadedMembers = await loadedMembers {
+                items = loadedItems
+                members = loadedMembers
+                if let key {
+                    try? await environment.cache.save(SharedPackingSnapshot(items: loadedItems, members: loadedMembers), for: key)
+                }
+                return
+            }
+        }
+        if items.isEmpty, members.isEmpty, let key,
+           let cached = try? await environment.cache.load(SharedPackingSnapshot.self, for: key) {
+            items = cached.items
+            members = cached.members
+        }
     }
 
     private func addItem() async {
@@ -436,4 +457,10 @@ struct SharedPackingView: View {
         }
         await load()
     }
+}
+
+/// Общие сборы для кэша: пункты и участники вместе.
+private struct SharedPackingSnapshot: Codable, Sendable {
+    let items: [SharedPackingItem]
+    let members: [SharedPackingMember]
 }
