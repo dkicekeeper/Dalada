@@ -15,6 +15,7 @@ export type PushKind =
   | "live_share"
   | "packing_invite"
   | "steward"
+  | "streak"
   | "test";
 
 export type PushRow = {
@@ -47,6 +48,8 @@ export type PushRow = {
     status?: string;
     // Общие сборы, куда позвали.
     packing_id?: string;
+    // Серия: сколько недель подряд.
+    weeks?: number;
   };
   token: string;
   environment: "sandbox" | "production";
@@ -113,6 +116,10 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
       title: "Вы — смотритель места",
       body: `«${p.place_name ?? "место"}»: у вас больше всего подтверждённых отчётов за 60 дней.`,
     }),
+    streak: (p) => ({
+      title: "Серия под угрозой",
+      body: `Недель подряд: ${p.weeks ?? ""}. Выберитесь на природу до воскресенья, чтобы продолжить.`,
+    }),
     test: () => ({ title: "Dalada", body: "Уведомления работают — это проверка." }),
   },
   kk: {
@@ -164,6 +171,10 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
       title: "Сіз — орын қараушысысыз",
       body: `«${p.place_name ?? "орын"}»: 60 күндегі расталған есептер сізде ең көп.`,
     }),
+    streak: (p) => ({
+      title: "Серия үзілуі мүмкін",
+      body: `Қатарынан апта: ${p.weeks ?? ""}. Жалғастыру үшін жексенбіге дейін табиғатқа шығыңыз.`,
+    }),
     test: () => ({ title: "Dalada", body: "Хабарландырулар жұмыс істейді — бұл тексеру." }),
   },
   en: {
@@ -214,6 +225,10 @@ const texts: Record<string, Record<PushKind, (p: Payload) => { title: string; bo
     steward: (p) => ({
       title: "You’re the place keeper",
       body: `“${p.place_name ?? "a place"}”: you have the most verified reports in 60 days.`,
+    }),
+    streak: (p) => ({
+      title: "Your streak is at risk",
+      body: `Weeks in a row: ${p.weeks ?? ""}. Get outdoors by Sunday to keep it going.`,
     }),
     test: () => ({ title: "Dalada", body: "Notifications work — this is a test." }),
   },

@@ -40,6 +40,14 @@ struct NotificationSettingsView: View {
                 }
 
                 Section {
+                    Toggle("notifications.kind.streak", isOn: binding(\.streak))
+                } header: {
+                    Text("notifications.section.reminders")
+                } footer: {
+                    Text("notifications.reminders.footer")
+                }
+
+                Section {
                     Toggle("notifications.quiet.toggle", isOn: quietBinding)
                     if settings.quietHours != nil {
                         Picker("notifications.quiet.from", selection: hourBinding(\.from)) {

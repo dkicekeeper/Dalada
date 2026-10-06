@@ -209,3 +209,10 @@ Deno.test("комментарий в заметках места — к комм
   });
   assertEquals(message.url, "dalada://comments/place/aaaaaaaa-0000-0000-0000-000000000001");
 });
+
+Deno.test("серия под угрозой — без ссылки, с числом недель", () => {
+  const message = buildMessage({ ...reply, kind: "streak", language: "en", payload: { weeks: 5 } });
+  assertEquals(message.title, "Your streak is at risk");
+  assertEquals(message.body, "Weeks in a row: 5. Get outdoors by Sunday to keep it going.");
+  assertEquals(message.url, undefined);
+});

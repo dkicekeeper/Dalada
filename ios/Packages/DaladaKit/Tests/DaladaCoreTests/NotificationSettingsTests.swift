@@ -35,7 +35,7 @@ struct NotificationSettingsTests {
          "notify_replies": true, "notify_friend_requests": false, "notify_comments": true,
          "notify_friend_posts": false, "notify_bans": false, "notify_place_activity": true,
          "notify_trip_tags": false, "notify_reactions": false, "notify_live_share": false,
-         "notify_steward": true, "quiet_from": 23, "quiet_to": 7}
+         "notify_steward": true, "notify_streak": false, "quiet_from": 23, "quiet_to": 7}
         """.utf8))
         #expect(profile.notificationSettings == NotificationSettings(
             friendRequests: false,
@@ -44,6 +44,7 @@ struct NotificationSettingsTests {
             tripTags: false,
             reactions: false,
             liveShare: false,
+            streak: false,
             quietHours: QuietHours(from: 23, to: 7)
         ))
     }
@@ -64,9 +65,10 @@ struct NotificationSettingsTests {
         #expect(json["notify_reactions"] as? Bool == true)
         #expect(json["notify_live_share"] as? Bool == true)
         #expect(json["notify_steward"] as? Bool == true)
+        #expect(json["notify_streak"] as? Bool == true)
         #expect(json["quiet_from"] is NSNull)
         #expect(json["quiet_to"] is NSNull)
-        #expect(json.count == 12)
+        #expect(json.count == 13)
     }
 
     @Test func encodesQuietHours() throws {

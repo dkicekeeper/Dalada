@@ -10055,6 +10055,29 @@
         }
       }
     },
+    "notifications.kind.streak" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My streak is at risk"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Серия үзілуі мүмкін"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Серия под угрозой"
+          }
+        }
+      }
+    },
     "notifications.kind.tripTags" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10285,6 +10308,29 @@
         }
       }
     },
+    "notifications.reminders.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On Saturday morning, if your outdoor streak is 2+ weeks and you haven’t been out this week yet."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Табиғаттағы апталар сериясы 2 аптадан асса және осы аптада әлі шықпасаңыз — сенбі күні таңертең."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В субботу утром, если серия недель на природе длится от 2 недель, а на этой неделе выезда ещё не было."
+          }
+        }
+      }
+    },
     "notifications.section.people" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10327,6 +10373,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Места"
+          }
+        }
+      }
+    },
+    "notifications.section.reminders" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminders"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Еске салғыштар"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Напоминания"
           }
         }
       }

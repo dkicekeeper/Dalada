@@ -22,6 +22,7 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
     public var notifyReactions: Bool?
     public var notifyLiveShare: Bool?
     public var notifySteward: Bool?
+    public var notifyStreak: Bool?
     public var quietFrom: Int?
     public var quietTo: Int?
     /// Закрытый профиль (`nil` — старый ответ без поля: открыт).
@@ -70,6 +71,7 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
         case notifyReactions = "notify_reactions"
         case notifyLiveShare = "notify_live_share"
         case notifySteward = "notify_steward"
+        case notifyStreak = "notify_streak"
         case quietFrom = "quiet_from"
         case quietTo = "quiet_to"
         case isPrivate = "is_private"
@@ -88,6 +90,7 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
             reactions: notifyReactions ?? true,
             liveShare: notifyLiveShare ?? true,
             steward: notifySteward ?? true,
+            streak: notifyStreak ?? true,
             quietHours: quietFrom.flatMap { from in quietTo.map { QuietHours(from: from, to: $0) } }
         )
     }
@@ -143,6 +146,8 @@ public struct NotificationSettings: Equatable, Sendable {
     public var liveShare: Bool
     /// Я стал смотрителем места.
     public var steward: Bool
+    /// Серия недель на природе вот-вот прервётся (суббота).
+    public var streak: Bool
     /// `nil` — без тихих часов.
     public var quietHours: QuietHours?
 
@@ -157,6 +162,7 @@ public struct NotificationSettings: Equatable, Sendable {
         reactions: Bool = true,
         liveShare: Bool = true,
         steward: Bool = true,
+        streak: Bool = true,
         quietHours: QuietHours? = nil
     ) {
         self.replies = replies
@@ -169,6 +175,7 @@ public struct NotificationSettings: Equatable, Sendable {
         self.reactions = reactions
         self.liveShare = liveShare
         self.steward = steward
+        self.streak = streak
         self.quietHours = quietHours
     }
 }
@@ -205,6 +212,7 @@ extension NotificationSettings: Encodable {
         case reactions = "notify_reactions"
         case liveShare = "notify_live_share"
         case steward = "notify_steward"
+        case streak = "notify_streak"
         case quietFrom = "quiet_from"
         case quietTo = "quiet_to"
     }
@@ -222,6 +230,7 @@ extension NotificationSettings: Encodable {
         try c.encode(reactions, forKey: .reactions)
         try c.encode(liveShare, forKey: .liveShare)
         try c.encode(steward, forKey: .steward)
+        try c.encode(streak, forKey: .streak)
         try c.encode(quietHours?.from, forKey: .quietFrom)
         try c.encode(quietHours?.to, forKey: .quietTo)
     }
