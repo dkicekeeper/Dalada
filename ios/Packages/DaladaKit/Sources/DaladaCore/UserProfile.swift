@@ -24,6 +24,8 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
     public var notifySteward: Bool?
     public var quietFrom: Int?
     public var quietTo: Int?
+    /// Закрытый профиль (`nil` — старый ответ без поля: открыт).
+    public var isPrivate: Bool?
 
     public init(
         id: UUID,
@@ -70,6 +72,7 @@ public struct UserProfile: Codable, Equatable, Sendable, Identifiable {
         case notifySteward = "notify_steward"
         case quietFrom = "quiet_from"
         case quietTo = "quiet_to"
+        case isPrivate = "is_private"
     }
 
     /// Настройки уведомлений из профиля (чего нет в ответе — включено).

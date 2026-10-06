@@ -45,6 +45,19 @@ extension BackendClient {
             .value
     }
 
+    /// Закрытый профиль: не друзьям на странице — только шапка.
+    public func updateProfilePrivacy(isPrivate: Bool) async throws -> UserProfile {
+        guard let userID = supabase.auth.currentUser?.id else { throw AuthError.sessionMissing }
+        return try await supabase
+            .from("profiles")
+            .update(["is_private": isPrivate])
+            .eq("id", value: userID)
+            .select()
+            .single()
+            .execute()
+            .value
+    }
+
     private func updateAvatarPath(_ path: String?, userID: UUID) async throws -> UserProfile {
         try await supabase
             .from("profiles")

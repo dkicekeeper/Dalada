@@ -280,6 +280,10 @@ final class SessionStore {
         await updateProfile { try await $0.updateNotificationSettings(settings) }
     }
 
+    func updateProfilePrivacy(isPrivate: Bool) async -> String? {
+        await updateProfile { try await $0.updateProfilePrivacy(isPrivate: isPrivate) }
+    }
+
     private func updateProfile(_ change: (BackendClient) async throws -> UserProfile) async -> String? {
         guard let backend, profile != nil else { return String(localized: "auth.error.generic") }
         isWorking = true

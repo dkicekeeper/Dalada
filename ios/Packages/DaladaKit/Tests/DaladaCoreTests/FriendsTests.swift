@@ -58,4 +58,16 @@ struct FriendsTests {
         #expect(InviteLink.username(from: URL(string: "https://example.com/u/arman")!) == nil)
         #expect(InviteLink.url(username: "no spaces") == nil)
     }
+
+    @Test func privateProfileIsClosedOnlyForStrangers() throws {
+        let stranger = try JSONDecoder().decode(PublicProfile.self, from: Data("""
+        {"id": "11111111-1111-1111-1111-111111111111", "username": "arman", "is_friend": false, "is_private": true}
+        """.utf8))
+        #expect(stranger.isClosed)
+        #expect(!stranger.with(isFriend: true, requestStatus: nil).isClosed, "друг видит всё")
+        let old = try JSONDecoder().decode(PublicProfile.self, from: Data("""
+        {"id": "11111111-1111-1111-1111-111111111111", "username": "arman", "is_friend": false}
+        """.utf8))
+        #expect(!old.isPrivate, "старый ответ без поля — открыт")
+    }
 }

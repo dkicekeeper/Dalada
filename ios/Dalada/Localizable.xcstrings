@@ -11090,6 +11090,52 @@
         }
       }
     },
+    "person.private" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trips and places are visible to friends only. Add them as a friend to see more."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сапарлар мен орындар тек достарға көрінеді. Көбірек көру үшін достарға қосыңыз."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поездки и места видны только друзьям. Добавьте в друзья, чтобы видеть больше."
+          }
+        }
+      }
+    },
+    "person.private.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Private profile"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жабық профиль"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закрытый профиль"
+          }
+        }
+      }
+    },
     "person.removeConfirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -16069,6 +16115,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Фото"
+          }
+        }
+      }
+    },
+    "profile.private" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Private profile"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жабық профиль"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закрытый профиль"
+          }
+        }
+      }
+    },
+    "profile.private.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "People who aren’t your friends will see only your photo, name and the Add friend button on your page. Posts visible to Everyone still show on place cards and in discussions."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Достарыңыз емес адамдар бетіңізде тек фото, есім және «Достарға қосу» батырмасын көреді. «Барлығы» көрінетін жазбалар орын карточкаларында және талқылауларда бұрынғыдай көрінеді."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кто не в друзьях, увидит на вашей странице только фото, имя и кнопку «Добавить в друзья». Записи с видимостью «Все» по-прежнему видны в карточках мест и в обсуждениях."
           }
         }
       }

@@ -17,6 +17,8 @@ public struct PublicProfile: Codable, Identifiable, Hashable, Sendable {
     public let city: String?
     public let isFriend: Bool
     public let requestStatus: FriendRequestDirection?
+    /// Закрытый профиль: не друзьям — только шапка.
+    public let isPrivate: Bool
 
     public init(
         id: UUID,
@@ -25,7 +27,8 @@ public struct PublicProfile: Codable, Identifiable, Hashable, Sendable {
         avatarPath: String? = nil,
         city: String? = nil,
         isFriend: Bool,
-        requestStatus: FriendRequestDirection?
+        requestStatus: FriendRequestDirection?,
+        isPrivate: Bool = false
     ) {
         self.id = id
         self.username = username
@@ -34,6 +37,7 @@ public struct PublicProfile: Codable, Identifiable, Hashable, Sendable {
         self.city = city
         self.isFriend = isFriend
         self.requestStatus = requestStatus
+        self.isPrivate = isPrivate
     }
 
     enum CodingKeys: String, CodingKey {
@@ -44,6 +48,7 @@ public struct PublicProfile: Codable, Identifiable, Hashable, Sendable {
         case city
         case isFriend = "is_friend"
         case requestStatus = "request_status"
+        case isPrivate = "is_private"
     }
 
     public init(from decoder: any Decoder) throws {
@@ -55,7 +60,11 @@ public struct PublicProfile: Codable, Identifiable, Hashable, Sendable {
         city = try c.decodeIfPresent(String.self, forKey: .city)
         isFriend = try c.decodeIfPresent(Bool.self, forKey: .isFriend) ?? false
         requestStatus = try? c.decodeIfPresent(FriendRequestDirection.self, forKey: .requestStatus)
+        isPrivate = try c.decodeIfPresent(Bool.self, forKey: .isPrivate) ?? false
     }
+
+    /// Страница закрыта для меня: профиль закрыт, и мы не друзья.
+    public var isClosed: Bool { isPrivate && !isFriend }
 
     /// Та же страница после действия («Запрос отправлен», «Друзья»).
     public func with(isFriend: Bool, requestStatus: FriendRequestDirection?) -> PublicProfile {
@@ -66,7 +75,8 @@ public struct PublicProfile: Codable, Identifiable, Hashable, Sendable {
             avatarPath: avatarPath,
             city: city,
             isFriend: isFriend,
-            requestStatus: requestStatus
+            requestStatus: requestStatus,
+            isPrivate: isPrivate
         )
     }
 }

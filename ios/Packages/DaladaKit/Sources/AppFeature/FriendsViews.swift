@@ -376,11 +376,20 @@ struct UserProfileView: View {
                 }
                 .frame(maxWidth: .infinity)
 
-                UserContentSections(
-                    userID: profile.id,
-                    isFriend: profile.isFriend || profile.id == session.profile?.id,
-                    environment: environment
-                )
+                if profile.isClosed && profile.id != session.profile?.id {
+                    // Закрытый профиль: не друзьям — только шапка.
+                    EmptyStateView(
+                        icon: "lock",
+                        title: String(localized: "person.private.title"),
+                        description: String(localized: "person.private")
+                    )
+                } else {
+                    UserContentSections(
+                        userID: profile.id,
+                        isFriend: profile.isFriend || profile.id == session.profile?.id,
+                        environment: environment
+                    )
+                }
             }
             .screenPadding()
             .padding(.vertical, AppSpacing.xl)

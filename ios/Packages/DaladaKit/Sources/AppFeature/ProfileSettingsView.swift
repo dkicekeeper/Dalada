@@ -19,6 +19,9 @@ struct ProfileSettingsView: View {
     @State private var photoItem: PhotosPickerItem?
     @State private var isSavingPhoto = false
     @State private var photoError: String?
+    /// Закрытый профиль — сразу на экране, пока сервер не ответил.
+    @State private var privacyOverride: Bool?
+    @State private var privacyError: String?
     /// Автопауза записи поездки, минуты (0 — выключена). Настройка телефона.
     @AppStorage(AutoPauseSetting.storageKey) private var autoPauseMinutes = AutoPauseSetting.defaultMinutes
 
@@ -84,6 +87,25 @@ struct ProfileSettingsView: View {
                 }
             } footer: {
                 Text("profile.settings.privacyZonesFooter")
+            }
+
+            if let profile = session.profile {
+                Section {
+                    Toggle(isOn: Binding(
+                        get: { privacyOverride ?? profile.isPrivate ?? false },
+                        set: { value in Task { await setPrivate(value) } }
+                    )) {
+                        Label("profile.private", systemImage: "lock")
+                    }
+                    .disabled(session.isWorking)
+                } footer: {
+                    if let privacyError {
+                        Text(verbatim: privacyError)
+                            .foregroundStyle(AppColors.destructive)
+                    } else {
+                        Text("profile.private.footer")
+                    }
+                }
             }
 
             Section {
@@ -225,6 +247,12 @@ struct ProfileSettingsView: View {
         photoError = nil
         defer { isSavingPhoto = false }
         photoError = await session.removeAvatar()
+    }
+
+    private func setPrivate(_ value: Bool) async {
+        privacyOverride = value
+        privacyError = await session.updateProfilePrivacy(isPrivate: value)
+        privacyOverride = nil
     }
 
     private func deleteAccount() async {
