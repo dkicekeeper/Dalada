@@ -89,3 +89,22 @@ struct RespondParams: Encodable, Sendable {
         case accept = "p_accept"
     }
 }
+
+// MARK: - Возможно, вы знакомы
+
+extension BackendClient {
+    /// Друзья друзей и те, кто отчитывался в моих местах (публично).
+    public func peopleYouMayKnow(limit: Int = 10) async throws -> [FriendSuggestion] {
+        try await supabase
+            .rpc("people_you_may_know", params: ["p_limit": limit])
+            .execute()
+            .value
+    }
+
+    /// Больше не подсказывать этого человека.
+    public func dismissFriendSuggestion(_ userID: UUID) async throws {
+        try await supabase
+            .rpc("dismiss_friend_suggestion", params: ["p_user": userID])
+            .execute()
+    }
+}

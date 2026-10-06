@@ -70,4 +70,13 @@ struct FriendsTests {
         """.utf8))
         #expect(!old.isPrivate, "старый ответ без поля — открыт")
     }
+
+    @Test func decodesSuggestions() throws {
+        let rows = try JSONDecoder().decode([FriendSuggestion].self, from: Data("""
+        [{"id": "11111111-1111-1111-1111-111111111111", "username": "arman", "display_name": null,
+          "avatar_path": null, "mutual_friends": 2, "shared_places": 1}]
+        """.utf8))
+        #expect(rows.first?.mutualFriends == 2)
+        #expect(rows.first?.sharedPlaces == 1)
+    }
 }

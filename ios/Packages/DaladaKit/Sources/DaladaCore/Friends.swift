@@ -162,3 +162,38 @@ public enum InviteLink {
         return UsernameRules.isValidFormat(username) ? username : nil
     }
 }
+
+/// «Возможно, вы знакомы» — строка `people_you_may_know`: сколько общих друзей и общих мест.
+public struct FriendSuggestion: Codable, Identifiable, Hashable, Sendable {
+    public let id: UUID
+    public let username: String?
+    public let displayName: String?
+    public let avatarPath: String?
+    public let mutualFriends: Int
+    public let sharedPlaces: Int
+
+    public init(
+        id: UUID,
+        username: String?,
+        displayName: String? = nil,
+        avatarPath: String? = nil,
+        mutualFriends: Int,
+        sharedPlaces: Int
+    ) {
+        self.id = id
+        self.username = username
+        self.displayName = displayName
+        self.avatarPath = avatarPath
+        self.mutualFriends = mutualFriends
+        self.sharedPlaces = sharedPlaces
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case username
+        case displayName = "display_name"
+        case avatarPath = "avatar_path"
+        case mutualFriends = "mutual_friends"
+        case sharedPlaces = "shared_places"
+    }
+}

@@ -65,6 +65,7 @@ struct FriendsView: View {
     @State private var isLoaded = false
     @State private var loadError: String?
     @State private var showsInvite = false
+    @State private var suggestions: [FriendSuggestion] = []
 
     private var backend: BackendClient? { environment.backend }
     private var incoming: [FriendRequest] { requests.filter { $0.direction == .incoming } }
@@ -114,6 +115,8 @@ struct FriendsView: View {
                 }
             }
 
+            PeopleSuggestionsSection(environment: environment, suggestions: $suggestions)
+
             if !outgoing.isEmpty {
                 Section("friends.outgoing") {
                     ForEach(outgoing) { request in
@@ -159,6 +162,7 @@ struct FriendsView: View {
             async let loadedRequests = backend.myFriendRequests()
             (friends, requests) = try await (loadedFriends, loadedRequests)
             loadError = nil
+            suggestions = await PeopleSuggestionsSection.load(environment) ?? suggestions
         } catch {
             loadError = error.localizedDescription
         }
@@ -184,6 +188,7 @@ struct FindPeopleView: View {
     @State private var query = ""
     @State private var results: [PublicProfile] = []
     @State private var searched = false
+    @State private var suggestions: [FriendSuggestion] = []
 
     private var trimmed: String {
         query.trimmingCharacters(in: CharacterSet(charactersIn: "@ ").union(.whitespacesAndNewlines))
@@ -195,6 +200,7 @@ struct FindPeopleView: View {
                 Text("friends.search.hint")
                     .font(AppTypography.bodySmall)
                     .foregroundStyle(AppColors.textSecondary)
+                PeopleSuggestionsSection(environment: environment, suggestions: $suggestions)
             } else if results.isEmpty && searched {
                 Text("friends.search.empty")
                     .font(AppTypography.bodySmall)
@@ -217,6 +223,7 @@ struct FindPeopleView: View {
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled()
         .task(id: trimmed) { await search() }
+        .task { suggestions = await PeopleSuggestionsSection.load(environment, limit: 10) ?? [] }
     }
 
     private func search() async {
