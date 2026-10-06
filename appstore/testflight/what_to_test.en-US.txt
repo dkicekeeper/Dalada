@@ -1,27 +1,23 @@
 Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, post a report with a catch and a photo (I’m here on a place card), record a trip (Start a trip on the map), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
 New:
-• Notifications: a friend turns on Show friends where I am — you get Friend out on a trip; someone invites you to shared packing — you get the invite; you become a place keeper — we tell you. Settings: Profile → the gear → Notifications.
-• Pack together in the “…” menu of a checklist or packing list: straight to picking friends.
-• Private profile: Profile → the gear → Private profile — people who aren’t your friends see only the header.
-• Export: Download GPX in the “…” menu of your trip; Download my data in profile settings — an archive with your data, tracks and photos.
-• People you may know in Friends and Find people: mutual friends and places in common; swipe to hide.
-• Streaks: Weeks in a row in your profile — a week with a trip or report counts; in winter and during fishing bans a missed week doesn’t break it.
-• Weather at a place: the place card shows temperature, wind and pressure (and where it went over the day); tap it for a 3-day pressure chart, the forecast, sunrise and sunset. Reports save the weather by themselves.
-• Show friends where I am: while recording a trip, pick friends — they see you on Home under Out right now, with a map and Route. It stops at the finish or after 12 hours; inside a privacy zone the point is hidden.
-• Close friends visibility: Profile → the gear → Close friends — pick friends, and posts set to Close friends are shown only to them.
-• Place keeper: whoever has the most verified reports at a place in 60 days, in the Reports tab, with a star on their reports. Below are Place records — the heaviest catch of each species with a photo.
-• Shared packing: Tips → Shared packing → “+” — share your packing with friends; everyone marks I'll bring and Packed and adds their own items.
-• Easier navigation: Profile has Trips · Catches · Places · Photos chips; a trip shows its note on top and tighter stats; bigger buttons under posts and Reply on discussions; map Layers is a sheet; a hint that a long press adds a place; Tips is split into Before the trip and Know-how and articles; empty place tabs say what to do next.
-• The place card opens to full height when you pick a tab (Reports, Reviews, Discussions, Info). Your catches in Profile → Catches have a “…” button to edit or delete them.
-• A shorter place card: the essentials and bans on top; Reports, Reviews, Discussions and Info open from chips, with a line saying what each one is. Trip pages have a clear Comments button, “…” on your own trip edits or deletes it, and “…” on your report now has Edit report. A My location button on the map and a settings gear in Profile.
-• You can now edit and delete your own place, report and catch: the “…” menu on your place card (edit or delete the place), “…” → Delete report on your report, and the “…” button on a catch in Profile → Catches.
-• Layers → Places: show only your places or only others, hide place types you don't need.
-• Photos in reviews: up to 5 pictures in a place review.
-• Profile → Photos: your latest pictures from reports, catches and reviews, and All photos by month.
-• Map → Layers → My tracks: all your trips on the map.
-• Mentions: write @username in a discussion — the person gets a notification and the name becomes a link to their profile.
-• Notifications about Respect and Helpful on your posts — a toggle in Notifications.
-• Discussion subscriptions: the bell in a discussion — Get notified of replies, or stop. Replies now reach the author, everyone who replied and anyone who subscribed.
+• Web links: Share on a public place, trip or catch gives a link to a web page that opens without the app: map, photos, Open in Dalada. A place link shows a preview of the place in Telegram.
+• Invite to a trip by link: in your trip → Participants → Invite by link. Whoever opens it in the app joins the trip (even without the app — after installing and signing in), and you get their friend request.
+• Contributor level in your profile: points for public places, verified reports, reviews, photos and accepted edits. From Expert on — Review place edits from other people.
+• Notes in your Only me and Friends places: the Notes tab on the place card — a diary for the place or a chat with friends.
+• Map → Layers → My photos: photos from your reports and catches where they were taken.
+• A Your streak is at risk notification on Saturday if you haven’t been out this week. Turn it off in Notifications → Reminders.
+• Shared packing lists open offline — the last loaded copy.
+
+Earlier:
+• Notifications: a friend out on a trip, an invite to shared packing, you became a place keeper. Pack together in a checklist’s “…” menu.
+• Private profile and the Close friends visibility — in profile settings.
+• Download GPX in your trip’s “…” menu; Download my data in profile settings.
+• People you may know in Friends and Find people.
+• Streaks: Weeks in a row in your profile; winter and fishing bans don’t break a streak.
+• Weather at a place: pressure, wind, forecast, sunrise and sunset; reports save the weather by themselves.
+• Show friends where I am while recording a trip — friends see you on Home in Out right now.
+• Place keeper and Place records in the Reports tab.
+• Shared packing: Tips → Shared packing → “+”; everyone marks I'll bring and packed.
 
 Feedback: the Send Beta Feedback button in TestFlight or dakacom@gmail.com.
