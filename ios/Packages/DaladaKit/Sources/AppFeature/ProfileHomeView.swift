@@ -83,6 +83,7 @@ struct ProfileHomeView: View {
                 .buttonStyle(.plain)
                 .accessibilityHint(Text("profile.settings.title"))
                 ProfileStatsCard(environment: environment, userID: profile.id)
+                StreakCard(environment: environment, userID: profile.id)
                 PendingQueueSection()
                 MyFriendsSection(environment: environment, userID: profile.id)
                 // Поездки, уловы, места и фото — по чипам, а не четырьмя разделами подряд.
@@ -532,6 +533,62 @@ struct ProfileStatsCard: View {
             try? await environment.cache.save(loaded, for: key)
         } else if stats == nil {
             stats = try? await environment.cache.load(UserStats.self, for: key)
+        }
+    }
+}
+
+/// Серия: недели подряд с выездом, лучшая серия и что делать на этой неделе. Пока не было ни одной
+/// засчитанной недели — карточки нет. Без сети — сохранённая.
+struct StreakCard: View {
+    let environment: AppEnvironment
+    let userID: UUID
+
+    @Environment(SyncEngine.self) private var sync
+    @State private var streak: Streak?
+
+    var body: some View {
+        Group {
+            if let streak, streak.bestWeeks > 0 {
+                HStack(spacing: AppSpacing.md) {
+                    Image(systemName: streak.freeze != nil && !streak.thisWeekDone ? "snowflake" : "flame.fill")
+                        .font(.system(size: AppIconSize.lg))
+                        .foregroundStyle(streak.currentWeeks > 0 ? AppColors.accent : AppColors.textTertiary)
+                        .frame(width: AppIconSize.avatar)
+                    VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                        Text("streak.current \(streak.currentWeeks)")
+                            .font(AppTypography.bodyEmphasis)
+                        Text(LocalizedStringKey(streak.hintKey))
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+                    Spacer(minLength: 0)
+                    VStack(alignment: .trailing, spacing: AppSpacing.xxs) {
+                        Text(verbatim: String(streak.bestWeeks))
+                            .font(AppTypography.bodyEmphasis)
+                            .monospacedDigit()
+                        Text("streak.best")
+                            .font(AppTypography.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+                }
+                .cardContentPadding()
+                .cardStyle()
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .task(id: userID) { await load() }
+        .onChange(of: sync.sentCount) { _, _ in
+            Task { await load() }
+        }
+    }
+
+    private func load() async {
+        let key = CacheKey.streak(userID)
+        if let backend = environment.backend, let loaded = try? await backend.myStreak() {
+            streak = loaded
+            try? await environment.cache.save(loaded, for: key)
+        } else if streak == nil {
+            streak = try? await environment.cache.load(Streak.self, for: key)
         }
     }
 }

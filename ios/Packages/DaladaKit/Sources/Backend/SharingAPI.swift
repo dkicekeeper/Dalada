@@ -149,3 +149,13 @@ struct PrivacyZoneRow: Encodable, Sendable {
         case radiusM = "radius_m"
     }
 }
+
+// MARK: - Серия
+
+extension BackendClient {
+    /// Своя серия недель с выездами (`my_streak`).
+    public func myStreak() async throws -> Streak? {
+        let rows: [Streak] = try await supabase.rpc("my_streak").execute().value
+        return rows.first
+    }
+}

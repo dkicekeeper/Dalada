@@ -82,6 +82,11 @@ public struct CacheKey: Hashable, Sendable {
         CacheKey(rawValue: userPrefix(user) + "my_catches")
     }
 
+    /// Своя серия недель с выездами.
+    public static func streak(_ user: UUID) -> CacheKey {
+        CacheKey(rawValue: userPrefix(user) + "streak")
+    }
+
     public static func stats(_ user: UUID) -> CacheKey {
         CacheKey(rawValue: userPrefix(user) + "stats")
     }
