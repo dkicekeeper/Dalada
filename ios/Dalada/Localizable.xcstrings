@@ -4570,6 +4570,259 @@
         }
       }
     },
+    "export.data" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download my data"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Деректерімді жүктеу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать мои данные"
+          }
+        }
+      }
+    },
+    "export.data.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An archive with your places, reports, catches, trips with GPX tracks, reviews, discussions, gear and photos."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Мұрағат: орындар, есептер, олжа, GPX тректері бар сапарлар, пікірлер, талқылаулар, жабдық және фотолар."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Архив: места, отчёты, уловы, поездки с треками в GPX, отзывы, обсуждения, снаряжение и фото."
+          }
+        }
+      }
+    },
+    "export.data.sheetFooter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The archive has only your data: data.json, tracks in the trips folder and photos in the photos folder. Keep it safe: it contains the exact coordinates of your places."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Мұрағатта тек сіздің деректеріңіз: data.json, trips қалтасындағы тректер және photos қалтасындағы фотолар. Оны сенімді жерде сақтаңыз: онда орындарыңыздың нақты координаттары бар."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В архиве — только ваши данные: data.json, треки в папке trips и фото в папке photos. Храните его в надёжном месте: там точные координаты ваших мест."
+          }
+        }
+      }
+    },
+    "export.failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t prepare the file"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Файлды дайындау мүмкін болмады"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не получилось подготовить файл"
+          }
+        }
+      }
+    },
+    "export.gpx" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download GPX"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "GPX жүктеу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать GPX"
+          }
+        }
+      }
+    },
+    "export.gpx.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPX opens in Strava, Komoot, Organic Maps and Google Earth. The file has the whole track, including its start and end."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "GPX Strava, Komoot, Organic Maps және Google Earth-те ашылады. Файлда тректің бәрі бар — басы мен соңымен."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GPX открывается в Strava, Komoot, Organic Maps и Google Earth. В файле весь трек — с началом и концом."
+          }
+        }
+      }
+    },
+    "export.preparing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing the file…"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Файл дайындалуда…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Готовим файл…"
+          }
+        }
+      }
+    },
+    "export.progress.data" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collecting your data…"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Деректер жиналуда…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Собираем данные…"
+          }
+        }
+      }
+    },
+    "export.progress.photos %lld %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo %1$lld of %2$lld"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%2$lld фотоның %1$lld-сі"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Фото %1$lld из %2$lld"
+          }
+        }
+      }
+    },
+    "export.progress.zip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Packing the archive…"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Мұрағат буылуда…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Упаковываем архив…"
+          }
+        }
+      }
+    },
+    "export.share" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save or send"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сақтау немесе жіберу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранить или отправить"
+          }
+        }
+      }
+    },
     "feed.failed" : {
       "extractionState" : "manual",
       "localizations" : {

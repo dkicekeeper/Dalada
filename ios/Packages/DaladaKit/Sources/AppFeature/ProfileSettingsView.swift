@@ -22,6 +22,7 @@ struct ProfileSettingsView: View {
     /// Закрытый профиль — сразу на экране, пока сервер не ответил.
     @State private var privacyOverride: Bool?
     @State private var privacyError: String?
+    @State private var exportsData = false
     /// Автопауза записи поездки, минуты (0 — выключена). Настройка телефона.
     @AppStorage(AutoPauseSetting.storageKey) private var autoPauseMinutes = AutoPauseSetting.defaultMinutes
 
@@ -105,6 +106,18 @@ struct ProfileSettingsView: View {
                     } else {
                         Text("profile.private.footer")
                     }
+                }
+            }
+
+            if session.profile != nil {
+                Section {
+                    Button {
+                        exportsData = true
+                    } label: {
+                        Label("export.data", systemImage: "square.and.arrow.down")
+                    }
+                } footer: {
+                    Text("export.data.footer")
                 }
             }
 
@@ -197,6 +210,12 @@ struct ProfileSettingsView: View {
             Task { await setPhoto(item) }
         }
         .onChange(of: name) { _, _ in nameError = nil }
+        .sheet(isPresented: $exportsData) {
+            ExportSheet(title: "export.data", footer: "export.data.sheetFooter") { progress in
+                guard let backend = environment.backend else { throw URLError(.notConnectedToInternet) }
+                return try await ExportFiles.archive(backend: backend, progress: progress)
+            }
+        }
         .confirmationDialog("account.delete.confirm", isPresented: $confirmsDelete, titleVisibility: .visible) {
             Button("account.delete.confirmButton", role: .destructive) {
                 Task { await deleteAccount() }

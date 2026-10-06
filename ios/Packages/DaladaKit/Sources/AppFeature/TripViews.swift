@@ -689,6 +689,7 @@ struct TripDetailView: View {
     @State private var showsEdit = false
     @State private var showsPrivacyZones = false
     @State private var confirmsDelete = false
+    @State private var exportsGPX = false
     @State private var ownActionError: String?
 
     var body: some View {
@@ -753,6 +754,14 @@ struct TripDetailView: View {
                 TripEditView(trip: trip, environment: environment) { edited in
                     self.trip = edited
                     Task { try? await environment.cache.save(edited, for: CacheKey.trip(tripID, viewer: session.profile?.id)) }
+                }
+            }
+        }
+        .sheet(isPresented: $exportsGPX) {
+            if let trip {
+                ExportSheet(title: "export.gpx", footer: "export.gpx.footer") { _ in
+                    guard let backend = environment.backend else { throw URLError(.notConnectedToInternet) }
+                    return try await ExportFiles.tripGPX(trip.summary, backend: backend)
                 }
             }
         }
@@ -918,6 +927,11 @@ struct TripDetailView: View {
                 }
                 Button("privacyZones.title", systemImage: "house.circle") {
                     showsPrivacyZones = true
+                }
+            }
+            Section {
+                Button("export.gpx", systemImage: "square.and.arrow.down") {
+                    exportsGPX = true
                 }
             }
             Section {
