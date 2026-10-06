@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0C3A4C"/>
+      <stop offset="1" stop-color="#2A8A7E"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0F5560"/>
+      <stop offset="1" stop-color="#082C38"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF8456"/>
+      <stop offset="1" stop-color="#E5482B"/>
+    </linearGradient>
+    <linearGradient id="white" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#DCE9E5"/>
+    </linearGradient>
+    <clipPath id="above"><rect width="1024" height="600"/></clipPath>
+    <clipPath id="below"><rect y="600" width="1024" height="424"/></clipPath>
+    <clipPath id="back"><rect width="1024" height="606"/></clipPath>
+    <clipPath id="front"><rect y="606" width="1024" height="418"/></clipPath>
+    <clipPath id="top"><rect width="1024" height="470"/></clipPath>
+  </defs>
+  <rect width="1024" height="600" fill="url(#sky)"/>
+  <!-- горы на горизонте -->
+  <polygon points="0,600 120,520 210,560 330,450 450,560 560,500 700,580 820,470 930,550 1024,500 1024,600" fill="#1B5E63" opacity="0.9"/>
+  <rect y="600" width="1024" height="424" fill="url(#water)"/>
+  <g clip-path="url(#back)">
+    <ellipse cx="512" cy="604" rx="230" ry="38" fill="none" stroke="#FFFFFF" stroke-width="14" opacity="0.6"/>
+    <ellipse cx="512" cy="612" rx="360" ry="62" fill="none" stroke="#FFFFFF" stroke-width="10" opacity="0.28"/>
+  </g>
+  <!-- поплавок над водой -->
+  <g clip-path="url(#above)">
+    <rect x="497" y="150" width="30" height="170" rx="15" fill="#FF6A3D"/>
+    <ellipse cx="512" cy="470" rx="128" ry="196" fill="url(#white)"/>
+    <g clip-path="url(#top)"><ellipse cx="512" cy="470" rx="128" ry="196" fill="url(#red)"/></g>
+    <rect x="384" y="462" width="256" height="18" fill="#22313A" opacity="0.85"/>
+  </g>
+  <!-- под водой -->
+  <g clip-path="url(#below)" opacity="0.38">
+    <ellipse cx="512" cy="470" rx="128" ry="196" fill="#BFE3DA"/>
+    <rect x="503" y="660" width="18" height="120" rx="9" fill="#BFE3DA"/>
+  </g>
+  <!-- круги на воде: передняя половина — перед поплавком -->
+  <g clip-path="url(#front)">
+    <ellipse cx="512" cy="604" rx="230" ry="38" fill="none" stroke="#FFFFFF" stroke-width="14" opacity="0.6"/>
+    <ellipse cx="512" cy="612" rx="360" ry="62" fill="none" stroke="#FFFFFF" stroke-width="10" opacity="0.28"/>
+  </g>
+</svg>

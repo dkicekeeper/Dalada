@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0B3340"/>
+      <stop offset="0.62" stop-color="#1D7468"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#145C55"/>
+      <stop offset="1" stop-color="#0A2F35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFD28A" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#FFD28A" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="snowL" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E4F1EC"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="640" fill="url(#sky)"/>
+  <rect y="640" width="1024" height="384" fill="url(#water)"/>
+  <circle cx="660" cy="300" r="230" fill="url(#glow)"/>
+  <circle cx="660" cy="300" r="92" fill="#FFCB7A"/>
+  <!-- дальний хребет -->
+  <polygon points="560,640 760,392 1024,640" fill="#5FA79B"/>
+  <!-- главная вершина -->
+  <polygon points="96,640 430,210 790,640" fill="url(#snowL)"/>
+  <polygon points="430,210 790,640 470,640" fill="#BFDAD3"/>
+  <!-- отражение -->
+  <g opacity="0.28">
+    <polygon points="96,640 430,930 790,640" fill="#FFFFFF"/>
+    <polygon points="560,640 760,820 1024,640" fill="#9ED0C6"/>
+  </g>
+  <rect x="300" y="700" width="300" height="12" rx="6" fill="#FFFFFF" opacity="0.35"/>
+  <rect x="520" y="760" width="200" height="10" rx="5" fill="#FFCB7A" opacity="0.45"/>
+  <rect x="230" y="820" width="160" height="10" rx="5" fill="#FFFFFF" opacity="0.22"/>
+</svg>

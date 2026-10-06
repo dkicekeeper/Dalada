@@ -24,7 +24,8 @@
 | 1. Анализ рынка и конкурентов | [`docs/01-market-analysis.md`](docs/01-market-analysis.md) | ✅ готово |
 | 2. План по каждому разделу | [`docs/02-plan/`](docs/02-plan/README.md) | ✅ готово, решения приняты |
 | 3. Архитектура и стек | [`docs/03-architecture/`](docs/03-architecture/README.md) | ✅ готово, решения приняты (Supabase, TypeScript, MapLibre) |
-| 4–5. Спецификации и реализация по вехам | [`docs/04-beta/`](docs/04-beta/README.md) | 🔨 M0–M1 проверены, M2–M4 на проверке, идёт M5 «Правила и лайфхаки» |
+| 4–5. Спецификации и реализация по вехам | [`docs/04-beta/`](docs/04-beta/README.md) | 🔨 закрытая бета: вехи M0–M33, сборка 137 в TestFlight |
+| 6. Релиз 1.0 в App Store | [`docs/05-release/`](docs/05-release/README.md) | 📋 план: витрина, иконка, скриншоты, переезд в РК, запуск 20 мая 2027 |
 
 ## Документы
 
@@ -34,6 +35,7 @@
   планы по вкладкам и сквозным темам
 - [`docs/03-architecture/`](docs/03-architecture/README.md) — архитектура и стек: iOS, бэкенд на Supabase, карты, инфраструктура и переезд в РК
 - [`docs/04-beta/`](docs/04-beta/README.md) — путь к бете: вехи M0–M6, что сделано, что нужно от владельца
+- [`docs/05-release/`](docs/05-release/README.md) — релиз 1.0: этапы до запуска, решения, иконка, страница App Store и скриншоты
 - [`docs/naming.md`](docs/naming.md) — название: выбор Dalada и оставшиеся проверки
 
 ## Код

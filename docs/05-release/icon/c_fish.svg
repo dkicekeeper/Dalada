@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2E8B57"/>
+      <stop offset="1" stop-color="#0E4A44"/>
+    </linearGradient>
+    <linearGradient id="inSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE3B0"/>
+      <stop offset="1" stop-color="#FFF7EA"/>
+    </linearGradient>
+    <clipPath id="fish">
+      <path id="fp" d="M 840 512 C 790 380 600 330 440 362 C 340 382 270 432 232 482 L 112 372 Q 160 446 168 512 Q 160 578 112 652 L 232 542 C 270 592 340 642 440 662 C 600 694 790 644 840 512 Z"/>
+    </clipPath>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <g transform="translate(512 512) scale(1.16) translate(-476 -512)"><g clip-path="url(#fish)">
+    <rect width="1024" height="1024" fill="url(#inSky)"/>
+    <circle cx="610" cy="430" r="44" fill="#FFB44D"/>
+    <polygon points="250,600 420,420 520,520 600,460 760,600" fill="#2E8B57"/>
+    <polygon points="420,420 470,470 445,480 420,455 395,478 372,470" fill="#FFFFFF"/>
+    <polygon points="600,460 640,494 618,500 600,486 582,500 566,492" fill="#FFFFFF"/>
+    <rect y="596" width="1024" height="200" fill="#1A6B58"/>
+    <rect x="330" y="622" width="160" height="10" rx="5" fill="#FFFFFF" opacity="0.4"/>
+    <rect x="520" y="642" width="120" height="8" rx="4" fill="#FFFFFF" opacity="0.3"/>
+  </g>
+  <circle cx="742" cy="478" r="18" fill="#0E4A44"/>
+  </g>
+</svg>
