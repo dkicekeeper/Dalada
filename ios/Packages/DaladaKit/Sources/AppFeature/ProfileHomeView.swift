@@ -84,6 +84,7 @@ struct ProfileHomeView: View {
                 .accessibilityHint(Text("profile.settings.title"))
                 ProfileStatsCard(environment: environment, userID: profile.id)
                 StreakCard(environment: environment, userID: profile.id)
+                ContributionCard(environment: environment, userID: profile.id)
                 PendingQueueSection()
                 MyFriendsSection(environment: environment, userID: profile.id)
                 // Поездки, уловы, места и фото — по чипам, а не четырьмя разделами подряд.
