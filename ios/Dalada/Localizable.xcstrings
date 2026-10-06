@@ -22026,6 +22026,29 @@
         }
       }
     },
+    "trip.share.link" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link to the trip"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сапарға сілтеме"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ссылка на поездку"
+          }
+        }
+      }
+    },
     "trip.signInRequired" : {
       "extractionState" : "manual",
       "localizations" : {

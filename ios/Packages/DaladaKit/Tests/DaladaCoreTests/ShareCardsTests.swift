@@ -48,4 +48,11 @@ struct ShareCardsTests {
         #expect(ShareCardFormat.post.height * ShareCardFormat.scale == 1350)
         #expect(ShareCardLink.siteLabel == "dkicekeeper.github.io/Dalada")
     }
+
+    @Test func webLinks() throws {
+        let id = try #require(UUID(uuidString: "AAAAAAAA-0000-0000-0000-000000000001"))
+        #expect(WebLink.place(id).absoluteString == "https://dkicekeeper.github.io/Dalada/p/aaaaaaaa-0000-0000-0000-000000000001/")
+        #expect(WebLink.trip(id).absoluteString == "https://dkicekeeper.github.io/Dalada/s/?trip=aaaaaaaa-0000-0000-0000-000000000001")
+        #expect(WebLink.catchPage(id).absoluteString == "https://dkicekeeper.github.io/Dalada/s/?catch=aaaaaaaa-0000-0000-0000-000000000001")
+    }
 }

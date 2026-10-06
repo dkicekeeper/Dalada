@@ -2,13 +2,18 @@ name: Pages
 
 # Политика конфиденциальности, условия и правила сообщества, поддержка — на GitHub Pages
 # (https://dkicekeeper.github.io/Dalada/…). Публикуется только docs/public, не внутренние документы.
+# Плюс страницы «Поделиться» (docs/04-beta/M29-web-share.md): /s/?trip=…, /s/?catch=…, /p/<место>/ —
+# страницы мест собираются из базы раз в день, чтобы новые публичные места получили превью.
 # Один раз: Settings → Pages → Build and deployment → Source: GitHub Actions.
 on:
   push:
     branches: [main]
     paths:
       - "docs/public/**"
+      - ".github/scripts/build_site.py"
       - ".github/workflows/pages.yml"
+  schedule:
+    - cron: "17 2 * * *"
   workflow_dispatch:
 
 permissions:
@@ -29,8 +34,14 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: actions/configure-pages@v5
+      # Адрес Supabase и публичный ключ гостя — из секретов (как для сборки приложения), в журнал не печатаем.
+      - name: Build site
+        env:
+          SUPABASE_HOST: ${{ secrets.SUPABASE_HOST }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python3 .github/scripts/build_site.py
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./docs/public
+          path: ./_site
       - id: deployment
         uses: actions/deploy-pages@v4

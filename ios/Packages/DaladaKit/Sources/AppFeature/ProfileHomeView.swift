@@ -402,7 +402,7 @@ private struct MyCatchRow: View {
                 .foregroundStyle(AppColors.textSecondary)
             }
             // Картинка улова для Stories и Telegram.
-            CatchShareCardButton(catchID: item.id)
+            CatchShareCardButton(catchID: item.id, isPublic: item.visibility == .public)
         }
         .task { await speciesStore.loadIfNeeded() }
     }

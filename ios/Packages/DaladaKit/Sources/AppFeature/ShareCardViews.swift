@@ -348,6 +348,8 @@ struct PlaceShareCardView: View {
 struct TripShareCardButton: View {
     let tripID: UUID
     let environment: AppEnvironment
+    /// Публичную поездку можно открыть в браузере — в сообщении ссылка на её страницу.
+    var isPublic = false
 
     @State private var showsSheet = false
 
@@ -361,7 +363,10 @@ struct TripShareCardButton: View {
         .sheet(isPresented: $showsSheet) {
             ShareCardSheet(
                 load: { try? await environment.backend?.tripShareCard(tripID) },
-                message: { card in String(localized: "share.message.trip \(card.title) \(ShareCardLink.site.absoluteString)") }
+                message: { card in
+                    let link = isPublic ? WebLink.trip(tripID) : ShareCardLink.site
+                    return String(localized: "share.message.trip \(card.title) \(link.absoluteString)")
+                }
             ) { card, format in
                 TripShareCardView(card: card, format: format)
             }
@@ -372,6 +377,8 @@ struct TripShareCardButton: View {
 /// «Картинка для Stories» своего улова (кнопка в строке улова).
 struct CatchShareCardButton: View {
     let catchID: UUID
+    /// Публичный улов можно открыть в браузере — в сообщении ссылка на его страницу.
+    var isPublic = false
 
     @Environment(SessionStore.self) private var session
     @Environment(SpeciesStore.self) private var speciesStore
@@ -398,7 +405,10 @@ struct CatchShareCardButton: View {
         .sheet(isPresented: $showsSheet) {
             ShareCardSheet(
                 load: { await load() },
-                message: { loaded in String(localized: "share.message.catch \(loaded.speciesName) \(ShareCardLink.site.absoluteString)") }
+                message: { loaded in
+                    let link = isPublic ? WebLink.catchPage(catchID) : ShareCardLink.site
+                    return String(localized: "share.message.catch \(loaded.speciesName) \(link.absoluteString)")
+                }
             ) { loaded, format in
                 CatchShareCardView(card: loaded.card, speciesName: loaded.speciesName, photo: loaded.photo, format: format)
             }

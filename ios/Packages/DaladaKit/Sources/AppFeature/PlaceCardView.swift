@@ -112,8 +112,11 @@ struct PlaceCardView: View {
                 if case .loaded(let place) = state, place.visibility != .private {
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu {
+                            // Публичное — страница в браузере (с превью), для друзей — ссылка в приложение.
                             ShareLink(
-                                item: PlaceLink.url(placeID: place.id),
+                                item: place.visibility == .public && place.status == .published
+                                    ? WebLink.place(place.id)
+                                    : PlaceLink.url(placeID: place.id),
                                 subject: Text(verbatim: place.name),
                                 message: shareMessage(place)
                             ) {

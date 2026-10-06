@@ -723,7 +723,11 @@ struct TripDetailView: View {
             if let trip, trip.isOwn {
                 // Картинка для Stories: трек без начала и конца, как у гостя.
                 ToolbarItem(placement: .topBarTrailing) {
-                    TripShareCardButton(tripID: trip.summary.id, environment: environment)
+                    TripShareCardButton(
+                        tripID: trip.summary.id,
+                        environment: environment,
+                        isPublic: trip.summary.visibility == .public
+                    )
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     ownMenu(trip)
@@ -927,6 +931,14 @@ struct TripDetailView: View {
                 }
                 Button("privacyZones.title", systemImage: "house.circle") {
                     showsPrivacyZones = true
+                }
+            }
+            if trip.summary.visibility == .public {
+                Section {
+                    // Страница поездки в браузере — для друзей без приложения.
+                    ShareLink(item: WebLink.trip(trip.summary.id)) {
+                        Label("trip.share.link", systemImage: "link")
+                    }
                 }
             }
             Section {

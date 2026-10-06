@@ -138,3 +138,22 @@ public enum ShareCardLink {
         return text
     }
 }
+
+/// Веб-страницы публичных записей (GitHub Pages): открываются в браузере без приложения, у места —
+/// с превью в Telegram. Непубличное по ссылке не открыть — страница скажет «недоступно».
+public enum WebLink {
+    public static var base: URL { LegalDocuments.baseURL }
+
+    /// `…/p/<id>/` — статическая страница места (превью собирается раз в день).
+    public static func place(_ id: UUID) -> URL {
+        URL(string: base.absoluteString + "p/" + id.uuidString.lowercased() + "/")!
+    }
+
+    public static func trip(_ id: UUID) -> URL {
+        URL(string: base.absoluteString + "s/?trip=" + id.uuidString.lowercased())!
+    }
+
+    public static func catchPage(_ id: UUID) -> URL {
+        URL(string: base.absoluteString + "s/?catch=" + id.uuidString.lowercased())!
+    }
+}
