@@ -382,7 +382,7 @@ struct TripInviteLinkSheet: View {
         NavigationStack {
             VStack(spacing: AppSpacing.lg) {
                 Image(systemName: "link.badge.plus")
-                    .font(.system(size: AppIconSize.xxl))
+                    .font(.system(size: AppIconSize.Tile.sm))
                     .foregroundStyle(AppColors.accent)
                 Text("trip.inviteLink.message")
                     .font(AppTypography.body)

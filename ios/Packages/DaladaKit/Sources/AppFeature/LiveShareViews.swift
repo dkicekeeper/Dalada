@@ -227,7 +227,7 @@ struct FriendLiveRow: View {
 
     var body: some View {
         HStack(spacing: AppSpacing.sm) {
-            PersonAvatar(name: friend.name, path: friend.avatarPath, size: AppIconSize.avatar)
+            PersonAvatar(name: friend.name, path: friend.avatarPath, size: AppIconSize.Tile.xs)
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: friend.name ?? String(localized: "profile.noName"))
                     .font(AppTypography.bodyEmphasis)

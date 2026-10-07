@@ -25,7 +25,7 @@ struct ExportSheet: View {
                 Spacer(minLength: 0)
                 if let fileURL {
                     Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: AppIconSize.xxl))
+                        .font(.system(size: AppIconSize.Tile.sm))
                         .foregroundStyle(AppColors.success)
                     Text(verbatim: fileURL.lastPathComponent)
                         .font(AppTypography.bodyEmphasis)

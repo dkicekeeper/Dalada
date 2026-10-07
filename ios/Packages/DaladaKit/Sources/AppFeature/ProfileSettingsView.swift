@@ -31,7 +31,7 @@ struct ProfileSettingsView: View {
             if let profile = session.profile {
                 Section {
                     HStack(spacing: AppSpacing.lg) {
-                        PersonAvatar(name: profile.displayName ?? profile.username, path: profile.avatarPath, size: AppIconSize.mega)
+                        PersonAvatar(name: profile.displayName ?? profile.username, path: profile.avatarPath, size: AppIconSize.Tile.xl)
                         VStack(alignment: .leading, spacing: AppSpacing.sm) {
                             PhotosPicker(selection: $photoItem, matching: .images) {
                                 Text(LocalizedStringKey(profile.avatarPath == nil ? "profile.photo.add" : "profile.photo.change"))

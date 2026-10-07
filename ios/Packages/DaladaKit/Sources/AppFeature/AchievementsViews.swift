@@ -36,7 +36,7 @@ struct AchievementsSection: View {
                 // Значки и строка «ближе всего» той же формы, пока грузятся.
                 VStack(spacing: AppSpacing.md) {
                     HStack(alignment: .top, spacing: AppSpacing.sm) {
-                        ForEach(0..<4, id: \.self) { _ in AchievementTileSkeleton(medalSize: AppIconSize.xxxl) }
+                        ForEach(0..<4, id: \.self) { _ in AchievementTileSkeleton(medalSize: AppIconSize.Tile.md) }
                     }
                     AchievementProgressRowSkeleton()
                 }
@@ -64,7 +64,7 @@ struct AchievementsSection: View {
                     Button {
                         selected = achievement
                     } label: {
-                        AchievementTile(achievement: achievement, medalSize: AppIconSize.xxxl)
+                        AchievementTile(achievement: achievement, medalSize: AppIconSize.Tile.md)
                     }
                     .buttonStyle(.plain)
                 }
@@ -135,7 +135,7 @@ struct AchievementsView: View {
                     Button {
                         selected = achievement
                     } label: {
-                        AchievementTile(achievement: achievement, medalSize: AppIconSize.mega, showsProgress: true)
+                        AchievementTile(achievement: achievement, medalSize: AppIconSize.Tile.xl, showsProgress: true)
                     }
                     .buttonStyle(.plain)
                 }
@@ -219,7 +219,7 @@ private struct AchievementDetailSheet: View {
 
     var body: some View {
         VStack(spacing: AppSpacing.lg) {
-            AchievementMedal(achievement: achievement, size: AppIconSize.budgetRing * 1.5)
+            AchievementMedal(achievement: achievement, size: AppIconSize.Tile.xxl * 1.5)
             if let kind = achievement.kind {
                 VStack(spacing: AppSpacing.sm) {
                     Text(AchievementText.title(kind))
@@ -267,7 +267,7 @@ private struct NewAchievementsSheet: View {
                     ForEach(achievements) { achievement in
                         if let kind = achievement.kind {
                             HStack(spacing: AppSpacing.md) {
-                                AchievementMedal(achievement: achievement, size: AppIconSize.mega)
+                                AchievementMedal(achievement: achievement, size: AppIconSize.Tile.xl)
                                 VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                                     Text(AchievementText.title(kind))
                                         .font(AppTypography.bodyEmphasis)

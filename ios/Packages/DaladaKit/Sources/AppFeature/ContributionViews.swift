@@ -25,7 +25,7 @@ struct ContributionCard: View {
                             Image(systemName: contribution.level.systemImage)
                                 .font(.system(size: AppIconSize.lg))
                                 .foregroundStyle(AppColors.accent)
-                                .frame(width: AppIconSize.avatar)
+                                .frame(width: AppIconSize.Tile.xs)
                             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                                 Text(LocalizedStringKey(contribution.level.titleKey))
                                     .font(AppTypography.bodyEmphasis)

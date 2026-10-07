@@ -260,12 +260,12 @@ struct SharedPackingView: View {
                         HStack(spacing: AppSpacing.md) {
                             ForEach(members) { member in
                                 VStack(spacing: AppSpacing.xxs) {
-                                    PersonAvatar(name: member.name, path: member.avatarPath, size: AppIconSize.avatar)
+                                    PersonAvatar(name: member.name, path: member.avatarPath, size: AppIconSize.Tile.xs)
                                     Text(verbatim: shortName(member))
                                         .font(AppTypography.caption)
                                         .lineLimit(1)
                                 }
-                                .frame(width: AppIconSize.ultra)
+                                .frame(width: AppIconSize.Tile.xxxl)
                             }
                         }
                     }
