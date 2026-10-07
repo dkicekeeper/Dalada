@@ -55,7 +55,7 @@ struct UsernameOnboardingView: View {
                     Text("onboarding.username.save")
                         .frame(maxWidth: .infinity)
                 }
-                .primaryButton(disabled: status != .available || session.isWorking)
+                .dsButton(disabled: status != .available || session.isWorking)
             }
             .screenPadding()
             .padding(.vertical, AppSpacing.xl)

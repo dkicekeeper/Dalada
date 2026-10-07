@@ -19,7 +19,7 @@ struct RouteButton: View {
             Label("place.card.route", systemImage: "arrow.triangle.turn.up.right.diamond")
                 .frame(maxWidth: .infinity)
         }
-        .secondaryButton()
+        .dsButton(.secondary)
         .confirmationDialog("navigator.choose", isPresented: $choosing, titleVisibility: .visible) {
             ForEach(choices) { navigator in
                 Button(LocalizedStringKey(navigator.titleKey)) {

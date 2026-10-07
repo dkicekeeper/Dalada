@@ -26,7 +26,7 @@ struct PlaceStewardRow: View {
 
     private var row: some View {
         HStack(spacing: AppSpacing.sm) {
-            PersonAvatar(name: steward.name, path: steward.avatarPath, size: AppIconSize.Tile.xs)
+            PersonAvatar(name: steward.name, path: steward.avatarPath, size: AppIconSize.xxl)
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Label("steward.title", systemImage: "star.circle.fill")
                     .font(AppTypography.caption)

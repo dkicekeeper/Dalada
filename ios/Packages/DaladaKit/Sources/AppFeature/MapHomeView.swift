@@ -84,7 +84,7 @@ struct MapHomeView: View {
                 Label("map.layers", systemImage: placeFilter.isActive ? "square.3.layers.3d.top.filled" : "square.3.layers.3d")
                     .font(AppTypography.bodyEmphasis)
             }
-            .secondaryButton()
+            .dsButton(.secondary)
             .padding(.leading, AppSpacing.lg)
             .padding(.top, AppSpacing.sm)
         }
@@ -130,7 +130,7 @@ struct MapHomeView: View {
                 Label("map.addPlace", systemImage: "plus")
                     .font(AppTypography.bodyEmphasis)
             }
-            .secondaryButton()
+            .dsButton(.secondary)
             .padding(.trailing, AppSpacing.lg)
             .padding(.top, AppSpacing.sm)
         }
@@ -150,7 +150,7 @@ struct MapHomeView: View {
                     .font(AppTypography.bodyEmphasis)
                     .accessibilityLabel(Text("map.locate"))
             }
-            .secondaryButton()
+            .dsButton(.secondary)
             .buttonBorderShape(.circle)
             .padding(.trailing, AppSpacing.lg)
             .padding(.bottom, AppSpacing.lg)
@@ -160,7 +160,7 @@ struct MapHomeView: View {
             if !recorder.isActive || !TripAccessoryModifier.isAvailable {
                 StartTripButton()
                     .font(AppTypography.bodyEmphasis)
-                    .primaryButton()
+                    .dsButton()
                     .padding(.bottom, AppSpacing.lg)
             }
         }

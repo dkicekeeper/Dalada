@@ -36,7 +36,7 @@ struct FriendPickerView: View {
     var body: some View {
         Group {
             if available.isEmpty && isLoaded {
-                EmptyStateView(
+                EmptyState(
                     icon: "person.2",
                     title: String(localized: "friendPicker.empty.title"),
                     description: String(localized: "friendPicker.empty.description")
@@ -116,7 +116,7 @@ struct TripParticipantsSection: View {
                 tagButton
             } else if !visible.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
-                    SectionHeaderView(String(localized: "trip.participants.title"), systemImage: "person.2")
+                    SectionHeader(String(localized: "trip.participants.title"), systemImage: "person.2")
                     ForEach(visible) { participant in
                         row(participant)
                     }
@@ -215,14 +215,14 @@ struct TripParticipantsSection: View {
                     Text("trip.invitation.accept")
                         .frame(maxWidth: .infinity)
                 }
-                .primaryButton()
+                .dsButton()
                 Button {
                     Task { await respond(accept: false) }
                 } label: {
                     Text("trip.invitation.decline")
                         .frame(maxWidth: .infinity)
                 }
-                .secondaryButton()
+                .dsButton(.secondary)
             }
             .disabled(isWorking)
         }
@@ -308,7 +308,7 @@ struct TripInvitationsSection: View {
         Group {
             if !invitations.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
-                    SectionHeaderView(String(localized: "home.invitations.title"), systemImage: "person.2.badge.plus")
+                    SectionHeader(String(localized: "home.invitations.title"), systemImage: "person.2.badge.plus")
                     ForEach(invitations) { invitation in
                         NavigationLink {
                             TripDetailView(tripID: invitation.tripID, environment: environment)
@@ -392,7 +392,7 @@ struct TripInviteLinkSheet: View {
                         Label("trip.inviteLink.send", systemImage: "square.and.arrow.up")
                             .frame(maxWidth: .infinity)
                     }
-                    .primaryButton()
+                    .dsButton()
                 } else if let errorText {
                     Text(verbatim: errorText)
                         .font(AppTypography.bodySmall)
@@ -401,7 +401,7 @@ struct TripInviteLinkSheet: View {
                     Button("common.retry") {
                         Task { await load() }
                     }
-                    .secondaryButton()
+                    .dsButton(.secondary)
                 } else {
                     ProgressView()
                 }

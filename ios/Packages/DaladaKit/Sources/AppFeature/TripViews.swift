@@ -132,7 +132,7 @@ struct StartTripView: View {
                     Label("trip.start.button", systemImage: "record.circle")
                         .frame(maxWidth: .infinity)
                 }
-                .primaryButton()
+                .dsButton()
             }
             .screenPadding()
             .padding(.vertical, AppSpacing.lg)
@@ -245,7 +245,7 @@ struct TripRecordingView: View {
                         Label("trip.pause", systemImage: "pause.fill")
                             .frame(maxWidth: .infinity)
                     }
-                    .secondaryButton()
+                    .dsButton(.secondary)
                 } else {
                     Button {
                         Task { await recorder.resume() }
@@ -253,7 +253,7 @@ struct TripRecordingView: View {
                         Label("trip.resume", systemImage: "play.fill")
                             .frame(maxWidth: .infinity)
                     }
-                    .primaryButton()
+                    .dsButton()
                 }
                 Button {
                     Task {
@@ -264,7 +264,7 @@ struct TripRecordingView: View {
                     Label("trip.finish", systemImage: "stop.fill")
                         .frame(maxWidth: .infinity)
                 }
-                .secondaryButton()
+                .dsButton(.secondary)
             }
         }
         .cardContentPadding()
@@ -513,7 +513,7 @@ struct TripRow: View {
             Image(systemName: trip.activity.systemImage)
                 .font(.system(size: AppIconSize.md))
                 .foregroundStyle(AppColors.accent)
-                .frame(width: AppIconSize.Tile.xs, height: AppIconSize.Tile.xs)
+                .frame(width: AppIconSize.xxl, height: AppIconSize.xxl)
                 .background(AppColors.pale(AppColors.accent), in: Circle())
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: trip.title)
@@ -697,7 +697,7 @@ struct TripDetailView: View {
             if let trip {
                 content(trip)
             } else if let loadError {
-                EmptyStateView(
+                EmptyState(
                     icon: "wifi.slash",
                     title: String(localized: "trip.detail.failed"),
                     description: loadError,
@@ -707,9 +707,9 @@ struct TripDetailView: View {
                 )
             } else {
                 VStack(alignment: .leading, spacing: AppSpacing.lg) {
-                    SkeletonView(height: 260, cornerRadius: AppRadius.xl)
-                    SkeletonView(height: 14, width: 160)
-                    SkeletonView(height: 150, cornerRadius: AppRadius.card)
+                    Skeleton(height: 260, cornerRadius: AppRadius.xl)
+                    Skeleton(height: 14, width: 160)
+                    Skeleton(height: 150, cornerRadius: AppRadius.card)
                 }
                 .screenPadding()
                 .padding(.vertical, AppSpacing.lg)
@@ -821,7 +821,7 @@ struct TripDetailView: View {
                         Label("route.follow", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
                             .frame(maxWidth: .infinity)
                     }
-                    .secondaryButton()
+                    .dsButton(.secondary)
                 }
                 if !trip.isOwn {
                     Label(
@@ -888,7 +888,7 @@ struct TripDetailView: View {
 
                 if !checkins.isEmpty {
                     VStack(alignment: .leading, spacing: AppSpacing.md) {
-                        SectionHeaderView(String(localized: "trip.detail.checkins"), systemImage: "mappin.circle")
+                        SectionHeader(String(localized: "trip.detail.checkins"), systemImage: "mappin.circle")
                         // Чекины по порядку на линии поездки: подтверждённые — зелёной печатью.
                         ActivityTimeline(checkins) { checkin in
                             checkin.verified
@@ -1136,11 +1136,11 @@ struct PendingTripRow: View {
                     Button("common.retry") {
                         Task { await sync.retry(item.id) }
                     }
-                    .secondaryButton()
+                    .dsButton(.secondary)
                     Button("pending.discard", role: .destructive) {
                         confirmsDiscard = true
                     }
-                    .secondaryButton()
+                    .dsButton(.secondary)
                 }
             }
         }

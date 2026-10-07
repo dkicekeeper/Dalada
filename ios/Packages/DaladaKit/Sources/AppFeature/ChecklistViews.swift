@@ -283,7 +283,7 @@ struct ChecklistDetailView: View {
         if let checklist = lists.checklist(checklistID) {
             content(checklist)
         } else {
-            EmptyStateView(
+            EmptyState(
                 icon: "checklist",
                 title: String(localized: "checklist.notFound"),
                 description: String(localized: "checklist.notFound.description")

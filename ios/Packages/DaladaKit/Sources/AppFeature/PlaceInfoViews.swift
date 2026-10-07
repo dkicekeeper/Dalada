@@ -52,7 +52,7 @@ struct PlaceInfoSection: View {
         if !info.isEmpty || canEdit || canSuggest {
             VStack(alignment: .leading, spacing: AppSpacing.md) {
                 if showsHeader {
-                    SectionHeaderView(String(localized: "place.info.title"), systemImage: "info.circle")
+                    SectionHeader(String(localized: "place.info.title"), systemImage: "info.circle")
                 }
                 if info.isEmpty {
                     Text(LocalizedStringKey(canEdit ? "place.info.empty.own" : "place.info.empty"))
@@ -430,7 +430,7 @@ struct PlaceEditView: View {
                 if let draft = Binding($draft) {
                     form(draft)
                 } else if let loadError {
-                    EmptyStateView(
+                    EmptyState(
                         icon: "wifi.slash",
                         title: String(localized: "place.card.failed"),
                         description: loadError,
@@ -724,7 +724,7 @@ struct NearbyPlacesSection: View {
         Group {
             if !items.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
-                    SectionHeaderView(String(localized: "place.nearby"), systemImage: "location.circle")
+                    SectionHeader(String(localized: "place.nearby"), systemImage: "location.circle")
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack(alignment: .top, spacing: AppSpacing.md) {
                             ForEach(items) { item in

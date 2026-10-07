@@ -284,7 +284,7 @@ struct UserProfileView: View {
             case .loading:
                 // Шапка профиля той же формы, пока грузится: аватар, имя, @username.
                 VStack(spacing: AppSpacing.lg) {
-                    SkeletonView.circle(AppIconSize.Tile.xl)
+                    Skeleton.circle(AppIconSize.Tile.xl)
                     VStack(spacing: AppSpacing.xs) {
                         SkeletonText(AppTypography.h3, width: 180)
                         SkeletonText(AppTypography.bodySmall, width: 100)
@@ -295,13 +295,13 @@ struct UserProfileView: View {
                 .padding(.top, AppSpacing.xl)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             case .notFound:
-                EmptyStateView(
+                EmptyState(
                     icon: "person.slash",
                     title: String(localized: "person.notFound"),
                     description: "@" + username
                 )
             case .failed(let message):
-                EmptyStateView(
+                EmptyState(
                     icon: "wifi.slash",
                     title: String(localized: "person.failed"),
                     description: message,
@@ -385,7 +385,7 @@ struct UserProfileView: View {
 
                 if profile.isClosed && profile.id != session.profile?.id {
                     // Закрытый профиль: не друзьям — только шапка.
-                    EmptyStateView(
+                    EmptyState(
                         icon: "lock",
                         title: String(localized: "person.private.title"),
                         description: String(localized: "person.private")
@@ -418,7 +418,7 @@ struct UserProfileView: View {
                     Label("person.requestedCancel", systemImage: "clock")
                         .frame(maxWidth: .infinity)
                 }
-                .secondaryButton()
+                .dsButton(.secondary)
             } else {
                 Button {
                     Task { await sendRequest(profile) }
@@ -429,7 +429,7 @@ struct UserProfileView: View {
                     )
                     .frame(maxWidth: .infinity)
                 }
-                .primaryButton()
+                .dsButton()
             }
         }
         .disabled(isWorking)
@@ -527,7 +527,7 @@ struct InviteView: View {
                         Label("invite.share", systemImage: "square.and.arrow.up")
                             .frame(maxWidth: .infinity)
                     }
-                    .primaryButton()
+                    .dsButton()
                 } else {
                     Text("invite.needsUsername")
                         .font(AppTypography.body)

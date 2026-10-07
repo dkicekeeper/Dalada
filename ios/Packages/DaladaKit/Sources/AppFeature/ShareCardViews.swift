@@ -42,7 +42,7 @@ struct ShareCardSheet<Model, Card: View>: View {
                         Label("share.send", systemImage: "square.and.arrow.up")
                             .frame(maxWidth: .infinity)
                     }
-                    .primaryButton()
+                    .dsButton()
                 }
             }
             .screenPadding()
@@ -73,7 +73,7 @@ struct ShareCardSheet<Model, Card: View>: View {
                 .shadow(color: .black.opacity(0.25), radius: 12, y: 4)
                 .accessibilityLabel(Text("share.title"))
         } else if isLoaded {
-            EmptyStateView(icon: "photo", title: String(localized: "share.failed"), style: .error)
+            EmptyState(icon: "photo", title: String(localized: "share.failed"), style: .error)
         } else {
             ProgressView()
         }

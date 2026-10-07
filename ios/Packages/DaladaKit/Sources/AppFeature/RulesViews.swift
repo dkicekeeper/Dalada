@@ -53,7 +53,7 @@ struct RuleStatusBadge: View {
     let status: RuleStatus
 
     var body: some View {
-        BadgeView(RuleFormat.statusText(status), color: RuleFormat.statusColor(status))
+        Badge(RuleFormat.statusText(status), color: RuleFormat.statusColor(status))
     }
 }
 
@@ -283,7 +283,7 @@ struct RuleZoneView: View {
                 let bans = pack.regulations(inZone: zone.id).filter { $0.kind == .fishingBan && $0.window != nil }
                 if !bans.isEmpty {
                     VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                        SectionHeaderView(String(localized: "rules.calendar"), systemImage: "calendar")
+                        SectionHeader(String(localized: "rules.calendar"), systemImage: "calendar")
                         ZoneBanCalendar(bans: bans)
                     }
                 }
@@ -372,7 +372,7 @@ struct PlaceRulesSection: View {
             if let pack = rules.pack, let zone = pack.zones(containing: coordinate).first {
                 let today = RulesStore.today
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                    SectionHeaderView(String(localized: "rules.here"), systemImage: "exclamationmark.shield")
+                    SectionHeader(String(localized: "rules.here"), systemImage: "exclamationmark.shield")
                     ForEach(pack.activeBans(at: coordinate, on: today)) { ban in
                         RecommendationBox(
                             text: ban.title.text(for: RulesStore.language) + ": "

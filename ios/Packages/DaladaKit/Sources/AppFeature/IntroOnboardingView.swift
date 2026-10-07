@@ -186,7 +186,7 @@ struct IntroOnboardingView: View {
                 Text("intro.signIn.guest")
                     .frame(maxWidth: .infinity)
             }
-            .secondaryButton()
+            .dsButton(.secondary)
         default:
             single(key: "intro.next") { next() }
         }
@@ -197,24 +197,16 @@ struct IntroOnboardingView: View {
             Text(key)
                 .frame(maxWidth: .infinity)
         }
-        .primaryButton()
+        .dsButton()
     }
 
     /// Основное действие и «Позже» (просто дальше).
     private func pair(primaryTitle: String, isWorking: Bool, action: @escaping () -> Void) -> some View {
         VStack(spacing: AppSpacing.sm) {
-            Button(action: action) {
-                LoadingButtonLabel(primaryTitle, isLoading: isWorking)
-                    .frame(maxWidth: .infinity)
-            }
-            .primaryButton(disabled: isWorking)
-            Button {
+            DSButton(primaryTitle, fullWidth: true, isLoading: isWorking, action: action)
+            DSButton(String(localized: "intro.later"), appearance: .secondary, fullWidth: true) {
                 next()
-            } label: {
-                Text("intro.later")
-                    .frame(maxWidth: .infinity)
             }
-            .secondaryButton()
         }
     }
 

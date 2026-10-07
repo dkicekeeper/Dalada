@@ -118,8 +118,8 @@
 
 ## Компоненты DesignKit
 
-`UniversalRow`, `FormSection`, `FormTextField`, `SectionHeaderView`, `ProportionBar`
-(прогресс сборов, вес по категориям), `RecommendationBox` (совет дня), `EmptyStateView`.
+`UniversalRow`, `FormSection`, `FormTextField`, `SectionHeader`, `ProportionBar`
+(прогресс сборов, вес по категориям), `RecommendationBox` (совет дня), `EmptyState`.
 
 **Нужно добавить:** строка-чекбокс для чеклиста, карточка статьи, читалка статьи (Markdown с
 фото), карточка вида рыбы, карточка правила с бейджем статуса.

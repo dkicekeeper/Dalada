@@ -41,7 +41,7 @@ struct GearListView: View {
         List {
             if lists.gear.isEmpty {
                 Section {
-                    EmptyStateView(
+                    EmptyState(
                         icon: "backpack",
                         title: String(localized: "gear.empty.title"),
                         description: String(localized: "gear.empty.description"),

@@ -3,7 +3,7 @@ import DesignTokens
 import SwiftUI
 
 /// Заглушка раздела, который появится в следующих этапах: иконка, заголовок, пояснение.
-/// Тексты передаются уже локализованными (EmptyStateView принимает `String`).
+/// Тексты передаются уже локализованными (EmptyState принимает `String`).
 public struct PlaceholderScreen: View {
     private let icon: String
     private let title: String
@@ -16,7 +16,7 @@ public struct PlaceholderScreen: View {
     }
 
     public var body: some View {
-        EmptyStateView(icon: icon, title: title, description: description)
+        EmptyState(icon: icon, title: title, description: description)
             .padding(AppSpacing.xxl)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

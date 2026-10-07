@@ -59,17 +59,17 @@ final class AvatarStore {
     }
 }
 
-/// Аватар человека: фото профиля, пока его нет — инициалы (`AvatarView` из DesignKit).
+/// Аватар человека: фото профиля, пока его нет — инициалы (`Avatar` из DesignKit).
 struct PersonAvatar: View {
     let name: String?
     let path: String?
-    var size: CGFloat = AppIconSize.Tile.xs
+    var size: CGFloat = AppIconSize.xxl
 
     @Environment(AvatarStore.self) private var avatars: AvatarStore?
     @State private var image: UIImage?
 
     var body: some View {
-        AvatarView(name: name, image: image.map { Image(uiImage: $0) }, size: size)
+        Avatar(name: name, image: image.map { Image(uiImage: $0) }, size: size)
             .task(id: path) {
                 image = await avatars?.image(for: path)
             }

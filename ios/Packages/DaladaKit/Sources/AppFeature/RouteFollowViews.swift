@@ -139,14 +139,14 @@ struct FollowRouteView: View {
                     )
                     .frame(maxWidth: .infinity)
                 }
-                .secondaryButton()
+                .dsButton(.secondary)
                 Button {
                     dismiss()
                 } label: {
                     Label("route.follow.stop", systemImage: "xmark")
                         .frame(maxWidth: .infinity)
                 }
-                .primaryButton()
+                .dsButton()
             }
             .screenPadding()
             .padding(.bottom, AppSpacing.lg)

@@ -29,7 +29,7 @@ struct PlaceReviewsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             if showsHeader {
-                SectionHeaderView(String(localized: "reviews.title"), systemImage: "star.bubble")
+                SectionHeader(String(localized: "reviews.title"), systemImage: "star.bubble")
             }
             if let summary {
                 if summary.reviewsCount > 0 {
@@ -38,7 +38,7 @@ struct PlaceReviewsSection: View {
                 } else {
                     // Пусто — сразу и что делать: «Оставить отзыв», если уже можно.
                     let canWrite = session.profile != nil && summary.myReview == nil && summary.canReview
-                    EmptyStateView(
+                    EmptyState(
                         icon: "star.bubble",
                         title: String(localized: "reviews.empty.title"),
                         description: String(localized: "reviews.empty"),
@@ -84,7 +84,7 @@ struct PlaceReviewsSection: View {
                     Label("reviews.edit", systemImage: "square.and.pencil")
                         .frame(maxWidth: .infinity)
                 }
-                .secondaryButton()
+                .dsButton(.secondary)
             } else if summary.canReview {
                 Button {
                     showsForm = true
@@ -92,7 +92,7 @@ struct PlaceReviewsSection: View {
                     Label("reviews.write", systemImage: "star")
                         .frame(maxWidth: .infinity)
                 }
-                .primaryButton()
+                .dsButton()
             } else {
                 Label("reviews.checkinFirst", systemImage: "mappin.circle")
                     .font(AppTypography.caption)
@@ -122,7 +122,7 @@ struct ReviewSummaryView: View {
                 Text(verbatim: (summary.ratingAverage ?? 0).formatted(.number.precision(.fractionLength(1))))
                     .font(AppTypography.h2)
                     .monospacedDigit()
-                RatingView(rating: summary.ratingAverage ?? 0, size: 12)
+                Rating(rating: summary.ratingAverage ?? 0, size: 12)
                 Text("reviews.count \(summary.reviewsCount)")
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
@@ -463,7 +463,7 @@ struct PlaceThreadsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             if showsHeader {
-                SectionHeaderView(String(localized: "threads.title"), systemImage: "bubble.left.and.bubble.right") {
+                SectionHeader(String(localized: "threads.title"), systemImage: "bubble.left.and.bubble.right") {
                     if threads.count > 3 { allThreadsLink }
                 }
             } else {
@@ -477,7 +477,7 @@ struct PlaceThreadsSection: View {
             }
             if threads.isEmpty && isLoaded {
                 // Пусто — сразу и что делать: «Новое обсуждение» после входа.
-                EmptyStateView(
+                EmptyState(
                     icon: "bubble.left.and.bubble.right",
                     title: String(localized: "threads.empty.title"),
                     description: String(localized: "threads.empty"),
@@ -500,7 +500,7 @@ struct PlaceThreadsSection: View {
                     Label("threads.new", systemImage: "plus.bubble")
                         .frame(maxWidth: .infinity)
                 }
-                .secondaryButton()
+                .dsButton(.secondary)
             }
         }
         .task(id: place.id) { await load() }
@@ -711,13 +711,13 @@ struct ThreadView: View {
             if let thread {
                 content(thread)
             } else if isNotFound {
-                EmptyStateView(
+                EmptyState(
                     icon: "bubble.left.and.exclamationmark.bubble.right",
                     title: String(localized: "threads.notFound"),
                     description: String(localized: "threads.notFound.description")
                 )
             } else if let loadError {
-                EmptyStateView(
+                EmptyState(
                     icon: "wifi.slash",
                     title: String(localized: "threads.failed"),
                     description: loadError,

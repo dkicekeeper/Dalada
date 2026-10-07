@@ -116,11 +116,11 @@ struct PendingReportRow: View {
                     Button("common.retry") {
                         Task { await sync.retry(item.id) }
                     }
-                    .secondaryButton()
+                    .dsButton(.secondary)
                     Button("pending.discard", role: .destructive) {
                         confirmsDiscard = true
                     }
-                    .secondaryButton()
+                    .dsButton(.secondary)
                 }
             }
         }
@@ -138,7 +138,7 @@ struct PendingQueueSection: View {
     var body: some View {
         if !sync.pending.isEmpty || !sync.pendingTrips.isEmpty {
             VStack(alignment: .leading, spacing: AppSpacing.md) {
-                SectionHeaderView(String(localized: "pending.title"), systemImage: "icloud.and.arrow.up") {
+                SectionHeader(String(localized: "pending.title"), systemImage: "icloud.and.arrow.up") {
                     if sync.isSending {
                         ProgressView()
                     } else if hasWaiting {

@@ -57,7 +57,7 @@ External              DesignKit · MapLibre · GRDB · supabase-swift · Nuke
 - Страница места с карты — нижняя шторка (`presentationDetents`).
 - Зависимости передаются через `Environment` (`AppDependencies` с протоколами сервисов) —
   в тестах и превью подменяются на фейки.
-- Общий тип состояния экрана: `loading / content / empty / error` → `EmptyStateView` из DesignKit.
+- Общий тип состояния экрана: `loading / content / empty / error` → `EmptyState` из DesignKit.
 
 ## Данные и офлайн
 

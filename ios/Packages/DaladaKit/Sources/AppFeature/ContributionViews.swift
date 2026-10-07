@@ -25,7 +25,7 @@ struct ContributionCard: View {
                             Image(systemName: contribution.level.systemImage)
                                 .font(.system(size: AppIconSize.lg))
                                 .foregroundStyle(AppColors.accent)
-                                .frame(width: AppIconSize.Tile.xs)
+                                .frame(width: AppIconSize.xxl)
                             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                                 Text(LocalizedStringKey(contribution.level.titleKey))
                                     .font(AppTypography.bodyEmphasis)
@@ -159,7 +159,7 @@ struct SuggestionReviewView: View {
     var body: some View {
         List {
             if items.isEmpty && isLoaded {
-                EmptyStateView(
+                EmptyState(
                     icon: "checkmark.seal",
                     title: String(localized: "review.empty.title"),
                     description: String(localized: "review.empty")

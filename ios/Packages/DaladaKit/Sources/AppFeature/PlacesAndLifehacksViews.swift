@@ -16,7 +16,7 @@ struct PlaceRow: View {
             Image(systemName: place.type.systemImage)
                 .font(.system(size: AppIconSize.md))
                 .foregroundStyle(AppColors.accent)
-                .frame(width: AppIconSize.Tile.xs, height: AppIconSize.Tile.xs)
+                .frame(width: AppIconSize.xxl, height: AppIconSize.xxl)
                 .background(AppColors.pale(AppColors.accent), in: Circle())
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: place.name)

@@ -244,7 +244,7 @@ private struct AchievementDetailSheet: View {
                 }
             }
             Button("common.ok") { dismiss() }
-                .primaryButton()
+                .dsButton()
         }
         .padding(AppSpacing.xl)
         .presentationDetents([.medium])
@@ -284,7 +284,7 @@ private struct NewAchievementsSheet: View {
             }
             .scrollBounceBehavior(.basedOnSize)
             Button("achievements.new.done") { dismiss() }
-                .primaryButton()
+                .dsButton()
         }
         .padding(AppSpacing.xl)
         .presentationDetents([.medium, .large])

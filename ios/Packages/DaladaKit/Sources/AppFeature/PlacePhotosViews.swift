@@ -87,7 +87,7 @@ struct PlacePhotosGrid: View {
                         ProgressView()
                             .padding(.top, AppSpacing.xl)
                     } else {
-                        EmptyStateView(
+                        EmptyState(
                             icon: loadError == nil ? "photo.on.rectangle" : "wifi.slash",
                             title: String(localized: "place.photos.empty.title"),
                             description: loadError ?? String(localized: "place.photos.empty.description")
