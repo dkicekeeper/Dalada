@@ -67,18 +67,27 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 `DisclosureChevron`, скелетоны загрузки (`SkeletonRow`, `.skeletonLoadingLabel()`),
 `LoadingButtonLabel`, `ExpandableText`, `ActivityTimeline`, `MonthCalendar`,
 `PermissionPrimerView` (перед системным запросом разрешения), `OnboardingPager` /
-`OnboardingPage`. Своё — только если в DesignKit нет подходящего.
+`OnboardingPage`, поле сообщения `MessageComposer`, `PersonRow`, `CommentRow`, `ThreadCard`,
+`ReviewCard`, `ReactionButton`, значки достижений (`AchievementMedal`, `AchievementTile`,
+`AchievementProgressRow`), `ChecklistRow` / `ChecklistSummaryRow`, `StatsStrip`, `StreakCard`,
+`ThumbnailCard` / `ThumbnailRow`. Своё — только если в DesignKit нет подходящего.
 
-Компонент идёт в DesignKit, если выполнены все три условия:
+У каждого компонента DesignKit с данными есть скелетон `<Имя>Skeleton` той же формы: пока данные
+грузятся, показывай его на месте компонента, а не `ProgressView()`.
+
+Компонент идёт в DesignKit, если выполнены оба условия (правило «двух потребителей» отменено
+владельцем в октябре 2026: общим делается всё, что может быть общим, даже если нужно одному
+приложению):
 1. **Не знает данных приложения**: принимает текст, числа, даты, цвета, иконки, замыкания и
    `@ViewBuilder`-слоты — никаких `Place`, `Trip`, `Catch`, сторов и сервисов. Если зависимость от
    модели можно заменить параметром — тоже DesignKit, а переходник (`RuleStatus` → `BadgeView`)
    остаётся здесь маленькой обёрткой.
 2. **Отвечает на «как выглядит», а не «что значит»**: карточка, строка, бейдж, выбор — да;
    «карточка улова», «форма чекина» — нет.
-3. **Нужен в двух местах** (правило двух): нужен и Tenra, или это базовый паттерн, который должен
-   выглядеть везде одинаково. Новый компонент можно начать здесь, а при втором применении —
-   перенести PR в DesignKit (чеклист переноса — в CLAUDE.md DesignKit).
+
+Перенос — PR в DesignKit по его чеклисту (CLAUDE.md DesignKit): нейтральное имя и API, скелетон,
+экземпляр в Gallery, снапшот-тест. Здесь остаётся тонкий переходник со старым именем, который
+отдаёт модели Dalada в параметры и слоты.
 
 Признаки, что компонент остаётся в Dalada: в названии слово предметной области (Place, Trip,
 Catch, Rule, Gear), или он сам загружает данные и управляет навигацией. Новая версия DesignKit

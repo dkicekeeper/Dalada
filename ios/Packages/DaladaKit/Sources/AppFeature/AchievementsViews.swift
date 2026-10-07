@@ -33,8 +33,13 @@ struct AchievementsSection: View {
             } else if isLoaded {
                 ProfileSectionHint(text: String(localized: "achievements.empty"))
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
+                // Значки и строка «ближе всего» той же формы, пока грузятся.
+                VStack(spacing: AppSpacing.md) {
+                    HStack(alignment: .top, spacing: AppSpacing.sm) {
+                        ForEach(0..<4, id: \.self) { _ in AchievementTileSkeleton(medalSize: AppIconSize.xxxl) }
+                    }
+                    AchievementProgressRowSkeleton()
+                }
             }
         }
         .task(id: userID) { await load() }
@@ -154,27 +159,19 @@ private struct AchievementTile: View {
     var showsProgress = false
 
     var body: some View {
-        VStack(spacing: AppSpacing.xs) {
+        if let kind = achievement.kind {
+            DesignComponents.AchievementTile(
+                title: String(localized: AchievementText.title(kind)),
+                systemImage: kind.systemImage,
+                color: CategoryColors.hexColor(for: achievement.id),
+                isEarned: achievement.isEarned,
+                medalSize: medalSize,
+                progressText: showsProgress ? AchievementText.progress(achievement, kind: kind) : nil
+            )
+        } else {
             AchievementMedal(achievement: achievement, size: medalSize)
-            if let kind = achievement.kind {
-                Text(AchievementText.title(kind))
-                    .font(AppTypography.caption)
-                    .foregroundStyle(achievement.isEarned ? AppColors.textPrimary : AppColors.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                if showsProgress && !achievement.isEarned {
-                    Text(verbatim: AchievementText.progress(achievement, kind: kind))
-                        .font(AppTypography.caption2)
-                        .foregroundStyle(AppColors.textTertiary)
-                        .monospacedDigit()
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.8)
-                }
-            }
+                .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
-        .contentShape(Rectangle())
-        .accessibilityElement(children: .combine)
     }
 }
 
@@ -184,18 +181,12 @@ struct AchievementMedal: View {
     let size: CGFloat
 
     var body: some View {
-        IconView(
-            source: .sfSymbol(achievement.kind?.systemImage ?? "rosette"),
-            style: .circle(
-                size: size,
-                tint: .monochrome(achievement.isEarned ? AppColors.staticWhite : AppColors.textTertiary),
-                backgroundColor: achievement.isEarned
-                    ? CategoryColors.hexColor(for: achievement.id)
-                    : AppColors.bgMuted,
-                padding: size * 0.24
-            )
+        DesignComponents.AchievementMedal(
+            systemImage: achievement.kind?.systemImage ?? "rosette",
+            color: CategoryColors.hexColor(for: achievement.id),
+            isEarned: achievement.isEarned,
+            size: size
         )
-        .accessibilityHidden(true)
     }
 }
 
@@ -204,28 +195,17 @@ private struct AchievementProgressRow: View {
     let achievement: Achievement
 
     var body: some View {
-        HStack(spacing: AppSpacing.md) {
-            AchievementMedal(achievement: achievement, size: AppIconSize.xl)
-            if let kind = achievement.kind {
-                VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                    HStack {
-                        Text("achievements.next")
-                            .foregroundStyle(AppColors.textSecondary)
-                        Text(AchievementText.title(kind))
-                            .foregroundStyle(AppColors.textPrimary)
-                        Spacer(minLength: 0)
-                        Text(verbatim: AchievementText.progress(achievement, kind: kind))
-                            .foregroundStyle(AppColors.textSecondary)
-                            .monospacedDigit()
-                    }
-                    .font(AppTypography.bodySmall)
-                    .lineLimit(1)
-                    LinearProgressBar(value: achievement.fraction, height: 6)
-                }
-            }
+        if let kind = achievement.kind {
+            DesignComponents.AchievementProgressRow(
+                label: String(localized: "achievements.next"),
+                title: String(localized: AchievementText.title(kind)),
+                progressText: AchievementText.progress(achievement, kind: kind),
+                fraction: achievement.fraction,
+                systemImage: kind.systemImage,
+                color: CategoryColors.hexColor(for: achievement.id),
+                isEarned: achievement.isEarned
+            )
         }
-        .contentShape(Rectangle())
-        .accessibilityElement(children: .combine)
     }
 }
 

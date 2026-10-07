@@ -104,8 +104,21 @@ struct PlacesHomeView: View {
                 description: store.loadError ?? String(localized: "places.discover.empty")
             )
         } else if !store.hasLoaded && store.isLoading {
-            VStack(spacing: 0) {
-                ForEach(0..<4, id: \.self) { _ in SkeletonRow() }
+            // Две карусели-заглушки: заголовок и карточки мест той же формы.
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                ForEach(0..<2, id: \.self) { _ in
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                        SkeletonText(AppTypography.bodyEmphasis, width: 160)
+                            .screenPadding()
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(alignment: .top, spacing: AppSpacing.md) {
+                                ForEach(0..<3, id: \.self) { _ in ThumbnailCardSkeleton() }
+                            }
+                            .screenPadding()
+                        }
+                        .scrollDisabled(true)
+                    }
+                }
             }
             .padding(.top, AppSpacing.md)
             .skeletonLoadingLabel()
@@ -250,37 +263,17 @@ struct PlaceItemCard: View {
     let photoURL: URL?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.xs) {
-            ZStack(alignment: .topTrailing) {
-                PlaceItemImage(item: item, photoURL: photoURL)
-                    .frame(width: 200, height: 110)
-                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
-                if item.isSaved {
-                    Image(systemName: "bookmark.fill")
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.staticWhite)
-                        .padding(AppSpacing.xs)
-                        .background(AppColors.accent, in: Circle())
-                        .padding(AppSpacing.xs)
-                        .accessibilityLabel(Text("place.card.saved"))
-                }
-            }
-            HStack(spacing: AppSpacing.xxs) {
-                Text(verbatim: item.name)
-                    .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
-                    .lineLimit(1)
-                if item.isEditorial {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.accent)
-                        .accessibilityLabel(Text("place.card.editorial"))
-                }
-            }
+        ThumbnailCard(
+            title: item.name,
+            isVerified: item.isEditorial,
+            isSaved: item.isSaved,
+            verifiedLabel: String(localized: "place.card.editorial"),
+            savedLabel: String(localized: "place.card.saved")
+        ) {
+            PlaceItemImage(item: item, photoURL: photoURL)
+        } details: {
             PlaceItemMeta(item: item)
         }
-        .frame(width: 200, alignment: .leading)
-        .contentShape(Rectangle())
     }
 }
 
@@ -294,12 +287,7 @@ private struct PlaceItemImage: View {
             RemotePhoto(path: path, url: photoURL)
                 .background(AppColors.bgMuted)
         } else {
-            ZStack {
-                AppColors.accent.opacity(0.12)
-                Image(systemName: item.type.systemImage)
-                    .font(.system(size: AppIconSize.md * 1.5))
-                    .foregroundStyle(AppColors.accent)
-            }
+            ThumbnailPlaceholder(systemImage: item.type.systemImage)
         }
     }
 }
@@ -347,34 +335,17 @@ private struct PlaceItemRow: View {
     let photoURL: URL?
 
     var body: some View {
-        HStack(alignment: .top, spacing: AppSpacing.md) {
+        ThumbnailRow(
+            title: item.name,
+            isVerified: item.isEditorial,
+            isSaved: item.isSaved,
+            verifiedLabel: String(localized: "place.card.editorial"),
+            savedLabel: String(localized: "place.card.saved")
+        ) {
             PlaceItemImage(item: item, photoURL: photoURL)
-                .frame(width: 64, height: 64)
-                .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
-            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                HStack(spacing: AppSpacing.xxs) {
-                    Text(verbatim: item.name)
-                        .font(AppTypography.bodyEmphasis)
-                        .foregroundStyle(AppColors.textPrimary)
-                        .lineLimit(2)
-                    if item.isEditorial {
-                        Image(systemName: "checkmark.seal.fill")
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.accent)
-                            .accessibilityLabel(Text("place.card.editorial"))
-                    }
-                    if item.isSaved {
-                        Image(systemName: "bookmark.fill")
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.accent)
-                            .accessibilityLabel(Text("place.card.saved"))
-                    }
-                }
-                PlaceItemMeta(item: item)
-            }
-            Spacer(minLength: 0)
+        } details: {
+            PlaceItemMeta(item: item)
         }
-        .contentShape(Rectangle())
     }
 }
 
