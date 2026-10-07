@@ -462,17 +462,16 @@ struct PlaceThreadsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
-            HStack {
-                if showsHeader {
-                    SectionHeaderView(String(localized: "threads.title"), systemImage: "bubble.left.and.bubble.right")
+            if showsHeader {
+                SectionHeaderView(String(localized: "threads.title"), systemImage: "bubble.left.and.bubble.right") {
+                    if threads.count > 3 { allThreadsLink }
                 }
-                Spacer(minLength: 0)
-                if threads.count > 3 {
-                    NavigationLink {
-                        ThreadsListView(placeID: place.id, placeName: place.name, environment: environment)
-                    } label: {
-                        Text("threads.all")
-                            .font(AppTypography.bodySmall)
+            } else {
+                // В карточке места заголовок даёт вкладка: ссылка «Все» одна у правого края.
+                HStack {
+                    Spacer(minLength: 0)
+                    if threads.count > 3 {
+                        allThreadsLink.font(AppTypography.bodySmall)
                     }
                 }
             }
@@ -507,6 +506,14 @@ struct PlaceThreadsSection: View {
         .task(id: place.id) { await load() }
         .sheet(isPresented: $showsForm, onDismiss: { Task { await load() } }) {
             ThreadFormView(placeID: place.id, placeName: place.name, environment: environment)
+        }
+    }
+
+    private var allThreadsLink: some View {
+        NavigationLink {
+            ThreadsListView(placeID: place.id, placeName: place.name, environment: environment)
+        } label: {
+            Text("threads.all")
         }
     }
 
