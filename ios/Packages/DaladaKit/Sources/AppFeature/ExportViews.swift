@@ -34,9 +34,9 @@ struct ExportSheet: View {
                         Label("export.share", systemImage: "square.and.arrow.up")
                             .frame(maxWidth: .infinity)
                     }
-                    .primaryButton()
+                    .dsButton()
                 } else if let errorText {
-                    EmptyStateView(
+                    EmptyState(
                         icon: "exclamationmark.triangle",
                         title: String(localized: "export.failed"),
                         description: errorText,

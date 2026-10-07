@@ -17,7 +17,7 @@ struct CloseFriendsView: View {
     var body: some View {
         List {
             if friends.isEmpty && isLoaded {
-                EmptyStateView(
+                EmptyState(
                     icon: "person.2",
                     title: String(localized: "closeFriends.empty.title"),
                     description: String(localized: "closeFriends.empty")

@@ -77,7 +77,7 @@ struct PlacesHomeView: View {
                 Label("places.nearby.locate", systemImage: "location")
                     .frame(maxWidth: .infinity)
             }
-            .secondaryButton()
+            .dsButton(.secondary)
             .screenPadding()
         }
 
@@ -98,7 +98,7 @@ struct PlacesHomeView: View {
         section(.new)
 
         if store.hasLoaded && PlacesStore.allItems(store.discovery).isEmpty {
-            EmptyStateView(
+            EmptyState(
                 icon: store.loadError == nil ? "mappin.and.ellipse" : "wifi.slash",
                 title: String(localized: "places.empty.title"),
                 description: store.loadError ?? String(localized: "places.discover.empty")
@@ -387,7 +387,7 @@ private struct PlaceResultsList: View {
                     ProgressView()
                         .frame(maxWidth: .infinity)
                 } else {
-                    EmptyStateView(
+                    EmptyState(
                         icon: loadError == nil ? "magnifyingglass" : "wifi.slash",
                         title: String(localized: "places.search.empty.title"),
                         description: loadError ?? String(localized: "places.search.empty.description")
@@ -550,13 +550,13 @@ struct PlaceListScreen: View {
                         ProgressView()
                             .frame(maxWidth: .infinity)
                     } else if route == .saved && types.isEmpty && loadError == nil {
-                        EmptyStateView(
+                        EmptyState(
                             icon: "bookmark",
                             title: String(localized: "places.saved.empty.title"),
                             description: String(localized: "places.saved.empty.description")
                         )
                     } else {
-                        EmptyStateView(
+                        EmptyState(
                             icon: loadError == nil ? "magnifyingglass" : "wifi.slash",
                             title: String(localized: "places.search.empty.title"),
                             description: loadError ?? String(localized: "places.search.empty.description")

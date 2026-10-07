@@ -29,7 +29,7 @@ struct UserContentSections: View {
 
             if !trips.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
-                    SectionHeaderView(String(localized: "person.trips"), systemImage: "point.topleft.down.to.point.bottomright.curvepath") {
+                    SectionHeader(String(localized: "person.trips"), systemImage: "point.topleft.down.to.point.bottomright.curvepath") {
                         NavigationLink {
                             UserTripsListView(userID: userID, environment: environment)
                         } label: {
@@ -53,7 +53,7 @@ struct UserContentSections: View {
 
             if !places.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
-                    SectionHeaderView(String(localized: "person.places"), systemImage: "mappin.and.ellipse") {
+                    SectionHeader(String(localized: "person.places"), systemImage: "mappin.and.ellipse") {
                         if places.count > 5 {
                             NavigationLink {
                                 UserPlacesListView(places: places, environment: environment)
@@ -433,7 +433,7 @@ struct PrivacyZoneEditorView: View {
                     Button("privacyZones.delete", role: .destructive) {
                         confirmsDelete = true
                     }
-                    .secondaryButton()
+                    .dsButton(.secondary)
                 }
             }
             .screenPadding()

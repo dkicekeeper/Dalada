@@ -78,10 +78,10 @@ struct PlaceCardView: View {
                 switch state {
                 case .loading:
                     VStack(alignment: .leading, spacing: AppSpacing.md) {
-                        SkeletonView(height: 24, width: 200)
-                        SkeletonView(height: 14, width: 120)
-                        SkeletonView(height: 14)
-                        SkeletonView(height: 14, width: 240)
+                        Skeleton(height: 24, width: 200)
+                        Skeleton(height: 14, width: 120)
+                        Skeleton(height: 14)
+                        Skeleton(height: 14, width: 240)
                     }
                     .screenPadding()
                     .padding(.top, AppSpacing.lg)
@@ -90,13 +90,13 @@ struct PlaceCardView: View {
                 case .loaded(let place):
                     content(place)
                 case .notFound:
-                    EmptyStateView(
+                    EmptyState(
                         icon: "mappin.slash",
                         title: String(localized: "place.card.notFound.title"),
                         description: String(localized: "place.card.notFound.description")
                     )
                 case .failed(let message):
-                    EmptyStateView(
+                    EmptyState(
                         icon: "wifi.slash",
                         title: String(localized: "place.card.failed"),
                         description: message,
@@ -336,7 +336,7 @@ struct PlaceCardView: View {
                             Label("place.card.checkin", systemImage: "mappin.circle")
                                 .frame(maxWidth: .infinity)
                         }
-                        .primaryButton()
+                        .dsButton()
                     }
                     if let destination = routeDestination(place) {
                         RouteButton(destination: destination)
@@ -533,7 +533,7 @@ struct PlaceCardView: View {
             }
             if reports.isEmpty && pendingHere.isEmpty {
                 // Пусто — сразу и что делать: «Я здесь» (после входа и не у сохранённой копии).
-                EmptyStateView(
+                EmptyState(
                     icon: "mappin.circle",
                     title: String(localized: "place.card.reports.empty.title"),
                     description: String(localized: "place.card.reports.empty"),

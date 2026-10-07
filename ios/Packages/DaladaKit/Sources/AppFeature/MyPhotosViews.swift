@@ -87,7 +87,7 @@ struct MyPhotosView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: AppSpacing.lg) {
                 if photos.isEmpty && isLoaded {
-                    EmptyStateView(
+                    EmptyState(
                         icon: "photo.on.rectangle",
                         title: String(localized: "profile.photos.title"),
                         description: String(localized: "profile.photos.empty")

@@ -49,7 +49,7 @@
   «новые», значок остаётся после удаления, чужие значки не видны, без входа нельзя).
 - iOS: `DaladaCore/Achievements.swift` (модель, коды, единицы прогресса), `Backend/AchievementsAPI.swift`,
   `AppFeature/AchievementsViews.swift` (раздел профиля, сетка, подробности, поздравление). Значок —
-  `IconView` из DesignKit в круге цвета из палитры DesignKit.
+  `Icon` из DesignKit в круге цвета из палитры DesignKit.
 
 Новый значок на сервере, о котором старое приложение не знает, просто не показывается.
 

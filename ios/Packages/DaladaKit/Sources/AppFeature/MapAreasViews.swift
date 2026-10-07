@@ -46,14 +46,14 @@ struct MapAreaView: View {
                                 Label("mapArea.tickets", systemImage: "ticket")
                                     .frame(maxWidth: .infinity)
                             }
-                            .primaryButton()
+                            .dsButton()
                         }
                         if let website = area.websiteURL {
                             Link(destination: website) {
                                 Label("mapArea.website", systemImage: "safari")
                                     .frame(maxWidth: .infinity)
                             }
-                            .secondaryButton()
+                            .dsButton(.secondary)
                         }
                     }
                 }
@@ -93,7 +93,7 @@ struct MapAreaView: View {
             ("mapArea.fee.fishing", fees.fishing),
         ]
         return VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            SectionHeaderView(String(localized: "mapArea.fees"), systemImage: "banknote")
+            SectionHeader(String(localized: "mapArea.fees"), systemImage: "banknote")
             ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
                 if let mrp = row.1 {
                     HStack(alignment: .firstTextBaseline) {

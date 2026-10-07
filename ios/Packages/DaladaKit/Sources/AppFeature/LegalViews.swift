@@ -52,7 +52,7 @@ struct ConsentView: View {
                         Text("consent.continue")
                             .frame(maxWidth: .infinity)
                     }
-                    .primaryButton(disabled: !accepts || session.isWorking)
+                    .dsButton(disabled: !accepts || session.isWorking)
                 }
                 .screenPadding()
                 .padding(.vertical, AppSpacing.xl)

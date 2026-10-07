@@ -91,7 +91,7 @@ struct HomeView: View {
                 }
                 .skeletonLoadingLabel()
             } else if let loadError {
-                EmptyStateView(
+                EmptyState(
                     icon: "wifi.slash",
                     title: String(localized: "feed.failed"),
                     description: loadError,
@@ -100,7 +100,7 @@ struct HomeView: View {
                     style: .error
                 )
             } else if session.profile != nil {
-                EmptyStateView(
+                EmptyState(
                     icon: "house",
                     title: String(localized: "home.empty.title"),
                     description: String(localized: "home.empty.description"),
@@ -108,14 +108,14 @@ struct HomeView: View {
                     action: { showsFindPeople = true }
                 )
             } else {
-                EmptyStateView(
+                EmptyState(
                     icon: "bubble.left.and.bubble.right",
                     title: String(localized: "home.guest.empty")
                 )
             }
         } else {
             if session.profile == nil {
-                SectionHeaderView(String(localized: "threads.title"), systemImage: "bubble.left.and.bubble.right")
+                SectionHeader(String(localized: "threads.title"), systemImage: "bubble.left.and.bubble.right")
             }
             ForEach(items) { item in
                 FeedPostCard(
@@ -301,7 +301,7 @@ struct FeedPostCard: View {
             .buttonStyle(.plain)
         case .review(let review):
             VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                RatingView(rating: Double(review.rating), size: 16)
+                Rating(rating: Double(review.rating), size: 16)
                 if let body = review.body, !body.isEmpty {
                     Text(verbatim: body)
                         .font(AppTypography.body)

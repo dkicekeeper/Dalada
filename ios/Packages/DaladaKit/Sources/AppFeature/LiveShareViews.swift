@@ -185,7 +185,7 @@ struct FriendsLiveSection: View {
         Group {
             if !friends.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                    SectionHeaderView(String(localized: "live.friendsTitle"), systemImage: "dot.radiowaves.left.and.right")
+                    SectionHeader(String(localized: "live.friendsTitle"), systemImage: "dot.radiowaves.left.and.right")
                     ForEach(friends) { friend in
                         Button {
                             opened = friend
@@ -227,7 +227,7 @@ struct FriendLiveRow: View {
 
     var body: some View {
         HStack(spacing: AppSpacing.sm) {
-            PersonAvatar(name: friend.name, path: friend.avatarPath, size: AppIconSize.Tile.xs)
+            PersonAvatar(name: friend.name, path: friend.avatarPath, size: AppIconSize.xxl)
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: friend.name ?? String(localized: "profile.noName"))
                     .font(AppTypography.bodyEmphasis)
@@ -263,7 +263,7 @@ struct FriendLiveMapView: View {
                     .frame(height: 320)
                     .clipShape(RoundedRectangle(cornerRadius: AppRadius.xl))
                 } else {
-                    EmptyStateView(
+                    EmptyState(
                         icon: friend.inPrivacyZone ? "house.circle" : "location.slash",
                         title: String(localized: friend.inPrivacyZone ? "live.hiddenTitle" : "live.noPointTitle"),
                         description: String(localized: friend.inPrivacyZone ? "live.hidden" : "live.noPoint")

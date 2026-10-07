@@ -6,7 +6,7 @@ import UIKit
 
 /// Перед системным запросом уведомлений — наше объяснение, в момент первой пользы (первый чекин,
 /// сохранённое место, запрос в друзья, обсуждение). «Не сейчас» — не спрашиваем неделю.
-/// Сам лист — `PermissionPrimerView` из DesignKit (общий с Tenra), тексты `push.primer.*`.
+/// Сам лист — `PromptSheet` из DesignKit (общий с Tenra), тексты `push.primer.*`.
 ///
 /// Лист показывается поверх самого верхнего экрана (UIKit): вызвать можно откуда угодно, даже из
 /// листа поверх листа — SwiftUI из корня так не умеет.
@@ -28,14 +28,16 @@ final class NotificationPrimer {
         // Даём закрыться листу, из которого пришли (форма чекина и т. п.).
         try? await Task.sleep(for: .milliseconds(700))
         guard presented == nil, let top = Self.topViewController() else { return }
-        let host = UIHostingController(rootView: PermissionPrimerView(
+        let host = UIHostingController(rootView: PromptSheet(
             systemImage: "bell.badge",
             title: String(localized: "push.primer.title"),
             message: String(localized: "push.primer.body"),
-            allowTitle: String(localized: "push.primer.allow"),
-            laterTitle: String(localized: "push.primer.later"),
-            onAllow: { [weak self] in await MainActor.run { self?.allow() } },
-            onLater: { [weak self] in self?.later() }
+            primaryTitle: String(localized: "push.primer.allow"),
+            secondaryTitle: String(localized: "push.primer.later"),
+            detent: nil,
+            dismissesOnAnswer: false,
+            onPrimary: { [weak self] in await MainActor.run { self?.allow() } },
+            onSecondary: { [weak self] in self?.later() }
         ))
         host.isModalInPresentation = true
         if let sheet = host.sheetPresentationController {

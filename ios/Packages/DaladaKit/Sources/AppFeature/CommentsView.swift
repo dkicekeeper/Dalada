@@ -31,7 +31,7 @@ struct CommentsButton: View {
                     }
                     .frame(maxWidth: .infinity)
                 }
-                .secondaryButton()
+                .dsButton(.secondary)
             } else {
                 Button {
                     showsComments = true

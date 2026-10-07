@@ -20,7 +20,7 @@ struct SharedPackingsView: View {
     var body: some View {
         Group {
             if packings.isEmpty && isLoaded {
-                EmptyStateView(
+                EmptyState(
                     icon: "person.2.badge.gearshape",
                     title: String(localized: "sharedPacking.empty.title"),
                     description: String(localized: "sharedPacking.empty"),
@@ -178,7 +178,7 @@ struct SharePackingSheet: View {
         let candidates = lists.packingLists + lists.ownLists
         return Group {
             if candidates.isEmpty {
-                EmptyStateView(
+                EmptyState(
                     icon: "checklist",
                     title: String(localized: "sharedPacking.noLists.title"),
                     description: String(localized: "sharedPacking.noLists")
@@ -260,7 +260,7 @@ struct SharedPackingView: View {
                         HStack(spacing: AppSpacing.md) {
                             ForEach(members) { member in
                                 VStack(spacing: AppSpacing.xxs) {
-                                    PersonAvatar(name: member.name, path: member.avatarPath, size: AppIconSize.Tile.xs)
+                                    PersonAvatar(name: member.name, path: member.avatarPath, size: AppIconSize.xxl)
                                     Text(verbatim: shortName(member))
                                         .font(AppTypography.caption)
                                         .lineLimit(1)

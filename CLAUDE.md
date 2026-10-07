@@ -62,11 +62,11 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 Дизайн-система — пакет [DesignKit](https://github.com/dkicekeeper/DesignKit) (общий с Tenra). Перед
 тем как писать новый компонент, ищи готовый в DesignKit (Gallery в TestFlight, `docs/design-system.md`
 в DesignKit): кнопки, карточки (`cardStyle`), строки (`UniversalRow`, `InfoRow`), бейджи
-(`BadgeView`, `TrendBadge`), `StatTile`, `AvatarView`, `RatingView`/`RatingPicker`, `ChipPicker`,
-`SelectionIndicator`, `LinearProgressBar(value:)`, `EmptyStateView`, `RecommendationBox`,
+(`Badge`, `TrendBadge`), `StatTile`, `Avatar`, `Rating`/`RatingPicker`, `ChipPicker`,
+`SelectionIndicator`, `LinearProgressBar(value:)`, `EmptyState`, `RecommendationBox`,
 `DisclosureChevron`, скелетоны загрузки (`SkeletonRow`, `.skeletonLoadingLabel()`),
-`LoadingButtonLabel`, `ExpandableText`, `ActivityTimeline`, `MonthCalendar`,
-`PermissionPrimerView` (перед системным запросом разрешения), `OnboardingPager` /
+`DSButton` (кнопка с иконкой, загрузкой, ролью и размером), `ExpandableText`, `ActivityTimeline`, `MonthCalendar`,
+`PromptSheet` (вопрос и праймер перед системным запросом разрешения), `OnboardingPager` /
 `OnboardingPage`, поле сообщения `MessageComposer`, `PersonRow`, `CommentRow`, `ThreadCard`,
 `ReviewCard`, `ReactionButton`, значки достижений (`AchievementMedal`, `AchievementTile`,
 `AchievementProgressRow`), `ChecklistRow` / `ChecklistSummaryRow`, `StatsStrip`, `StreakCard`,
@@ -80,7 +80,7 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 приложению):
 1. **Не знает данных приложения**: принимает текст, числа, даты, цвета, иконки, замыкания и
    `@ViewBuilder`-слоты — никаких `Place`, `Trip`, `Catch`, сторов и сервисов. Если зависимость от
-   модели можно заменить параметром — тоже DesignKit, а переходник (`RuleStatus` → `BadgeView`)
+   модели можно заменить параметром — тоже DesignKit, а переходник (`RuleStatus` → `Badge`)
    остаётся здесь маленькой обёрткой.
 2. **Отвечает на «как выглядит», а не «что значит»**: карточка, строка, бейдж, выбор — да;
    «карточка улова», «форма чекина» — нет.

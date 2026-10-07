@@ -40,7 +40,7 @@ struct SignInCard: View {
                 Label("auth.google", systemImage: "g.circle.fill")
                     .frame(maxWidth: .infinity)
             }
-            .secondaryButton()
+            .dsButton(.secondary)
 
             if showsEmail {
                 emailForm
@@ -90,7 +90,7 @@ struct SignInCard: View {
                 Text("auth.email.signIn")
                     .frame(maxWidth: .infinity)
             }
-            .secondaryButton()
+            .dsButton(.secondary)
             .disabled(!email.contains("@") || password.count < 8)
 
             Text("auth.email.hint")

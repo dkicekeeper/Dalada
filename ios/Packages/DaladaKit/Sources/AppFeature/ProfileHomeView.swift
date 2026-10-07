@@ -94,7 +94,7 @@ struct ProfileHomeView: View {
                 historyPlaceholder
             }
         case .profileUnavailable(let message):
-            EmptyStateView(
+            EmptyState(
                 icon: "wifi.slash",
                 title: String(localized: "profile.unavailable"),
                 description: message,
@@ -153,7 +153,7 @@ struct ProfileSection<Content: View, Destination: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             if showsTitle {
-                SectionHeaderView(String(localized: titleKey), systemImage: systemImage) {
+                SectionHeader(String(localized: titleKey), systemImage: systemImage) {
                     if showsAll { allLink }
                 }
             } else if showsAll {
@@ -215,7 +215,7 @@ struct MyFriendsSection: View {
                             .font(AppTypography.bodyEmphasis)
                             .foregroundStyle(AppColors.textPrimary)
                     } trailing: {
-                        BadgeView("\(incomingCount)", color: AppColors.destructive, style: .filled)
+                        Badge("\(incomingCount)", color: AppColors.destructive, style: .filled)
                         DisclosureChevron()
                     }
                     .contentShape(Rectangle())
@@ -238,13 +238,13 @@ struct MyFriendsSection: View {
                     Label("friends.find", systemImage: "magnifyingglass")
                         .frame(maxWidth: .infinity)
                 }
-                .secondaryButton()
+                .dsButton(.secondary)
             } else {
                 // Аватары друзей той же формы, пока грузятся.
                 HStack(alignment: .top, spacing: AppSpacing.lg) {
                     ForEach(0..<4, id: \.self) { _ in
                         VStack(spacing: AppSpacing.xs) {
-                            SkeletonView.circle(AppIconSize.Tile.md)
+                            Skeleton.circle(AppIconSize.Tile.md)
                             SkeletonText(AppTypography.caption, width: AppIconSize.Tile.md)
                         }
                         .frame(width: AppIconSize.Tile.xxxl)

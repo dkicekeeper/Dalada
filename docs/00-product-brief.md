@@ -84,13 +84,13 @@ Swift 5 language mode. Визуальный язык — Liquid Glass (`glassEff
 
 **Переиспользуем как есть:**
 - Токены: `AppSpacing`, `AppRadius`, `AppIconSize`, `AppTypography`, `AppAnimation`, `AppColors` (базовые слои и текст).
-- Модификаторы: `cardStyle()`, `formCardStyle()`, `filterChipStyle()`, `primaryButton()` / `secondaryButton()`, `staggeredEntrance()`, `chartAppear()`.
-- Компоненты общего назначения: `UniversalRow`, `InfoRow`, `SectionHeaderView`, `EmptyStateView`,
-  `FormSection`, `FormTextField`, `SegmentedPickerView`, `OrbChart`/`MiniDonut` (бывший `DonutChart`), `ProportionBar`,
-  `RecommendationBox`, `PackedCircleIconsView` (фейспайл друзей), онбординг-компоненты,
-  `IconView`/`IconSource`, `HapticManager`.
-- С 0.4.0 (перенесены из Dalada и Tenra): `BadgeView`, `TrendBadge`, `StatTile` (значение + единица
-  вместо `InsightsStatCard`), `AvatarView`, `RatingView`/`RatingPicker`, `ChipPicker`,
+- Модификаторы: `cardStyle()`, `formCardStyle()`, `filterChipStyle()`, `DSButton` / `.dsButton()` (с DesignKit 2.0), `staggeredEntrance()`, `chartAppear()`.
+- Компоненты общего назначения: `UniversalRow`, `InfoRow`, `SectionHeader`, `EmptyState`,
+  `FormSection`, `FormTextField`, `SegmentedPicker`, `OrbChart`/`MiniDonut` (бывший `DonutChart`), `ProportionBar`,
+  `RecommendationBox`, `PackedCircleIcons` (фейспайл друзей), онбординг-компоненты,
+  `Icon`/`IconSource`, `HapticManager`.
+- С 0.4.0 (перенесены из Dalada и Tenra): `Badge`, `TrendBadge`, `StatTile` (значение + единица
+  вместо `InsightsStatCard`), `Avatar`, `Rating`/`RatingPicker`, `ChipPicker`,
   `LinearProgressBar(value:)`, `SelectionIndicator(tint:)`.
 
 **Не подходит / надо адаптировать:**
