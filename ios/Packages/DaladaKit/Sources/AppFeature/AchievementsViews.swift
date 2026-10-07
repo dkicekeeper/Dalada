@@ -163,7 +163,7 @@ private struct AchievementTile: View {
             DesignComponents.AchievementTile(
                 title: String(localized: AchievementText.title(kind)),
                 systemImage: kind.systemImage,
-                color: CategoryColors.hexColor(for: achievement.id),
+                color: CategoryColors.color(for: achievement.id),
                 isEarned: achievement.isEarned,
                 medalSize: medalSize,
                 progressText: showsProgress ? AchievementText.progress(achievement, kind: kind) : nil
@@ -183,7 +183,7 @@ struct AchievementMedal: View {
     var body: some View {
         DesignComponents.AchievementMedal(
             systemImage: achievement.kind?.systemImage ?? "rosette",
-            color: CategoryColors.hexColor(for: achievement.id),
+            color: CategoryColors.color(for: achievement.id),
             isEarned: achievement.isEarned,
             size: size
         )
@@ -202,7 +202,7 @@ private struct AchievementProgressRow: View {
                 progressText: AchievementText.progress(achievement, kind: kind),
                 fraction: achievement.fraction,
                 systemImage: kind.systemImage,
-                color: CategoryColors.hexColor(for: achievement.id),
+                color: CategoryColors.color(for: achievement.id),
                 isEarned: achievement.isEarned
             )
         }
