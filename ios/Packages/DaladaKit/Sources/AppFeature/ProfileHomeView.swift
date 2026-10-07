@@ -152,20 +152,15 @@ struct ProfileSection<Content: View, Destination: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
-            if showsTitle || showsAll {
+            if showsTitle {
+                SectionHeaderView(String(localized: titleKey), systemImage: systemImage) {
+                    if showsAll { allLink }
+                }
+            } else if showsAll {
+                // Во вкладке профиля заголовка нет: ссылка «Все» одна у правого края.
                 HStack {
-                    if showsTitle {
-                        SectionHeaderView(String(localized: titleKey), systemImage: systemImage)
-                    }
                     Spacer(minLength: 0)
-                    if showsAll {
-                        NavigationLink {
-                            destination
-                        } label: {
-                            Text("trips.all")
-                                .font(AppTypography.bodySmall)
-                        }
-                    }
+                    allLink.font(AppTypography.bodySmall)
                 }
             }
             VStack(alignment: .leading, spacing: AppSpacing.md) {
@@ -174,6 +169,14 @@ struct ProfileSection<Content: View, Destination: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .cardContentPadding()
             .cardStyle()
+        }
+    }
+
+    private var allLink: some View {
+        NavigationLink {
+            destination
+        } label: {
+            Text("trips.all")
         }
     }
 }

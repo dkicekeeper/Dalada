@@ -138,16 +138,13 @@ struct PendingQueueSection: View {
     var body: some View {
         if !sync.pending.isEmpty || !sync.pendingTrips.isEmpty {
             VStack(alignment: .leading, spacing: AppSpacing.md) {
-                HStack {
-                    SectionHeaderView(String(localized: "pending.title"), systemImage: "icloud.and.arrow.up")
-                    Spacer(minLength: 0)
+                SectionHeaderView(String(localized: "pending.title"), systemImage: "icloud.and.arrow.up") {
                     if sync.isSending {
                         ProgressView()
                     } else if hasWaiting {
                         Button("pending.sendNow") {
                             sync.kick(force: true)
                         }
-                        .font(AppTypography.bodySmall)
                     }
                 }
                 ForEach(sync.pendingTrips) { item in

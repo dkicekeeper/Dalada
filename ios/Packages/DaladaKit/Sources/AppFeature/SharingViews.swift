@@ -29,14 +29,11 @@ struct UserContentSections: View {
 
             if !trips.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
-                    HStack {
-                        SectionHeaderView(String(localized: "person.trips"), systemImage: "point.topleft.down.to.point.bottomright.curvepath")
-                        Spacer(minLength: 0)
+                    SectionHeaderView(String(localized: "person.trips"), systemImage: "point.topleft.down.to.point.bottomright.curvepath") {
                         NavigationLink {
                             UserTripsListView(userID: userID, environment: environment)
                         } label: {
                             Text("trips.all")
-                                .font(AppTypography.bodySmall)
                         }
                     }
                     VStack(spacing: AppSpacing.md) {
@@ -56,15 +53,12 @@ struct UserContentSections: View {
 
             if !places.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
-                    HStack {
-                        SectionHeaderView(String(localized: "person.places"), systemImage: "mappin.and.ellipse")
-                        Spacer(minLength: 0)
+                    SectionHeaderView(String(localized: "person.places"), systemImage: "mappin.and.ellipse") {
                         if places.count > 5 {
                             NavigationLink {
                                 UserPlacesListView(places: places, environment: environment)
                             } label: {
                                 Text("trips.all")
-                                    .font(AppTypography.bodySmall)
                             }
                         }
                     }
