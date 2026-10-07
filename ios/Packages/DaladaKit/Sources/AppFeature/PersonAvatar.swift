@@ -63,7 +63,7 @@ final class AvatarStore {
 struct PersonAvatar: View {
     let name: String?
     let path: String?
-    var size: CGFloat = AppIconSize.avatar
+    var size: CGFloat = AppIconSize.Tile.xs
 
     @Environment(AvatarStore.self) private var avatars: AvatarStore?
     @State private var image: UIImage?

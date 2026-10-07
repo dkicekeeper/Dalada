@@ -241,10 +241,10 @@ struct MyFriendsSection: View {
                 HStack(alignment: .top, spacing: AppSpacing.lg) {
                     ForEach(0..<4, id: \.self) { _ in
                         VStack(spacing: AppSpacing.xs) {
-                            SkeletonView.circle(AppIconSize.xxxl)
-                            SkeletonText(AppTypography.caption, width: AppIconSize.xxxl)
+                            SkeletonView.circle(AppIconSize.Tile.md)
+                            SkeletonText(AppTypography.caption, width: AppIconSize.Tile.md)
                         }
-                        .frame(width: AppIconSize.ultra)
+                        .frame(width: AppIconSize.Tile.xxxl)
                     }
                 }
                 .shimmer()
@@ -257,13 +257,13 @@ struct MyFriendsSection: View {
     @ViewBuilder
     private func friendAvatar(_ friend: Friend) -> some View {
         let label = VStack(spacing: AppSpacing.xs) {
-            PersonAvatar(name: friend.displayName ?? friend.username, path: friend.avatarPath, size: AppIconSize.xxxl)
+            PersonAvatar(name: friend.displayName ?? friend.username, path: friend.avatarPath, size: AppIconSize.Tile.md)
             Text(verbatim: shortName(friend))
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColors.textPrimary)
                 .lineLimit(1)
         }
-        .frame(width: AppIconSize.ultra)
+        .frame(width: AppIconSize.Tile.xxxl)
         if let username = friend.username {
             NavigationLink {
                 UserProfileView(username: username, environment: environment)
@@ -583,7 +583,7 @@ struct ProfileHeader: View {
 
     var body: some View {
         HStack(spacing: AppSpacing.lg) {
-            PersonAvatar(name: profile.displayName ?? profile.username, path: profile.avatarPath, size: AppIconSize.mega)
+            PersonAvatar(name: profile.displayName ?? profile.username, path: profile.avatarPath, size: AppIconSize.Tile.xl)
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 Text(verbatim: profile.displayName ?? String(localized: "profile.noName"))
                     .font(AppTypography.h4)

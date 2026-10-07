@@ -513,7 +513,7 @@ struct TripRow: View {
             Image(systemName: trip.activity.systemImage)
                 .font(.system(size: AppIconSize.md))
                 .foregroundStyle(AppColors.accent)
-                .frame(width: AppIconSize.avatar, height: AppIconSize.avatar)
+                .frame(width: AppIconSize.Tile.xs, height: AppIconSize.Tile.xs)
                 .background(AppColors.pale(AppColors.accent), in: Circle())
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: trip.title)

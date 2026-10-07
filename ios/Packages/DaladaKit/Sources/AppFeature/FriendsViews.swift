@@ -284,7 +284,7 @@ struct UserProfileView: View {
             case .loading:
                 // Шапка профиля той же формы, пока грузится: аватар, имя, @username.
                 VStack(spacing: AppSpacing.lg) {
-                    SkeletonView.circle(AppIconSize.mega)
+                    SkeletonView.circle(AppIconSize.Tile.xl)
                     VStack(spacing: AppSpacing.xs) {
                         SkeletonText(AppTypography.h3, width: 180)
                         SkeletonText(AppTypography.bodySmall, width: 100)
@@ -362,7 +362,7 @@ struct UserProfileView: View {
         ScrollView {
             VStack(spacing: AppSpacing.xl) {
                 VStack(spacing: AppSpacing.lg) {
-                    PersonAvatar(name: profile.displayName ?? profile.username, path: profile.avatarPath, size: AppIconSize.mega)
+                    PersonAvatar(name: profile.displayName ?? profile.username, path: profile.avatarPath, size: AppIconSize.Tile.xl)
                     VStack(spacing: AppSpacing.xs) {
                         Text(verbatim: profile.displayName ?? "@" + username)
                             .font(AppTypography.h3)
