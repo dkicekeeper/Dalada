@@ -585,28 +585,15 @@ struct ProfileHeader: View {
     let profile: UserProfile
 
     var body: some View {
-        HStack(spacing: AppSpacing.lg) {
-            PersonAvatar(name: profile.displayName ?? profile.username, path: profile.avatarPath, size: AppIconSize.Tile.xl)
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                Text(verbatim: profile.displayName ?? String(localized: "profile.noName"))
-                    .font(AppTypography.h4)
-                    .foregroundStyle(AppColors.textPrimary)
-                if let username = profile.username {
-                    Text(verbatim: "@" + username)
-                        .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
-                if let city = profile.city {
-                    Text(verbatim: city)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
-                }
-            }
-            Spacer(minLength: 0)
+        PersonRow(
+            name: profile.displayName ?? String(localized: "profile.noName"),
+            subtitle: profile.username.map { "@" + $0 },
+            detail: profile.city,
+            avatar: PersonAvatar(name: profile.displayName ?? profile.username, path: profile.avatarPath, size: AppIconSize.Tile.xl),
+            style: .card
+        ) {
             DisclosureChevron()
         }
-        .cardContentPadding()
-        .cardStyle()
         .contentShape(Rectangle())
     }
 }

@@ -138,9 +138,7 @@ struct ArticleView: View {
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
 
-                ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
-                    ArticleBlockView(block: block)
-                }
+                ArticleBody(blocks.map(\.designKitBlock))
             }
             .screenPadding()
             .padding(.vertical, AppSpacing.lg)
@@ -170,66 +168,15 @@ struct ArticleView: View {
     }
 }
 
-/// Один блок текста статьи.
-struct ArticleBlockView: View {
-    let block: ArticleBlock
-
-    var body: some View {
-        switch block {
-        case .heading(let text, let level):
-            inline(text)
-                .font(level == 2 ? Font.title3.weight(.semibold) : Font.headline)
-                .foregroundStyle(AppColors.textPrimary)
-                .padding(.top, AppSpacing.sm)
-                .accessibilityAddTraits(.isHeader)
-        case .paragraph(let text):
-            inline(text)
-                .font(AppTypography.body)
-                .foregroundStyle(AppColors.textPrimary)
-        case .bullets(let items):
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                ForEach(Array(items.enumerated()), id: \.offset) { _, item in
-                    HStack(alignment: .firstTextBaseline, spacing: AppSpacing.sm) {
-                        Text(verbatim: "•")
-                        inline(item)
-                    }
-                }
-            }
-            .font(AppTypography.body)
-            .foregroundStyle(AppColors.textPrimary)
-        case .steps(let items):
-            VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                ForEach(Array(items.enumerated()), id: \.offset) { index, item in
-                    HStack(alignment: .firstTextBaseline, spacing: AppSpacing.sm) {
-                        Text(verbatim: "\(index + 1).")
-                            .monospacedDigit()
-                            .foregroundStyle(AppColors.accent)
-                        inline(item)
-                    }
-                }
-            }
-            .font(AppTypography.body)
-            .foregroundStyle(AppColors.textPrimary)
-        case .note(let text):
-            HStack(alignment: .top, spacing: AppSpacing.sm) {
-                Image(systemName: "info.circle")
-                    .foregroundStyle(AppColors.accent)
-                inline(text)
-                    .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textPrimary)
-                Spacer(minLength: 0)
-            }
-            .cardContentPadding()
-            .cardStyle()
+/// Блок статьи Dalada как блок `ArticleBody` из DesignKit (разбор Markdown — `ArticleMarkdown`).
+extension ArticleBlock {
+    var designKitBlock: ArticleBody.Block {
+        switch self {
+        case .heading(let text, let level): .heading(text, level: level)
+        case .paragraph(let text): .paragraph(text)
+        case .bullets(let items): .bullets(items)
+        case .steps(let items): .steps(items)
+        case .note(let text): .note(text)
         }
-    }
-
-    /// Разметка внутри строки: **жирный**, *курсив*, ссылки.
-    private func inline(_ text: String) -> Text {
-        let options = AttributedString.MarkdownParsingOptions(interpretedSyntax: .inlineOnlyPreservingWhitespace)
-        if let attributed = try? AttributedString(markdown: text, options: options) {
-            return Text(attributed)
-        }
-        return Text(verbatim: text)
     }
 }

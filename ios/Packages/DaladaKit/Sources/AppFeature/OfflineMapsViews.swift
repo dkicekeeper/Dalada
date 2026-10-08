@@ -40,6 +40,7 @@ struct OfflineMapsView: View {
 }
 
 /// Район: название, размер или ход скачивания, кнопка действия; смахнуть — удалить.
+/// `DownloadRow` из DesignKit над состоянием `OfflineMaps`.
 struct OfflineRegionRow: View {
     let region: MapRegion
     let state: OfflineMaps.State
@@ -48,17 +49,15 @@ struct OfflineRegionRow: View {
     let remove: () -> Void
 
     var body: some View {
-        HStack(spacing: AppSpacing.md) {
-            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                Text(LocalizedStringKey(region.titleKey))
-                    .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
-                details
-            }
-            Spacer(minLength: 0)
-            action
-        }
-        .padding(.vertical, AppSpacing.xxs)
+        DownloadRow(
+            String(localized: String.LocalizationValue(region.titleKey)),
+            status: status,
+            caption: caption,
+            onDownload: download,
+            onPause: pause,
+            downloadLabel: String(localized: "offlineMaps.download"),
+            pauseLabel: String(localized: "offlineMaps.pause")
+        )
         .swipeActions {
             if hasData {
                 Button("offlineMaps.delete", systemImage: "trash", role: .destructive, action: remove)
@@ -73,59 +72,28 @@ struct OfflineRegionRow: View {
         }
     }
 
-    @ViewBuilder
-    private var details: some View {
+    private var status: DownloadRow.Status {
         switch state {
-        case .notDownloaded:
-            Text("offlineMaps.estimate \(OfflineMapsFormat.size(region.estimatedBytes))")
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
-        case .downloading(let progress, let bytes):
-            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                LinearProgressBar(value: progress, height: 6, animatesOnAppear: false)
-                Text("offlineMaps.progress \(Int(progress * 100)) \(OfflineMapsFormat.size(bytes))")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-        case .paused(let progress, _):
-            Text("offlineMaps.paused \(Int(progress * 100))")
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
-        case .downloaded(let bytes):
-            Label {
-                Text("offlineMaps.downloaded \(OfflineMapsFormat.size(bytes))")
-            } icon: {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(AppColors.accent)
-            }
-            .font(AppTypography.caption)
-            .foregroundStyle(AppColors.textSecondary)
-        case .failed(let message):
-            Text(verbatim: message.isEmpty ? String(localized: "offlineMaps.failed") : message)
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.destructive)
+        case .notDownloaded: .available
+        case .downloading(let progress, _): .downloading(progress)
+        case .paused: .paused
+        case .downloaded: .downloaded
+        case .failed: .failed
         }
     }
 
-    @ViewBuilder
-    private var action: some View {
+    private var caption: String {
         switch state {
-        case .notDownloaded, .failed, .paused:
-            Button(action: download) {
-                Image(systemName: "arrow.down.circle")
-                    .font(.title2)
-            }
-            .buttonStyle(.borderless)
-            .accessibilityLabel(Text("offlineMaps.download"))
-        case .downloading:
-            Button(action: pause) {
-                Image(systemName: "pause.circle")
-                    .font(.title2)
-            }
-            .buttonStyle(.borderless)
-            .accessibilityLabel(Text("offlineMaps.pause"))
-        case .downloaded:
-            EmptyView()
+        case .notDownloaded:
+            String(localized: "offlineMaps.estimate \(OfflineMapsFormat.size(region.estimatedBytes))")
+        case .downloading(let progress, let bytes):
+            String(localized: "offlineMaps.progress \(Int(progress * 100)) \(OfflineMapsFormat.size(bytes))")
+        case .paused(let progress, _):
+            String(localized: "offlineMaps.paused \(Int(progress * 100))")
+        case .downloaded(let bytes):
+            String(localized: "offlineMaps.downloaded \(OfflineMapsFormat.size(bytes))")
+        case .failed(let message):
+            message.isEmpty ? String(localized: "offlineMaps.failed") : message
         }
     }
 }

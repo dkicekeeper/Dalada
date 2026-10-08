@@ -2,27 +2,8 @@ import Foundation
 
 // MARK: - Картинки для Stories и Telegram
 
-/// Формат картинки: Stories (9:16) или пост (4:5). Размер — в точках, рисуется в 3 раза крупнее
-/// (1080 × 1920 и 1080 × 1350 пикселей).
-public enum ShareCardFormat: String, CaseIterable, Identifiable, Sendable {
-    case story
-    case post
-
-    public var id: String { rawValue }
-    public var titleKey: String { "share.format.\(rawValue)" }
-
-    public var width: Double { 360 }
-
-    public var height: Double {
-        switch self {
-        case .story: 640
-        case .post: 450
-        }
-    }
-
-    /// Масштаб отрисовки: 360 точек → 1080 пикселей.
-    public static let scale: Double = 3
-}
+// Формат картинки (Stories или пост) и её отрисовка — `ShareCard.Format` и `ShareCardSheet`
+// из DesignKit.
 
 /// Данные для картинки своей поездки (`trip_share_card`): трек — как у гостя, без начала и конца.
 public struct TripShareCard: Decodable, Sendable {
