@@ -28,11 +28,12 @@ struct MapLayersSheet: View {
                         divider
                         toggle("map.layers.otherPlaces", systemImage: "mappin.and.ellipse", isOn: $showsOtherPlaces)
                         divider
-                        FormChipRow(
+                        ChipPicker(
                             String(localized: "map.layers.types"),
                             options: PlaceType.allCases,
                             selection: shownTypes,
                             systemImage: { $0.systemImage },
+                            inset: AppSpacing.lg,
                             label: { String(localized: String.LocalizationValue($0.titleKey)) }
                         )
                         .padding(.vertical, AppSpacing.md)

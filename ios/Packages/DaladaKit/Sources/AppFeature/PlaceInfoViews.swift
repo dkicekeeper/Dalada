@@ -263,26 +263,30 @@ struct PlaceAttributesFields: View {
                 if type.isFishing {
                     fishing
                 }
-                FormChipRow(
+                ChipPicker(
                     String(localized: "place.info.access"),
                     options: PlaceAttributes.Access.allCases,
-                    selection: $attributes.access
+                    selection: $attributes.access,
+                    inset: AppSpacing.lg
                 ) { $0.title }
-                FormChipRow(
+                ChipPicker(
                     String(localized: "place.info.amenities"),
                     options: PlaceAttributes.Amenity.allCases,
                     selection: $attributes.amenities,
-                    systemImage: { $0.systemImage }
+                    systemImage: { $0.systemImage },
+                    inset: AppSpacing.lg
                 ) { $0.title }
-                FormChipRow(
+                ChipPicker(
                     String(localized: "place.info.signal"),
                     options: PlaceAttributes.Signal.allCases,
-                    selection: $attributes.signal
+                    selection: $attributes.signal,
+                    inset: AppSpacing.lg
                 ) { $0.title }
-                FormChipRow(
+                ChipPicker(
                     String(localized: "place.info.months"),
                     options: Array(1...12),
-                    selection: $attributes.months
+                    selection: $attributes.months,
+                    inset: AppSpacing.lg
                 ) { PlaceMonths.shortNames[$0 - 1] }
                 if !type.isFishing {
                     fishing
@@ -293,7 +297,7 @@ struct PlaceAttributesFields: View {
 
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             FormSection(header: String(localized: "place.info.fee")) {
-                FormChipRow(options: PlaceAttributes.Fee.allCases, selection: $attributes.fee) { $0.title }
+                ChipPicker(options: PlaceAttributes.Fee.allCases, selection: $attributes.fee, inset: AppSpacing.lg) { $0.title }
                     .padding(.vertical, AppSpacing.md)
                 if attributes.fee == .paid {
                     Divider().padding(.leading, AppSpacing.lg)
@@ -307,7 +311,7 @@ struct PlaceAttributesFields: View {
                             .font(AppTypography.body)
                             .foregroundStyle(AppColors.textSecondary)
                     }
-                    FormChipRow(options: PlaceAttributes.PriceUnit.allCases, selection: $attributes.priceUnit) { $0.title }
+                    ChipPicker(options: PlaceAttributes.PriceUnit.allCases, selection: $attributes.priceUnit, inset: AppSpacing.lg) { $0.title }
                         .padding(.bottom, AppSpacing.md)
                 }
                 Divider().padding(.leading, AppSpacing.lg)
@@ -369,10 +373,11 @@ struct PlaceAttributesFields: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        FormChipRow(
+        ChipPicker(
             String(localized: "place.info.methods"),
             options: PlaceAttributes.Method.allCases,
-            selection: $attributes.methods
+            selection: $attributes.methods,
+            inset: AppSpacing.lg
         ) { $0.title }
     }
 

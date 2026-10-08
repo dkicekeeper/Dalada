@@ -37,10 +37,10 @@ struct ReportEditView: View {
                 VStack(spacing: AppSpacing.lg) {
                     FormSection(header: String(localized: "checkin.form.conditions")) {
                         VStack(alignment: .leading, spacing: AppSpacing.md) {
-                            FormChipRow(String(localized: "conditions.bite"), options: CheckinConditions.Bite.allCases, selection: $edit.conditions.bite) { $0.title }
-                            FormChipRow(String(localized: "conditions.crowd"), options: CheckinConditions.Crowd.allCases, selection: $edit.conditions.crowd) { $0.title }
-                            FormChipRow(String(localized: "conditions.water"), options: CheckinConditions.Water.allCases, selection: $edit.conditions.water) { $0.title }
-                            FormChipRow(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $edit.conditions.road) { $0.title }
+                            ChipPicker(String(localized: "conditions.bite"), options: CheckinConditions.Bite.allCases, selection: $edit.conditions.bite, inset: AppSpacing.lg) { $0.title }
+                            ChipPicker(String(localized: "conditions.crowd"), options: CheckinConditions.Crowd.allCases, selection: $edit.conditions.crowd, inset: AppSpacing.lg) { $0.title }
+                            ChipPicker(String(localized: "conditions.water"), options: CheckinConditions.Water.allCases, selection: $edit.conditions.water, inset: AppSpacing.lg) { $0.title }
+                            ChipPicker(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $edit.conditions.road, inset: AppSpacing.lg) { $0.title }
                         }
                         .padding(.vertical, AppSpacing.md)
                     }

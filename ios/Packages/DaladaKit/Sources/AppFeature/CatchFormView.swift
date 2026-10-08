@@ -148,7 +148,7 @@ struct CatchFormView: View {
             }
         } else {
             PhotosPicker(selection: $pickerItem, matching: .images) {
-                PickerRowLabel(String(localized: "catch.form.addPhoto"), systemImage: "camera", titleColor: AppColors.textPrimary)
+                ActionRowLabel(String(localized: "catch.form.addPhoto"), systemImage: "camera", titleColor: AppColors.textPrimary)
             }
             .buttonStyle(.plain)
         }

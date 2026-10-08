@@ -79,7 +79,10 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 с карточками `FormSection` и строками `FormTextField(style: .row / .rowMultiline)`,
 `MenuPickerRow`, `NavigationPickerRow` (длинный список с поиском), `StepperRow`, `DatePickerRow`,
 `ToggleSettingsRow` / `ActionSettingsRow` / `CheckmarkRow` с `config: .standard`, `SegmentedPicker`,
-ошибки — `InlineStatusText`. Системный `Form` в новых экранах не используем. Эффекты — в
+ошибки — `InlineStatusText`; с 3.1.0 — чипы в карточке `ChipPicker(…, inset: AppSpacing.lg)`,
+подпись-строка для `PhotosPicker` — `ActionRowLabel`, фото по ссылке — `RemotePhoto` DesignKit
+(скелетон, пока грузится; грузит `PhotoCache` через `DesignKitPhotoLoader`, подключён в
+`AppBootstrap`), строка со слайдером — `SliderRow`. Системный `Form` в новых экранах не используем. Эффекты — в
 `docs/motion.md` DesignKit: `.celebration`,
 `.completionMoment`, `.holographic` + `.interactiveTilt`, `.dissolve`, `AuroraBackground`,
 `.spotlight` и другие. Своё — только если в DesignKit нет подходящего.

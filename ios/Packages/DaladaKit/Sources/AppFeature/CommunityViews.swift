@@ -342,7 +342,7 @@ struct ReviewFormView: View {
                                 maxSelectionCount: ReviewDraft.photoLimit - photos.count,
                                 matching: .images
                             ) {
-                                PickerRowLabel(String(localized: "reviews.form.addPhotos"), systemImage: "photo.on.rectangle.angled")
+                                ActionRowLabel(String(localized: "reviews.form.addPhotos"), systemImage: "photo.on.rectangle.angled")
                             }
                             .buttonStyle(.plain)
                         }
