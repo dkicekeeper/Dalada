@@ -1,6 +1,7 @@
 import Backend
 import DaladaCore
 import DesignComponents
+import DesignSupport
 import DesignTokens
 import SwiftUI
 
@@ -82,10 +83,12 @@ struct ReportEditView: View {
         defer { isSaving = false }
         do {
             try await backend.updateReport(edit)
+            HapticManager.play(.confirm)
             onSaved()
             dismiss()
         } catch {
             saveError = error.localizedDescription
+            HapticManager.play(.fail)
         }
     }
 }

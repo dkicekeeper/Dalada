@@ -27,6 +27,8 @@ struct ProfileHomeView: View {
                         BackendStatusCard(state: connection)
                     }
                 }
+                // Профиль загрузился — шапка проявляется на месте скелетона.
+                .animation(AppAnimation.smooth, value: isProfileLoading)
                 .screenPadding()
                 .padding(.bottom, AppSpacing.xl)
             }
@@ -64,12 +66,18 @@ struct ProfileHomeView: View {
         }
     }
 
+    private var isProfileLoading: Bool {
+        if case .loading = session.state { return true }
+        return false
+    }
+
     @ViewBuilder
     private var content: some View {
         switch session.state {
         case .loading:
             // Профиль грузится: карточка профиля.
             PersonRowSkeleton(style: .card)
+                .transition(.opacity)
         case .guest:
             SignInCard()
             historyPlaceholder
@@ -81,6 +89,7 @@ struct ProfileHomeView: View {
                     ProfileHeader(profile: profile)
                 }
                 .buttonStyle(.plain)
+                .transition(.skeletonReveal)
                 .accessibilityHint(Text("profile.settings.title"))
                 ProfileStatsCard(environment: environment, userID: profile.id)
                 StreakCard(environment: environment, userID: profile.id)

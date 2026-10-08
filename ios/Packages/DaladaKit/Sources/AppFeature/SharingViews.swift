@@ -325,6 +325,7 @@ struct PrivacyZoneEditorView: View {
             Group {
                 if let binding = Binding($draft) {
                     editor(binding)
+                        .transition(.skeletonReveal)
                 } else {
                     // Ищем, где вы сейчас: скелетон карты и полей.
                     ScrollView {
@@ -339,8 +340,11 @@ struct PrivacyZoneEditorView: View {
                         .padding(.vertical, AppSpacing.lg)
                     }
                     .scrollDisabled(true)
+                    .transition(.opacity)
                 }
             }
+            // Нашли, где вы, — карта и поля проявляются на месте скелетона.
+            .animation(AppAnimation.smooth, value: draft == nil)
         }
         .confirmationDialog("privacyZones.deleteConfirm", isPresented: $confirmsDelete, titleVisibility: .visible) {
             Button("privacyZones.delete", role: .destructive) {

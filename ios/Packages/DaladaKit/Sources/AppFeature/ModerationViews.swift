@@ -1,5 +1,6 @@
 import DaladaCore
 import DesignComponents
+import DesignSupport
 import DesignTokens
 import SwiftUI
 
@@ -160,9 +161,11 @@ struct ReportView: View {
         let trimmed = note.trimmingCharacters(in: .whitespacesAndNewlines)
         do {
             try await backend.report(target, id: targetID, reason: reason, note: trimmed.isEmpty ? nil : trimmed)
+            HapticManager.play(.confirm)
             isSent = true
         } catch {
             sendError = CommunityMessage.text(for: error)
+            HapticManager.play(.fail)
         }
     }
 }

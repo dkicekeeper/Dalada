@@ -8468,29 +8468,6 @@
         }
       }
     },
-    "map.addPlace" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Place"
-          }
-        },
-        "kk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Орын"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Место"
-          }
-        }
-      }
-    },
     "map.layers" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8786,6 +8763,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Удерживайте палец на карте — новое место встанет именно там."
+          }
+        }
+      }
+    },
+    "map.newPlaceHere" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New place here"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Осы жерде жаңа орын"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новое место здесь"
           }
         }
       }
@@ -9246,6 +9246,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Сайт парка"
+          }
+        }
+      }
+    },
+    "menu.close" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Жабу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Закрыть"
+          }
+        }
+      }
+    },
+    "menu.open" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actions"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Әрекеттер"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Действия"
           }
         }
       }
@@ -11707,6 +11753,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Отправить сейчас"
+          }
+        }
+      }
+    },
+    "pending.sending" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Жіберілуде"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отправляется"
           }
         }
       }

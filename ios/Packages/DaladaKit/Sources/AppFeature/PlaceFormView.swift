@@ -1,5 +1,6 @@
 import DaladaCore
 import DesignComponents
+import DesignSupport
 import DesignTokens
 import SwiftUI
 
@@ -113,6 +114,7 @@ struct PlaceFormView: View {
         isSaving = true
         saveError = await onSave(draft)
         isSaving = false
+        HapticManager.play(saveError == nil ? .confirm : .fail)
         // При успехе лист закрывает модель (сбрасывает запрос на новое место).
     }
 }

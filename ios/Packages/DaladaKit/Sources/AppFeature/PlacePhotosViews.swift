@@ -70,6 +70,7 @@ struct PlacePhotosGrid: View {
                 if gallery.isEmpty {
                     if isLoading {
                         PhotoGridSkeleton(count: 12, style: .edgeToEdge)
+                            .transition(.opacity)
                     } else {
                         EmptyState(
                             icon: loadError == nil ? "photo.on.rectangle" : "wifi.slash",
@@ -86,9 +87,12 @@ struct PlacePhotosGrid: View {
                     ) { photo in
                         RemotePhoto(path: photo.thumbnailPath, url: urls[photo.thumbnailPath])
                     }
+                    .transition(.skeletonReveal)
                 }
             }
             .padding(.vertical, AppSpacing.md)
+            // Фото проявляются на месте скелетона.
+            .animation(AppAnimation.smooth, value: gallery.isEmpty)
         }
         .navigationTitle(Text(verbatim: placeName))
         .navigationBarTitleDisplayMode(.inline)

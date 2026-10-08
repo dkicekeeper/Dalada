@@ -84,6 +84,14 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 `.completionMoment`, `.holographic` + `.interactiveTilt`, `.dissolve`, `AuroraBackground`,
 `.spotlight` и другие. Своё — только если в DesignKit нет подходящего.
 
+Движение по правилам DesignKit (`docs/motion.md`): анимации — пружинами `AppAnimation.snappy`
+(ответ на касание) и `.smooth` (меняется содержимое), без голого `withAnimation {}`; появление —
+`.riseIn` (карточка, подсказка) и `.popIn` (чип, значок); данные сменяют скелетон через
+`.transition(.skeletonReveal)` у содержимого, `.transition(.opacity)` у скелетона и
+`.animation(AppAnimation.smooth, value: <идёт загрузка>)` на контейнере; то, что идёт сейчас, —
+`.symbolPulse(.breathe)` (трансляция) и `.symbolPulse(.working)` (отправка, поиск); итог
+сохранения — `HapticManager.play(.confirm)` / `.fail`. Меню «+» на карте — `GlassActionMenu`.
+
 У каждого компонента DesignKit с данными есть скелетон `<Имя>Skeleton` той же формы: пока данные
 грузятся, показывай его на месте компонента, а не `ProgressView()`.
 

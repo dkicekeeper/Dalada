@@ -360,6 +360,7 @@ private struct PlaceResultsList: View {
                     ForEach(0..<4, id: \.self) { _ in
                         ThumbnailRowSkeleton()
                             .screenPadding()
+                            .transition(.opacity)
                     }
                 } else {
                     EmptyState(
@@ -377,9 +378,12 @@ private struct PlaceResultsList: View {
                     }
                     .buttonStyle(.plain)
                     .screenPadding()
+                    .transition(.skeletonReveal)
                 }
             }
         }
+        // Найденные места проявляются на месте скелетонов.
+        .animation(AppAnimation.smooth, value: isLoading)
         // Ждём паузу в наборе, чтобы не искать на каждую букву.
         .task(id: effectiveQuery) {
             try? await Task.sleep(for: .milliseconds(350))

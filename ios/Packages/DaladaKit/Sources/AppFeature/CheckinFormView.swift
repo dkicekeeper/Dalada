@@ -1,5 +1,6 @@
 import DaladaCore
 import DesignComponents
+import DesignSupport
 import DesignTokens
 import Persistence
 import PhotosUI
@@ -242,18 +243,24 @@ struct CheckinFormView: View {
         }
     }
 
-    /// Подпись под карточкой со значком — как подвал `FormSection`.
-    private func footerLabel(_ text: String, systemImage: String) -> some View {
-        Label(text, systemImage: systemImage)
-            .font(AppTypography.caption)
-            .foregroundStyle(AppColors.textSecondary)
-            .padding(.horizontal, AppSpacing.lg)
+    /// Подпись под карточкой со значком — как подвал `FormSection`. `isWorking` — значок
+    /// показывает работу (поиск места), пока она идёт.
+    private func footerLabel(_ text: String, systemImage: String, isWorking: Bool = false) -> some View {
+        Label {
+            Text(verbatim: text)
+        } icon: {
+            Image(systemName: systemImage)
+                .symbolPulse(.working, isActive: isWorking)
+        }
+        .font(AppTypography.caption)
+        .foregroundStyle(AppColors.textSecondary)
+        .padding(.horizontal, AppSpacing.lg)
     }
 
     private var locationFooter: some View {
         switch locationState {
         case .locating:
-            footerLabel(String(localized: "checkin.location.locating"), systemImage: "location")
+            footerLabel(String(localized: "checkin.location.locating"), systemImage: "location", isWorking: true)
         case .found:
             footerLabel(String(localized: "checkin.location.found"), systemImage: "location.fill")
         case .unavailable:
@@ -304,8 +311,10 @@ struct CheckinFormView: View {
         do {
             // Сохраняется на телефоне сразу; на сервер — когда получится.
             try await sync.submit(checkin, placeName: placeName)
+            HapticManager.play(.confirm)
         } catch {
             saveError = String(localized: "checkin.save.failed")
+            HapticManager.play(.fail)
             return
         }
         // Новый личный рекорд — поздравление, форма закроется после «OK».

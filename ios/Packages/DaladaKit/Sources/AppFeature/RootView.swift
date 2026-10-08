@@ -1,6 +1,7 @@
 import DaladaCore
 import DaladaUI
 import DesignComponents
+import DesignTokens
 import SwiftUI
 import Sync
 
@@ -96,7 +97,7 @@ public struct RootView: View {
         .overlay {
             if !introCompleted {
                 IntroOnboardingView(environment: environment) {
-                    withAnimation { introCompleted = true }
+                    withAnimation(AppAnimation.smooth) { introCompleted = true }
                 }
                 .transition(.opacity)
             }

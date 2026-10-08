@@ -14,6 +14,7 @@ struct MapAreaView: View {
         Group {
             if let pack = rules.areas, let area = pack.area(areaID) {
                 content(area, pack: pack)
+                    .transition(.skeletonReveal)
             } else {
                 // Слои грузятся: вид зоны, текст о ней, тарифы.
                 ScrollView {
@@ -28,8 +29,11 @@ struct MapAreaView: View {
                     .padding(.vertical, AppSpacing.lg)
                 }
                 .scrollDisabled(true)
+                .transition(.opacity)
             }
         }
+        // Слои загрузились — зона проявляется на месте скелетона (DesignKit).
+        .animation(AppAnimation.smooth, value: rules.areas != nil)
         .navigationTitle(Text(verbatim: rules.areas?.area(areaID)?.name.text(for: RulesStore.language) ?? ""))
         .navigationBarTitleDisplayMode(.inline)
         .task { await rules.loadIfNeeded() }

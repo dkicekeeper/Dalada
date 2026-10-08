@@ -247,6 +247,7 @@ struct RuleZoneView: View {
         Group {
             if let pack = rules.pack, let zone = pack.zone(zoneID) {
                 content(zone, pack: pack)
+                    .transition(.skeletonReveal)
             } else {
                 // Правила грузятся: карта зоны, название, карточки правил.
                 ScrollView {
@@ -264,8 +265,11 @@ struct RuleZoneView: View {
                     .padding(.vertical, AppSpacing.lg)
                 }
                 .scrollDisabled(true)
+                .transition(.opacity)
             }
         }
+        // Правила загрузились — зона проявляется на месте скелетона (DesignKit).
+        .animation(AppAnimation.smooth, value: rules.pack != nil)
         .navigationTitle(Text(verbatim: rules.pack?.zone(zoneID)?.name.text(for: RulesStore.language) ?? ""))
         .navigationBarTitleDisplayMode(.inline)
         .task { await rules.loadIfNeeded() }
