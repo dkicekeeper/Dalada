@@ -219,7 +219,7 @@ private struct AchievementDetailSheet: View {
 
     var body: some View {
         VStack(spacing: AppSpacing.lg) {
-            AchievementMedal(achievement: achievement, size: AppIconSize.Tile.xxl * 1.5)
+            medal
             if let kind = achievement.kind {
                 VStack(spacing: AppSpacing.sm) {
                     Text(AchievementText.title(kind))
@@ -249,6 +249,20 @@ private struct AchievementDetailSheet: View {
         .padding(AppSpacing.xl)
         .presentationDetents([.medium])
     }
+
+    /// Полученный значок переливается голографической фольгой и наклоняется к пальцу (DesignKit);
+    /// ещё не полученный — серый и неподвижный.
+    @ViewBuilder
+    private var medal: some View {
+        let badge = AchievementMedal(achievement: achievement, size: AppIconSize.Tile.xxl * 1.5)
+        if achievement.isEarned {
+            badge
+                .holographic()
+                .interactiveTilt(in: Circle())
+        } else {
+            badge
+        }
+    }
 }
 
 /// Поздравление с новыми значками.
@@ -267,7 +281,9 @@ private struct NewAchievementsSheet: View {
                     ForEach(achievements) { achievement in
                         if let kind = achievement.kind {
                             HStack(spacing: AppSpacing.md) {
+                                // Фольга без наклона: значки в прокрутке, наклон спорил бы с ней.
                                 AchievementMedal(achievement: achievement, size: AppIconSize.Tile.xl)
+                                    .holographic()
                                 VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                                     Text(AchievementText.title(kind))
                                         .font(AppTypography.bodyEmphasis)
