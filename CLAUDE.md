@@ -70,7 +70,13 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 `OnboardingPage`, поле сообщения `MessageComposer`, `PersonRow`, `CommentRow`, `ThreadCard`,
 `ReviewCard`, `ReactionButton`, значки достижений (`AchievementMedal`, `AchievementTile`,
 `AchievementProgressRow`), `ChecklistRow` / `ChecklistSummaryRow`, `StatsStrip`, `StreakCard`,
-`ThumbnailCard` / `ThumbnailRow`. Своё — только если в DesignKit нет подходящего.
+`ThumbnailCard` / `ThumbnailRow`; с 2.8.0 — фото (`PhotoTile`, `PhotoStrip`, `PhotoGrid`,
+`PhotoCarousel`, `PhotoViewer` с масштабом), картинки для Stories (`ShareCardSheet`,
+`ShareCardFrame` со стилем `ShareCard.Style.dalada`), `LiveSessionBar` (мини-плеер записи),
+`DownloadRow` (офлайн-карты), `ArticleBody` (статьи), `ChipPicker(allTitle:)`, `PersonRow(style:
+.card)` (шапка профиля). Эффекты — в `docs/motion.md` DesignKit: `.celebration`,
+`.completionMoment`, `.holographic` + `.interactiveTilt`, `.dissolve`, `AuroraBackground`,
+`.spotlight` и другие. Своё — только если в DesignKit нет подходящего.
 
 У каждого компонента DesignKit с данными есть скелетон `<Имя>Skeleton` той же формы: пока данные
 грузятся, показывай его на месте компонента, а не `ProgressView()`.

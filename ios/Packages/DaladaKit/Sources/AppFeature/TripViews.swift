@@ -458,60 +458,40 @@ struct TripFinishView: View {
 
 // MARK: - Мини-плеер
 
-/// Идущая запись над вкладками: время и дистанция; тап — экран записи.
+/// Идущая запись над вкладками: время и дистанция; тап — экран записи. `LiveSessionBar` из
+/// DesignKit над записью поездки.
 struct TripMiniPlayer: View {
     let onOpen: @MainActor () -> Void
 
     @Environment(TripRecorder.self) private var recorder
 
     var body: some View {
-        Button {
+        LiveSessionBar(
+            startedAt: recorder.startedAt,
+            isPaused: isPaused,
+            detail: TripFormat.distance(recorder.stats.distanceM),
+            accessibilityLabel: String(localized: "trip.miniPlayer")
+        ) {
             onOpen()
-        } label: {
-            HStack(spacing: AppSpacing.md) {
-                Image(systemName: isPaused ? "pause.circle.fill" : "record.circle")
-                    .foregroundStyle(isPaused ? AppColors.warning : AppColors.destructive)
-                    .symbolEffect(.pulse, isActive: !isPaused)
-                TimelineView(.periodic(from: .now, by: 1)) { context in
-                    Text(verbatim: TripFormat.clock(context.date.timeIntervalSince(recorder.startedAt ?? context.date)))
-                        .monospacedDigit()
-                }
-                Text(verbatim: TripFormat.distance(recorder.stats.distanceM))
-                    .foregroundStyle(AppColors.textSecondary)
-                Spacer(minLength: 0)
-                Image(systemName: "chevron.up")
-                    .foregroundStyle(AppColors.textTertiary)
-            }
-            .font(AppTypography.bodyEmphasis)
-            .padding(.horizontal, AppSpacing.lg)
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel(Text("trip.miniPlayer"))
     }
 
     /// Пауза — ручная или автопауза на стоянке.
     private var isPaused: Bool { recorder.phase == .paused || recorder.isAutoPaused }
 }
 
-/// Мини-плеер в `tabViewBottomAccessory`, пока идёт запись (iOS 26.1+). На iOS 26.0 к записи
-/// возвращаются через «+».
+/// Мини-плеер в аксессуаре панели вкладок, пока идёт запись (`.liveSessionAccessory` из
+/// DesignKit, iOS 26.1+). На iOS 26.0 к записи возвращаются через «+».
 struct TripAccessoryModifier: ViewModifier {
     let isEnabled: Bool
     let onOpen: @MainActor () -> Void
 
     /// Мини-плеер есть с iOS 26.1; на 26.0 запись открывается кнопкой на карте и значком на «Главной».
-    static var isAvailable: Bool {
-        if #available(iOS 26.1, *) { true } else { false }
-    }
+    static var isAvailable: Bool { LiveSessionAccessory.isAvailable }
 
     func body(content: Content) -> some View {
-        if #available(iOS 26.1, *) {
-            content.tabViewBottomAccessory(isEnabled: isEnabled) {
-                TripMiniPlayer(onOpen: onOpen)
-            }
-        } else {
-            content
+        content.liveSessionAccessory(isEnabled: isEnabled) {
+            TripMiniPlayer(onOpen: onOpen)
         }
     }
 }

@@ -153,25 +153,9 @@ struct PhotoGrid: View {
     let urls: [String: URL]
     let onOpen: @MainActor (MyPhoto) -> Void
 
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: AppSpacing.xs), count: 3)
-
     var body: some View {
-        LazyVGrid(columns: columns, spacing: AppSpacing.xs) {
-            ForEach(photos) { photo in
-                Button {
-                    onOpen(photo)
-                } label: {
-                    Color.clear
-                        .aspectRatio(1, contentMode: .fit)
-                        .overlay {
-                            RemotePhoto(path: photo.thumbnailPath, url: urls[photo.thumbnailPath])
-                        }
-                        .background(AppColors.bgMuted)
-                        .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(Text(verbatim: photo.placeName ?? String(localized: "photo.open")))
-            }
+        DesignComponents.PhotoGrid(photos, onOpen: { onOpen($0) }, label: { $0.placeName }) { photo in
+            RemotePhoto(path: photo.thumbnailPath, url: urls[photo.thumbnailPath])
         }
     }
 }

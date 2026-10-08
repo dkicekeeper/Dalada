@@ -1,60 +1,28 @@
 import DaladaCore
+import DesignComponents
 import DesignTokens
 import SwiftUI
 import UIKit
 
-/// Сторона квадратного превью фото в рядах.
-private let photoThumbnailSize: CGFloat = 88
-
 // MARK: - Фото в формах
 
-/// Превью выбранного, ещё не загруженного фото.
+/// Превью выбранного, ещё не загруженного фото — `PhotoTile` из DesignKit.
 struct PhotoDraftThumbnail: View {
     let photo: PhotoDraft
 
     var body: some View {
-        Group {
-            if let image = UIImage(data: photo.thumbnail) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                Image(systemName: "photo")
-                    .foregroundStyle(AppColors.textTertiary)
-            }
-        }
-        .frame(width: photoThumbnailSize, height: photoThumbnailSize)
-        .background(AppColors.bgMuted)
-        .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
+        PhotoTile(image: UIImage(data: photo.thumbnail))
     }
 }
 
-/// Ряд выбранных фото с кнопкой удаления на каждом.
+/// Ряд выбранных фото с кнопкой удаления на каждом — `PhotoStrip` из DesignKit.
 struct PhotoDraftStrip: View {
     let photos: [PhotoDraft]
     let onRemove: @MainActor (UUID) -> Void
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: AppSpacing.sm) {
-                ForEach(photos) { photo in
-                    PhotoDraftThumbnail(photo: photo)
-                        .overlay(alignment: .topTrailing) {
-                            Button {
-                                onRemove(photo.id)
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 22))
-                                    .symbolRenderingMode(.palette)
-                                    .foregroundStyle(AppColors.staticWhite, Color.black.opacity(0.55))
-                            }
-                            .buttonStyle(.borderless)
-                            .padding(AppSpacing.xxs)
-                            .accessibilityLabel(Text("photo.remove"))
-                        }
-                }
-            }
-            .padding(.vertical, AppSpacing.xxs)
+        PhotoStrip(photos, onRemove: { onRemove($0.id) }) { photo in
+            PhotoTileImage(image: UIImage(data: photo.thumbnail))
         }
     }
 }
@@ -132,7 +100,7 @@ struct RemotePhoto: View {
     }
 }
 
-/// Ряд фото отчёта; тап открывает просмотр на весь экран.
+/// Ряд фото отчёта (`PhotoStrip` из DesignKit); тап открывает просмотр на весь экран.
 struct ReportPhotoStrip: View {
     let media: [ReportMedia]
     let urls: [String: URL]
@@ -140,21 +108,8 @@ struct ReportPhotoStrip: View {
     @State private var opened: ReportMedia?
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: AppSpacing.sm) {
-                ForEach(media) { item in
-                    Button {
-                        opened = item
-                    } label: {
-                        RemotePhoto(path: item.thumbnailPath, url: urls[item.thumbnailPath])
-                            .frame(width: photoThumbnailSize, height: photoThumbnailSize)
-                            .background(AppColors.bgMuted)
-                            .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(Text("photo.open"))
-                }
-            }
+        PhotoStrip(media, onOpen: { opened = $0 }) { item in
+            RemotePhoto(path: item.thumbnailPath, url: urls[item.thumbnailPath])
         }
         .fullScreenCover(item: $opened) { item in
             PhotoViewer(media: media, urls: urls, selection: item.id)
@@ -162,42 +117,21 @@ struct ReportPhotoStrip: View {
     }
 }
 
-/// Просмотр фото отчёта на весь экран, листание свайпом.
+/// Просмотр фото отчёта на весь экран: `PhotoViewer` из DesignKit (листание, масштаб) над
+/// загрузкой фото Dalada.
 struct PhotoViewer: View {
     let media: [ReportMedia]
     let urls: [String: URL]
-
-    @Environment(\.dismiss) private var dismiss
-    @State private var selection: UUID
-
-    init(media: [ReportMedia], urls: [String: URL], selection: UUID) {
-        self.media = media
-        self.urls = urls
-        _selection = State(initialValue: selection)
-    }
+    let selection: UUID
 
     var body: some View {
-        NavigationStack {
-            TabView(selection: $selection) {
-                ForEach(media) { item in
-                    RemotePhoto(
-                        path: item.path,
-                        url: urls[item.path],
-                        contentMode: .fit,
-                        placeholderPath: item.thumbnailPath
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .tag(item.id)
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: media.count > 1 ? .automatic : .never))
-            .background(Color.black)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.close", systemImage: "xmark") { dismiss() }
-                }
-            }
+        DesignComponents.PhotoViewer(media, selection: selection) { item in
+            RemotePhoto(
+                path: item.path,
+                url: urls[item.path],
+                contentMode: .fit,
+                placeholderPath: item.thumbnailPath
+            )
         }
-        .preferredColorScheme(.dark)
     }
 }

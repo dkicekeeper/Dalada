@@ -250,6 +250,7 @@ struct PlaceCardView: View {
         .sheet(isPresented: $showsShareCard) {
             if case .loaded(let place) = state {
                 ShareCardSheet(
+                    previewTitle: "Dalada",
                     load: { await placeShareCard(place) },
                     message: { _ in String(localized: "share.message.place \(place.name) \(ShareCardLink.site.absoluteString)") }
                 ) { card, format in

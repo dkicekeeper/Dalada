@@ -168,48 +168,21 @@ private struct PlaceShortcutRow: View {
 
 // MARK: - Фильтр по типам
 
-/// Чипы типов мест: несколько можно выбрать сразу, «Все» сбрасывает.
+/// Чипы типов мест: несколько можно выбрать сразу, «Все» сбрасывает. `ChipPicker` из DesignKit;
+/// чипы прокручиваются до краёв экрана.
 struct PlaceTypeChips: View {
     @Binding var selection: Set<PlaceType>
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: AppSpacing.sm) {
-                chip(titleKey: "places.filter.all", systemImage: nil, isOn: selection.isEmpty) {
-                    selection = []
-                }
-                ForEach(PlaceType.allCases) { type in
-                    chip(titleKey: LocalizedStringKey(type.titleKey), systemImage: type.systemImage,
-                         isOn: selection.contains(type)) {
-                        if selection.contains(type) {
-                            selection.remove(type)
-                        } else {
-                            selection.insert(type)
-                        }
-                    }
-                }
-            }
-            .screenPadding()
+        ChipPicker(
+            options: PlaceType.allCases,
+            selection: $selection,
+            allTitle: String(localized: "places.filter.all"),
+            systemImage: { $0.systemImage }
+        ) { type in
+            String(localized: String.LocalizationValue(type.titleKey))
         }
-    }
-
-    private func chip(
-        titleKey: LocalizedStringKey,
-        systemImage: String?,
-        isOn: Bool,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack(spacing: AppSpacing.xxs) {
-                if let systemImage {
-                    Image(systemName: systemImage)
-                }
-                Text(titleKey)
-            }
-            .filterChipStyle(isSelected: isOn)
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(isOn ? .isSelected : [])
+        .contentMargins(.horizontal, AppSpacing.lg, for: .scrollContent)
     }
 }
 

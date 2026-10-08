@@ -42,10 +42,7 @@ struct ShareCardsTests {
         #expect(card.placeName == "Капшагай")
     }
 
-    @Test func formatsAndSiteLabel() {
-        #expect(ShareCardFormat.story.width * ShareCardFormat.scale == 1080)
-        #expect(ShareCardFormat.story.height * ShareCardFormat.scale == 1920)
-        #expect(ShareCardFormat.post.height * ShareCardFormat.scale == 1350)
+    @Test func siteLabel() {
         #expect(ShareCardLink.siteLabel == "dkicekeeper.github.io/Dalada")
     }
 

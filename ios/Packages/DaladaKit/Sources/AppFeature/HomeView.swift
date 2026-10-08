@@ -495,26 +495,9 @@ struct PostPhotoCarousel: View {
     @State private var opened: ReportMedia?
 
     var body: some View {
-        TabView {
-            ForEach(media) { item in
-                Button {
-                    opened = item
-                } label: {
-                    Color.clear
-                        .overlay {
-                            RemotePhoto(path: item.path, url: urls[item.path], placeholderPath: item.thumbnailPath)
-                        }
-                        .clipped()
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(Text("photo.open"))
-            }
+        PhotoCarousel(media, onOpen: { opened = $0 }) { item in
+            RemotePhoto(path: item.path, url: urls[item.path], placeholderPath: item.thumbnailPath)
         }
-        .tabViewStyle(.page(indexDisplayMode: media.count > 1 ? .automatic : .never))
-        .aspectRatio(4.0 / 3.0, contentMode: .fit)
-        .background(AppColors.bgMuted)
-        .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
         .fullScreenCover(item: $opened) { item in
             PhotoViewer(media: media, urls: urls, selection: item.id)
         }

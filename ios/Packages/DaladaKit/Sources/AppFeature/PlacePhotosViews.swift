@@ -17,21 +17,8 @@ struct PlacePhotosHeader: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: AppSpacing.sm) {
-                    ForEach(photos) { photo in
-                        Button {
-                            opened = photo
-                        } label: {
-                            RemotePhoto(path: photo.thumbnailPath, url: urls[photo.thumbnailPath])
-                                .frame(width: 150, height: 150)
-                                .background(AppColors.bgMuted)
-                                .clipShape(RoundedRectangle(cornerRadius: AppRadius.md))
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(Text("photo.open"))
-                    }
-                }
+            PhotoStrip(photos, size: 150, onOpen: { opened = $0 }) { photo in
+                RemotePhoto(path: photo.thumbnailPath, url: urls[photo.thumbnailPath])
             }
             NavigationLink {
                 PlacePhotosGrid(placeID: placeID, placeName: placeName, environment: environment)
@@ -67,7 +54,6 @@ struct PlacePhotosGrid: View {
     }
 
     private static let pageSize = 60
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 3)
 
     var body: some View {
         ScrollView {
@@ -94,27 +80,13 @@ struct PlacePhotosGrid: View {
                         )
                     }
                 } else {
-                    LazyVGrid(columns: columns, spacing: 2) {
-                        ForEach(gallery) { photo in
-                            Button {
-                                opened = photo
-                            } label: {
-                                Color.clear
-                                    .aspectRatio(1, contentMode: .fit)
-                                    .overlay {
-                                        RemotePhoto(path: photo.thumbnailPath, url: urls[photo.thumbnailPath])
-                                    }
-                                    .background(AppColors.bgMuted)
-                                    .clipped()
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel(Text("photo.open"))
-                            .onAppear {
-                                if photo.id == gallery.last?.id {
-                                    Task { await loadMore() }
-                                }
-                            }
-                        }
+                    DesignComponents.PhotoGrid(
+                        gallery,
+                        style: .edgeToEdge,
+                        onOpen: { opened = $0 },
+                        onReachEnd: { Task { await loadMore() } }
+                    ) { photo in
+                        RemotePhoto(path: photo.thumbnailPath, url: urls[photo.thumbnailPath])
                     }
                 }
             }
@@ -169,87 +141,49 @@ struct PlacePhotosGrid: View {
 struct PlacePhotoViewer: View {
     let photos: [PlaceGalleryPhoto]
     let urls: [String: URL]
+    let selection: UUID
     let environment: AppEnvironment
 
     @Environment(\.dismiss) private var dismiss
-    @State private var selection: UUID
-
-    init(photos: [PlaceGalleryPhoto], urls: [String: URL], selection: UUID, environment: AppEnvironment) {
-        self.photos = photos
-        self.urls = urls
-        self.environment = environment
-        _selection = State(initialValue: selection)
-    }
-
-    private var current: PlaceGalleryPhoto? { photos.first { $0.id == selection } }
 
     var body: some View {
-        NavigationStack {
-            TabView(selection: $selection) {
-                ForEach(photos) { photo in
-                    RemotePhoto(
-                        path: photo.path,
-                        url: urls[photo.path],
-                        contentMode: .fit,
-                        placeholderPath: photo.thumbnailPath
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .tag(photo.id)
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .background(Color.black)
-            .overlay(alignment: .bottom) {
-                if let photo = current {
-                    caption(photo)
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.close", systemImage: "xmark") { dismiss() }
-                }
-                if case .visitor(let photo) = current, !photo.isOwn {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        // Жалоба — на отчёт с этим фото; блокировка — автора.
-                        ModerationMenu(target: .checkin, targetID: photo.checkinID, author: photo.author, isToolbar: true) {
-                            dismiss()
-                        }
-                    }
-                }
+        DesignComponents.PhotoViewer(photos, selection: selection) { photo in
+            RemotePhoto(
+                path: photo.path,
+                url: urls[photo.path],
+                contentMode: .fit,
+                placeholderPath: photo.thumbnailPath
+            )
+        } caption: { item in
+            caption(item)
+        } actions: { (item: PlaceGalleryPhoto) -> ModerationMenu? in
+            // Жалоба — на отчёт с этим фото; блокировка — автора. Своё фото и фото редакции — без меню.
+            guard case .visitor(let photo) = item, !photo.isOwn else { return nil }
+            return ModerationMenu(target: .checkin, targetID: photo.checkinID, author: photo.author, isToolbar: true) {
+                dismiss()
             }
         }
-        .preferredColorScheme(.dark)
     }
 
+    @ViewBuilder
     private func caption(_ item: PlaceGalleryPhoto) -> some View {
-        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-            switch item {
-            case .visitor(let photo):
-                Text(verbatim: photo.authorName)
-                    .font(AppTypography.bodyEmphasis)
-                HStack(spacing: AppSpacing.xs) {
-                    Text(photo.at, format: .dateTime.day().month(.wide).year())
-                    Text(verbatim: "·")
-                    Label(
-                        LocalizedStringKey(photo.isCatch ? "place.photos.source.catch" : "place.photos.source.report"),
-                        systemImage: photo.isCatch ? "fish" : "mappin.circle"
-                    )
-                }
-                .font(AppTypography.caption)
-                .foregroundStyle(.white.opacity(0.8))
-            case .editorial(let photo):
-                EditorialPhotoCredit(photo: photo)
+        switch item {
+        case .visitor(let photo):
+            Text(verbatim: photo.authorName)
+                .font(AppTypography.bodyEmphasis)
+            HStack(spacing: AppSpacing.xs) {
+                Text(photo.at, format: .dateTime.day().month(.wide).year())
+                Text(verbatim: "·")
+                Label(
+                    LocalizedStringKey(photo.isCatch ? "place.photos.source.catch" : "place.photos.source.report"),
+                    systemImage: photo.isCatch ? "fish" : "mappin.circle"
+                )
             }
-            if photos.count > 1, let index = photos.firstIndex(where: { $0.id == item.id }) {
-                Text(verbatim: "\(index + 1) / \(photos.count)")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(.white.opacity(0.6))
-            }
+            .font(AppTypography.caption)
+            .foregroundStyle(.white.opacity(0.8))
+        case .editorial(let photo):
+            EditorialPhotoCredit(photo: photo)
         }
-        .foregroundStyle(.white)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(AppSpacing.md)
-        .background(.black.opacity(0.45))
     }
 }
 
