@@ -1,4 +1,5 @@
 import DaladaCore
+import DesignComponents
 import DesignTokens
 import MapEngine
 import SwiftUI
@@ -9,14 +10,15 @@ struct RuleZoneSelection: Identifiable, Hashable {
 }
 
 /// Вкладка «Карта»: места в видимой области, карточка по тапу, новое место долгим нажатием
-/// или кнопкой «Место», слои — зоны запретов (цвет — действует сейчас, скоро или нет), нацпарки и
-/// заповедники, погранзона, мои треки; «Начать поездку».
+/// или из меню «+», слои — зоны запретов (цвет — действует сейчас, скоро или нет), нацпарки и
+/// заповедники, погранзона, мои треки; поездка — тоже из меню «+».
 struct MapHomeView: View {
     let environment: AppEnvironment
 
     @Environment(SessionStore.self) private var session
     @Environment(RulesStore.self) private var rules
     @Environment(TripRecorder.self) private var recorder
+    @Environment(AppRouter.self) private var router
     @AppStorage("map.showsRules") private var showsRules = true
     @AppStorage("map.showsParks") private var showsParks = true
     @AppStorage("map.showsBorder") private var showsBorder = false
@@ -123,26 +125,15 @@ struct MapHomeView: View {
         .fullScreenCover(item: $openedPhoto) { point in
             MapPhotoViewer(point: point, environment: environment)
         }
-        .overlay(alignment: .topTrailing) {
-            Button {
-                startNewPlace(at: model.visibleCenter)
-            } label: {
-                Label("map.addPlace", systemImage: "plus")
-                    .font(AppTypography.bodyEmphasis)
-            }
-            .dsButton(.secondary)
-            .padding(.trailing, AppSpacing.lg)
-            .padding(.top, AppSpacing.sm)
-        }
         .overlay(alignment: .top) {
             if !longPressHintSeen && session.profile != nil {
                 longPressHint
                     .padding(.top, 64)
                     .screenPadding()
-                    .transition(.opacity)
+                    .transition(.riseIn)
             }
         }
-        .overlay(alignment: .bottomTrailing) {
+        .overlay(alignment: .bottomLeading) {
             Button {
                 locateRequest += 1
             } label: {
@@ -152,17 +143,15 @@ struct MapHomeView: View {
             }
             .dsButton(.secondary)
             .buttonBorderShape(.circle)
-            .padding(.trailing, AppSpacing.lg)
+            .padding(.leading, AppSpacing.lg)
             .padding(.bottom, AppSpacing.lg)
         }
-        // Во время записи вместо кнопки — мини-плеер над вкладками (где он есть).
-        .overlay(alignment: .bottom) {
-            if !recorder.isActive || !TripAccessoryModifier.isAvailable {
-                StartTripButton()
-                    .font(AppTypography.bodyEmphasis)
-                    .dsButton()
-                    .padding(.bottom, AppSpacing.lg)
-            }
+        // «+» раскрывается стеклянным меню (DesignKit): новое место в центре карты и поездка
+        // (во время записи — открыть её). Чекин — из карточки места: ему нужно место.
+        .overlay(alignment: .bottomTrailing) {
+            GlassActionMenu(items: createActions)
+                .padding(.trailing, AppSpacing.lg)
+                .padding(.bottom, AppSpacing.lg)
         }
         .sheet(item: $model.selectedPlace) { selection in
             PlaceCardView(placeID: selection.id, environment: environment)
@@ -193,6 +182,22 @@ struct MapHomeView: View {
         let userID: UUID?
     }
 
+    /// Действия меню «+», снизу вверх от кнопки: место ближе к пальцу, поездка над ним.
+    private var createActions: [GlassActionMenu.Item] {
+        [
+            .init(
+                String(localized: recorder.isActive ? "quick.tripInProgress" : "quick.trip"),
+                systemImage: recorder.isActive ? "record.circle" : "figure.hiking",
+                id: "trip"
+            ) {
+                router.startTrip(isRecording: recorder.isActive)
+            },
+            .init(String(localized: "map.newPlaceHere"), systemImage: "mappin.and.ellipse", id: "place") {
+                startNewPlace(at: model.visibleCenter)
+            },
+        ]
+    }
+
     private func startNewPlace(at coordinate: GeoPoint) {
         guard session.profile != nil else {
             showsSignInHint = true
@@ -202,7 +207,7 @@ struct MapHomeView: View {
         model.newPlace = NewPlaceRequest(coordinate: coordinate)
     }
 
-    /// Что место можно поставить долгим нажатием, иначе не узнать: кнопка «Место» ставит его в центр.
+    /// Что место можно поставить долгим нажатием, иначе не узнать: меню «+» ставит его в центр.
     private var longPressHint: some View {
         HStack(alignment: .top, spacing: AppSpacing.sm) {
             Image(systemName: "hand.tap")
@@ -212,7 +217,7 @@ struct MapHomeView: View {
                 .foregroundStyle(AppColors.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             Button {
-                withAnimation { longPressHintSeen = true }
+                withAnimation(AppAnimation.smooth) { longPressHintSeen = true }
             } label: {
                 Image(systemName: "xmark")
                     .foregroundStyle(AppColors.textSecondary)

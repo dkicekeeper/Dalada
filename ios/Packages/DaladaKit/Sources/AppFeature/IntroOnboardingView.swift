@@ -225,7 +225,7 @@ struct IntroOnboardingView: View {
             onFinish()
             return
         }
-        withAnimation { page = pages[index + 1] }
+        withAnimation(AppAnimation.smooth) { page = pages[index + 1] }
     }
 
     /// Системный запрос разрешения; позиция — чтобы предложить ближайший район.

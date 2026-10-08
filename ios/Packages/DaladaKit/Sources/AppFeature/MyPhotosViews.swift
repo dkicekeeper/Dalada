@@ -41,12 +41,17 @@ struct MyPhotosSection: View {
         } content: {
             if !photos.isEmpty {
                 PhotoGrid(photos: Array(photos.prefix(6)), urls: urls) { opened = $0 }
+                    .transition(.skeletonReveal)
             } else if isLoaded {
                 ProfileSectionHint(text: String(localized: "profile.photos.empty"))
+                    .transition(.skeletonReveal)
             } else {
                 PhotoGridSkeleton(count: 6)
+                    .transition(.opacity)
             }
         }
+        // Фото проявляются на месте скелетона.
+        .animation(AppAnimation.smooth, value: isLoaded)
         .task(id: userID) { await load() }
         // Отчёт с фото дошёл до сервера — показать его фото.
         .onChange(of: sync.sentCount) { _, _ in

@@ -500,7 +500,7 @@ struct TripAccessoryModifier: ViewModifier {
     let isEnabled: Bool
     let onOpen: @MainActor () -> Void
 
-    /// Мини-плеер есть с iOS 26.1; на 26.0 запись открывается кнопкой на карте и значком на «Главной».
+    /// Мини-плеер есть с iOS 26.1; на 26.0 запись открывается из меню «+» на карте и значком на «Главной».
     static var isAvailable: Bool { LiveSessionAccessory.isAvailable }
 
     func body(content: Content) -> some View {
@@ -597,16 +597,18 @@ struct MyTripsSection: View {
                         TripRow(trip: entry.summary, host: entry.host)
                     }
                     .buttonStyle(.plain)
-                    // Удалённая поездка рассыпается в пыль (DesignKit), новая проявляется.
-                    .transition(AsymmetricTransition(insertion: OpacityTransition(), removal: DissolveTransition()))
+                    // Удалённая поездка рассыпается в пыль (DesignKit), новая проявляется из размытия.
+                    .transition(AsymmetricTransition(insertion: SkeletonRevealTransition(), removal: DissolveTransition()))
                 }
             } else if isLoaded {
                 Text("trips.empty.description")
                     .font(AppTypography.bodySmall)
                     .foregroundStyle(AppColors.textSecondary)
+                    .transition(.skeletonReveal)
             } else {
                 ForEach(0..<3, id: \.self) { _ in
                     TripRowSkeleton()
+                        .transition(.opacity)
                 }
             }
         }
@@ -621,11 +623,12 @@ struct MyTripsSection: View {
 
     private func load() async {
         let loaded = await TripsLoader(environment: environment, userID: userID).load(limit: 50)
-        // Первая загрузка — без анимации; дальше список меняется плавно, удалённая уходит пылью.
-        withAnimation(isLoaded ? AppAnimation.gentleSpring : nil) {
+        // Первая загрузка — поездки проявляются на месте скелетонов; дальше список меняется плавно,
+        // удалённая уходит пылью.
+        withAnimation(isLoaded ? AppAnimation.gentleSpring : AppAnimation.smooth) {
             trips = loaded
+            isLoaded = true
         }
-        isLoaded = true
     }
 }
 

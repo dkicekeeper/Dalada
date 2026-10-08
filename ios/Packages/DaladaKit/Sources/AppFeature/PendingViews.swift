@@ -140,7 +140,11 @@ struct PendingQueueSection: View {
             VStack(alignment: .leading, spacing: AppSpacing.md) {
                 SectionHeader(String(localized: "pending.title"), systemImage: "icloud.and.arrow.up") {
                     if sync.isSending {
-                        ProgressView()
+                        // Отправка идёт — слои значка загораются по очереди (DesignKit).
+                        Image(systemName: "arrow.triangle.2.circlepath")
+                            .foregroundStyle(AppColors.accent)
+                            .symbolPulse(.working)
+                            .accessibilityLabel(Text("pending.sending"))
                     } else if hasWaiting {
                         Button("pending.sendNow") {
                             sync.kick(force: true)

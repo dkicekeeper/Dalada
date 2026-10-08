@@ -100,8 +100,10 @@ struct LiveShareRow: View {
             Group {
                 if let share = live.share, live.isSharing {
                     HStack(spacing: AppSpacing.sm) {
+                        // Трансляция идёт — значок «дышит» (DesignKit; без движения под Reduce Motion).
                         Image(systemName: "dot.radiowaves.left.and.right")
                             .foregroundStyle(AppColors.success)
+                            .symbolPulse(.breathe)
                         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                             Text("live.sharing \(share.viewerIDs.count)")
                                 .font(AppTypography.bodySmall)

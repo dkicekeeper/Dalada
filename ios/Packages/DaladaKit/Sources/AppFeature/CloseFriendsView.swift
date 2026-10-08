@@ -50,6 +50,8 @@ struct CloseFriendsView: View {
                 }
             }
         }
+        // Друзья проявляются на месте скелетонов.
+        .animation(AppAnimation.smooth, value: isLoaded)
         .navigationTitle("closeFriends.title")
         .task { await load() }
         .alert(

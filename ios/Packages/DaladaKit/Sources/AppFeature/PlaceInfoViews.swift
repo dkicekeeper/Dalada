@@ -1,6 +1,7 @@
 import Backend
 import DaladaCore
 import DesignComponents
+import DesignSupport
 import DesignTokens
 import SwiftUI
 
@@ -455,6 +456,7 @@ struct PlaceEditView: View {
             Group {
                 if let draft = Binding($draft) {
                     form(draft)
+                        .transition(.skeletonReveal)
                 } else if let loadError {
                     EmptyState(
                         icon: "wifi.slash",
@@ -486,8 +488,11 @@ struct PlaceEditView: View {
                         .padding(.vertical, AppSpacing.md)
                     }
                     .scrollDisabled(true)
+                    .transition(.opacity)
                 }
             }
+            // Место загрузилось — форма проявляется на месте скелетонов.
+            .animation(AppAnimation.smooth, value: draft == nil)
         }
         .interactiveDismissDisabled(isSaving || (draft != nil && draft != original))
         .task { await load() }
@@ -575,10 +580,12 @@ struct PlaceEditView: View {
         defer { isSaving = false }
         do {
             try await backend.updatePlace(id: placeID, draft)
+            HapticManager.play(.confirm)
             onSaved()
             dismiss()
         } catch {
             saveError = CommunityMessage.text(for: error)
+            HapticManager.play(.fail)
         }
     }
 }
@@ -730,9 +737,11 @@ struct PlaceSuggestView: View {
                 changes: kind == .edit ? changes : nil,
                 note: trimmed.isEmpty ? nil : trimmed
             )
+            HapticManager.play(.confirm)
             isSent = true
         } catch {
             sendError = CommunityMessage.text(for: error)
+            HapticManager.play(.fail)
         }
     }
 }

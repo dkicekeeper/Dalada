@@ -44,9 +44,10 @@ struct SignInCard: View {
 
             if showsEmail {
                 emailForm
+                    .transition(.riseIn)
             } else {
                 Button("auth.email.open") {
-                    withAnimation { showsEmail = true }
+                    withAnimation(AppAnimation.smooth) { showsEmail = true }
                 }
                 .font(AppTypography.bodySmall)
             }

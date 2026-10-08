@@ -2,6 +2,7 @@ import Backend
 import DaladaCore
 import DaladaUI
 import DesignComponents
+import DesignSupport
 import DesignTokens
 import PhotosUI
 import SwiftUI
@@ -405,9 +406,11 @@ struct ReviewFormView: View {
             let reviewID = try await backend.saveReview(draft)
             // Не загрузились фото — отзыв уже сохранён; «Сохранить» ещё раз догрузит их.
             try await backend.addReviewPhotos(photos, reviewID: reviewID)
+            HapticManager.play(.confirm)
             dismiss()
         } catch {
             saveError = CommunityMessage.text(for: error)
+            HapticManager.play(.fail)
         }
     }
 
