@@ -70,10 +70,17 @@ struct CheckinFormView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                if !activeBans.isEmpty, let pack = rules.pack {
-                    Section {
+        EditSheetContainer(
+            title: placeName,
+            isSaveDisabled: !draft.isValid || isProcessingPhotos || showsNewRecords,
+            isSaving: isSaving,
+            wrapInForm: false,
+            onSave: { Task { await save() } },
+            onCancel: { dismiss() }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    if !activeBans.isEmpty, let pack = rules.pack {
                         ForEach(activeBans) { ban in
                             RecommendationBox(
                                 text: String(localized: "rules.checkin.banWarning \(ban.title.text(for: RulesStore.language)) \(RuleFormat.statusText(pack.status(of: ban, on: CalendarDay(draft.at, calendar: RulesStore.almatyCalendar))).lowercased())"),
@@ -82,153 +89,175 @@ struct CheckinFormView: View {
                             )
                         }
                     }
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-                }
 
-                Section {
-                    ChipPicker(String(localized: "conditions.bite"), options: CheckinConditions.Bite.allCases, selection: $draft.conditions.bite) { $0.title }
-                    ChipPicker(String(localized: "conditions.crowd"), options: CheckinConditions.Crowd.allCases, selection: $draft.conditions.crowd) { $0.title }
-                    ChipPicker(String(localized: "conditions.water"), options: CheckinConditions.Water.allCases, selection: $draft.conditions.water) { $0.title }
-                    ChipPicker(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $draft.conditions.road) { $0.title }
-                } header: {
-                    Text("checkin.form.conditions")
-                } footer: {
-                    if let weather = draft.conditions.weather, let summary = WeatherText.summary(weather) {
-                        Label("weather.inReport \(summary)", systemImage: WeatherKind(code: weather.code)?.systemImage ?? "thermometer.medium")
-                    }
-                }
-
-                Section("checkin.form.catches") {
-                    ForEach(draft.catches) { catchDraft in
-                        Button {
-                            editingCatch = catchDraft
-                        } label: {
-                            CatchSummaryRow(
-                                speciesName: speciesStore.name(for: catchDraft.speciesID),
-                                count: catchDraft.count,
-                                weightGrams: catchDraft.weightGrams,
-                                lengthMillimeters: catchDraft.lengthMillimeters,
-                                released: catchDraft.released,
-                                hasPhoto: catchDraft.photo != nil
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                        FormSection(header: String(localized: "checkin.form.conditions")) {
+                            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                                FormChipRow(String(localized: "conditions.bite"), options: CheckinConditions.Bite.allCases, selection: $draft.conditions.bite) { $0.title }
+                                FormChipRow(String(localized: "conditions.crowd"), options: CheckinConditions.Crowd.allCases, selection: $draft.conditions.crowd) { $0.title }
+                                FormChipRow(String(localized: "conditions.water"), options: CheckinConditions.Water.allCases, selection: $draft.conditions.water) { $0.title }
+                                FormChipRow(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $draft.conditions.road) { $0.title }
+                            }
+                            .padding(.vertical, AppSpacing.md)
+                        }
+                        if let weather = draft.conditions.weather, let summary = WeatherText.summary(weather) {
+                            footerLabel(
+                                String(localized: "weather.inReport \(summary)"),
+                                systemImage: WeatherKind(code: weather.code)?.systemImage ?? "thermometer.medium"
                             )
+                        }
+                    }
+
+                    FormSection(header: String(localized: "checkin.form.catches")) {
+                        ForEach(draft.catches) { catchDraft in
+                            Button {
+                                editingCatch = catchDraft
+                            } label: {
+                                CatchSummaryRow(
+                                    speciesName: speciesStore.name(for: catchDraft.speciesID),
+                                    count: catchDraft.count,
+                                    weightGrams: catchDraft.weightGrams,
+                                    lengthMillimeters: catchDraft.lengthMillimeters,
+                                    released: catchDraft.released,
+                                    hasPhoto: catchDraft.photo != nil
+                                )
+                                .padding(.horizontal, AppSpacing.lg)
+                                .padding(.vertical, AppSpacing.md)
+                            }
+                            .buttonStyle(.plain)
+                            // Удалить улов: смахиванием (iOS 27) и долгим нажатием.
+                            .swipeActions {
+                                removeCatchButton(catchDraft)
+                            }
+                            .contextMenu {
+                                removeCatchButton(catchDraft)
+                            }
+                            Divider().padding(.leading, AppSpacing.lg)
+                        }
+
+                        Button {
+                            editingCatch = CatchDraft(speciesID: speciesStore.species.first?.id ?? "common_carp")
+                        } label: {
+                            UniversalRow(
+                                leadingIcon: .sfSymbol("plus.circle", color: AppColors.accent, size: AppIconSize.lg),
+                                title: String(localized: "checkin.form.addCatch"),
+                                titleColor: AppColors.accent
+                            )
+                            .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
                     }
-                    .onDelete { draft.catches.remove(atOffsets: $0) }
 
-                    Button {
-                        editingCatch = CatchDraft(speciesID: speciesStore.species.first?.id ?? "common_carp")
-                    } label: {
-                        Label("checkin.form.addCatch", systemImage: "plus.circle")
-                    }
-                }
-
-                Section {
-                    if !draft.photos.isEmpty {
-                        PhotoDraftStrip(photos: draft.photos) { id in
-                            draft.photos.removeAll { $0.id == id }
+                    FormSection(
+                        header: String(localized: "checkin.form.photos"),
+                        footer: photoFailed ? nil : String(localized: "checkin.form.photosFooter")
+                    ) {
+                        if !draft.photos.isEmpty {
+                            PhotoDraftStrip(photos: draft.photos) { id in
+                                draft.photos.removeAll { $0.id == id }
+                            }
+                            .contentMargins(.horizontal, AppSpacing.lg, for: .scrollContent)
+                            .padding(.vertical, AppSpacing.md)
+                        }
+                        if isProcessingPhotos {
+                            // Фото сжимаются: плитка-скелетон на месте будущего фото.
+                            PhotoTileSkeleton()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, AppSpacing.lg)
+                                .padding(.vertical, AppSpacing.md)
+                        } else if draft.photos.count < CheckinDraft.photoLimit {
+                            PhotosPicker(
+                                selection: $pickerItems,
+                                maxSelectionCount: CheckinDraft.photoLimit - draft.photos.count,
+                                matching: .images
+                            ) {
+                                PickerRowLabel(String(localized: "checkin.form.addPhotos"), systemImage: "photo.on.rectangle.angled")
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                    if isProcessingPhotos {
-                        ProgressView()
-                    } else if draft.photos.count < CheckinDraft.photoLimit {
-                        PhotosPicker(
-                            selection: $pickerItems,
-                            maxSelectionCount: CheckinDraft.photoLimit - draft.photos.count,
-                            matching: .images
-                        ) {
-                            Label("checkin.form.addPhotos", systemImage: "photo.on.rectangle.angled")
-                        }
-                    }
-                } header: {
-                    Text("checkin.form.photos")
-                } footer: {
                     if photoFailed {
-                        Text("photo.failed")
-                            .foregroundStyle(AppColors.destructive)
-                    } else {
-                        Text("checkin.form.photosFooter")
+                        InlineStatusText(message: String(localized: "photo.failed"), type: .error)
                     }
-                }
 
-                Section("checkin.form.note") {
-                    TextField("checkin.form.notePlaceholder", text: $draft.note, axis: .vertical)
-                        .lineLimit(2...6)
-                }
+                    FormSection(header: String(localized: "checkin.form.note")) {
+                        FormTextField(
+                            text: $draft.note,
+                            placeholder: String(localized: "checkin.form.notePlaceholder"),
+                            style: .rowMultiline(min: 2, max: 6)
+                        )
+                    }
 
-                Section {
-                    Picker("place.form.visibility", selection: $draft.visibility) {
-                        ForEach(Visibility.allCases) { visibility in
-                            Text(LocalizedStringKey(visibility.titleKey)).tag(visibility)
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                        FormSection(header: String(localized: "place.form.visibility")) {
+                            SegmentedPicker(
+                                title: String(localized: "place.form.visibility"),
+                                selection: $draft.visibility,
+                                options: DaladaCore.Visibility.allCases.map {
+                                    (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                                }
+                            )
+                            .padding(AppSpacing.md)
                         }
+                        locationFooter
                     }
-                    .pickerStyle(.segmented)
-                } header: {
-                    Text("place.form.visibility")
-                } footer: {
-                    locationFooter
-                }
 
-                if let saveError {
-                    Section {
-                        Text(saveError)
-                            .foregroundStyle(AppColors.destructive)
+                    if let saveError {
+                        InlineStatusText(message: saveError, type: .error)
                     }
                 }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
-            .navigationTitle(Text(verbatim: placeName))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isSaving {
-                        ProgressView()
-                    } else {
-                        Button("checkin.form.save") {
-                            Task { await save() }
-                        }
-                        .disabled(!draft.isValid || isProcessingPhotos || showsNewRecords)
-                    }
+            .swipeActionsContainerIfAvailable()
+        }
+        .sheet(item: $editingCatch) { catchDraft in
+            CatchFormView(draft: catchDraft, minSizes: minSizes) { updated in
+                if let index = draft.catches.firstIndex(where: { $0.id == updated.id }) {
+                    draft.catches[index] = updated
+                } else {
+                    draft.catches.append(updated)
                 }
             }
-            .sheet(item: $editingCatch) { catchDraft in
-                CatchFormView(draft: catchDraft, minSizes: minSizes) { updated in
-                    if let index = draft.catches.firstIndex(where: { $0.id == updated.id }) {
-                        draft.catches[index] = updated
-                    } else {
-                        draft.catches.append(updated)
-                    }
-                }
-                .environment(speciesStore)
-            }
-            .onChange(of: pickerItems) { _, items in
-                guard !items.isEmpty else { return }
-                Task { await addPhotos(items) }
-            }
-            .alert("records.new.title", isPresented: $showsNewRecords) {
-                Button("common.ok") { close() }
-            } message: {
-                Text(verbatim: NewRecordText.lines(newRecords, species: speciesStore))
-            }
-            .interactiveDismissDisabled(isSaving || showsNewRecords)
-            .task { await locate() }
-            .task { await loadWeather() }
-            .task { await speciesStore.loadIfNeeded() }
+            .environment(speciesStore)
+        }
+        .onChange(of: pickerItems) { _, items in
+            guard !items.isEmpty else { return }
+            Task { await addPhotos(items) }
+        }
+        .alert("records.new.title", isPresented: $showsNewRecords) {
+            Button("common.ok") { close() }
+        } message: {
+            Text(verbatim: NewRecordText.lines(newRecords, species: speciesStore))
+        }
+        .interactiveDismissDisabled(isSaving || showsNewRecords)
+        .task { await locate() }
+        .task { await loadWeather() }
+        .task { await speciesStore.loadIfNeeded() }
+    }
+
+    private func removeCatchButton(_ catchDraft: CatchDraft) -> some View {
+        Button("catch.delete", systemImage: "trash", role: .destructive) {
+            draft.catches.removeAll { $0.id == catchDraft.id }
         }
     }
 
-    @ViewBuilder
+    /// Подпись под карточкой со значком — как подвал `FormSection`.
+    private func footerLabel(_ text: String, systemImage: String) -> some View {
+        Label(text, systemImage: systemImage)
+            .font(AppTypography.caption)
+            .foregroundStyle(AppColors.textSecondary)
+            .padding(.horizontal, AppSpacing.lg)
+    }
+
     private var locationFooter: some View {
         switch locationState {
         case .locating:
-            Label("checkin.location.locating", systemImage: "location")
+            footerLabel(String(localized: "checkin.location.locating"), systemImage: "location")
         case .found:
-            Label("checkin.location.found", systemImage: "location.fill")
+            footerLabel(String(localized: "checkin.location.found"), systemImage: "location.fill")
         case .unavailable:
-            Label("checkin.location.unavailable", systemImage: "location.slash")
+            footerLabel(String(localized: "checkin.location.unavailable"), systemImage: "location.slash")
         }
     }
 

@@ -314,36 +314,37 @@ struct PrivacyZoneEditorView: View {
     private static let suggestions = ["privacyZones.suggestion.home", "privacyZones.suggestion.dacha", "privacyZones.suggestion.work"]
 
     var body: some View {
-        NavigationStack {
+        EditSheetContainer(
+            title: String(localized: String.LocalizationValue(zone == nil ? "privacyZones.new" : "privacyZones.edit")),
+            isSaveDisabled: !(draft?.isValid ?? false),
+            isSaving: isSaving,
+            wrapInForm: false,
+            onSave: { Task { await save() } },
+            onCancel: { dismiss() }
+        ) {
             Group {
                 if let binding = Binding($draft) {
                     editor(binding)
                 } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            }
-            .navigationTitle(LocalizedStringKey(zone == nil ? "privacyZones.new" : "privacyZones.edit"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isSaving {
-                        ProgressView()
-                    } else {
-                        Button("common.save") {
-                            Task { await save() }
+                    // Ищем, где вы сейчас: скелетон карты и полей.
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                            Skeleton(height: 300, cornerRadius: AppRadius.xl)
+                            SkeletonText(AppTypography.caption, lines: 2)
+                            Skeleton(height: 48, cornerRadius: AppRadius.xl)
                         }
-                        .disabled(!(draft?.isValid ?? false))
+                        .shimmer()
+                        .skeletonLoadingLabel()
+                        .screenPadding()
+                        .padding(.vertical, AppSpacing.lg)
                     }
+                    .scrollDisabled(true)
                 }
             }
-            .confirmationDialog("privacyZones.deleteConfirm", isPresented: $confirmsDelete, titleVisibility: .visible) {
-                Button("privacyZones.delete", role: .destructive) {
-                    Task { await delete() }
-                }
+        }
+        .confirmationDialog("privacyZones.deleteConfirm", isPresented: $confirmsDelete, titleVisibility: .visible) {
+            Button("privacyZones.delete", role: .destructive) {
+                Task { await delete() }
             }
         }
         .task {
@@ -359,81 +360,93 @@ struct PrivacyZoneEditorView: View {
     private func editor(_ draft: Binding<PrivacyZoneDraft>) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
-                ZStack {
-                    DaladaMapView(
-                        styleURL: environment.config.mapStyleURL,
-                        initialCenter: draft.wrappedValue.center,
-                        initialZoom: 14,
-                        places: [
-                            MapPlace(
-                                id: draft.wrappedValue.id,
-                                coordinate: draft.wrappedValue.center,
-                                isOwn: true,
-                                approximateRadiusM: draft.wrappedValue.radiusM
-                            ),
-                        ],
-                        onRegionChange: { box in draft.wrappedValue.center = box.center }
-                    )
-                    Image(systemName: "plus")
-                        .font(.system(size: 28, weight: .light))
-                        .foregroundStyle(AppColors.textPrimary)
-                        .allowsHitTesting(false)
-                        .accessibilityHidden(true)
-                }
-                .frame(height: 300)
-                .clipShape(RoundedRectangle(cornerRadius: AppRadius.xl))
+                VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                    ZStack {
+                        DaladaMapView(
+                            styleURL: environment.config.mapStyleURL,
+                            initialCenter: draft.wrappedValue.center,
+                            initialZoom: 14,
+                            places: [
+                                MapPlace(
+                                    id: draft.wrappedValue.id,
+                                    coordinate: draft.wrappedValue.center,
+                                    isOwn: true,
+                                    approximateRadiusM: draft.wrappedValue.radiusM
+                                ),
+                            ],
+                            onRegionChange: { box in draft.wrappedValue.center = box.center }
+                        )
+                        Image(systemName: "plus")
+                            .font(.system(size: 28, weight: .light))
+                            .foregroundStyle(AppColors.textPrimary)
+                            .allowsHitTesting(false)
+                            .accessibilityHidden(true)
+                    }
+                    .frame(height: 300)
+                    .clipShape(RoundedRectangle(cornerRadius: AppRadius.xl))
 
-                Text("privacyZones.editor.hint")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    Text("privacyZones.editor.hint")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.textSecondary)
+                        .padding(.horizontal, AppSpacing.lg)
+                }
 
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                    TextField("privacyZones.name", text: draft.name)
-                        .textFieldStyle(.roundedBorder)
+                    FormSection {
+                        FormTextField(text: draft.name, placeholder: String(localized: "privacyZones.name"), style: .row)
+                    }
                     HStack(spacing: AppSpacing.sm) {
                         ForEach(Self.suggestions, id: \.self) { key in
-                            Button(LocalizedStringKey(key)) {
+                            DSButton(
+                                String(localized: String.LocalizationValue(key)),
+                                appearance: .secondary,
+                                size: .small
+                            ) {
                                 draft.wrappedValue.name = String(localized: String.LocalizationValue(key))
                             }
-                            .buttonStyle(.bordered)
-                            .font(AppTypography.bodySmall)
                         }
                     }
                 }
 
-                VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                    HStack {
-                        Text("privacyZones.radiusTitle")
-                            .font(AppTypography.bodyEmphasis)
-                        Spacer(minLength: 0)
-                        Text(verbatim: TripFormat.distance(Double(draft.wrappedValue.radiusM)))
-                            .font(AppTypography.body)
-                            .monospacedDigit()
+                FormSection(footer: String(localized: "privacyZones.radiusHint")) {
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                        HStack {
+                            Text("privacyZones.radiusTitle")
+                                .font(AppTypography.body)
+                                .foregroundStyle(AppColors.textPrimary)
+                            Spacer(minLength: 0)
+                            Text(verbatim: TripFormat.distance(Double(draft.wrappedValue.radiusM)))
+                                .font(AppTypography.body)
+                                .monospacedDigit()
+                                .foregroundStyle(AppColors.textSecondary)
+                        }
+                        Slider(
+                            value: Binding(
+                                get: { Double(draft.wrappedValue.radiusM) },
+                                set: { draft.wrappedValue.radiusM = Int($0.rounded()) }
+                            ),
+                            in: Double(PrivacyZone.radiusRange.lowerBound)...Double(PrivacyZone.radiusRange.upperBound),
+                            step: Double(PrivacyZone.radiusStep)
+                        )
                     }
-                    Slider(
-                        value: Binding(
-                            get: { Double(draft.wrappedValue.radiusM) },
-                            set: { draft.wrappedValue.radiusM = Int($0.rounded()) }
-                        ),
-                        in: Double(PrivacyZone.radiusRange.lowerBound)...Double(PrivacyZone.radiusRange.upperBound),
-                        step: Double(PrivacyZone.radiusStep)
-                    )
-                    Text("privacyZones.radiusHint")
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.vertical, AppSpacing.md)
                 }
 
                 if let saveError {
-                    Text(verbatim: saveError)
-                        .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.destructive)
+                    InlineStatusText(message: saveError, type: .error)
                 }
 
                 if zone != nil {
-                    Button("privacyZones.delete", role: .destructive) {
-                        confirmsDelete = true
+                    FormSection {
+                        ActionSettingsRow(
+                            title: String(localized: "privacyZones.delete"),
+                            isDestructive: true,
+                            config: .standard
+                        ) {
+                            confirmsDelete = true
+                        }
                     }
-                    .dsButton(.secondary)
                 }
             }
             .screenPadding()

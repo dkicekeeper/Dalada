@@ -74,7 +74,13 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 `PhotoCarousel`, `PhotoViewer` с масштабом), картинки для Stories (`ShareCardSheet`,
 `ShareCardFrame` со стилем `ShareCard.Style.dalada`), `LiveSessionBar` (мини-плеер записи),
 `DownloadRow` (офлайн-карты), `ArticleBody` (статьи), `ChipPicker(allTitle:)`, `PersonRow(style:
-.card)` (шапка профиля). Эффекты — в `docs/motion.md` DesignKit: `.celebration`,
+.card)` (шапка профиля); с 3.0.0 — формы: `EditSheetContainer(wrapInForm: false)` (✕ и ✓ в
+тулбаре, `isSaving:` — индикатор вместо ✓, `saveTitle:` — имя ✓ для VoiceOver) поверх `ScrollView`
+с карточками `FormSection` и строками `FormTextField(style: .row / .rowMultiline)`,
+`MenuPickerRow`, `NavigationPickerRow` (длинный список с поиском), `StepperRow`, `DatePickerRow`,
+`ToggleSettingsRow` / `ActionSettingsRow` / `CheckmarkRow` с `config: .standard`, `SegmentedPicker`,
+ошибки — `InlineStatusText`. Системный `Form` в новых экранах не используем. Эффекты — в
+`docs/motion.md` DesignKit: `.celebration`,
 `.completionMoment`, `.holographic` + `.interactiveTilt`, `.dissolve`, `AuroraBackground`,
 `.spotlight` и другие. Своё — только если в DesignKit нет подходящего.
 

@@ -58,20 +58,18 @@ struct PlacePhotosGrid: View {
     var body: some View {
         ScrollView {
             VStack(spacing: AppSpacing.md) {
-                Picker(selection: $kind) {
-                    ForEach(PlacePhotoKind.allCases) { option in
-                        Text(LocalizedStringKey(option.titleKey)).tag(option)
+                SegmentedPicker(
+                    title: String(localized: "place.photos.title"),
+                    selection: $kind,
+                    options: PlacePhotoKind.allCases.map {
+                        (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                     }
-                } label: {
-                    Text("place.photos.title")
-                }
-                .pickerStyle(.segmented)
+                )
                 .screenPadding()
 
                 if gallery.isEmpty {
                     if isLoading {
-                        ProgressView()
-                            .padding(.top, AppSpacing.xl)
+                        PhotoGridSkeleton(count: 12, style: .edgeToEdge)
                     } else {
                         EmptyState(
                             icon: loadError == nil ? "photo.on.rectangle" : "wifi.slash",

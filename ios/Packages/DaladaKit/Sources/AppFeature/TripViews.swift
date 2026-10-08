@@ -298,118 +298,132 @@ struct TripFinishView: View {
     @State private var celebrates = false
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    HStack(spacing: AppSpacing.md) {
-                        StatTile(title: String(localized: "trip.stat.distance"), value: TripFormat.distance(recorder.stats.distanceM))
-                        StatTile(title: String(localized: "trip.stat.moving"), value: TripFormat.duration(recorder.stats.movingSeconds))
-                    }
-                    .completionMoment(isComplete: celebrates, in: RoundedRectangle(cornerRadius: AppRadius.md), playsHaptic: false)
-                    HStack(spacing: AppSpacing.md) {
-                        StatTile(
-                            title: String(localized: "trip.stat.duration"),
-                            value: TripFormat.duration(endedAt.timeIntervalSince(recorder.startedAt ?? endedAt))
-                        )
-                        StatTile(title: String(localized: "trip.stat.elevation"), value: TripFormat.elevation(recorder.stats.elevationGainM))
-                    }
-                    .completionMoment(isComplete: celebrates, in: RoundedRectangle(cornerRadius: AppRadius.md), playsHaptic: false)
-                }
-
-                Section("trip.finish.name") {
-                    TextField("trip.finish.name", text: $title)
-                    Picker("trip.finish.activity", selection: $activity) {
-                        ForEach(TripActivity.allCases) { item in
-                            Label(LocalizedStringKey(item.titleKey), systemImage: item.systemImage).tag(item)
-                        }
-                    }
-                }
-
-                Section("checkin.form.note") {
-                    TextField("trip.finish.notePlaceholder", text: $note, axis: .vertical)
-                        .lineLimit(2...6)
-                }
-
-                if let userID = session.profile?.id {
-                    Section {
-                        NavigationLink {
-                            FriendPickerView(environment: environment, userID: userID, selection: $participants)
-                        } label: {
-                            LabeledContent {
-                                if participants.isEmpty {
-                                    Text("trip.participants.none")
-                                } else {
-                                    Text(verbatim: "\(participants.count)")
-                                }
-                            } label: {
-                                Label("trip.participants.with", systemImage: "person.2")
+        EditSheetContainer(
+            title: String(localized: "trip.finish.title"),
+            saveTitle: String(localized: "trip.finish.save"),
+            isSaveDisabled: !isValid,
+            isSaving: isSaving,
+            wrapInForm: false,
+            onSave: { Task { await save() } },
+            onCancel: {
+                onClose(false)
+                dismiss()
+            }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection {
+                        VStack(spacing: AppSpacing.md) {
+                            HStack(spacing: AppSpacing.md) {
+                                StatTile(title: String(localized: "trip.stat.distance"), value: TripFormat.distance(recorder.stats.distanceM))
+                                StatTile(title: String(localized: "trip.stat.moving"), value: TripFormat.duration(recorder.stats.movingSeconds))
                             }
+                            .completionMoment(isComplete: celebrates, in: RoundedRectangle(cornerRadius: AppRadius.md), playsHaptic: false)
+                            HStack(spacing: AppSpacing.md) {
+                                StatTile(
+                                    title: String(localized: "trip.stat.duration"),
+                                    value: TripFormat.duration(endedAt.timeIntervalSince(recorder.startedAt ?? endedAt))
+                                )
+                                StatTile(title: String(localized: "trip.stat.elevation"), value: TripFormat.elevation(recorder.stats.elevationGainM))
+                            }
+                            .completionMoment(isComplete: celebrates, in: RoundedRectangle(cornerRadius: AppRadius.md), playsHaptic: false)
                         }
-                    } footer: {
-                        Text("trip.participants.finishFooter")
+                        .padding(AppSpacing.lg)
                     }
-                }
 
-                Section {
-                    Picker("place.form.visibility", selection: $visibility) {
-                        ForEach(DaladaCore.Visibility.allCases) { item in
-                            Text(LocalizedStringKey(item.titleKey)).tag(item)
+                    FormSection(header: String(localized: "trip.finish.name")) {
+                        FormTextField(text: $title, placeholder: String(localized: "trip.finish.name"), style: .row)
+                        Divider().padding(.leading, AppSpacing.lg)
+                        MenuPickerRow(
+                            title: String(localized: "trip.finish.activity"),
+                            selection: $activity,
+                            options: TripActivity.allCases.map {
+                                (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                            }
+                        )
+                    }
+
+                    FormSection(header: String(localized: "checkin.form.note")) {
+                        FormTextField(
+                            text: $note,
+                            placeholder: String(localized: "trip.finish.notePlaceholder"),
+                            style: .rowMultiline(min: 2, max: 6)
+                        )
+                    }
+
+                    if let userID = session.profile?.id {
+                        FormSection(footer: String(localized: "trip.participants.finishFooter")) {
+                            NavigationLink {
+                                FriendPickerView(environment: environment, userID: userID, selection: $participants)
+                            } label: {
+                                UniversalRow(
+                                    leadingIcon: .sfSymbol("person.2", color: AppColors.accent, size: AppIconSize.lg),
+                                    title: String(localized: "trip.participants.with")
+                                ) {
+                                    HStack(spacing: AppSpacing.sm) {
+                                        Group {
+                                            if participants.isEmpty {
+                                                Text("trip.participants.none")
+                                            } else {
+                                                Text(verbatim: "\(participants.count)")
+                                            }
+                                        }
+                                        .font(AppTypography.body)
+                                        .foregroundStyle(AppColors.textSecondary)
+                                        DisclosureChevron()
+                                    }
+                                }
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                    .pickerStyle(.segmented)
-                } header: {
-                    Text("place.form.visibility")
-                } footer: {
-                    Text("trip.finish.visibilityFooter")
-                }
 
-                if let saveError {
-                    Section {
-                        Text(saveError)
-                            .foregroundStyle(AppColors.destructive)
+                    FormSection(
+                        header: String(localized: "place.form.visibility"),
+                        footer: String(localized: "trip.finish.visibilityFooter")
+                    ) {
+                        SegmentedPicker(
+                            title: String(localized: "place.form.visibility"),
+                            selection: $visibility,
+                            options: DaladaCore.Visibility.allCases.map {
+                                (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                            }
+                        )
+                        .padding(AppSpacing.md)
                     }
-                }
 
-                Section {
-                    Button("trip.finish.discard", role: .destructive) {
-                        confirmsDiscard = true
+                    if let saveError {
+                        InlineStatusText(message: saveError, type: .error)
                     }
-                }
-            }
-            .navigationTitle("trip.finish.title")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("trip.finish.back") {
-                        onClose(false)
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isSaving {
-                        ProgressView()
-                    } else {
-                        Button("trip.finish.save") {
-                            Task { await save() }
+
+                    FormSection {
+                        ActionSettingsRow(
+                            title: String(localized: "trip.finish.discard"),
+                            isDestructive: true,
+                            config: .standard
+                        ) {
+                            confirmsDiscard = true
                         }
-                        .disabled(!isValid)
                     }
                 }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
-            .confirmationDialog("trip.finish.discardConfirm", isPresented: $confirmsDiscard, titleVisibility: .visible) {
-                Button("trip.finish.discard", role: .destructive) {
-                    Task {
-                        await recorder.discard()
-                        onClose(true)
-                        dismiss()
-                    }
+        }
+        .confirmationDialog("trip.finish.discardConfirm", isPresented: $confirmsDiscard, titleVisibility: .visible) {
+            Button("trip.finish.discard", role: .destructive) {
+                Task {
+                    await recorder.discard()
+                    onClose(true)
+                    dismiss()
                 }
             }
-            .onAppear {
-                guard title.isEmpty else { return }
-                activity = recorder.activity
-                title = TripFormat.defaultTitle(activity: recorder.activity, date: recorder.startedAt ?? endedAt)
-            }
+        }
+        .onAppear {
+            guard title.isEmpty else { return }
+            activity = recorder.activity
+            title = TripFormat.defaultTitle(activity: recorder.activity, date: recorder.startedAt ?? endedAt)
         }
         .celebration(trigger: celebrates)
         .task {
@@ -540,6 +554,22 @@ struct TripRow: View {
     }
 }
 
+/// Скелетон `TripRow`: кружок вида поездки, название, строка с датой и цифрами.
+struct TripRowSkeleton: View {
+    var body: some View {
+        HStack(spacing: AppSpacing.md) {
+            IconSkeleton(style: .circle(size: AppIconSize.xxl))
+            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                SkeletonText(AppTypography.bodyEmphasis, width: 150)
+                SkeletonText(AppTypography.caption, width: 190)
+            }
+            Spacer(minLength: 0)
+        }
+        .shimmer()
+        .skeletonLoadingLabel()
+    }
+}
+
 /// «Мои поездки» в профиле: последние три и «Все поездки». Без сети — сохранённый список.
 struct MyTripsSection: View {
     let environment: AppEnvironment
@@ -575,8 +605,9 @@ struct MyTripsSection: View {
                     .font(AppTypography.bodySmall)
                     .foregroundStyle(AppColors.textSecondary)
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
+                ForEach(0..<3, id: \.self) { _ in
+                    TripRowSkeleton()
+                }
             }
         }
         .task(id: userID) { await load() }

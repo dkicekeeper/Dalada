@@ -32,43 +32,40 @@ struct TripEditView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("trip.finish.name") {
-                    TextField("trip.finish.name", text: $title)
-                    Picker("trip.finish.activity", selection: $activity) {
-                        ForEach(TripActivity.allCases) { item in
-                            Label(LocalizedStringKey(item.titleKey), systemImage: item.systemImage).tag(item)
-                        }
+        EditSheetContainer(
+            title: String(localized: "trip.edit.title"),
+            isSaveDisabled: !isValid,
+            isSaving: isSaving,
+            wrapInForm: false,
+            onSave: { Task { await save() } },
+            onCancel: { dismiss() }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection(header: String(localized: "trip.finish.name")) {
+                        FormTextField(text: $title, placeholder: String(localized: "trip.finish.name"), style: .row)
+                        Divider().padding(.leading, AppSpacing.lg)
+                        MenuPickerRow(
+                            title: String(localized: "trip.finish.activity"),
+                            selection: $activity,
+                            options: TripActivity.allCases.map {
+                                (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                            }
+                        )
+                    }
+                    FormSection(header: String(localized: "checkin.form.note")) {
+                        FormTextField(
+                            text: $note,
+                            placeholder: String(localized: "trip.finish.notePlaceholder"),
+                            style: .rowMultiline(min: 2, max: 6)
+                        )
+                    }
+                    if let saveError {
+                        InlineStatusText(message: saveError, type: .error)
                     }
                 }
-                Section("checkin.form.note") {
-                    TextField("trip.finish.notePlaceholder", text: $note, axis: .vertical)
-                        .lineLimit(2...6)
-                }
-                if let saveError {
-                    Section {
-                        Text(saveError)
-                            .foregroundStyle(AppColors.destructive)
-                    }
-                }
-            }
-            .navigationTitle("trip.edit.title")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isSaving {
-                        ProgressView()
-                    } else {
-                        Button("common.save") {
-                            Task { await save() }
-                        }
-                        .disabled(!isValid)
-                    }
-                }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
         }
     }

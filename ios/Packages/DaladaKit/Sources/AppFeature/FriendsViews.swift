@@ -68,16 +68,13 @@ struct FriendsView: View {
                     ForEach(incoming) { request in
                         PersonRow(displayName: request.displayName, username: request.username, avatarPath: request.avatarPath) {
                             HStack(spacing: AppSpacing.sm) {
-                                Button("friends.accept") {
+                                DSButton(String(localized: "friends.accept"), size: .small) {
                                     Task { await respond(request, accept: true) }
                                 }
-                                .buttonStyle(.borderedProminent)
-                                Button("friends.decline") {
+                                DSButton(String(localized: "friends.decline"), appearance: .secondary, size: .small) {
                                     Task { await respond(request, accept: false) }
                                 }
-                                .buttonStyle(.bordered)
                             }
-                            .font(AppTypography.bodySmall)
                         }
                     }
                 }
@@ -111,11 +108,9 @@ struct FriendsView: View {
                 Section("friends.outgoing") {
                     ForEach(outgoing) { request in
                         PersonRow(displayName: request.displayName, username: request.username, avatarPath: request.avatarPath) {
-                            Button("friends.cancel") {
+                            DSButton(String(localized: "friends.cancel"), appearance: .secondary, size: .small) {
                                 Task { await cancel(request) }
                             }
-                            .buttonStyle(.bordered)
-                            .font(AppTypography.bodySmall)
                         }
                     }
                 }
@@ -577,14 +572,12 @@ struct BlockedUsersView: View {
             }
             ForEach(blocked) { user in
                 PersonRow(displayName: user.displayName, username: user.username, avatarPath: user.avatarPath) {
-                    Button("person.unblock") {
+                    DSButton(String(localized: "person.unblock"), appearance: .secondary, size: .small) {
                         Task {
                             try? await environment.backend?.unblock(user.id)
                             await load()
                         }
                     }
-                    .buttonStyle(.bordered)
-                    .font(AppTypography.bodySmall)
                 }
             }
         }
