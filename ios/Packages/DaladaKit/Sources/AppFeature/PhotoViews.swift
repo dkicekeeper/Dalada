@@ -63,40 +63,17 @@ final class PhotoCache {
     }
 }
 
-/// Фото из хранилища по подписанной ссылке. Пока грузится — превью `placeholderPath`
-/// (если оно уже в кэше) или индикатор.
+/// Фото из хранилища по подписанной ссылке — `RemotePhoto` из DesignKit: пока грузится — скелетон
+/// (или превью `placeholderPath`, если оно уже в кэше), потом фото проявляется. Грузит `PhotoCache`
+/// через `DesignKitPhotoLoader` (подключён в `AppBootstrap`); ключ — путь в хранилище.
 struct RemotePhoto: View {
     let path: String
     let url: URL?
     var contentMode: ContentMode = .fill
     var placeholderPath: String?
 
-    @State private var image: UIImage?
-    @State private var failed = false
-
     var body: some View {
-        ZStack {
-            if let image = image ?? PhotoCache.shared.cached(path) {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: contentMode)
-            } else if let placeholderPath, let placeholder = PhotoCache.shared.cached(placeholderPath) {
-                Image(uiImage: placeholder)
-                    .resizable()
-                    .aspectRatio(contentMode: contentMode)
-                    .overlay { ProgressView() }
-            } else if failed || url == nil {
-                Image(systemName: "photo")
-                    .foregroundStyle(AppColors.textTertiary)
-            } else {
-                ProgressView()
-            }
-        }
-        .task(id: url) {
-            guard image == nil, let url else { return }
-            image = await PhotoCache.shared.image(path: path, url: url)
-            failed = image == nil
-        }
+        DesignComponents.RemotePhoto(key: path, url: url, contentMode: contentMode, placeholderKey: placeholderPath)
     }
 }
 

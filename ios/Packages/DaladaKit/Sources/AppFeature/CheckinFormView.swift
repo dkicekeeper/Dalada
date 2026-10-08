@@ -94,10 +94,10 @@ struct CheckinFormView: View {
                     VStack(alignment: .leading, spacing: AppSpacing.sm) {
                         FormSection(header: String(localized: "checkin.form.conditions")) {
                             VStack(alignment: .leading, spacing: AppSpacing.md) {
-                                FormChipRow(String(localized: "conditions.bite"), options: CheckinConditions.Bite.allCases, selection: $draft.conditions.bite) { $0.title }
-                                FormChipRow(String(localized: "conditions.crowd"), options: CheckinConditions.Crowd.allCases, selection: $draft.conditions.crowd) { $0.title }
-                                FormChipRow(String(localized: "conditions.water"), options: CheckinConditions.Water.allCases, selection: $draft.conditions.water) { $0.title }
-                                FormChipRow(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $draft.conditions.road) { $0.title }
+                                ChipPicker(String(localized: "conditions.bite"), options: CheckinConditions.Bite.allCases, selection: $draft.conditions.bite, inset: AppSpacing.lg) { $0.title }
+                                ChipPicker(String(localized: "conditions.crowd"), options: CheckinConditions.Crowd.allCases, selection: $draft.conditions.crowd, inset: AppSpacing.lg) { $0.title }
+                                ChipPicker(String(localized: "conditions.water"), options: CheckinConditions.Water.allCases, selection: $draft.conditions.water, inset: AppSpacing.lg) { $0.title }
+                                ChipPicker(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $draft.conditions.road, inset: AppSpacing.lg) { $0.title }
                             }
                             .padding(.vertical, AppSpacing.md)
                         }
@@ -172,7 +172,7 @@ struct CheckinFormView: View {
                                 maxSelectionCount: CheckinDraft.photoLimit - draft.photos.count,
                                 matching: .images
                             ) {
-                                PickerRowLabel(String(localized: "checkin.form.addPhotos"), systemImage: "photo.on.rectangle.angled")
+                                ActionRowLabel(String(localized: "checkin.form.addPhotos"), systemImage: "photo.on.rectangle.angled")
                             }
                             .buttonStyle(.plain)
                         }

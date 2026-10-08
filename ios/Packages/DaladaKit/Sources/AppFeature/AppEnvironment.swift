@@ -1,5 +1,6 @@
 import Backend
 import DaladaCore
+import DesignSupport
 import DesignTokens
 import Foundation
 import MapEngine
@@ -70,6 +71,10 @@ public enum AppBootstrap {
         DesignKitTheme.accent = Color("AccentColor")
         // Шрифт Inter из DesignKit должен быть зарегистрирован до первого экрана.
         DesignKitFonts.registerIfNeeded()
+        // Фото по ссылке (`RemotePhoto` DesignKit) грузит и держит кэш Dalada: ключ — путь в
+        // хранилище, ссылка подписанная и меняется. Уже загруженное показывается сразу.
+        DesignKitPhotoLoader.loader = { path, url in await PhotoCache.shared.image(path: path, url: url) }
+        DesignKitPhotoLoader.cached = { PhotoCache.shared.cached($0) }
         // Просмотренные районы карты остаются доступны без сети.
         MapCache.configure()
     }

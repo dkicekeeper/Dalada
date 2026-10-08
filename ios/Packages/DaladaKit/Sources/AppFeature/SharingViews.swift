@@ -413,28 +413,19 @@ struct PrivacyZoneEditorView: View {
                 }
 
                 FormSection(footer: String(localized: "privacyZones.radiusHint")) {
-                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                        HStack {
-                            Text("privacyZones.radiusTitle")
-                                .font(AppTypography.body)
-                                .foregroundStyle(AppColors.textPrimary)
-                            Spacer(minLength: 0)
-                            Text(verbatim: TripFormat.distance(Double(draft.wrappedValue.radiusM)))
-                                .font(AppTypography.body)
-                                .monospacedDigit()
-                                .foregroundStyle(AppColors.textSecondary)
-                        }
-                        Slider(
-                            value: Binding(
-                                get: { Double(draft.wrappedValue.radiusM) },
-                                set: { draft.wrappedValue.radiusM = Int($0.rounded()) }
-                            ),
-                            in: Double(PrivacyZone.radiusRange.lowerBound)...Double(PrivacyZone.radiusRange.upperBound),
-                            step: Double(PrivacyZone.radiusStep)
-                        )
-                    }
+                    // Строка со слайдером DesignKit, как в Tenra: щелчок на каждом шаге.
+                    SliderRow(
+                        String(localized: "privacyZones.radiusTitle"),
+                        value: Binding(
+                            get: { Double(draft.wrappedValue.radiusM) },
+                            set: { draft.wrappedValue.radiusM = Int($0.rounded()) }
+                        ),
+                        in: Double(PrivacyZone.radiusRange.lowerBound)...Double(PrivacyZone.radiusRange.upperBound),
+                        step: Double(PrivacyZone.radiusStep),
+                        valueText: TripFormat.distance(Double(draft.wrappedValue.radiusM))
+                    )
                     .padding(.horizontal, AppSpacing.lg)
-                    .padding(.vertical, AppSpacing.md)
+                    .padding(.vertical, AppSpacing.sm)
                 }
 
                 if let saveError {
