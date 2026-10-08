@@ -211,78 +211,83 @@ struct GearFormView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    TextField("gear.form.name", text: $draft.name)
-                    Picker("gear.form.category", selection: $draft.category) {
-                        ForEach(GearCategory.allCases) { category in
-                            Label(LocalizedStringKey(category.titleKey), systemImage: category.systemImage)
-                                .tag(category)
+        EditSheetContainer(
+            title: isNew ? String(localized: "gear.new") : draft.name,
+            isSaveDisabled: !edited.isValid,
+            wrapInForm: false,
+            onSave: {
+                lists.save(edited)
+                dismiss()
+            },
+            onCancel: { dismiss() }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection {
+                        FormTextField(text: $draft.name, placeholder: String(localized: "gear.form.name"), style: .row)
+                        Divider().padding(.leading, AppSpacing.lg)
+                        MenuPickerRow(
+                            title: String(localized: "gear.form.category"),
+                            selection: $draft.category,
+                            options: GearCategory.allCases.map {
+                                (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                            }
+                        )
+                        Divider().padding(.leading, AppSpacing.lg)
+                        FormTextField(text: $brand, placeholder: String(localized: "gear.form.brand"), style: .row)
+                    }
+
+                    FormSection(footer: String(localized: "gear.form.weightFooter")) {
+                        UniversalRow(title: String(localized: "gear.form.weight")) {
+                            TextField("gear.form.weightPlaceholder", value: $draft.weightGrams, format: .number)
+                                .keyboardType(.numberPad)
+                                .multilineTextAlignment(.trailing)
+                                .font(AppTypography.body)
+                                .foregroundStyle(AppColors.textPrimary)
+                        }
+                        Divider().padding(.leading, AppSpacing.lg)
+                        StepperRow(title: String(localized: "gear.form.quantity"), value: $draft.quantity, in: 1...999)
+                    }
+
+                    FormSection(header: String(localized: "gear.form.status")) {
+                        SegmentedPicker(
+                            title: String(localized: "gear.form.status"),
+                            selection: $draft.status,
+                            options: GearStatus.allCases.map {
+                                (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                            }
+                        )
+                        .padding(AppSpacing.md)
+                    }
+
+                    FormSection(header: String(localized: "gear.form.note")) {
+                        FormTextField(
+                            text: $note,
+                            placeholder: String(localized: "gear.form.notePlaceholder"),
+                            style: .rowMultiline(min: 2, max: 6)
+                        )
+                    }
+
+                    if !isNew {
+                        FormSection {
+                            ActionSettingsRow(
+                                title: String(localized: "gear.delete"),
+                                isDestructive: true,
+                                config: .standard
+                            ) {
+                                confirmsDelete = true
+                            }
                         }
                     }
-                    TextField("gear.form.brand", text: $brand)
                 }
-
-                Section {
-                    LabeledContent("gear.form.weight") {
-                        TextField("gear.form.weightPlaceholder", value: $draft.weightGrams, format: .number)
-                            .keyboardType(.numberPad)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    Stepper(value: $draft.quantity, in: 1...999) {
-                        LabeledContent("gear.form.quantity") {
-                            Text(verbatim: "\(draft.quantity)")
-                                .monospacedDigit()
-                        }
-                    }
-                } footer: {
-                    Text("gear.form.weightFooter")
-                }
-
-                Section {
-                    Picker("gear.form.status", selection: $draft.status) {
-                        ForEach(GearStatus.allCases) { status in
-                            Text(LocalizedStringKey(status.titleKey)).tag(status)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                } header: {
-                    Text("gear.form.status")
-                }
-
-                Section("gear.form.note") {
-                    TextField("gear.form.notePlaceholder", text: $note, axis: .vertical)
-                        .lineLimit(2...6)
-                }
-
-                if !isNew {
-                    Section {
-                        Button("gear.delete", role: .destructive) {
-                            confirmsDelete = true
-                        }
-                    }
-                }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
-            .navigationTitle(isNew ? Text("gear.new") : Text(verbatim: draft.name))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("common.save") {
-                        lists.save(edited)
-                        dismiss()
-                    }
-                    .disabled(!edited.isValid)
-                }
-            }
-            .confirmationDialog("gear.deleteConfirm", isPresented: $confirmsDelete, titleVisibility: .visible) {
-                Button("gear.delete", role: .destructive) {
-                    lists.delete(draft)
-                    dismiss()
-                }
+        }
+        .confirmationDialog("gear.deleteConfirm", isPresented: $confirmsDelete, titleVisibility: .visible) {
+            Button("gear.delete", role: .destructive) {
+                lists.delete(draft)
+                dismiss()
             }
         }
     }

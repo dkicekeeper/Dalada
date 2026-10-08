@@ -21,46 +21,48 @@ struct MapLayersSheet: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("map.layers.places") {
-                    Toggle(isOn: $showsOwnPlaces) {
-                        Label("map.layers.ownPlaces", systemImage: "person.crop.circle")
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection(header: String(localized: "map.layers.places")) {
+                        toggle("map.layers.ownPlaces", systemImage: "person.crop.circle", isOn: $showsOwnPlaces)
+                        divider
+                        toggle("map.layers.otherPlaces", systemImage: "mappin.and.ellipse", isOn: $showsOtherPlaces)
+                        divider
+                        FormChipRow(
+                            String(localized: "map.layers.types"),
+                            options: PlaceType.allCases,
+                            selection: shownTypes,
+                            systemImage: { $0.systemImage },
+                            label: { String(localized: String.LocalizationValue($0.titleKey)) }
+                        )
+                        .padding(.vertical, AppSpacing.md)
+                        if !hiddenTypesStorage.isEmpty {
+                            divider
+                            ActionSettingsRow(
+                                icon: "checklist.checked",
+                                title: String(localized: "map.layers.allTypes"),
+                                config: .standard
+                            ) {
+                                hiddenTypesStorage = ""
+                            }
+                        }
                     }
-                    Toggle(isOn: $showsOtherPlaces) {
-                        Label("map.layers.otherPlaces", systemImage: "mappin.and.ellipse")
-                    }
-                    ChipPicker(
-                        String(localized: "map.layers.types"),
-                        options: PlaceType.allCases,
-                        selection: shownTypes,
-                        systemImage: { $0.systemImage },
-                        label: { String(localized: String.LocalizationValue($0.titleKey)) }
-                    )
-                    if !hiddenTypesStorage.isEmpty {
-                        Button("map.layers.allTypes", systemImage: "checklist.checked") {
-                            hiddenTypesStorage = ""
+                    FormSection(header: String(localized: "map.layers.overlays")) {
+                        toggle("map.rules", systemImage: "exclamationmark.shield", isOn: $showsRules)
+                        divider
+                        toggle("map.layers.parks", systemImage: "tree", isOn: $showsParks)
+                        divider
+                        toggle("map.layers.border", systemImage: "flag", isOn: $showsBorder)
+                        if isSignedIn {
+                            divider
+                            toggle("map.layers.tracks", systemImage: "point.topleft.down.to.point.bottomright.curvepath", isOn: $showsTracks)
+                            divider
+                            toggle("map.layers.photos", systemImage: "camera", isOn: $showsPhotos)
                         }
                     }
                 }
-                Section("map.layers.overlays") {
-                    Toggle(isOn: $showsRules) {
-                        Label("map.rules", systemImage: "exclamationmark.shield")
-                    }
-                    Toggle(isOn: $showsParks) {
-                        Label("map.layers.parks", systemImage: "tree")
-                    }
-                    Toggle(isOn: $showsBorder) {
-                        Label("map.layers.border", systemImage: "flag")
-                    }
-                    if isSignedIn {
-                        Toggle(isOn: $showsTracks) {
-                            Label("map.layers.tracks", systemImage: "point.topleft.down.to.point.bottomright.curvepath")
-                        }
-                        Toggle(isOn: $showsPhotos) {
-                            Label("map.layers.photos", systemImage: "camera")
-                        }
-                    }
-                }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
             .navigationTitle("map.layers")
             .navigationBarTitleDisplayMode(.inline)
@@ -71,6 +73,14 @@ struct MapLayersSheet: View {
             }
         }
         .presentationDetents([.medium, .large])
+    }
+
+    private func toggle(_ key: String.LocalizationValue, systemImage: String, isOn: Binding<Bool>) -> some View {
+        ToggleSettingsRow(icon: systemImage, title: String(localized: key), config: .standard, isOn: isOn)
+    }
+
+    private var divider: some View {
+        Divider().padding(.leading, AppSpacing.lg)
     }
 
     /// Видимые типы — выбранные чипы; хранятся скрытые, чтобы новые типы были видны сразу.

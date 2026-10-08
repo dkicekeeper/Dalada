@@ -496,27 +496,35 @@ struct PackingDateFields: View {
     let notificationsDenied: Bool
 
     var body: some View {
-        Section {
-            Toggle("packing.form.hasDate", isOn: $hasDate)
+        FormSection(footer: footer) {
+            ToggleSettingsRow(title: String(localized: "packing.form.hasDate"), config: .standard, isOn: $hasDate)
             if hasDate {
-                DatePicker(
-                    "packing.form.date",
+                Divider().padding(.leading, AppSpacing.lg)
+                DatePickerRow(
+                    title: String(localized: "packing.form.date"),
                     selection: $tripDay,
-                    in: Calendar.current.startOfDay(for: Date())...,
-                    displayedComponents: .date
+                    minDate: Calendar.current.startOfDay(for: Date())
                 )
-                Toggle("packing.form.remind", isOn: $reminds)
+                Divider().padding(.leading, AppSpacing.lg)
+                ToggleSettingsRow(title: String(localized: "packing.form.remind"), config: .standard, isOn: $reminds)
                 if reminds {
-                    DatePicker("packing.form.remindTime", selection: $remindTime, displayedComponents: .hourAndMinute)
+                    Divider().padding(.leading, AppSpacing.lg)
+                    DatePickerRow(
+                        title: String(localized: "packing.form.remindTime"),
+                        selection: $remindTime,
+                        displayedComponents: .hourAndMinute
+                    )
                 }
             }
-        } footer: {
-            if hasDate && reminds {
-                Text(notificationsDenied
-                     ? LocalizedStringKey("packing.form.notificationsDenied")
-                     : LocalizedStringKey("packing.form.remindFooter"))
-            }
         }
+    }
+
+    /// Под напоминанием — когда оно придёт, или что уведомления выключены.
+    private var footer: String? {
+        guard hasDate && reminds else { return nil }
+        return notificationsDenied
+            ? String(localized: "packing.form.notificationsDenied")
+            : String(localized: "packing.form.remindFooter")
     }
 }
 
@@ -548,62 +556,60 @@ struct StartPackingView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    Picker("packing.form.source", selection: $source) {
-                        Text("packing.form.chooseSource").tag(PackingSource?.none)
-                        ForEach(lists.templates) { template in
-                            Text(verbatim: template.title.text(for: PackingFormat.language))
-                                .tag(Optional(PackingSource.template(template.id)))
-                        }
-                        ForEach(lists.ownLists) { list in
-                            Text(verbatim: list.title)
-                                .tag(Optional(PackingSource.list(list.id)))
-                        }
+        EditSheetContainer(
+            title: String(localized: "packing.start"),
+            isSaveDisabled: source == nil || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            wrapInForm: false,
+            onSave: create,
+            onCancel: { dismiss() }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection(footer: String(localized: "packing.form.sourceFooter")) {
+                        NavigationPickerRow(
+                            title: String(localized: "packing.form.source"),
+                            selection: $source,
+                            options: sourceOptions
+                        )
+                        Divider().padding(.leading, AppSpacing.lg)
+                        FormTextField(text: $title, placeholder: String(localized: "packing.form.title"), style: .row)
                     }
-                    .pickerStyle(.navigationLink)
-                    TextField("packing.form.title", text: $title)
-                } footer: {
-                    Text("packing.form.sourceFooter")
-                }
 
-                PackingDateFields(
-                    hasDate: $hasDate,
-                    tripDay: $tripDay,
-                    reminds: $reminds,
-                    remindTime: $remindTime,
-                    notificationsDenied: notificationsDenied
-                )
-            }
-            .navigationTitle("packing.start")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
+                    PackingDateFields(
+                        hasDate: $hasDate,
+                        tripDay: $tripDay,
+                        reminds: $reminds,
+                        remindTime: $remindTime,
+                        notificationsDenied: notificationsDenied
+                    )
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("packing.form.create", action: create)
-                        .disabled(source == nil || title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
-            }
-            .onChange(of: source) { previous, current in
-                // Название по умолчанию — как у выбранного списка, если его не меняли вручную.
-                if title.isEmpty || title == defaultTitle(previous) {
-                    title = defaultTitle(current)
-                }
-            }
-            .onChange(of: reminds) { _, isOn in
-                guard isOn else { return }
-                Task { notificationsDenied = !(await PackingReminders.requestPermission()) }
-            }
-            .task {
-                await lists.loadTemplates()
-                if title.isEmpty {
-                    title = defaultTitle(source)
-                }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
         }
+        .onChange(of: source) { previous, current in
+            // Название по умолчанию — как у выбранного списка, если его не меняли вручную.
+            if title.isEmpty || title == defaultTitle(previous) {
+                title = defaultTitle(current)
+            }
+        }
+        .onChange(of: reminds) { _, isOn in
+            guard isOn else { return }
+            Task { notificationsDenied = !(await PackingReminders.requestPermission()) }
+        }
+        .task {
+            await lists.loadTemplates()
+            if title.isEmpty {
+                title = defaultTitle(source)
+            }
+        }
+    }
+
+    /// По чему собираться: «выберите», шаблоны редакции и свои чеклисты.
+    private var sourceOptions: [(label: String, value: PackingSource?)] {
+        [(label: String(localized: "packing.form.chooseSource"), value: nil)]
+            + lists.templates.map { (label: $0.title.text(for: PackingFormat.language), value: Optional(PackingSource.template($0.id))) }
+            + lists.ownLists.map { (label: $0.title, value: Optional(PackingSource.list($0.id))) }
     }
 
     private func defaultTitle(_ source: PackingSource?) -> String {
@@ -675,36 +681,35 @@ struct ChecklistEditView: View {
     private var isPacking: Bool { checklist?.kind == .packing }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    TextField("checklist.form.title", text: $title)
+        EditSheetContainer(
+            title: checklist == nil ? String(localized: "checklists.new") : String(localized: "checklist.edit"),
+            isSaveDisabled: !(1...100).contains(title.trimmingCharacters(in: .whitespacesAndNewlines).count),
+            wrapInForm: false,
+            onSave: save,
+            onCancel: { dismiss() }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection {
+                        FormTextField(text: $title, placeholder: String(localized: "checklist.form.title"), style: .row)
+                    }
+                    if isPacking {
+                        PackingDateFields(
+                            hasDate: $hasDate,
+                            tripDay: $tripDay,
+                            reminds: $reminds,
+                            remindTime: $remindTime,
+                            notificationsDenied: notificationsDenied
+                        )
+                    }
                 }
-                if isPacking {
-                    PackingDateFields(
-                        hasDate: $hasDate,
-                        tripDay: $tripDay,
-                        reminds: $reminds,
-                        remindTime: $remindTime,
-                        notificationsDenied: notificationsDenied
-                    )
-                }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
-            .navigationTitle(checklist == nil ? Text("checklists.new") : Text("checklist.edit"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("common.save", action: save)
-                        .disabled(!(1...100).contains(title.trimmingCharacters(in: .whitespacesAndNewlines).count))
-                }
-            }
-            .onChange(of: reminds) { _, isOn in
-                guard isOn else { return }
-                Task { notificationsDenied = !(await PackingReminders.requestPermission()) }
-            }
+        }
+        .onChange(of: reminds) { _, isOn in
+            guard isOn else { return }
+            Task { notificationsDenied = !(await PackingReminders.requestPermission()) }
         }
     }
 

@@ -257,69 +257,81 @@ struct PlaceAttributesFields: View {
     @Environment(SpeciesStore.self) private var speciesStore
 
     var body: some View {
-        Section {
-            if type.isFishing {
-                fishing
-            }
-            ChipPicker(
-                String(localized: "place.info.access"),
-                options: PlaceAttributes.Access.allCases,
-                selection: $attributes.access
-            ) { $0.title }
-            ChipPicker(
-                String(localized: "place.info.amenities"),
-                options: PlaceAttributes.Amenity.allCases,
-                selection: $attributes.amenities,
-                systemImage: { $0.systemImage }
-            ) { $0.title }
-            ChipPicker(
-                String(localized: "place.info.signal"),
-                options: PlaceAttributes.Signal.allCases,
-                selection: $attributes.signal
-            ) { $0.title }
-            ChipPicker(
-                String(localized: "place.info.months"),
-                options: Array(1...12),
-                selection: $attributes.months
-            ) { PlaceMonths.shortNames[$0 - 1] }
-            if !type.isFishing {
-                fishing
-            }
-        } header: {
-            Text("place.info.title")
-        }
-
-        Section {
-            ChipPicker(options: PlaceAttributes.Fee.allCases, selection: $attributes.fee) { $0.title }
-            if attributes.fee == .paid {
-                HStack {
-                    TextField("place.info.price", text: priceText)
-                        .keyboardType(.numberPad)
-                    Text(verbatim: "₸")
-                        .foregroundStyle(AppColors.textSecondary)
+        FormSection(header: String(localized: "place.info.title")) {
+            VStack(alignment: .leading, spacing: AppSpacing.md) {
+                if type.isFishing {
+                    fishing
                 }
-                ChipPicker(options: PlaceAttributes.PriceUnit.allCases, selection: $attributes.priceUnit) { $0.title }
+                FormChipRow(
+                    String(localized: "place.info.access"),
+                    options: PlaceAttributes.Access.allCases,
+                    selection: $attributes.access
+                ) { $0.title }
+                FormChipRow(
+                    String(localized: "place.info.amenities"),
+                    options: PlaceAttributes.Amenity.allCases,
+                    selection: $attributes.amenities,
+                    systemImage: { $0.systemImage }
+                ) { $0.title }
+                FormChipRow(
+                    String(localized: "place.info.signal"),
+                    options: PlaceAttributes.Signal.allCases,
+                    selection: $attributes.signal
+                ) { $0.title }
+                FormChipRow(
+                    String(localized: "place.info.months"),
+                    options: Array(1...12),
+                    selection: $attributes.months
+                ) { PlaceMonths.shortNames[$0 - 1] }
+                if !type.isFishing {
+                    fishing
+                }
             }
-            TextField("place.info.contact.placeholder", text: text(\.contact))
+            .padding(.vertical, AppSpacing.md)
+        }
+
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            FormSection(header: String(localized: "place.info.fee")) {
+                FormChipRow(options: PlaceAttributes.Fee.allCases, selection: $attributes.fee) { $0.title }
+                    .padding(.vertical, AppSpacing.md)
+                if attributes.fee == .paid {
+                    Divider().padding(.leading, AppSpacing.lg)
+                    UniversalRow(config: .standard) {
+                        TextField("place.info.price", text: priceText)
+                            .keyboardType(.numberPad)
+                            .font(AppTypography.body)
+                            .foregroundStyle(AppColors.textPrimary)
+                    } trailing: {
+                        Text(verbatim: "₸")
+                            .font(AppTypography.body)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+                    FormChipRow(options: PlaceAttributes.PriceUnit.allCases, selection: $attributes.priceUnit) { $0.title }
+                        .padding(.bottom, AppSpacing.md)
+                }
+                Divider().padding(.leading, AppSpacing.lg)
+                FormTextField(
+                    text: text(\.contact),
+                    placeholder: String(localized: "place.info.contact.placeholder"),
+                    style: .row
+                )
                 .textContentType(.telephoneNumber)
-        } header: {
-            Text("place.info.fee")
-        } footer: {
+            }
             if (attributes.contact?.count ?? 0) > PlaceAttributes.contactLimit {
-                Text("place.info.tooLong \(PlaceAttributes.contactLimit)")
-                    .foregroundStyle(AppColors.destructive)
+                InlineStatusText(message: String(localized: "place.info.tooLong \(PlaceAttributes.contactLimit)"), type: .error)
             }
         }
 
-        Section {
-            TextField("place.info.features.placeholder", text: text(\.features), axis: .vertical)
-                .lineLimit(2...6)
-        } header: {
-            Text("place.info.features")
-        } footer: {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            FormSection(header: String(localized: "place.info.features")) {
+                FormTextField(
+                    text: text(\.features),
+                    placeholder: String(localized: "place.info.features.placeholder"),
+                    style: .rowMultiline(min: 2, max: 6)
+                )
+            }
             if (attributes.features?.count ?? 0) > PlaceAttributes.featuresLimit {
-                Text("place.info.tooLong \(PlaceAttributes.featuresLimit)")
-                    .foregroundStyle(AppColors.destructive)
+                InlineStatusText(message: String(localized: "place.info.tooLong \(PlaceAttributes.featuresLimit)"), type: .error)
             }
         }
     }
@@ -339,17 +351,24 @@ struct PlaceAttributesFields: View {
                 )
             )
         } label: {
-            LabeledContent {
-                if attributes.species.isEmpty {
-                    Text("common.notSpecified")
-                } else {
-                    Text(verbatim: "\(attributes.species.count)")
+            UniversalRow(title: String(localized: "place.info.species")) {
+                HStack(spacing: AppSpacing.sm) {
+                    Group {
+                        if attributes.species.isEmpty {
+                            Text("common.notSpecified")
+                        } else {
+                            Text(verbatim: "\(attributes.species.count)")
+                        }
+                    }
+                    .font(AppTypography.body)
+                    .foregroundStyle(AppColors.textSecondary)
+                    DisclosureChevron()
                 }
-            } label: {
-                Text("place.info.species")
             }
+            .contentShape(Rectangle())
         }
-        ChipPicker(
+        .buttonStyle(.plain)
+        FormChipRow(
             String(localized: "place.info.methods"),
             options: PlaceAttributes.Method.allCases,
             selection: $attributes.methods
@@ -425,7 +444,14 @@ struct PlaceEditView: View {
     @State private var saveError: String?
 
     var body: some View {
-        NavigationStack {
+        EditSheetContainer(
+            title: String(localized: "place.edit.title"),
+            isSaveDisabled: draft == nil || draft == original || draft?.isValid != true,
+            isSaving: isSaving,
+            wrapInForm: false,
+            onSave: { Task { await save() } },
+            onCancel: { dismiss() }
+        ) {
             Group {
                 if let draft = Binding($draft) {
                     form(draft)
@@ -439,76 +465,89 @@ struct PlaceEditView: View {
                         style: .error
                     )
                 } else {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            }
-            .navigationTitle("place.edit.title")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isSaving {
-                        ProgressView()
-                    } else {
-                        Button("common.save") {
-                            Task { await save() }
+                    // Место грузится: скелетоны карточек формы.
+                    ScrollView {
+                        VStack(spacing: AppSpacing.lg) {
+                            FormSection {
+                                UniversalRowSkeleton(iconStyle: nil)
+                                Divider().padding(.leading, AppSpacing.lg)
+                                UniversalRowSkeleton(iconStyle: nil, trailing: .value)
+                            }
+                            FormSection {
+                                UniversalRowSkeleton(iconStyle: nil, showsSubtitle: true)
+                            }
+                            FormSection {
+                                UniversalRowSkeleton(iconStyle: nil, trailing: .capsule)
+                                Divider().padding(.leading, AppSpacing.lg)
+                                UniversalRowSkeleton(iconStyle: nil, trailing: .toggle)
+                            }
                         }
-                        .disabled(draft == nil || draft == original || draft?.isValid != true)
+                        .screenPadding()
+                        .padding(.vertical, AppSpacing.md)
                     }
+                    .scrollDisabled(true)
                 }
             }
-            .interactiveDismissDisabled(isSaving || (draft != nil && draft != original))
         }
+        .interactiveDismissDisabled(isSaving || (draft != nil && draft != original))
         .task { await load() }
     }
 
     private func form(_ draft: Binding<OwnPlaceDraft>) -> some View {
-        Form {
-            Section {
-                TextField("place.form.name", text: draft.fields.name)
-                Picker("place.form.type", selection: draft.fields.type) {
-                    ForEach(PlaceType.allCases) { type in
-                        Label(LocalizedStringKey(type.titleKey), systemImage: type.systemImage)
-                            .tag(type)
-                    }
+        ScrollView {
+            VStack(spacing: AppSpacing.lg) {
+                FormSection {
+                    FormTextField(text: draft.fields.name, placeholder: String(localized: "place.form.name"), style: .row)
+                    Divider().padding(.leading, AppSpacing.lg)
+                    MenuPickerRow(
+                        title: String(localized: "place.form.type"),
+                        selection: draft.fields.type,
+                        options: PlaceType.allCases.map {
+                            (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                        }
+                    )
                 }
-            }
 
-            Section("place.form.description") {
-                TextField("place.form.descriptionPlaceholder", text: draft.fields.description, axis: .vertical)
-                    .lineLimit(3...8)
-            }
-
-            PlaceAttributesFields(attributes: draft.fields.attributes, type: draft.wrappedValue.fields.type)
-
-            Section {
-                Picker("place.form.visibility", selection: draft.visibility) {
-                    ForEach(DaladaCore.Visibility.allCases) { visibility in
-                        Text(LocalizedStringKey(visibility.titleKey)).tag(visibility)
-                    }
+                FormSection(header: String(localized: "place.form.description")) {
+                    FormTextField(
+                        text: draft.fields.description,
+                        placeholder: String(localized: "place.form.descriptionPlaceholder"),
+                        style: .rowMultiline(min: 3, max: 8)
+                    )
                 }
-                .pickerStyle(.segmented)
 
-                Toggle("place.form.approximate", isOn: draft.isApproximate)
+                PlaceAttributesFields(attributes: draft.fields.attributes, type: draft.wrappedValue.fields.type)
+
+                FormSection(
+                    header: String(localized: "place.form.visibility"),
+                    footer: PlaceFormView.visibilityFooter(
+                        draft.wrappedValue.visibility,
+                        approximate: draft.wrappedValue.effectiveApproximate
+                    )
+                ) {
+                    SegmentedPicker(
+                        title: String(localized: "place.form.visibility"),
+                        selection: draft.visibility,
+                        options: DaladaCore.Visibility.allCases.map {
+                            (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                        }
+                    )
+                    .padding(AppSpacing.md)
+                    Divider().padding(.leading, AppSpacing.lg)
+                    ToggleSettingsRow(
+                        title: String(localized: "place.form.approximate"),
+                        config: .standard,
+                        isOn: draft.isApproximate
+                    )
                     .disabled(draft.wrappedValue.visibility == .private)
-            } header: {
-                Text("place.form.visibility")
-            } footer: {
-                Text(PlaceFormView.visibilityFooter(
-                    draft.wrappedValue.visibility,
-                    approximate: draft.wrappedValue.effectiveApproximate
-                ))
-            }
+                }
 
-            if let saveError {
-                Section {
-                    Text(verbatim: saveError)
-                        .foregroundStyle(AppColors.destructive)
+                if let saveError {
+                    InlineStatusText(message: saveError, type: .error)
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
     }
 
@@ -579,61 +618,57 @@ struct PlaceSuggestView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                if isSent {
-                    Section {
-                        Label("place.suggest.sent", systemImage: "checkmark.circle.fill")
-                            .foregroundStyle(AppColors.success)
-                        Text("place.suggest.sentDetail")
-                            .font(AppTypography.bodySmall)
-                            .foregroundStyle(AppColors.textSecondary)
-                    }
-                } else {
-                    if kind == .edit {
-                        editFields
-                    } else {
-                        problemKinds
-                    }
-
-                    Section {
-                        TextField("place.suggest.notePlaceholder", text: $note, axis: .vertical)
-                            .lineLimit(2...6)
-                    } header: {
-                        Text("place.suggest.note")
-                    } footer: {
-                        Text("place.suggest.footer")
-                    }
-
-                    if let sendError {
-                        Section {
-                            Text(verbatim: sendError)
-                                .foregroundStyle(AppColors.destructive)
-                        }
-                    }
-                }
-            }
-            .navigationTitle(LocalizedStringKey(kind == .edit ? "place.suggest.edit" : "place.suggest.problem"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                if isSent {
+        if isSent {
+            NavigationStack {
+                EmptyState(
+                    icon: "checkmark.circle.fill",
+                    title: String(localized: "place.suggest.sent"),
+                    description: String(localized: "place.suggest.sentDetail")
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .navigationTitle(LocalizedStringKey(kind == .edit ? "place.suggest.edit" : "place.suggest.problem"))
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
                         Button("common.done") { dismiss() }
                     }
-                } else {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("common.cancel") { dismiss() }
-                    }
-                    ToolbarItem(placement: .confirmationAction) {
-                        if isSending {
-                            ProgressView()
+                }
+            }
+        } else {
+            EditSheetContainer(
+                title: String(localized: String.LocalizationValue(kind == .edit ? "place.suggest.edit" : "place.suggest.problem")),
+                saveTitle: String(localized: "place.suggest.send"),
+                isSaveDisabled: !canSend,
+                isSaving: isSending,
+                wrapInForm: false,
+                onSave: { Task { await send() } },
+                onCancel: { dismiss() }
+            ) {
+                ScrollView {
+                    VStack(spacing: AppSpacing.lg) {
+                        if kind == .edit {
+                            editFields
                         } else {
-                            Button("place.suggest.send") {
-                                Task { await send() }
-                            }
-                            .disabled(!canSend)
+                            problemKinds
+                        }
+
+                        FormSection(
+                            header: String(localized: "place.suggest.note"),
+                            footer: String(localized: "place.suggest.footer")
+                        ) {
+                            FormTextField(
+                                text: $note,
+                                placeholder: String(localized: "place.suggest.notePlaceholder"),
+                                style: .rowMultiline(min: 2, max: 6)
+                            )
+                        }
+
+                        if let sendError {
+                            InlineStatusText(message: sendError, type: .error)
                         }
                     }
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.md)
                 }
             }
             .interactiveDismissDisabled(isSending)
@@ -642,48 +677,44 @@ struct PlaceSuggestView: View {
 
     @ViewBuilder
     private var editFields: some View {
-        Section {
-            TextField("place.form.name", text: $draft.name)
-            Picker("place.form.type", selection: $draft.type) {
-                ForEach(PlaceType.allCases) { type in
-                    Label(LocalizedStringKey(type.titleKey), systemImage: type.systemImage)
-                        .tag(type)
+        FormSection(footer: String(localized: "place.suggest.editHint")) {
+            FormTextField(text: $draft.name, placeholder: String(localized: "place.form.name"), style: .row)
+            Divider().padding(.leading, AppSpacing.lg)
+            MenuPickerRow(
+                title: String(localized: "place.form.type"),
+                selection: $draft.type,
+                options: PlaceType.allCases.map {
+                    (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                 }
-            }
-        } footer: {
-            Text("place.suggest.editHint")
+            )
         }
 
-        Section("place.form.description") {
-            TextField("place.form.descriptionPlaceholder", text: $draft.description, axis: .vertical)
-                .lineLimit(3...8)
+        FormSection(header: String(localized: "place.form.description")) {
+            FormTextField(
+                text: $draft.description,
+                placeholder: String(localized: "place.form.descriptionPlaceholder"),
+                style: .rowMultiline(min: 3, max: 8)
+            )
         }
 
         PlaceAttributesFields(attributes: $draft.attributes, type: draft.type)
     }
 
     private var problemKinds: some View {
-        Section {
-            ForEach(PlaceSuggestionKind.problems) { option in
-                Button {
+        FormSection(header: String(localized: "place.suggest.problem.what")) {
+            let options = PlaceSuggestionKind.problems
+            ForEach(options) { option in
+                CheckmarkRow(
+                    String(localized: String.LocalizationValue(option.titleKey)),
+                    isSelected: kind == option,
+                    config: .standard
+                ) {
                     kind = option
-                } label: {
-                    HStack {
-                        Text(LocalizedStringKey(option.titleKey))
-                            .foregroundStyle(AppColors.textPrimary)
-                        Spacer(minLength: 0)
-                        if kind == option {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(AppColors.accent)
-                        }
-                    }
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(kind == option ? .isSelected : [])
+                if option.id != options.last?.id {
+                    Divider().padding(.leading, AppSpacing.lg)
+                }
             }
-        } header: {
-            Text("place.suggest.problem.what")
         }
     }
 

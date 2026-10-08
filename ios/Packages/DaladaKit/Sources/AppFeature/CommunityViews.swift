@@ -210,12 +210,13 @@ struct ReviewsListView: View {
     var body: some View {
         List {
             Section {
-                Picker("reviews.sort", selection: $sort) {
-                    ForEach(ReviewSort.allCases) { item in
-                        Text(LocalizedStringKey(item.titleKey)).tag(item)
+                SegmentedPicker(
+                    title: String(localized: "reviews.sort"),
+                    selection: $sort,
+                    options: ReviewSort.allCases.map {
+                        (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                     }
-                }
-                .pickerStyle(.segmented)
+                )
             }
             ForEach(reviews) { review in
                 ReviewRow(review: review, environment: environment) { blocked in
@@ -283,107 +284,113 @@ struct ReviewFormView: View {
     @State private var photoFailed = false
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    RatingPicker(rating: $rating)
-                        .padding(.vertical, AppSpacing.sm)
-                } header: {
-                    Text("reviews.form.rating")
-                }
-
-                Section {
-                    TextField("reviews.form.placeholder", text: $text, axis: .vertical)
-                        .lineLimit(3...10)
-                } header: {
-                    Text("reviews.form.text")
-                } footer: {
-                    if text.count > ReviewDraft.bodyLimit - 200 {
-                        Text(verbatim: "\(text.count) / \(ReviewDraft.bodyLimit)")
+        EditSheetContainer(
+            title: placeName,
+            isSaveDisabled: !draft.isValid || isProcessingPhotos,
+            isSaving: isSaving,
+            wrapInForm: false,
+            onSave: { Task { await save() } },
+            onCancel: { dismiss() }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection(header: String(localized: "reviews.form.rating")) {
+                        RatingPicker(rating: $rating)
+                            .padding(.vertical, AppSpacing.md)
                     }
-                }
 
-                Section {
-                    DatePicker("reviews.form.visitedOn", selection: $visitedDate, in: ...Date(), displayedComponents: .date)
-                }
+                    FormSection(
+                        header: String(localized: "reviews.form.text"),
+                        footer: text.count > ReviewDraft.bodyLimit - 200 ? "\(text.count) / \(ReviewDraft.bodyLimit)" : nil
+                    ) {
+                        FormTextField(
+                            text: $text,
+                            placeholder: String(localized: "reviews.form.placeholder"),
+                            style: .rowMultiline(min: 3, max: 10)
+                        )
+                    }
 
-                Section {
-                    if !photos.isEmpty {
-                        PhotoDraftStrip(photos: photos) { id in
-                            photos.removeAll { $0.id == id }
+                    FormSection {
+                        DatePickerRow(
+                            title: String(localized: "reviews.form.visitedOn"),
+                            selection: $visitedDate,
+                            maxDate: Date()
+                        )
+                    }
+
+                    FormSection(
+                        header: String(localized: "reviews.form.photos"),
+                        footer: photoFailed ? nil : String(localized: "reviews.form.photosFooter")
+                    ) {
+                        if !photos.isEmpty {
+                            PhotoDraftStrip(photos: photos) { id in
+                                photos.removeAll { $0.id == id }
+                            }
+                            .contentMargins(.horizontal, AppSpacing.lg, for: .scrollContent)
+                            .padding(.vertical, AppSpacing.md)
+                        }
+                        if isProcessingPhotos {
+                            // Фото сжимаются: плитка-скелетон на месте будущего фото.
+                            PhotoTileSkeleton()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, AppSpacing.lg)
+                                .padding(.vertical, AppSpacing.md)
+                        } else if photos.count < ReviewDraft.photoLimit {
+                            PhotosPicker(
+                                selection: $pickerItems,
+                                maxSelectionCount: ReviewDraft.photoLimit - photos.count,
+                                matching: .images
+                            ) {
+                                UniversalRow(
+                                    leadingIcon: .sfSymbol("photo.on.rectangle.angled", color: AppColors.accent, size: AppIconSize.lg),
+                                    title: String(localized: "reviews.form.addPhotos"),
+                                    titleColor: AppColors.accent
+                                )
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                    if isProcessingPhotos {
-                        ProgressView()
-                    } else if photos.count < ReviewDraft.photoLimit {
-                        PhotosPicker(
-                            selection: $pickerItems,
-                            maxSelectionCount: ReviewDraft.photoLimit - photos.count,
-                            matching: .images
-                        ) {
-                            Label("reviews.form.addPhotos", systemImage: "photo.on.rectangle.angled")
-                        }
-                    }
-                } header: {
-                    Text("reviews.form.photos")
-                } footer: {
                     if photoFailed {
-                        Text("photo.failed")
-                            .foregroundStyle(AppColors.destructive)
-                    } else {
-                        Text("reviews.form.photosFooter")
+                        InlineStatusText(message: String(localized: "photo.failed"), type: .error)
                     }
-                }
 
-                if let saveError {
-                    Section {
-                        Text(verbatim: saveError)
-                            .foregroundStyle(AppColors.destructive)
+                    if let saveError {
+                        InlineStatusText(message: saveError, type: .error)
                     }
-                }
 
-                if existing != nil {
-                    Section {
-                        Button("reviews.delete", role: .destructive) {
-                            confirmsDelete = true
+                    if existing != nil {
+                        FormSection {
+                            ActionSettingsRow(
+                                title: String(localized: "reviews.delete"),
+                                isDestructive: true,
+                                config: .standard
+                            ) {
+                                confirmsDelete = true
+                            }
                         }
                     }
                 }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
-            .navigationTitle(Text(verbatim: placeName))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isSaving {
-                        ProgressView()
-                    } else {
-                        Button("common.save") {
-                            Task { await save() }
-                        }
-                        .disabled(!draft.isValid)
-                    }
-                }
+        }
+        .confirmationDialog("reviews.deleteConfirm", isPresented: $confirmsDelete, titleVisibility: .visible) {
+            Button("reviews.delete", role: .destructive) {
+                Task { await delete() }
             }
-            .confirmationDialog("reviews.deleteConfirm", isPresented: $confirmsDelete, titleVisibility: .visible) {
-                Button("reviews.delete", role: .destructive) {
-                    Task { await delete() }
-                }
-            }
-            .onChange(of: pickerItems) { _, items in
-                guard !items.isEmpty else { return }
-                Task { await addPhotos(items) }
-            }
-            .onAppear {
-                guard !isPrepared else { return }
-                isPrepared = true
-                let initial = ReviewDraft(placeID: placeID, existing: existing)
-                rating = initial.rating
-                text = initial.body
-                visitedDate = initial.visitedOn.date()
-            }
+        }
+        .onChange(of: pickerItems) { _, items in
+            guard !items.isEmpty else { return }
+            Task { await addPhotos(items) }
+        }
+        .onAppear {
+            guard !isPrepared else { return }
+            isPrepared = true
+            let initial = ReviewDraft(placeID: placeID, existing: existing)
+            rating = initial.rating
+            text = initial.body
+            visitedDate = initial.visitedOn.date()
         }
     }
 
@@ -617,42 +624,40 @@ struct ThreadFormView: View {
     @State private var saveError: String?
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    TextField("threads.form.titlePlaceholder", text: $title)
-                } header: {
-                    Text("threads.form.title")
-                } footer: {
-                    Text("threads.form.hint")
-                }
-                Section("threads.form.text") {
-                    TextField("threads.form.textPlaceholder", text: $text, axis: .vertical)
-                        .lineLimit(4...12)
-                }
-                if let saveError {
-                    Section {
-                        Text(verbatim: saveError)
-                            .foregroundStyle(AppColors.destructive)
+        EditSheetContainer(
+            title: placeName,
+            saveTitle: String(localized: "threads.form.publish"),
+            isSaveDisabled: !draft.isValid,
+            isSaving: isSaving,
+            wrapInForm: false,
+            onSave: { Task { await save() } },
+            onCancel: { dismiss() }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection(
+                        header: String(localized: "threads.form.title"),
+                        footer: String(localized: "threads.form.hint")
+                    ) {
+                        FormTextField(
+                            text: $title,
+                            placeholder: String(localized: "threads.form.titlePlaceholder"),
+                            style: .row
+                        )
+                    }
+                    FormSection(header: String(localized: "threads.form.text")) {
+                        FormTextField(
+                            text: $text,
+                            placeholder: String(localized: "threads.form.textPlaceholder"),
+                            style: .rowMultiline(min: 4, max: 12)
+                        )
+                    }
+                    if let saveError {
+                        InlineStatusText(message: saveError, type: .error)
                     }
                 }
-            }
-            .navigationTitle(Text(verbatim: placeName))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isSaving {
-                        ProgressView()
-                    } else {
-                        Button("threads.form.publish") {
-                            Task { await save() }
-                        }
-                        .disabled(!draft.isValid)
-                    }
-                }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
         }
     }

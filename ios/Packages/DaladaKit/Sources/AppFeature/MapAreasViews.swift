@@ -15,8 +15,19 @@ struct MapAreaView: View {
             if let pack = rules.areas, let area = pack.area(areaID) {
                 content(area, pack: pack)
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // Слои грузятся: вид зоны, текст о ней, тарифы.
+                ScrollView {
+                    VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                        SkeletonText(AppTypography.bodySmall, width: 140)
+                        SkeletonText(AppTypography.body, lines: 4)
+                        Skeleton(height: 120, cornerRadius: AppRadius.xl)
+                    }
+                    .shimmer()
+                    .skeletonLoadingLabel()
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.lg)
+                }
+                .scrollDisabled(true)
             }
         }
         .navigationTitle(Text(verbatim: rules.areas?.area(areaID)?.name.text(for: RulesStore.language) ?? ""))

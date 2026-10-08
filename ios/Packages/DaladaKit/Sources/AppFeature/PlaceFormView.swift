@@ -1,4 +1,5 @@
 import DaladaCore
+import DesignComponents
 import DesignTokens
 import SwiftUI
 
@@ -17,72 +18,75 @@ struct PlaceFormView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    TextField("place.form.name", text: $draft.name)
-                    Picker("place.form.type", selection: $draft.type) {
-                        ForEach(PlaceType.allCases) { type in
-                            Label(LocalizedStringKey(type.titleKey), systemImage: type.systemImage)
-                                .tag(type)
-                        }
+        EditSheetContainer(
+            title: String(localized: "place.form.title"),
+            isSaveDisabled: !draft.isValid,
+            isSaving: isSaving,
+            wrapInForm: false,
+            onSave: { Task { await save() } },
+            onCancel: { dismiss() }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection {
+                        FormTextField(text: $draft.name, placeholder: String(localized: "place.form.name"), style: .row)
+                        Divider().padding(.leading, AppSpacing.lg)
+                        MenuPickerRow(
+                            title: String(localized: "place.form.type"),
+                            selection: $draft.type,
+                            options: PlaceType.allCases.map {
+                                (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                            }
+                        )
                     }
-                }
 
-                Section("place.form.description") {
-                    TextField("place.form.descriptionPlaceholder", text: $draft.description, axis: .vertical)
-                        .lineLimit(3...8)
-                }
-
-                Section {
-                    Picker("place.form.visibility", selection: $draft.visibility) {
-                        ForEach(Visibility.allCases) { visibility in
-                            Text(LocalizedStringKey(visibility.titleKey)).tag(visibility)
-                        }
+                    FormSection(header: String(localized: "place.form.description")) {
+                        FormTextField(
+                            text: $draft.description,
+                            placeholder: String(localized: "place.form.descriptionPlaceholder"),
+                            style: .rowMultiline(min: 3, max: 8)
+                        )
                     }
-                    .pickerStyle(.segmented)
 
-                    Toggle("place.form.approximate", isOn: $draft.isApproximate)
+                    FormSection(
+                        header: String(localized: "place.form.visibility"),
+                        footer: Self.visibilityFooter(draft.visibility, approximate: draft.effectiveApproximate)
+                    ) {
+                        SegmentedPicker(
+                            title: String(localized: "place.form.visibility"),
+                            selection: $draft.visibility,
+                            options: DaladaCore.Visibility.allCases.map {
+                                (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                            }
+                        )
+                        .padding(AppSpacing.md)
+                        Divider().padding(.leading, AppSpacing.lg)
+                        ToggleSettingsRow(
+                            title: String(localized: "place.form.approximate"),
+                            config: .standard,
+                            isOn: $draft.isApproximate
+                        )
                         .disabled(draft.visibility == .private)
-                } header: {
-                    Text("place.form.visibility")
-                } footer: {
-                    Text(Self.visibilityFooter(draft.visibility, approximate: draft.effectiveApproximate))
-                }
-
-                Section {
-                    LabeledContent("place.form.coordinates") {
-                        Text(verbatim: String(format: "%.5f, %.5f", draft.coordinate.latitude, draft.coordinate.longitude))
-                            .monospacedDigit()
                     }
-                }
 
-                if let saveError {
-                    Section {
-                        Text(saveError)
-                            .foregroundStyle(AppColors.destructive)
-                    }
-                }
-            }
-            .navigationTitle("place.form.title")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isSaving {
-                        ProgressView()
-                    } else {
-                        Button("common.save") {
-                            Task { await save() }
+                    FormSection {
+                        UniversalRow(title: String(localized: "place.form.coordinates")) {
+                            Text(verbatim: String(format: "%.5f, %.5f", draft.coordinate.latitude, draft.coordinate.longitude))
+                                .font(AppTypography.body)
+                                .monospacedDigit()
+                                .foregroundStyle(AppColors.textSecondary)
                         }
-                        .disabled(!draft.isValid)
+                    }
+
+                    if let saveError {
+                        InlineStatusText(message: saveError, type: .error)
                     }
                 }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
-            .interactiveDismissDisabled(isSaving)
         }
+        .interactiveDismissDisabled(isSaving)
     }
 
     /// Кто увидит место и как — под выбором видимости (новое место и правка своего).

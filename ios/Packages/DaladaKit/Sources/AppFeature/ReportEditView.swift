@@ -24,54 +24,51 @@ struct ReportEditView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    ChipPicker(String(localized: "conditions.bite"), options: CheckinConditions.Bite.allCases, selection: $edit.conditions.bite) { $0.title }
-                    ChipPicker(String(localized: "conditions.crowd"), options: CheckinConditions.Crowd.allCases, selection: $edit.conditions.crowd) { $0.title }
-                    ChipPicker(String(localized: "conditions.water"), options: CheckinConditions.Water.allCases, selection: $edit.conditions.water) { $0.title }
-                    ChipPicker(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $edit.conditions.road) { $0.title }
-                } header: {
-                    Text("checkin.form.conditions")
-                }
-
-                Section("checkin.form.note") {
-                    TextField("checkin.form.notePlaceholder", text: $edit.note, axis: .vertical)
-                        .lineLimit(2...6)
-                }
-
-                Section("place.form.visibility") {
-                    Picker("place.form.visibility", selection: $edit.visibility) {
-                        ForEach(DaladaCore.Visibility.allCases) { visibility in
-                            Text(LocalizedStringKey(visibility.titleKey)).tag(visibility)
+        EditSheetContainer(
+            title: placeName,
+            isSaveDisabled: edit.note.count > 2000,
+            isSaving: isSaving,
+            wrapInForm: false,
+            onSave: { Task { await save() } },
+            onCancel: { dismiss() }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection(header: String(localized: "checkin.form.conditions")) {
+                        VStack(alignment: .leading, spacing: AppSpacing.md) {
+                            FormChipRow(String(localized: "conditions.bite"), options: CheckinConditions.Bite.allCases, selection: $edit.conditions.bite) { $0.title }
+                            FormChipRow(String(localized: "conditions.crowd"), options: CheckinConditions.Crowd.allCases, selection: $edit.conditions.crowd) { $0.title }
+                            FormChipRow(String(localized: "conditions.water"), options: CheckinConditions.Water.allCases, selection: $edit.conditions.water) { $0.title }
+                            FormChipRow(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $edit.conditions.road) { $0.title }
                         }
+                        .padding(.vertical, AppSpacing.md)
                     }
-                    .pickerStyle(.segmented)
-                }
 
-                if let saveError {
-                    Section {
-                        Text(saveError)
-                            .foregroundStyle(AppColors.destructive)
+                    FormSection(header: String(localized: "checkin.form.note")) {
+                        FormTextField(
+                            text: $edit.note,
+                            placeholder: String(localized: "checkin.form.notePlaceholder"),
+                            style: .rowMultiline(min: 2, max: 6)
+                        )
+                    }
+
+                    FormSection(header: String(localized: "place.form.visibility")) {
+                        SegmentedPicker(
+                            title: String(localized: "place.form.visibility"),
+                            selection: $edit.visibility,
+                            options: DaladaCore.Visibility.allCases.map {
+                                (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
+                            }
+                        )
+                        .padding(AppSpacing.md)
+                    }
+
+                    if let saveError {
+                        InlineStatusText(message: saveError, type: .error)
                     }
                 }
-            }
-            .navigationTitle(Text(verbatim: placeName))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    if isSaving {
-                        ProgressView()
-                    } else {
-                        Button("common.save") {
-                            Task { await save() }
-                        }
-                        .disabled(edit.note.count > 2000)
-                    }
-                }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
         }
     }

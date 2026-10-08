@@ -357,8 +357,10 @@ private struct PlaceResultsList: View {
 
             if items.isEmpty {
                 if isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
+                    ForEach(0..<4, id: \.self) { _ in
+                        ThumbnailRowSkeleton()
+                            .screenPadding()
+                    }
                 } else {
                     EmptyState(
                         icon: loadError == nil ? "magnifyingglass" : "wifi.slash",

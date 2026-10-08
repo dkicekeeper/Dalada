@@ -68,8 +68,8 @@ struct ProfileHomeView: View {
     private var content: some View {
         switch session.state {
         case .loading:
-            ProgressView()
-                .padding(AppSpacing.xxl)
+            // Профиль грузится: карточка профиля.
+            PersonRowSkeleton(style: .card)
         case .guest:
             SignInCard()
             historyPlaceholder

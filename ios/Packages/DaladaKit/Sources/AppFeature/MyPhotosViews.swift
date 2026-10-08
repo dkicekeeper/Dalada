@@ -44,8 +44,7 @@ struct MyPhotosSection: View {
             } else if isLoaded {
                 ProfileSectionHint(text: String(localized: "profile.photos.empty"))
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
+                PhotoGridSkeleton(count: 6)
             }
         }
         .task(id: userID) { await load() }

@@ -66,11 +66,9 @@ struct PeopleSuggestionsSection: View {
                     .labelStyle(.iconOnly)
                     .foregroundStyle(AppColors.textSecondary)
             } else {
-                Button("friends.suggestion.add") {
+                DSButton(String(localized: "friends.suggestion.add"), appearance: .secondary, size: .small) {
                     Task { await add(suggestion) }
                 }
-                .buttonStyle(.bordered)
-                .font(AppTypography.bodySmall)
             }
         }
     }

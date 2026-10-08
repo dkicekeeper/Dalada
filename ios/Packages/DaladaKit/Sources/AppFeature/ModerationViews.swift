@@ -87,78 +87,67 @@ struct ReportView: View {
     @State private var sendError: String?
 
     var body: some View {
-        NavigationStack {
-            Form {
-                if isSent {
-                    Section {
-                        Label("moderation.report.sent", systemImage: "checkmark.circle.fill")
-                            .foregroundStyle(AppColors.success)
-                        Text("moderation.report.sentDetail")
-                            .font(AppTypography.bodySmall)
-                            .foregroundStyle(AppColors.textSecondary)
-                    }
-                } else {
-                    Section {
-                        ForEach(ReportReason.options(for: target)) { option in
-                            Button {
-                                reason = option
-                            } label: {
-                                HStack {
-                                    Text(LocalizedStringKey(option.titleKey))
-                                        .foregroundStyle(AppColors.textPrimary)
-                                    Spacer(minLength: 0)
-                                    if reason == option {
-                                        Image(systemName: "checkmark")
-                                            .foregroundStyle(AppColors.accent)
-                                    }
-                                }
-                                .contentShape(Rectangle())
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityAddTraits(reason == option ? .isSelected : [])
-                        }
-                    } header: {
-                        Text("moderation.report.reason")
-                    }
-
-                    Section {
-                        TextField("moderation.report.notePlaceholder", text: $note, axis: .vertical)
-                            .lineLimit(2...6)
-                    } header: {
-                        Text("moderation.report.note")
-                    } footer: {
-                        Text("moderation.report.footer")
-                    }
-
-                    if let sendError {
-                        Section {
-                            Text(verbatim: sendError)
-                                .foregroundStyle(AppColors.destructive)
-                        }
-                    }
-                }
-            }
-            .navigationTitle("moderation.report")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                if isSent {
+        if isSent {
+            NavigationStack {
+                EmptyState(
+                    icon: "checkmark.circle.fill",
+                    title: String(localized: "moderation.report.sent"),
+                    description: String(localized: "moderation.report.sentDetail")
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .navigationTitle("moderation.report")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
                         Button("common.done") { dismiss() }
                     }
-                } else {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("common.cancel") { dismiss() }
-                    }
-                    ToolbarItem(placement: .confirmationAction) {
-                        if isSending {
-                            ProgressView()
-                        } else {
-                            Button("moderation.report.send") {
-                                Task { await send() }
+                }
+            }
+        } else {
+            EditSheetContainer(
+                title: String(localized: "moderation.report"),
+                saveTitle: String(localized: "moderation.report.send"),
+                isSaveDisabled: reason == nil || note.count > 1000,
+                isSaving: isSending,
+                wrapInForm: false,
+                onSave: { Task { await send() } },
+                onCancel: { dismiss() }
+            ) {
+                ScrollView {
+                    VStack(spacing: AppSpacing.lg) {
+                        FormSection(header: String(localized: "moderation.report.reason")) {
+                            let options = ReportReason.options(for: target)
+                            ForEach(options) { option in
+                                CheckmarkRow(
+                                    String(localized: String.LocalizationValue(option.titleKey)),
+                                    isSelected: reason == option,
+                                    config: .standard
+                                ) {
+                                    reason = option
+                                }
+                                if option.id != options.last?.id {
+                                    Divider().padding(.leading, AppSpacing.lg)
+                                }
                             }
-                            .disabled(reason == nil || note.count > 1000)
+                        }
+
+                        FormSection(
+                            header: String(localized: "moderation.report.note"),
+                            footer: String(localized: "moderation.report.footer")
+                        ) {
+                            FormTextField(
+                                text: $note,
+                                placeholder: String(localized: "moderation.report.notePlaceholder"),
+                                style: .rowMultiline(min: 2, max: 6)
+                            )
+                        }
+
+                        if let sendError {
+                            InlineStatusText(message: sendError, type: .error)
                         }
                     }
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.md)
                 }
             }
         }

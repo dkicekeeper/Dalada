@@ -41,114 +41,135 @@ struct CatchFormView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("catch.form.species") {
-                    Picker("catch.form.species", selection: $draft.speciesID) {
-                        ForEach(speciesStore.species) { species in
-                            Text(verbatim: species.name(for: SpeciesStore.languageCode)).tag(species.id)
-                        }
+        EditSheetContainer(
+            title: String(localized: "catch.form.title"),
+            isSaveDisabled: !draft.isValid || isProcessingPhoto,
+            wrapInForm: false,
+            onSave: {
+                onDone(draft)
+                dismiss()
+            },
+            onCancel: { dismiss() }
+        ) {
+            ScrollView {
+                VStack(spacing: AppSpacing.lg) {
+                    FormSection(header: String(localized: "catch.form.species")) {
+                        NavigationPickerRow(
+                            title: String(localized: "catch.form.species"),
+                            selection: $draft.speciesID,
+                            options: speciesStore.species.map {
+                                (label: $0.name(for: SpeciesStore.languageCode), value: $0.id)
+                            }
+                        )
                     }
-                    .pickerStyle(.navigationLink)
-                }
 
-                Section {
-                    LabeledContent("catch.form.weight") {
-                        TextField("catch.form.weightPlaceholder", value: $draft.weightKg, format: .number.precision(.fractionLength(0...3)))
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    LabeledContent("catch.form.length") {
-                        TextField("catch.form.lengthPlaceholder", value: $draft.lengthCm, format: .number.precision(.fractionLength(0...1)))
-                            .keyboardType(.decimalPad)
-                            .multilineTextAlignment(.trailing)
-                    }
-                    Stepper(value: $draft.count, in: 1...1000) {
-                        LabeledContent("catch.form.count") {
-                            Text(verbatim: "\(draft.count)")
-                                .monospacedDigit()
+                    FormSection(footer: minSizeHint) {
+                        UniversalRow(title: String(localized: "catch.form.weight")) {
+                            numberField("catch.form.weightPlaceholder", value: $draft.weightKg, fractionDigits: 0...3)
                         }
+                        Divider().padding(.leading, AppSpacing.lg)
+                        UniversalRow(title: String(localized: "catch.form.length")) {
+                            numberField("catch.form.lengthPlaceholder", value: $draft.lengthCm, fractionDigits: 0...1)
+                        }
+                        Divider().padding(.leading, AppSpacing.lg)
+                        StepperRow(title: String(localized: "catch.form.count"), value: $draft.count, in: 1...1000)
                     }
-                } footer: {
-                    if let minSize, !isUndersized {
-                        Text("rules.catch.minSizeHint \(minSize)")
-                    }
-                }
 
-                if isUndersized, let minSize {
-                    Section {
+                    if isUndersized, let minSize {
                         RecommendationBox(
                             text: String(localized: "rules.catch.undersized \(minSize)"),
                             color: AppColors.warning,
                             icon: "ruler"
                         )
                     }
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-                }
 
-                if allowsPhoto {
-                Section {
-                    if let photo = draft.photo {
-                        HStack(spacing: AppSpacing.md) {
-                            PhotoDraftThumbnail(photo: photo)
-                            Spacer(minLength: 0)
-                            Button("photo.remove", role: .destructive) {
-                                draft.photo = nil
-                            }
-                            .buttonStyle(.borderless)
+                    if allowsPhoto {
+                        FormSection(header: String(localized: "catch.form.photo")) {
+                            photoRow
                         }
-                    } else if isProcessingPhoto {
-                        ProgressView()
-                    } else {
-                        PhotosPicker(selection: $pickerItem, matching: .images) {
-                            Label("catch.form.addPhoto", systemImage: "camera")
+                        if photoFailed {
+                            InlineStatusText(message: String(localized: "photo.failed"), type: .error)
                         }
                     }
-                } header: {
-                    Text("catch.form.photo")
-                } footer: {
-                    if photoFailed {
-                        Text("photo.failed")
-                            .foregroundStyle(AppColors.destructive)
-                    }
-                }
-                }
 
-                Section {
-                    Picker("catch.form.method", selection: $draft.method) {
-                        Text("common.notSpecified").tag(FishingMethod?.none)
-                        ForEach(FishingMethod.allCases) { method in
-                            Text(LocalizedStringKey(method.titleKey)).tag(Optional(method))
-                        }
+                    FormSection(footer: String(localized: "catch.form.hideSizeFooter")) {
+                        MenuPickerRow(
+                            title: String(localized: "catch.form.method"),
+                            selection: $draft.method,
+                            options: methodOptions
+                        )
+                        Divider().padding(.leading, AppSpacing.lg)
+                        FormTextField(text: $draft.bait, placeholder: String(localized: "catch.form.bait"), style: .row)
+                        Divider().padding(.leading, AppSpacing.lg)
+                        ToggleSettingsRow(title: String(localized: "catch.form.released"), config: .standard, isOn: $draft.released)
+                        Divider().padding(.leading, AppSpacing.lg)
+                        ToggleSettingsRow(title: String(localized: "catch.form.hideSize"), config: .standard, isOn: $draft.hideSize)
                     }
-                    TextField("catch.form.bait", text: $draft.bait)
-                    Toggle("catch.form.released", isOn: $draft.released)
-                    Toggle("catch.form.hideSize", isOn: $draft.hideSize)
-                } footer: {
-                    Text("catch.form.hideSizeFooter")
                 }
-            }
-            .navigationTitle("catch.form.title")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("common.done") {
-                        onDone(draft)
-                        dismiss()
-                    }
-                    .disabled(!draft.isValid || isProcessingPhoto)
-                }
-            }
-            .task { await speciesStore.loadIfNeeded() }
-            .onChange(of: pickerItem) { _, item in
-                guard let item else { return }
-                Task { await loadPhoto(item) }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
         }
+        .task { await speciesStore.loadIfNeeded() }
+        .onChange(of: pickerItem) { _, item in
+            guard let item else { return }
+            Task { await loadPhoto(item) }
+        }
+    }
+
+    /// Подсказка о промысловой мере под весом и длиной, пока улов не меньше неё.
+    private var minSizeHint: String? {
+        guard let minSize, !isUndersized else { return nil }
+        return String(localized: "rules.catch.minSizeHint \(minSize)")
+    }
+
+    /// Способ ловли: «не указан» и все способы.
+    private var methodOptions: [(label: String, value: FishingMethod?)] {
+        [(label: String(localized: "common.notSpecified"), value: nil)]
+            + FishingMethod.allCases.map { (label: String(localized: String.LocalizationValue($0.titleKey)), value: Optional($0)) }
+    }
+
+    /// Фото улова: само фото с кнопкой удаления, плитка-скелетон, пока фото сжимается, или выбор фото.
+    @ViewBuilder
+    private var photoRow: some View {
+        if let photo = draft.photo {
+            UniversalRow(config: .standard) {
+                PhotoDraftThumbnail(photo: photo)
+            } trailing: {
+                DSButton(String(localized: "photo.remove"), appearance: .flat, role: .destructive) {
+                    draft.photo = nil
+                }
+            }
+        } else if isProcessingPhoto {
+            UniversalRow(config: .standard) {
+                PhotoTileSkeleton()
+            } trailing: {
+                EmptyView()
+            }
+        } else {
+            PhotosPicker(selection: $pickerItem, matching: .images) {
+                UniversalRow(
+                    leadingIcon: .sfSymbol("camera", color: AppColors.accent, size: AppIconSize.lg),
+                    title: String(localized: "catch.form.addPhoto")
+                )
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    /// Число в строке формы, справа, как `FormTextField(.inline)`: у DesignKit нет поля с форматом
+    /// числа, поэтому здесь системное поле с тем же шрифтом и выравниванием.
+    private func numberField(
+        _ placeholder: LocalizedStringKey,
+        value: Binding<Double?>,
+        fractionDigits: ClosedRange<Int>
+    ) -> some View {
+        TextField(placeholder, value: value, format: .number.precision(.fractionLength(fractionDigits)))
+            .keyboardType(.decimalPad)
+            .multilineTextAlignment(.trailing)
+            .font(AppTypography.body)
+            .foregroundStyle(AppColors.textPrimary)
     }
 
     private func loadPhoto(_ item: PhotosPickerItem) async {

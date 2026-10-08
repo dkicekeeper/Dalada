@@ -24,8 +24,11 @@ struct CloseFriendsView: View {
                 )
                 .listRowBackground(Color.clear)
             } else if !isLoaded {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
+                Section {
+                    ForEach(0..<5, id: \.self) { _ in
+                        PersonRowSkeleton()
+                    }
+                }
             } else {
                 Section {
                     ForEach(friends) { friend in

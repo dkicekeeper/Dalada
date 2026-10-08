@@ -175,14 +175,12 @@ struct SuggestionReviewView: View {
                             .foregroundStyle(AppColors.textSecondary)
                     }
                     HStack(spacing: AppSpacing.md) {
-                        Button("review.accept") {
+                        DSButton(String(localized: "review.accept"), size: .medium) {
                             Task { await decide(item, accept: true) }
                         }
-                        .buttonStyle(.borderedProminent)
-                        Button("review.reject", role: .destructive) {
+                        DSButton(String(localized: "review.reject"), appearance: .secondary, role: .destructive, size: .medium) {
                             Task { await decide(item, accept: false) }
                         }
-                        .buttonStyle(.bordered)
                         Spacer(minLength: 0)
                         Button("review.openPlace") {
                             openedPlace = PlaceSelection(id: item.placeID)

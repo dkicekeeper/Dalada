@@ -248,8 +248,22 @@ struct RuleZoneView: View {
             if let pack = rules.pack, let zone = pack.zone(zoneID) {
                 content(zone, pack: pack)
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                // Правила грузятся: карта зоны, название, карточки правил.
+                ScrollView {
+                    VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                        Skeleton(height: 240, cornerRadius: AppRadius.xl)
+                        SkeletonText(AppTypography.h3, width: 200)
+                        SkeletonText(AppTypography.caption, lines: 2)
+                        ForEach(0..<2, id: \.self) { _ in
+                            Skeleton(height: 96, cornerRadius: AppRadius.xl)
+                        }
+                    }
+                    .shimmer()
+                    .skeletonLoadingLabel()
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.lg)
+                }
+                .scrollDisabled(true)
             }
         }
         .navigationTitle(Text(verbatim: rules.pack?.zone(zoneID)?.name.text(for: RulesStore.language) ?? ""))
