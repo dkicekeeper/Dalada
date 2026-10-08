@@ -294,6 +294,8 @@ struct TripFinishView: View {
     @State private var isSaving = false
     @State private var saveError: String?
     @State private var confirmsDiscard = false
+    /// Поездка закончена: конфетти и вспышка над цифрами (DesignKit), один раз при появлении.
+    @State private var celebrates = false
 
     var body: some View {
         NavigationStack {
@@ -303,6 +305,7 @@ struct TripFinishView: View {
                         StatTile(title: String(localized: "trip.stat.distance"), value: TripFormat.distance(recorder.stats.distanceM))
                         StatTile(title: String(localized: "trip.stat.moving"), value: TripFormat.duration(recorder.stats.movingSeconds))
                     }
+                    .completionMoment(isComplete: celebrates, in: RoundedRectangle(cornerRadius: AppRadius.md), playsHaptic: false)
                     HStack(spacing: AppSpacing.md) {
                         StatTile(
                             title: String(localized: "trip.stat.duration"),
@@ -310,6 +313,7 @@ struct TripFinishView: View {
                         )
                         StatTile(title: String(localized: "trip.stat.elevation"), value: TripFormat.elevation(recorder.stats.elevationGainM))
                     }
+                    .completionMoment(isComplete: celebrates, in: RoundedRectangle(cornerRadius: AppRadius.md), playsHaptic: false)
                 }
 
                 Section("trip.finish.name") {
@@ -407,6 +411,18 @@ struct TripFinishView: View {
                 title = TripFormat.defaultTitle(activity: recorder.activity, date: recorder.startedAt ?? endedAt)
             }
         }
+        .celebration(trigger: celebrates)
+        .task {
+            guard isWorthCelebrating else { return }
+            // Сначала лист поднимается, потом праздник.
+            try? await Task.sleep(for: .milliseconds(400))
+            celebrates = true
+        }
+    }
+
+    /// Случайный короткий старт не празднуем: нужна хотя бы прогулка или полчаса на берегу.
+    private var isWorthCelebrating: Bool {
+        recorder.stats.distanceM >= 500 || endedAt.timeIntervalSince(recorder.startedAt ?? endedAt) >= 30 * 60
     }
 
     private var isValid: Bool {
@@ -571,6 +587,8 @@ struct MyTripsSection: View {
                         TripRow(trip: entry.summary, host: entry.host)
                     }
                     .buttonStyle(.plain)
+                    // Удалённая поездка рассыпается в пыль (DesignKit), новая проявляется.
+                    .transition(AsymmetricTransition(insertion: OpacityTransition(), removal: DissolveTransition()))
                 }
             } else if isLoaded {
                 Text("trips.empty.description")
@@ -591,7 +609,11 @@ struct MyTripsSection: View {
     }
 
     private func load() async {
-        trips = await TripsLoader(environment: environment, userID: userID).load(limit: 50)
+        let loaded = await TripsLoader(environment: environment, userID: userID).load(limit: 50)
+        // Первая загрузка — без анимации; дальше список меняется плавно, удалённая уходит пылью.
+        withAnimation(isLoaded ? AppAnimation.gentleSpring : nil) {
+            trips = loaded
+        }
         isLoaded = true
     }
 }

@@ -49,7 +49,15 @@ struct IntroOnboardingView: View {
         } actions: { _ in
             buttons
         }
-        .background(AppColors.bgCard.ignoresSafeArea())
+        // Зелёное сияние Dalada (палитра вокруг акцента) медленно плывёт: экран видят недолго,
+        // а приглушённая яркость оставляет текст читаемым.
+        .background {
+            ZStack {
+                AppColors.bgCard
+                AuroraBackground(intensity: 0.5)
+            }
+            .ignoresSafeArea()
+        }
         // Вошли прямо здесь — знакомство закончено, дальше согласие и username.
         .onChange(of: session.profile?.id) { _, id in
             if id != nil { onFinish() }
