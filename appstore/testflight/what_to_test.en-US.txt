@@ -1,23 +1,23 @@
-Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, post a report with a catch and a photo (I’m here on a place card), record a trip (Start a trip on the map), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
+Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, post a report with a catch and a photo (I’m here on a place card), record a trip (the “+” button on the map → Start a trip), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
-New:
-• Web links: Share on a public place, trip or catch gives a link to a web page that opens without the app: map, photos, Open in Dalada. A place link shows a preview of the place in Telegram.
-• Invite to a trip by link: in your trip → Participants → Invite by link. Whoever opens it in the app joins the trip (even without the app — after installing and signing in), and you get their friend request.
-• Contributor level in your profile: points for public places, verified reports, reviews, photos and accepted edits. From Expert on — Review place edits from other people.
-• Notes in your Only me and Friends places: the Notes tab on the place card — a diary for the place or a chat with friends.
-• Map → Layers → My photos: photos from your reports and catches where they were taken.
-• A Your streak is at risk notification on Saturday if you haven’t been out this week. Turn it off in Notifications → Reminders.
-• Shared packing lists open offline — the last loaded copy.
+New — a refreshed design. A lot has changed: if anything looks or works wrong, please send a screenshot.
+• Map: the “+” button opens a menu — New place here and Start a trip (or open the recording in progress). My location moved to the bottom left.
+• Place, report, catch, review, profile and other forms have new cards, fields and buttons.
+• Loading spinners became screen outlines that smoothly turn into the content.
+• Comments and discussion replies have a new field at the bottom, with the quote above the text.
+• Photos open full screen and zoom with a pinch.
+• Achievement medals shimmer as you tilt the phone, finishing a trip brings confetti, and the intro has a green aurora.
+• Saving a report, place or review answers with a light haptic, an error with a different one.
+• Kazakh has been proofread: consistent terms, typos fixed.
 
 Earlier:
-• Notifications: a friend out on a trip, an invite to shared packing, you became a place keeper. Pack together in a checklist’s “…” menu.
-• Private profile and the Close friends visibility — in profile settings.
-• Download GPX in your trip’s “…” menu; Download my data in profile settings.
-• People you may know in Friends and Find people.
-• Streaks: Weeks in a row in your profile; winter and fishing bans don’t break a streak.
-• Weather at a place: pressure, wind, forecast, sunrise and sunset; reports save the weather by themselves.
-• Show friends where I am while recording a trip — friends see you on Home in Out right now.
-• Place keeper and Place records in the Reports tab.
-• Shared packing: Tips → Shared packing → “+”; everyone marks I'll bring and packed.
+• Web links: Share on a public place, trip or catch gives a page that opens without the app.
+• Invite to a trip by link: your trip → Participants → Invite by link.
+• Contributor level in your profile; from Expert on — Review place edits.
+• A Notes tab in your Only me and Friends places.
+• Map → Layers → My photos.
+• A Your streak is at risk notification on Saturday; turn it off in Notifications → Reminders.
+• Shared packing lists open offline.
+• Private profile and Close friends, Download GPX and Download my data, People you may know, weekly streaks, weather at a place, Show friends where I am, place keeper and records, shared packing.
 
 Feedback: the Send Beta Feedback button in TestFlight or dakacom@gmail.com.
