@@ -341,12 +341,7 @@ struct ReviewFormView: View {
                                 maxSelectionCount: ReviewDraft.photoLimit - photos.count,
                                 matching: .images
                             ) {
-                                UniversalRow(
-                                    leadingIcon: .sfSymbol("photo.on.rectangle.angled", color: AppColors.accent, size: AppIconSize.lg),
-                                    title: String(localized: "reviews.form.addPhotos"),
-                                    titleColor: AppColors.accent
-                                )
-                                .contentShape(Rectangle())
+                                PickerRowLabel(String(localized: "reviews.form.addPhotos"), systemImage: "photo.on.rectangle.angled")
                             }
                             .buttonStyle(.plain)
                         }

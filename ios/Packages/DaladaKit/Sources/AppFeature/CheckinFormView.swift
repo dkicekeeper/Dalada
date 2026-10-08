@@ -171,12 +171,7 @@ struct CheckinFormView: View {
                                 maxSelectionCount: CheckinDraft.photoLimit - draft.photos.count,
                                 matching: .images
                             ) {
-                                UniversalRow(
-                                    leadingIcon: .sfSymbol("photo.on.rectangle.angled", color: AppColors.accent, size: AppIconSize.lg),
-                                    title: String(localized: "checkin.form.addPhotos"),
-                                    titleColor: AppColors.accent
-                                )
-                                .contentShape(Rectangle())
+                                PickerRowLabel(String(localized: "checkin.form.addPhotos"), systemImage: "photo.on.rectangle.angled")
                             }
                             .buttonStyle(.plain)
                         }
@@ -328,48 +323,6 @@ struct CheckinFormView: View {
         dismiss()
         // Первый чекин — момент первой пользы: объясним, зачем уведомления.
         Task { await NotificationPrimer.shared.offer() }
-    }
-}
-
-/// Ряд чипов внутри карточки `FormSection`: подпись с отступом карточки, чипы прокручиваются
-/// от края до края (у `ChipPicker` подпись без отступа). Чекин, правка отчёта, «Информация» места.
-struct FormChipRow<Option: Hashable>: View {
-    let title: String?
-    let picker: ChipPicker<Option>
-
-    init(
-        _ title: String? = nil,
-        options: [Option],
-        selection: Binding<Option?>,
-        systemImage: ((Option) -> String?)? = nil,
-        label: @escaping (Option) -> String
-    ) {
-        self.title = title
-        self.picker = ChipPicker(options: options, selection: selection, systemImage: systemImage, label: label)
-    }
-
-    init(
-        _ title: String? = nil,
-        options: [Option],
-        selection: Binding<Set<Option>>,
-        systemImage: ((Option) -> String?)? = nil,
-        label: @escaping (Option) -> String
-    ) {
-        self.title = title
-        self.picker = ChipPicker(options: options, selection: selection, systemImage: systemImage, label: label)
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            if let title {
-                Text(verbatim: title)
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-                    .padding(.horizontal, AppSpacing.lg)
-            }
-            picker
-                .contentMargins(.horizontal, AppSpacing.lg, for: .scrollContent)
-        }
     }
 }
 

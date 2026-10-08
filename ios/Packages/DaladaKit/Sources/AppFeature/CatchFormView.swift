@@ -148,11 +148,7 @@ struct CatchFormView: View {
             }
         } else {
             PhotosPicker(selection: $pickerItem, matching: .images) {
-                UniversalRow(
-                    leadingIcon: .sfSymbol("camera", color: AppColors.accent, size: AppIconSize.lg),
-                    title: String(localized: "catch.form.addPhoto")
-                )
-                .contentShape(Rectangle())
+                PickerRowLabel(String(localized: "catch.form.addPhoto"), systemImage: "camera", titleColor: AppColors.textPrimary)
             }
             .buttonStyle(.plain)
         }
