@@ -585,7 +585,8 @@ struct ProfileHeader: View {
     let profile: UserProfile
 
     var body: some View {
-        PersonRow(
+        // Свой PersonRow (FriendsViews) принимает модель Dalada; здесь строка из DesignKit.
+        DesignComponents.PersonRow(
             name: profile.displayName ?? String(localized: "profile.noName"),
             subtitle: profile.username.map { "@" + $0 },
             detail: profile.city,
