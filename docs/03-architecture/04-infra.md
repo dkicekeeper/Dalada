@@ -62,13 +62,57 @@ Xcode Cloud и эти минуты не тратят.
 
 ## Бэкапы
 
+Workflow **Backup** (`.github/workflows/backup.yml`, с 2026-10-09):
+
 | Что | Как |
 |-----|-----|
-| База | Ежедневно GitHub Actions: `supabase db dump` → шифрование (age) → отдельный бакет R2 с версионированием; хранение 30 дней |
-| Файлы Storage | Еженедельная копия в R2 (rclone) |
+| База | Каждую ночь (01:41 по Алматы): `supabase db dump` — роли, схема и данные (как в инструкции Supabase «Backup and restore using the CLI») + расписание pg_cron (`cron.sql`) → **восстановление в чистый локальный Supabase** и сверка числа строк в каждой таблице с дампом (`.github/scripts/backup_check.py`) → архив, зашифрованный age → `db/` в закрытом бакете R2 |
+| Фото (Storage `media`) | Раз в неделю (воскресенье) или вручную с галочкой: `rclone sync` из Storage (S3) в `media/` того же бакета — удалённые в приложении фото уходят и из копии |
+| Сколько храним | 29 дней: политика конфиденциальности обещает, что копии перезаписываются в течение 30 дней |
+| Чего в копии нет | Секреты из vault (`push_function_url`, `push_worker_secret`) и Edge Functions — они в репозитории и секретах |
 | Код и схема | Репозиторий |
 
-Раз в месяц — пробное восстановление дампа в локальный Supabase.
+Логи публичные: workflow печатает только имена файлов, размеры и «строки совпадают». Пока настройка
+не сделана, задачи пропускаются с предупреждением.
+
+### Настройка (владелец, один раз)
+
+1. **Бакет.** Cloudflare → R2 → Create bucket `dalada-backups`; публичный доступ **не** включать.
+   Другое имя — переменная `BACKUP_BUCKET`.
+2. **Доступ к бакету.** R2 → Manage API tokens: либо добавить `dalada-backups` в токен карты (тогда
+   ничего больше не нужно), либо новый токен с Object Read & Write только на `dalada-backups` →
+   секреты `BACKUP_R2_ACCESS_KEY_ID` и `BACKUP_R2_SECRET_ACCESS_KEY`.
+3. **Ключ шифрования.** На Mac: `brew install age`, затем `age-keygen -o dalada-backup.key`. Файл
+   ключа — в менеджер паролей и на флешку: без него копию не открыть. Открытый ключ (строка
+   `age1…` из вывода) → GitHub → Settings → Secrets and variables → Actions → **Variables** →
+   `BACKUP_AGE_RECIPIENT`.
+4. **Строка подключения.** Supabase → Connect → **Session pooler** → URI, в неё — пароль базы →
+   секрет `SUPABASE_DB_URL`. (Прямое подключение — только IPv6, у GitHub Actions его нет.)
+5. **Фото.** Supabase → Storage → S3 Connection → включить, New access key → секреты
+   `SUPABASE_S3_ACCESS_KEY_ID` и `SUPABASE_S3_SECRET_ACCESS_KEY`; регион проекта, если не
+   `eu-central-1`, — переменная `SUPABASE_S3_REGION`.
+6. **Проверка.** Actions → Backup → Run workflow (с галочкой «фото»): в итогах — имя копии, размер,
+   «строки совпадают».
+
+### Восстановление
+
+1. Скачать нужный `db/dalada-db-….tar.gz.age` (R2 в панели Cloudflare или `rclone`), открыть:
+   `age -d -i dalada-backup.key dalada-db-….tar.gz.age | tar xz`.
+2. Новый проект Supabase (или self-hosted в РК), его строка подключения — `URL`:
+   ```bash
+   psql --single-transaction --variable ON_ERROR_STOP=1 --file roles.sql --file schema.sql \
+     --command 'SET session_replication_role = replica' --file data.sql --dbname "$URL"
+   psql "$URL" -f cron.sql
+   ```
+   Строки `GRANT SET ON PARAMETER` в `roles.sql` выдаёт платформа — если они не проходят, удалить их.
+3. Секреты vault: `push_function_url`, `push_worker_secret` ([M6d](../04-beta/M6-beta-readiness.md)).
+   Edge Functions — workflow **Edge Functions**; история миграций —
+   `supabase migration repair --status applied <версии из supabase/migrations>`.
+4. Фото — `rclone copy` из `media/` бакета бэкапов в Storage нового проекта.
+5. В приложении — новый адрес и ключ (`config.json`); пользователи один раз входят заново.
+
+Восстановление в чистую базу проверяется каждую ночь в самом workflow, отдельная ежемесячная
+проверка не нужна.
 
 ## Безопасность
 

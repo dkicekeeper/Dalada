@@ -1,0 +1,210 @@
+name: Backup
+
+# Резервные копии рабочей базы и фото (docs/03-architecture/04-infra.md, «Бэкапы»).
+#
+# База — каждую ночь: роли, схема и данные через Supabase CLI (как в инструкции Supabase «Backup and
+# restore using the CLI») + расписание pg_cron → проверка восстановлением в чистую локальную базу →
+# шифрование age → закрытый бакет R2. Фото — раз в неделю: копия бакета Storage `media` в тот же бакет.
+# Политика конфиденциальности обещает, что копии перезаписываются в течение 30 дней: храним 29.
+#
+# Настройка (один раз, владелец, docs/03-architecture/04-infra.md#бэкапы):
+#   секреты  SUPABASE_DB_URL — строка подключения Session pooler (с паролем базы);
+#            BACKUP_R2_ACCESS_KEY_ID / BACKUP_R2_SECRET_ACCESS_KEY — токен R2 на бакет бэкапов
+#              (если нет — берём R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY, им нужен доступ к бакету);
+#            SUPABASE_S3_ACCESS_KEY_ID / SUPABASE_S3_SECRET_ACCESS_KEY — ключи S3 к Storage (для фото);
+#   переменные BACKUP_AGE_RECIPIENT — открытый ключ age (age1…); закрытый — только у владельца;
+#            BACKUP_BUCKET — закрытый бакет R2 (по умолчанию dalada-backups), без публичного доступа;
+#            SUPABASE_S3_REGION — регион проекта для S3 Storage (по умолчанию eu-central-1).
+# Пока настройки нет, задачи пропускаются с предупреждением, а не падают каждую ночь.
+#
+# Репозиторий публичный, логи — тоже: печатаем только размеры, имена файлов и «совпадает».
+on:
+  schedule:
+    - cron: "41 20 * * *" # 01:41 по Алматы
+  workflow_dispatch:
+    inputs:
+      media:
+        description: "Скопировать и фото (иначе — только по воскресеньям)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+env:
+  BACKUP_BUCKET: ${{ vars.BACKUP_BUCKET || 'dalada-backups' }}
+  RCLONE_CONFIG_R2_TYPE: s3
+  RCLONE_CONFIG_R2_PROVIDER: Cloudflare
+  RCLONE_CONFIG_R2_NO_CHECK_BUCKET: "true"
+  KEEP_DAYS: "29"
+
+jobs:
+  database:
+    name: Database
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Settings
+        id: settings
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          AGE_RECIPIENT: ${{ vars.BACKUP_AGE_RECIPIENT }}
+        run: |
+          missing=()
+          [ -n "$SUPABASE_DB_URL" ] || missing+=("секрет SUPABASE_DB_URL")
+          [[ "$AGE_RECIPIENT" =~ ^age1[0-9a-z]{58}$ ]] || missing+=("переменная BACKUP_AGE_RECIPIENT (age1…, 62 символа)")
+          if [ ${#missing[@]} -gt 0 ]; then
+            for m in "${missing[@]}"; do echo "::warning::Бэкап базы не настроен: нет $m (docs/03-architecture/04-infra.md#бэкапы)"; done
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Пароль внутри строки подключения GitHub сам не скрывает — скрываем отдельно.
+          password=$(python3 -c "import sys, urllib.parse as u; print(u.unquote(u.urlsplit(sys.argv[1]).password or ''))" "$SUPABASE_DB_URL")
+          [ -n "$password" ] && echo "::add-mask::$password"
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+      - name: R2 access
+        if: steps.settings.outputs.ready == 'true'
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.BACKUP_R2_ACCESS_KEY_ID || secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_R2_SECRET_ACCESS_KEY || secrets.R2_SECRET_ACCESS_KEY }}
+        run: bash map/r2_env.sh
+
+      - name: Tools
+        if: steps.settings.outputs.ready == 'true'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq age rclone postgresql-client > /dev/null
+
+      # Та же версия CLI, что в supabase.yml.
+      - uses: supabase/setup-cli@v1
+        if: steps.settings.outputs.ready == 'true'
+        with:
+          version: 2.118.0
+
+      - name: Dump
+        if: steps.settings.outputs.ready == 'true'
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/dump"
+          cd "$RUNNER_TEMP/dump"
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f roles.sql --role-only > /dev/null
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f schema.sql > /dev/null
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f data.sql --use-copy --data-only > /dev/null
+          # Расписание pg_cron лежит в схеме расширения и в дамп не попадает.
+          psql "$SUPABASE_DB_URL" -qtAX -v ON_ERROR_STOP=1 \
+            -c "select format('select cron.schedule(%L, %L, %L);', jobname, schedule, command) from cron.job order by jobname" > cron.sql
+          ls -la
+
+      # Восстановление в чистый локальный Supabase — как при настоящей аварии, только без строк GRANT SET
+      # ON PARAMETER (их выдаёт платформа). Если дамп битый, ночь заканчивается ошибкой, а не тишиной.
+      - name: Restore check
+        if: steps.settings.outputs.ready == 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/restore" && cd "$RUNNER_TEMP/restore"
+          supabase init --force > /dev/null
+          supabase db start > /dev/null
+          target="postgresql://supabase_admin:postgres@127.0.0.1:54322/postgres"
+          dump="$RUNNER_TEMP/dump"
+          check="$GITHUB_WORKSPACE/.github/scripts/backup_check.py"
+          grep -v '^GRANT SET ON PARAMETER' "$dump/roles.sql" > roles.check.sql
+          # При ошибке — только строки ERROR без DETAIL и CONTEXT: там бывают значения из строк.
+          psql --single-transaction --variable ON_ERROR_STOP=1 --quiet \
+            --file roles.check.sql --file "$dump/schema.sql" \
+            --command 'SET session_replication_role = replica' --file "$dump/data.sql" \
+            --dbname "$target" > restore.log 2>&1 \
+            || { grep -o 'ERROR: .*' restore.log | cut -c1-160 | head -3; echo "::error::Дамп не восстанавливается"; exit 1; }
+          psql "$target" -q -v ON_ERROR_STOP=1 -f "$dump/cron.sql" > /dev/null
+          # Строки сверяем с самим дампом, а не с рабочей базой: та меняется, пока идёт дамп.
+          python3 "$check" counts "$dump/data.sql" | sort > counts.dump
+          python3 "$check" sql "$dump/data.sql" > counts.sql
+          psql "$target" -qtAX -v ON_ERROR_STOP=1 -f counts.sql | sort > counts.restored
+          if cmp -s counts.dump counts.restored; then
+            echo "Восстановление: $(wc -l < counts.dump) таблиц, число строк совпадает с дампом"
+          else
+            echo "::error::После восстановления число строк не совпадает с дампом в таблицах:"
+            diff counts.dump counts.restored | grep '^[<>]' | cut -d'|' -f1 | sort -u || true
+            exit 1
+          fi
+          supabase stop --no-backup > /dev/null
+
+      - name: Encrypt and upload
+        if: steps.settings.outputs.ready == 'true'
+        env:
+          AGE_RECIPIENT: ${{ vars.BACKUP_AGE_RECIPIENT }}
+        run: |
+          name="dalada-db-$(date -u +%Y%m%d-%H%M).tar.gz.age"
+          tar -C "$RUNNER_TEMP/dump" -czf - . | age -r "$AGE_RECIPIENT" -o "$RUNNER_TEMP/$name"
+          rm -rf "$RUNNER_TEMP/dump"
+          rclone copyto "$RUNNER_TEMP/$name" "r2:$BACKUP_BUCKET/db/$name" --s3-no-check-bucket
+          rclone lsl "r2:$BACKUP_BUCKET/db/$name" > /dev/null || { echo "::error::Копия не видна в бакете"; exit 1; }
+          rclone delete "r2:$BACKUP_BUCKET/db" --min-age "${KEEP_DAYS}d"
+          count=$(rclone lsf "r2:$BACKUP_BUCKET/db" | wc -l)
+          size=$(du -h "$RUNNER_TEMP/$name" | cut -f1)
+          echo "Загружено: db/$name ($size); копий в бакете: $count"
+          {
+            echo "### Бэкап базы"
+            echo "- \`db/$name\` — $size, зашифрован age"
+            echo "- восстановление в чистую базу проверено, строки совпадают с дампом"
+            echo "- копий в бакете: $count (храним $KEEP_DAYS дней)"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  media:
+    name: Photos
+    # Раз в неделю (ночь на понедельник по Алматы) или вручную с галочкой.
+    if: (github.event_name == 'schedule' && github.event.schedule == '41 20 * * *') || (github.event_name == 'workflow_dispatch' && inputs.media)
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Settings
+        id: settings
+        env:
+          S3_KEY: ${{ secrets.SUPABASE_S3_ACCESS_KEY_ID }}
+          S3_SECRET: ${{ secrets.SUPABASE_S3_SECRET_ACCESS_KEY }}
+          SUPABASE_HOST: ${{ secrets.SUPABASE_HOST }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          # По расписанию — только по воскресеньям (UTC), вручную — всегда.
+          if [ "$EVENT" = "schedule" ] && [ "$(date -u +%u)" != "7" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if [ -z "$S3_KEY" ] || [ -z "$S3_SECRET" ] || [ -z "$SUPABASE_HOST" ]; then
+            echo "::warning::Копия фото не настроена: нужны секреты SUPABASE_S3_ACCESS_KEY_ID, SUPABASE_S3_SECRET_ACCESS_KEY и SUPABASE_HOST"
+            echo "ready=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+
+      - name: R2 access
+        if: steps.settings.outputs.ready == 'true'
+        env:
+          R2_ACCESS_KEY_ID: ${{ secrets.BACKUP_R2_ACCESS_KEY_ID || secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.BACKUP_R2_SECRET_ACCESS_KEY || secrets.R2_SECRET_ACCESS_KEY }}
+        run: bash map/r2_env.sh
+
+      - name: Tools
+        if: steps.settings.outputs.ready == 'true'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq rclone > /dev/null
+
+      # sync, а не copy: фото, удалённые в приложении, уходят и из копии за неделю.
+      - name: Copy photos
+        if: steps.settings.outputs.ready == 'true'
+        env:
+          RCLONE_CONFIG_SB_TYPE: s3
+          RCLONE_CONFIG_SB_PROVIDER: Other
+          RCLONE_CONFIG_SB_ACCESS_KEY_ID: ${{ secrets.SUPABASE_S3_ACCESS_KEY_ID }}
+          RCLONE_CONFIG_SB_SECRET_ACCESS_KEY: ${{ secrets.SUPABASE_S3_SECRET_ACCESS_KEY }}
+          RCLONE_CONFIG_SB_REGION: ${{ vars.SUPABASE_S3_REGION || 'eu-central-1' }}
+          RCLONE_CONFIG_SB_FORCE_PATH_STYLE: "true"
+          SUPABASE_HOST: ${{ secrets.SUPABASE_HOST }}
+        run: |
+          export RCLONE_CONFIG_SB_ENDPOINT="https://$SUPABASE_HOST/storage/v1/s3"
+          rclone sync sb:media "r2:$BACKUP_BUCKET/media" --checksum --transfers 16 --checkers 32 \
+            --s3-no-check-bucket --stats 0 --log-level ERROR
+          files=$(rclone lsf -R --files-only "r2:$BACKUP_BUCKET/media" | wc -l)
+          size=$(rclone size "r2:$BACKUP_BUCKET/media" --json | python3 -c "import json,sys; print(round(json.load(sys.stdin)['bytes']/2**20))")
+          echo "Фото: $files файлов, $size МБ"
+          echo "### Копия фото: $files файлов, $size МБ" >> "$GITHUB_STEP_SUMMARY"
