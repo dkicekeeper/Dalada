@@ -36,6 +36,7 @@ on:
       - "appstore/**"
       - "!appstore/listing/**"
       - "!appstore/listing.py"
+      - "!appstore/screenshots/**"
       - ".github/workflows/testflight-info.yml"
 
 concurrency:
