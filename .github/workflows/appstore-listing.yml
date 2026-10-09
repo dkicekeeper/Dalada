@@ -1,0 +1,55 @@
+name: App Store page
+
+# Страница App Store из appstore/listing/ → App Store Connect (appstore/listing.py): название,
+# подзаголовок, ключевые слова, промотекст, описание, ссылки и категории для ru и en-US.
+# На любой ветке — проверка длин; в main и вручную — отправка. Ключ — те же секреты ASC_*, что у
+# TestFlight. Сборку к версии не привязывает и на проверку не отправляет.
+on:
+  push:
+    paths:
+      - "appstore/listing/**"
+      - "appstore/listing.py"
+      - ".github/workflows/appstore-listing.yml"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Версия, если её ещё нет в App Store Connect"
+        default: "1.0"
+
+concurrency:
+  group: appstore-listing
+  cancel-in-progress: false
+
+jobs:
+  listing:
+    name: Check and upload texts
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check texts
+        run: python3 appstore/listing.py --check
+
+      - name: Upload to App Store Connect
+        if: github.ref == 'refs/heads/main'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          VERSION: ${{ inputs.version || '1.0' }}
+        run: |
+          if [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY_P8" ]; then
+            echo "::error::Нет секретов ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8 (docs/04-beta/testflight.md)"
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/asc"
+          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/asc/AuthKey.p8"
+          export ASC_KEY_PATH="$RUNNER_TEMP/asc/AuthKey.p8"
+          python3 -m venv "$RUNNER_TEMP/ascenv"
+          "$RUNNER_TEMP/ascenv/bin/pip" install --quiet pyjwt cryptography
+          "$RUNNER_TEMP/ascenv/bin/python" appstore/listing.py --version "$VERSION"
+
+      - name: Remove API key
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/asc"
