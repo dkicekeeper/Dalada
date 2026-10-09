@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 """Печатает SQL со слоями карты (M16): тексты из areas.json, геометрии из osm_src.areas — для миграции.
 
-Запуск: python3 export_areas.py > /tmp/map_areas.sql (нужны psql и локальная база после fetch_osm.sh).
+Запуск: python3 export_areas.py [id …] > /tmp/map_areas.sql (нужны psql и локальная база после
+fetch_osm.sh). С id — только эти слои (для миграции, которая добавляет новые: применённые не правим).
 Даты проверки — VERIFIED_ON; тарифы — в МРП, только со страниц тарифов самих парков.
 """
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 DB = os.environ.get("DB", "postgresql://postgres:postgres@127.0.0.1:54322/postgres")
-VERIFIED_ON = "2026-10-05"
+VERIFIED_ON = os.environ.get("VERIFIED_ON", "2026-10-05")
 
 areas = json.loads((Path(__file__).parent / "areas.json").read_text())
+if sys.argv[1:]:
+    areas = [a for a in areas if a["id"] in sys.argv[1:]]
+    assert len(areas) == len(sys.argv[1:]), "неизвестный id"
 rows = subprocess.run(
     ["psql", DB, "-At", "-F", "\t", "-c", "select id, extensions.st_astext(geom, 5) from osm_src.areas order by id"],
     check=True, capture_output=True, text=True,

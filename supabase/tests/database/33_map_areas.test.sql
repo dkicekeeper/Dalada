@@ -21,8 +21,10 @@ insert into auth.users (id, email) values ('11111111-1111-1111-1111-111111111111
 set local role anon;
 select is(
   (select string_agg(id, ',' order by sort_order) from public.map_areas),
-  'ile_alatau,almaty_reserve,kolsai,charyn,altyn_emel,zhongar_alatau,border_strip_cn,border_zone_kg',
-  'гость видит все слои'
+  'ile_alatau,almaty_reserve,kolsai,charyn,altyn_emel,zhongar_alatau,border_strip_cn,border_zone_kg,'
+  || 'bayanaul,burabay,kokshetau,tarbagatai,karkaraly,katon_karagay,buiratau,sairam_ugam,'
+  || 'aksu_zhabagly,korgalzhyn,naurzum,ustyurt',
+  'гость видит все слои (с M34 — нацпарки и заповедники всего Казахстана)'
 );
 select is(
   (select tenge from public.mrp_values where year = 2026),

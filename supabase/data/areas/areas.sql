@@ -19,7 +19,9 @@ $$;
 insert into osm_src.areas
 select key, pg_temp.outline(geom)
   from osm_src.areas_raw
- where key in ('ile_alatau', 'altyn_emel', 'charyn', 'kolsai', 'zhongar_alatau', 'almaty_reserve');
+ where key in ('ile_alatau', 'altyn_emel', 'charyn', 'kolsai', 'zhongar_alatau', 'almaty_reserve',
+               'bayanaul', 'burabay', 'kokshetau', 'tarbagatai', 'karkaraly', 'katon_karagay', 'buiratau',
+               'sairam_ugam', 'aksu_zhabagly', 'korgalzhyn', 'naurzum', 'ustyurt');
 
 -- Регион приложения: Алматинская область и Жетісу (граница с Китаем — до ≈ 46° с. ш.).
 create temp table region as select st_makeenvelope(73.0, 42.0, 83.0, 46.0, 4326) g;

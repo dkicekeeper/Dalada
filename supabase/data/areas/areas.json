@@ -126,5 +126,197 @@
     "source_title": "Постановление Правительства РК от 16 апреля 2014 года № 356",
     "source_url": "https://adilet.zan.kz/rus/docs/P1400000356",
     "sort_order": 80
+  },
+  {
+    "id": "bayanaul",
+    "kind": "national_park",
+    "name": ["Баянаульский национальный парк", "Баянауыл ұлттық паркі", "Bayanaul National Park"],
+    "info": [
+      "Въезд платный — на КПП парка. Тариф — по приказу Министра экологии № 232, в МРП. Рыбалка — только там, где её разрешает парк.",
+      "Кіру ақылы — саябақтың өткізу бекетінде. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен. Балық аулау — тек саябақ рұқсат еткен жерлерде.",
+      "Paid entry at the park checkpoint. The fee is set in MCI by order No. 232 of the Minister of Ecology. Fishing only where the park allows it."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Приказ Министра экологии и природных ресурсов РК от 2 октября 2024 года № 232",
+    "source_url": "https://adilet.zan.kz/rus/docs/V2400035202",
+    "sort_order": 90
+  },
+  {
+    "id": "burabay",
+    "kind": "national_park",
+    "name": ["Национальный парк «Бурабай»", "«Бурабай» ұлттық паркі", "Burabay National Park"],
+    "info": [
+      "Въезд платный — на КПП парка. Тариф — по приказу Министра экологии № 232, в МРП. Рыбалка — только там, где её разрешает парк.",
+      "Кіру ақылы — саябақтың өткізу бекетінде. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен. Балық аулау — тек саябақ рұқсат еткен жерлерде.",
+      "Paid entry at the park checkpoint. The fee is set in MCI by order No. 232 of the Minister of Ecology. Fishing only where the park allows it."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Приказ Министра экологии и природных ресурсов РК от 2 октября 2024 года № 232",
+    "source_url": "https://adilet.zan.kz/rus/docs/V2400035202",
+    "sort_order": 100
+  },
+  {
+    "id": "kokshetau",
+    "kind": "national_park",
+    "name": ["Национальный парк «Кокшетау»", "«Көкшетау» ұлттық паркі", "Kokshetau National Park"],
+    "info": [
+      "Въезд платный — на КПП парка. Тариф — по приказу Министра экологии № 232, в МРП. Рыбалка — только там, где её разрешает парк.",
+      "Кіру ақылы — саябақтың өткізу бекетінде. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен. Балық аулау — тек саябақ рұқсат еткен жерлерде.",
+      "Paid entry at the park checkpoint. The fee is set in MCI by order No. 232 of the Minister of Ecology. Fishing only where the park allows it."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Приказ Министра экологии и природных ресурсов РК от 2 октября 2024 года № 232",
+    "source_url": "https://adilet.zan.kz/rus/docs/V2400035202",
+    "sort_order": 110
+  },
+  {
+    "id": "tarbagatai",
+    "kind": "national_park",
+    "name": ["Национальный парк «Тарбагатай»", "«Тарбағатай» ұлттық паркі", "Tarbagatai National Park"],
+    "info": [
+      "Въезд платный — на КПП парка. Тариф — по приказу Министра экологии № 232, в МРП. Рыбалка — только там, где её разрешает парк.",
+      "Кіру ақылы — саябақтың өткізу бекетінде. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен. Балық аулау — тек саябақ рұқсат еткен жерлерде.",
+      "Paid entry at the park checkpoint. The fee is set in MCI by order No. 232 of the Minister of Ecology. Fishing only where the park allows it."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Приказ Министра экологии и природных ресурсов РК от 2 октября 2024 года № 232",
+    "source_url": "https://adilet.zan.kz/rus/docs/V2400035202",
+    "sort_order": 120
+  },
+  {
+    "id": "karkaraly",
+    "kind": "national_park",
+    "name": ["Каркаралинский национальный парк", "Қарқаралы ұлттық паркі", "Karkaraly National Park"],
+    "info": [
+      "Въезд платный — на КПП парка. Тариф — по приказу Министра экологии № 232, в МРП. Рыбалка — только там, где её разрешает парк.",
+      "Кіру ақылы — саябақтың өткізу бекетінде. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен. Балық аулау — тек саябақ рұқсат еткен жерлерде.",
+      "Paid entry at the park checkpoint. The fee is set in MCI by order No. 232 of the Minister of Ecology. Fishing only where the park allows it."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Приказ Министра экологии и природных ресурсов РК от 2 октября 2024 года № 232",
+    "source_url": "https://adilet.zan.kz/rus/docs/V2400035202",
+    "sort_order": 130
+  },
+  {
+    "id": "katon_karagay",
+    "kind": "national_park",
+    "name": ["Катон-Карагайский национальный парк", "Катонқарағай ұлттық паркі", "Katon-Karagay National Park"],
+    "info": [
+      "Въезд платный — на КПП парка. Тариф — по приказу Министра экологии № 232, в МРП. Рыбалка — только там, где её разрешает парк.",
+      "Кіру ақылы — саябақтың өткізу бекетінде. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен. Балық аулау — тек саябақ рұқсат еткен жерлерде.",
+      "Paid entry at the park checkpoint. The fee is set in MCI by order No. 232 of the Minister of Ecology. Fishing only where the park allows it."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Приказ Министра экологии и природных ресурсов РК от 2 октября 2024 года № 232",
+    "source_url": "https://adilet.zan.kz/rus/docs/V2400035202",
+    "sort_order": 140
+  },
+  {
+    "id": "buiratau",
+    "kind": "national_park",
+    "name": ["Национальный парк «Буйратау»", "«Бұйратау» ұлттық паркі", "Buiratau National Park"],
+    "info": [
+      "Въезд платный — на КПП парка. Тариф — по приказу Министра экологии № 232, в МРП. Рыбалка — только там, где её разрешает парк.",
+      "Кіру ақылы — саябақтың өткізу бекетінде. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен. Балық аулау — тек саябақ рұқсат еткен жерлерде.",
+      "Paid entry at the park checkpoint. The fee is set in MCI by order No. 232 of the Minister of Ecology. Fishing only where the park allows it."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Приказ Министра экологии и природных ресурсов РК от 2 октября 2024 года № 232",
+    "source_url": "https://adilet.zan.kz/rus/docs/V2400035202",
+    "sort_order": 150
+  },
+  {
+    "id": "sairam_ugam",
+    "kind": "national_park",
+    "name": ["Сайрам-Угамский национальный парк", "Сайрам-Өгем ұлттық паркі", "Sairam-Ugam National Park"],
+    "info": [
+      "Въезд платный — на КПП парка. Тариф — по приказу Министра экологии № 232, в МРП. Рыбалка — только там, где её разрешает парк.",
+      "Кіру ақылы — саябақтың өткізу бекетінде. Тариф — Экология министрінің № 232 бұйрығы бойынша, АЕК-пен. Балық аулау — тек саябақ рұқсат еткен жерлерде.",
+      "Paid entry at the park checkpoint. The fee is set in MCI by order No. 232 of the Minister of Ecology. Fishing only where the park allows it."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Приказ Министра экологии и природных ресурсов РК от 2 октября 2024 года № 232",
+    "source_url": "https://adilet.zan.kz/rus/docs/V2400035202",
+    "sort_order": 160
+  },
+  {
+    "id": "aksu_zhabagly",
+    "kind": "nature_reserve",
+    "name": ["Заповедник Аксу-Жабаглы", "Ақсу-Жабағылы қорығы", "Aksu-Zhabagly Nature Reserve"],
+    "info": [
+      "Государственный природный заповедник: свободного посещения нет, рыбалка и охота запрещены. Пройти можно только с разрешения администрации заповедника.",
+      "Мемлекеттік табиғи қорық: еркін кіруге болмайды, балық және аң аулауға тыйым салынған. Тек қорық әкімшілігінің рұқсатымен кіруге болады.",
+      "State nature reserve: no free access, fishing and hunting are banned. Entry only with permission from the reserve administration."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Закон РК «Об особо охраняемых природных территориях» от 7 июля 2006 года № 175",
+    "source_url": "https://adilet.zan.kz/rus/docs/Z060000175_",
+    "sort_order": 170
+  },
+  {
+    "id": "korgalzhyn",
+    "kind": "nature_reserve",
+    "name": ["Коргалжынский заповедник", "Қорғалжын қорығы", "Korgalzhyn Nature Reserve"],
+    "info": [
+      "Государственный природный заповедник: свободного посещения нет, рыбалка и охота запрещены. Пройти можно только с разрешения администрации заповедника.",
+      "Мемлекеттік табиғи қорық: еркін кіруге болмайды, балық және аң аулауға тыйым салынған. Тек қорық әкімшілігінің рұқсатымен кіруге болады.",
+      "State nature reserve: no free access, fishing and hunting are banned. Entry only with permission from the reserve administration."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Закон РК «Об особо охраняемых природных территориях» от 7 июля 2006 года № 175",
+    "source_url": "https://adilet.zan.kz/rus/docs/Z060000175_",
+    "sort_order": 180
+  },
+  {
+    "id": "naurzum",
+    "kind": "nature_reserve",
+    "name": ["Наурзумский заповедник", "Наурызым қорығы", "Naurzum Nature Reserve"],
+    "info": [
+      "Государственный природный заповедник: свободного посещения нет, рыбалка и охота запрещены. Пройти можно только с разрешения администрации заповедника.",
+      "Мемлекеттік табиғи қорық: еркін кіруге болмайды, балық және аң аулауға тыйым салынған. Тек қорық әкімшілігінің рұқсатымен кіруге болады.",
+      "State nature reserve: no free access, fishing and hunting are banned. Entry only with permission from the reserve administration."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Закон РК «Об особо охраняемых природных территориях» от 7 июля 2006 года № 175",
+    "source_url": "https://adilet.zan.kz/rus/docs/Z060000175_",
+    "sort_order": 190
+  },
+  {
+    "id": "ustyurt",
+    "kind": "nature_reserve",
+    "name": ["Устюртский заповедник", "Үстірт қорығы", "Ustyurt Nature Reserve"],
+    "info": [
+      "Государственный природный заповедник: свободного посещения нет, рыбалка и охота запрещены. Пройти можно только с разрешения администрации заповедника.",
+      "Мемлекеттік табиғи қорық: еркін кіруге болмайды, балық және аң аулауға тыйым салынған. Тек қорық әкімшілігінің рұқсатымен кіруге болады.",
+      "State nature reserve: no free access, fishing and hunting are banned. Entry only with permission from the reserve administration."
+    ],
+    "fees": {},
+    "website_url": null,
+    "tickets_url": null,
+    "source_title": "Закон РК «Об особо охраняемых природных территориях» от 7 июля 2006 года № 175",
+    "source_url": "https://adilet.zan.kz/rus/docs/Z060000175_",
+    "sort_order": 200
   }
 ]
