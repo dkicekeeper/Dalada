@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0F5560"/>
+      <stop offset="1" stop-color="#072A35"/>
+    </linearGradient>
+  </defs>
+  <polygon points="0,612 110,532 200,572 330,452 450,566 560,506 700,590 820,476 935,556 1024,512 1024,612" fill="#1A5C62"/>
+  <rect y="610" width="1024" height="414" fill="url(#water)"/>
+</svg>

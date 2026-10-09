@@ -1,0 +1,123 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "srgb:0.04314,0.21176,0.27451,1.00000",
+      "srgb:0.13725,0.49804,0.47059,1.00000"
+    ],
+    "orientation" : {
+      "start" : {
+        "x" : 0.5,
+        "y" : 0
+      },
+      "stop" : {
+        "x" : 0.5,
+        "y" : 0.6
+      }
+    }
+  },
+  "fill-specializations" : [
+    {
+      "appearance" : "dark",
+      "value" : {
+        "linear-gradient" : [
+          "srgb:0.01961,0.10588,0.14118,1.00000",
+          "srgb:0.05882,0.27451,0.27059,1.00000"
+        ],
+        "orientation" : {
+          "start" : {
+            "x" : 0.5,
+            "y" : 0
+          },
+          "stop" : {
+            "x" : 0.5,
+            "y" : 0.6
+          }
+        }
+      }
+    }
+  ],
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "glass" : false,
+          "image-name" : "ripples-front.svg",
+          "name" : "ripples-front"
+        },
+        {
+          "glass" : false,
+          "image-name" : "water.svg",
+          "name" : "water"
+        }
+      ],
+      "name" : "Surface",
+      "shadow" : {
+        "kind" : "none",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "glass" : true,
+          "image-name" : "float.svg",
+          "name" : "float"
+        }
+      ],
+      "lighting" : "combined",
+      "name" : "Float",
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "glass" : false,
+          "image-name" : "ripples-back.svg",
+          "name" : "ripples-back"
+        }
+      ],
+      "name" : "Ripples",
+      "shadow" : {
+        "kind" : "none",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "glass" : false,
+          "image-name" : "landscape.svg",
+          "name" : "landscape"
+        }
+      ],
+      "name" : "Landscape",
+      "shadow" : {
+        "kind" : "none",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "squares" : "shared"
+  }
+}
