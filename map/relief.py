@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Рельеф для своей карты из Copernicus DEM GLO-30 (высоты с шагом ~30 м).
 
-    python3 map/relief.py download DIR   — листы DEM 1°×1° на весь регион (с запасом) → DIR/*.tif
-    python3 map/relief.py terrain DEM OUT — тайлы высот terrarium OUT/{z}/{x}/{y}.png
+    python3 map/relief.py areas                  — горные районы построчно: запад юг восток север
+    python3 map/relief.py download DIR [W S E N]  — листы DEM 1°×1° (с запасом) → DIR/*.tif
+    python3 map/relief.py terrain DEM OUT [W S E N] — тайлы высот terrarium OUT/{z}/{x}/{y}.png
                                             (масштабы — config.json → relief.terrain_zooms)
+Без W S E N — все горные районы (relief.areas в config.json). Workflow Map tiles обрабатывает
+районы по одному: скачал листы района → горизонтали и тайлы высот → удалил листы.
 
 Горизонтали строит workflow Map tiles (gdal_contour + tippecanoe), отмывку рисует MapLibre по
 тайлам высот (слой hillshade). Нужны GDAL с Python, numpy и Pillow.
@@ -29,16 +32,24 @@ TILE = 256
 EARTH = 6378137.0
 
 
-def dem_names() -> list[str]:
-    """Листы, покрывающие регион, и ещё по градусу вокруг: тайлы мелких масштабов выходят за границы
-    региона, и без высот там был бы обрыв до нуля."""
-    west, south, east, north = CONFIG["bounds"]
+def areas() -> list[list[float]]:
+    """Горные районы с рельефом (relief.areas: запад, юг, восток, север); без списка — весь bounds.
+    Высоты всей страны не помещаются на диск сборщика, а в степи горизонтали не нужны."""
+    return CONFIG["relief"].get("areas") or [CONFIG["bounds"]]
+
+
+def dem_names(selected: list[list[float]] | None = None) -> list[str]:
+    """Листы, покрывающие районы, и ещё по градусу вокруг: тайлы мелких масштабов выходят за границы
+    района, и без высот там был бы обрыв до нуля."""
     names = []
-    for lat in range(math.floor(south) - 1, math.floor(north) + 2):
-        for lon in range(math.floor(west) - 1, math.floor(east) + 2):
-            ns = f"N{lat:02d}" if lat >= 0 else f"S{-lat:02d}"
-            ew = f"E{lon:03d}" if lon >= 0 else f"W{-lon:03d}"
-            names.append(f"Copernicus_DSM_COG_10_{ns}_00_{ew}_00_DEM")
+    for west, south, east, north in selected or areas():
+        for lat in range(math.floor(south) - 1, math.floor(north) + 2):
+            for lon in range(math.floor(west) - 1, math.floor(east) + 2):
+                ns = f"N{lat:02d}" if lat >= 0 else f"S{-lat:02d}"
+                ew = f"E{lon:03d}" if lon >= 0 else f"W{-lon:03d}"
+                name = f"Copernicus_DSM_COG_10_{ns}_00_{ew}_00_DEM"
+                if name not in names:
+                    names.append(name)
     return names
 
 
@@ -62,9 +73,9 @@ def fetch(name: str, out: Path) -> str:
     return "?"
 
 
-def download(out: Path) -> None:
+def download(out: Path, selected: list[list[float]] | None = None) -> None:
     out.mkdir(parents=True, exist_ok=True)
-    names = dem_names()
+    names = dem_names(selected)
     with ThreadPoolExecutor(8) as pool:
         results = list(pool.map(lambda name: fetch(name, out), names))
     for state in sorted(set(results)):
@@ -73,8 +84,8 @@ def download(out: Path) -> None:
         sys.exit("Не скачано ни одного листа DEM")
 
 
-def tile_range(zoom: int) -> tuple[range, range]:
-    west, south, east, north = CONFIG["bounds"]
+def tile_columns(zoom: int, selected: list[list[float]] | None = None) -> dict[int, list[int]]:
+    """Тайлы масштаба, покрывающие горные районы: столбец x → строки y."""
 
     def tile(lon: float, lat: float) -> tuple[int, int]:
         n = 1 << zoom
@@ -82,9 +93,13 @@ def tile_range(zoom: int) -> tuple[range, range]:
         y = int((1 - math.asinh(math.tan(math.radians(lat))) / math.pi) / 2 * n)
         return min(x, n - 1), min(y, n - 1)
 
-    x0, y0 = tile(west, north)
-    x1, y1 = tile(east, south)
-    return range(x0, x1 + 1), range(y0, y1 + 1)
+    columns: dict[int, set[int]] = {}
+    for west, south, east, north in selected or areas():
+        x0, y0 = tile(west, north)
+        x1, y1 = tile(east, south)
+        for x in range(x0, x1 + 1):
+            columns.setdefault(x, set()).update(range(y0, y1 + 1))
+    return {x: sorted(ys) for x, ys in sorted(columns.items())}
 
 
 def mercator_bounds(z: int, x: int, y: int) -> tuple[float, float, float, float]:
@@ -124,11 +139,10 @@ def render_column(job: tuple[str, str, int, int, list[int]]) -> tuple[int, int]:
     return count, size
 
 
-def terrain(dem: Path, out: Path) -> None:
+def terrain(dem: Path, out: Path, selected: list[list[float]] | None = None) -> None:
     jobs = []
     for z in TERRAIN_ZOOMS:
-        xs, ys = tile_range(z)
-        jobs += [(str(dem), str(out), z, x, list(ys)) for x in xs]
+        jobs += [(str(dem), str(out), z, x, ys) for x, ys in tile_columns(z, selected).items()]
     with ProcessPoolExecutor() as pool:
         results = list(pool.map(render_column, jobs))
     count = sum(c for c, _ in results)
@@ -137,9 +151,12 @@ def terrain(dem: Path, out: Path) -> None:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 3 and sys.argv[1] == "download":
-        download(Path(sys.argv[2]))
-    elif len(sys.argv) == 4 and sys.argv[1] == "terrain":
-        terrain(Path(sys.argv[2]), Path(sys.argv[3]))
+    if len(sys.argv) == 2 and sys.argv[1] == "areas":
+        for area in areas():
+            print(*area)
+    elif len(sys.argv) in (3, 7) and sys.argv[1] == "download":
+        download(Path(sys.argv[2]), [list(map(float, sys.argv[3:7]))] if len(sys.argv) == 7 else None)
+    elif len(sys.argv) in (4, 8) and sys.argv[1] == "terrain":
+        terrain(Path(sys.argv[2]), Path(sys.argv[3]), [list(map(float, sys.argv[4:8]))] if len(sys.argv) == 8 else None)
     else:
         sys.exit(__doc__)

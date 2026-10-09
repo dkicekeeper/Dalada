@@ -9,11 +9,11 @@ on:
   workflow_dispatch:
     inputs:
       tiles:
-        description: "Пересобрать тайлы (15–40 минут); без галочки — только стили, шрифты и значки"
+        description: "Пересобрать тайлы (Казахстан: 1–3 часа); без галочки — только стили, шрифты и значки"
         type: boolean
         default: true
       relief:
-        description: "Пересобрать рельеф и горизонтали (Copernicus DEM, 20–40 минут)"
+        description: "Пересобрать рельеф и горизонтали (Copernicus DEM, горные районы: 1–3 часа)"
         type: boolean
         default: false
   schedule:
@@ -40,7 +40,7 @@ jobs:
     name: Relief and contours
     if: github.event_name == 'workflow_dispatch' && inputs.relief
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 300
     steps:
       - uses: actions/checkout@v5
 
@@ -56,37 +56,41 @@ jobs:
           sudo apt-get install -y -qq rclone gdal-bin python3-gdal python3-numpy python3-pil tippecanoe > /dev/null
           gdalinfo --version && tippecanoe --version 2>&1 | head -1
 
-      - name: Copernicus DEM
-        run: |
-          python3 map/relief.py download data/dem
-          bounds=$(python3 -c "import json; print(' '.join(map(str, json.load(open('map/config.json'))['bounds'])))")
-          gdalbuildvrt -q data/dem.vrt data/dem/*.tif
-          gdalbuildvrt -q -te $bounds data/region.vrt data/dem/*.tif
-          du -sh data/dem
-
+      # Горные районы по одному (relief.areas в map/config.json): листы района → горизонтали и тайлы
+      # высот → листы удаляем. Высоты всей страны разом не помещаются на диск сборщика.
       # Горизонтали: через 100 м — по высотам, усреднённым до ~90 м (масштабы 11–12), через 20 м — по
       # исходным ~30 м (13-й; крупнее MapLibre растягивает). Короткие замкнутые линии (бугорки, шум
       # высот) отбрасываем; idx = 1 — у горизонталей, кратных 100 м (толще и с подписью).
-      - name: Contours
+      - name: Contours and terrain by area
         run: |
+          mkdir -p data/contours
+          i=0
+          while read -r west south east north; do
+            i=$((i + 1))
+            echo "::group::Район $i: $west $south $east $north"
+            rm -rf data/dem && python3 map/relief.py download data/dem "$west" "$south" "$east" "$north"
+            gdalbuildvrt -q data/dem.vrt data/dem/*.tif
+            gdalbuildvrt -q -te "$west" "$south" "$east" "$north" data/area.vrt data/dem/*.tif
+            gdal_contour -q -a ele -i 20 -f FlatGeobuf data/area.vrt data/c20.fgb
+            gdalwarp -q -r average -tr 0.000833333333 0.000833333333 data/area.vrt data/dem90.tif
+            gdal_contour -q -a ele -i 100 -f FlatGeobuf data/dem90.tif data/c100.fgb
+            ogr2ogr -f FlatGeobuf "data/contours/m20_$i.fgb" data/c20.fgb -dialect sqlite -sql \
+              "SELECT geometry, CAST(ele AS INTEGER) AS ele, CAST(ele AS INTEGER) % 100 = 0 AS idx FROM contour WHERE ST_Length(geometry) > 0.003"
+            ogr2ogr -f FlatGeobuf "data/contours/m100_$i.fgb" data/c100.fgb -dialect sqlite -sql \
+              "SELECT geometry, CAST(ele AS INTEGER) AS ele, 1 AS idx FROM contour WHERE ST_Length(geometry) > 0.006"
+            rm -f data/c20.fgb data/c100.fgb data/dem90.tif
+            python3 map/relief.py terrain data/dem.vrt public/relief "$west" "$south" "$east" "$north"
+            df -h . | tail -1
+            echo "::endgroup::"
+          done < <(python3 map/relief.py areas)
+          rm -rf data/dem
+          ls -la data/contours
           read z0 z1 < <(python3 -c "import json; r = json.load(open('map/config.json'))['relief']['contour_zooms']; print(r[0], r[1])")
-          gdal_contour -q -a ele -i 20 -f FlatGeobuf data/region.vrt data/c20.fgb
-          gdalwarp -q -r average -tr 0.000833333333 0.000833333333 data/region.vrt data/dem90.tif
-          gdal_contour -q -a ele -i 100 -f FlatGeobuf data/dem90.tif data/c100.fgb
-          ogr2ogr -f FlatGeobuf data/m20.fgb data/c20.fgb -dialect sqlite -sql \
-            "SELECT geometry, CAST(ele AS INTEGER) AS ele, CAST(ele AS INTEGER) % 100 = 0 AS idx FROM contour WHERE ST_Length(geometry) > 0.003"
-          ogr2ogr -f FlatGeobuf data/m100.fgb data/c100.fgb -dialect sqlite -sql \
-            "SELECT geometry, CAST(ele AS INTEGER) AS ele, 1 AS idx FROM contour WHERE ST_Length(geometry) > 0.006"
-          rm data/c20.fgb data/c100.fgb data/dem90.tif
-          ls -la data/*.fgb
           # -T: из FlatGeobuf tippecanoe читает целые как строки — просим числа.
-          tippecanoe -q -f -o data/contours-low.mbtiles -l contour -T ele:int -T idx:int -Z"$z0" -z"$((z1 - 1))" data/m100.fgb
-          tippecanoe -q -f -o data/contours-high.mbtiles -l contour -T ele:int -T idx:int -Z"$z1" -z"$z1" data/m20.fgb
+          tippecanoe -q -f -o data/contours-low.mbtiles -l contour -T ele:int -T idx:int -Z"$z0" -z"$((z1 - 1))" data/contours/m100_*.fgb
+          tippecanoe -q -f -o data/contours-high.mbtiles -l contour -T ele:int -T idx:int -Z"$z1" -z"$z1" data/contours/m20_*.fgb
           tile-join -q -f -o data/contours.mbtiles data/contours-low.mbtiles data/contours-high.mbtiles
           python3 map/dump_mbtiles.py data/contours.mbtiles public/contours
-
-      - name: Terrain tiles
-        run: python3 map/relief.py terrain data/dem.vrt public/relief
 
       - name: Upload
         run: |
@@ -163,7 +167,7 @@ jobs:
     # Без !cancelled() пропущенный рельеф (он выше по цепочке) пропустил бы и эту задачу.
     if: ${{ !cancelled() && needs.assets.result == 'success' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.tiles)) }}
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 330
     steps:
       - uses: actions/checkout@v5
 
