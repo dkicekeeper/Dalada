@@ -76,6 +76,16 @@ final class SessionStore {
             state = .guest
             return
         }
+        #if DEBUG
+        // Скриншоты для App Store (UI-тест DaladaScreenshots на CI): вход демо-аккаунтом из окружения
+        // теста, без касаний. Только в отладочной сборке — в TestFlight и App Store этого кода нет.
+        let environment = ProcessInfo.processInfo.environment
+        if backend.currentUserID == nil,
+           let email = environment["DALADA_SCREENSHOT_EMAIL"], !email.isEmpty,
+           let password = environment["DALADA_SCREENSHOT_PASSWORD"], !password.isEmpty {
+            Task { await signInWithEmail(email, password: password) }
+        }
+        #endif
         for await userID in backend.authChanges() {
             if userID == nil {
                 state = .guest

@@ -1,0 +1,125 @@
+name: Screenshots
+
+# Скриншоты для App Store (docs/05-release/README.md#скриншоты): UI-тест DaladaScreenshots на
+# симуляторе iPhone 6,9″ под демо-аккаунтом — по-русски и по-английски → рамки с подписями
+# (appstore/screenshots/frame.py, captions.json) → артефакт «screenshots» (готовые и сырые снимки).
+# Вручную: Actions → Screenshots → Run workflow. Логи публичные: данные входа — только из секретов.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: screenshots
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    name: Take and frame screenshots
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check secrets
+        env:
+          SUPABASE_HOST: ${{ secrets.SUPABASE_HOST }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          DEMO_USER: ${{ secrets.ASC_DEMO_USER }}
+          DEMO_PASSWORD: ${{ secrets.ASC_DEMO_PASSWORD }}
+        run: |
+          missing=""
+          for name in SUPABASE_HOST SUPABASE_KEY DEMO_USER DEMO_PASSWORD; do
+            [ -n "${!name}" ] || missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Не заданы секреты:$missing (SUPABASE_*, ASC_DEMO_USER, ASC_DEMO_PASSWORD)"
+            exit 1
+          fi
+
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Generate Xcode project
+        working-directory: ios
+        env:
+          SUPABASE_HOST: ${{ secrets.SUPABASE_HOST }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          brew install xcodegen
+          printf 'SUPABASE_HOST = %s\nSUPABASE_KEY = %s\n' "$SUPABASE_HOST" "$SUPABASE_KEY" > Config/Secrets.xcconfig
+          xcodegen generate
+
+      # iPhone 6,9″ (1320 × 2868): Pro Max из самой свежей iOS. Время 9:41, полная батарея, разрешение
+      # на геопозицию и точка у Капшагая — карта открывается на водоёмах.
+      - name: Simulator
+        run: |
+          UDID=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          for runtime, items in sorted(devices.items(), reverse=True):
+              if ".iOS-" not in runtime:
+                  continue
+              for d in items:
+                  if d["name"].startswith("iPhone") and "Pro Max" in d["name"]:
+                      print(d["udid"]); sys.exit()
+          ')
+          [ -n "$UDID" ] || { echo "::error::Нет симулятора iPhone Pro Max"; exit 1; }
+          echo "UDID=$UDID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b > /dev/null
+          xcrun simctl status_bar "$UDID" override --time "9:41" --dataNetwork wifi --wifiMode active --wifiBars 3 \
+            --cellularMode active --cellularBars 4 --batteryState charged --batteryLevel 100
+          xcrun simctl privacy "$UDID" grant location app.dalada.ios
+          xcrun simctl location "$UDID" set 43.87,77.08
+          xcrun simctl list devices | grep "$UDID"
+
+      - name: Build for testing
+        working-directory: ios
+        run: |
+          # Подпись «для запуска на этом Mac»: без неё у приложения в симуляторе нет доступа к связке
+          # ключей, где Supabase хранит вход.
+          xcodebuild build-for-testing -project Dalada.xcodeproj -scheme Dalada \
+            -destination "id=$UDID" -derivedDataPath build -quiet \
+            CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= PROVISIONING_PROFILE_SPECIFIER=
+
+      - name: Take screenshots
+        working-directory: ios
+        env:
+          TEST_RUNNER_SCREENSHOT_EMAIL: ${{ secrets.ASC_DEMO_USER }}
+          TEST_RUNNER_SCREENSHOT_PASSWORD: ${{ secrets.ASC_DEMO_PASSWORD }}
+        run: |
+          for language in ru en; do
+            TEST_RUNNER_SCREENSHOT_LANGUAGE=$language xcodebuild test-without-building -project Dalada.xcodeproj \
+              -scheme Dalada -only-testing:DaladaScreenshots -destination "id=$UDID" -derivedDataPath build \
+              -resultBundlePath "$RUNNER_TEMP/$language.xcresult" -quiet \
+              || echo "::warning::Тест скриншотов ($language) завершился с ошибкой — берём снятое"
+            mkdir -p "$RUNNER_TEMP/export/$language" "$RUNNER_TEMP/raw/$language"
+            xcrun xcresulttool export attachments --path "$RUNNER_TEMP/$language.xcresult" \
+              --output-path "$RUNNER_TEMP/export/$language"
+            # Имена вложений — имена экранов (01-map и т. д.).
+            python3 - "$RUNNER_TEMP/export/$language" "$RUNNER_TEMP/raw/$language" <<'PY'
+          import json, shutil, sys
+          from pathlib import Path
+          src, dst = Path(sys.argv[1]), Path(sys.argv[2])
+          for test in json.loads((src / "manifest.json").read_text()):
+              for a in test.get("attachments", []):
+                  name = a.get("suggestedHumanReadableName", a["exportedFileName"]).split("_")[0]
+                  shutil.copy(src / a["exportedFileName"], dst / (Path(name).stem + ".png"))
+                  print(name)
+          PY
+          done
+
+      - name: Frame
+        run: |
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet pillow
+          font=$(find ios/build/SourcePackages/checkouts -name 'Inter-VariableFont*.ttf' | head -1)
+          [ -n "$font" ] || { echo "::error::Нет шрифта Inter в DesignKit"; exit 1; }
+          "$RUNNER_TEMP/venv/bin/python" appstore/screenshots/frame.py "$RUNNER_TEMP/raw" "$RUNNER_TEMP/screenshots/framed" --font "$font"
+          cp -r "$RUNNER_TEMP/raw" "$RUNNER_TEMP/screenshots/raw"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: ${{ runner.temp }}/screenshots
+          retention-days: 30

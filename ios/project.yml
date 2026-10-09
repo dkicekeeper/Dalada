@@ -27,6 +27,10 @@ targets:
     type: application
     platform: iOS
     deploymentTarget: "26.0"
+    # Схема Dalada: сборка и архив — как раньше; в тестах — UI-тест скриншотов для App Store.
+    scheme:
+      testTargets:
+        - DaladaScreenshots
     sources:
       - path: Dalada
         excludes:
@@ -86,3 +90,19 @@ targets:
         INFOPLIST_KEY_CFBundleDisplayName: Dalada
         SKIP_INSTALL: YES
         ENABLE_USER_SCRIPT_SANDBOXING: YES
+
+  # Скриншоты для App Store: UI-тест снимает экраны под демо-аккаунтом (workflow Screenshots,
+  # docs/05-release/README.md#скриншоты). В обычной сборке и архиве не участвует.
+  DaladaScreenshots:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: DaladaScreenshots
+    dependencies:
+      - target: Dalada
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.dalada.ios.screenshots
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Dalada

@@ -1,0 +1,42 @@
+{
+  "01-map": {
+    "ru": "Места для рыбалки и отдыха — на одной карте",
+    "en": "Every fishing and camping spot on one map"
+  },
+  "02-place": {
+    "ru": "Где клюёт сегодня: свежие отчёты и погода",
+    "en": "What’s biting today: fresh reports and weather",
+    "credit": {
+      "ru": "Фото: Anton Yefimov, CC BY 3.0",
+      "en": "Photo: Anton Yefimov, CC BY 3.0"
+    }
+  },
+  "03-places": {
+    "ru": "Водоёмы, стоянки и родники рядом с вами",
+    "en": "Lakes, campsites and springs near you",
+    "credit": {
+      "ru": "Фото мест: Wikimedia Commons, CC BY и CC BY-SA",
+      "en": "Place photos: Wikimedia Commons, CC BY and CC BY-SA"
+    }
+  },
+  "04-profile": {
+    "ru": "Ваши поездки, уловы и серии недель",
+    "en": "Your trips, catches and weekly streaks"
+  },
+  "05-profile-content": {
+    "ru": "Ваши места видите только вы",
+    "en": "Your spots stay private"
+  },
+  "06-trip": {
+    "ru": "Запишите поездку: трек, время и расстояние",
+    "en": "Record trips: track, time and distance"
+  },
+  "07-lifehacks": {
+    "ru": "Чеклисты, сборы и статьи — ничего не забыть",
+    "en": "Checklists, packing and know-how"
+  },
+  "08-home": {
+    "ru": "Друзья, лента и обсуждения мест",
+    "en": "Friends, feed and place discussions"
+  }
+}
