@@ -82,7 +82,9 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 ошибки — `InlineStatusText`; с 3.1.0 — чипы в карточке `ChipPicker(…, inset: AppSpacing.lg)`,
 подпись-строка для `PhotosPicker` — `ActionRowLabel`, фото по ссылке — `RemotePhoto` DesignKit
 (скелетон, пока грузится; грузит `PhotoCache` через `DesignKitPhotoLoader`, подключён в
-`AppBootstrap`), строка со слайдером — `SliderRow`. Системный `Form` в новых экранах не используем. Эффекты — в
+`AppBootstrap`), строка со слайдером — `SliderRow`; с 3.2.0 `SectionHeader` рисует `systemImage`
+в любом стиле (раньше только в `.large`), поэтому заголовки разделов Dalada — без значка, пока
+он не нужен на экране. Системный `Form` в новых экранах не используем. Эффекты — в
 `docs/motion.md` DesignKit: `.celebration`,
 `.completionMoment`, `.holographic` + `.interactiveTilt`, `.dissolve`, `AuroraBackground`,
 `.spotlight` и другие. Своё — только если в DesignKit нет подходящего.
