@@ -1,23 +1,19 @@
 Browse places on the Map tab (editorial places from OpenStreetMap), open a place card, sign in with Apple, add your own place, post a report with a catch and a photo (I’m here on a place card), record a trip (the “+” button on the map → Start a trip), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
-New — a refreshed design. A lot has changed: if anything looks or works wrong, please send a screenshot.
-• Map: the “+” button opens a menu — New place here and Start a trip (or open the recording in progress). My location moved to the bottom left.
-• Place, report, catch, review, profile and other forms have new cards, fields and buttons.
-• Loading spinners became screen outlines that smoothly turn into the content.
-• Comments and discussion replies have a new field at the bottom, with the quote above the text.
-• Photos open full screen and zoom with a pinch.
-• Achievement medals shimmer as you tilt the phone, finishing a trip brings confetti, and the intro has a green aurora.
-• Saving a report, place or review answers with a light haptic, an error with a different one.
-• Kazakh has been proofread: consistent terms, typos fixed.
+New:
+• A new icon — a float on the water. It looks different in dark mode and with tinted icons on iOS 26: please send a screenshot if anything looks off.
+• The map covers all of Kazakhstan. Offline maps has 15 new regions: Burabay and Kokshetau, Bayanaul, Karkaraly, Bukhtarma, the Altai, Zaysan, Mangystau, Astana, Shymkent and more. The country map is being built during the day — if a region does not download yet, try again later.
+• The National parks and reserves layer covers the whole country: 8 more national parks and 4 reserves.
+• Photos load with an outline instead of a spinner; form chips, the photo picker row and the privacy zone radius slider have a new look.
+• Crash reports: if Share with App Developers is on in iOS settings, the app sends crash and hang reports, not linked to your account.
 
 Earlier:
+• A refreshed design: the “+” menu on the map, new forms, outlines while loading, full-screen photos with zoom, haptics on save.
 • Web links: Share on a public place, trip or catch gives a page that opens without the app.
 • Invite to a trip by link: your trip → Participants → Invite by link.
 • Contributor level in your profile; from Expert on — Review place edits.
-• A Notes tab in your Only me and Friends places.
-• Map → Layers → My photos.
+• A Notes tab in your Only me and Friends places; Map → Layers → My photos.
 • A Your streak is at risk notification on Saturday; turn it off in Notifications → Reminders.
-• Shared packing lists open offline.
-• Private profile and Close friends, Download GPX and Download my data, People you may know, weekly streaks, weather at a place, Show friends where I am, place keeper and records, shared packing.
+• Private profile and Close friends, Download GPX and Download my data, People you may know, weekly streaks, weather at a place, Show friends where I am, place keeper and records, shared packing (opens offline too).
 
 Feedback: the Send Beta Feedback button in TestFlight or dakacom@gmail.com.
