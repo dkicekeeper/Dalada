@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Кандидаты в места редакции из OpenStreetMap: Алматинская область, область Жетісу и Алматы.
+"""Кандидаты в места редакции из OpenStreetMap: весь Казахстан (M34; раньше — Алматинская область, Жетісу и Алматы).
 
     python3 supabase/data/places/fetch_osm.py
 
@@ -31,8 +31,8 @@ MIRRORS = [
 ]
 # Ответы Overpass кэшируются (удалите папку, чтобы скачать заново).
 CACHE = HERE / ".osm"
-# Алматы, область Жетісу, Алматинская область (id отношений + 3600000000).
-AREAS = "(area(id:3602465058);area(id:3614312169);area(id:3600215718);)->.r;"
+# Казахстан (id отношения + 3600000000). До M34 — Алматы, Жетісу и Алматинская область.
+AREAS = "area(id:3600214665)->.r;"
 
 FIELDS = ["include", "type", "name", "lat", "lon", "description", "source", "kind", "osm_name", "link", "note"]
 
@@ -74,7 +74,7 @@ def overpass(query: str) -> dict:
         url = MIRRORS[attempt % len(MIRRORS)]
         try:
             req = urllib.request.Request(url, data=data, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=120) as resp:
+            with urllib.request.urlopen(req, timeout=360) as resp:
                 body = resp.read()
             if body.lstrip().startswith(b"{") and b'"remark"' not in body[:2000]:
                 cached.write_bytes(body)
@@ -189,7 +189,7 @@ def main() -> None:
     rows, seen = [], set()
     for label, selector, with_geometry in QUERIES:
         out = "out geom;" if with_geometry else "out center tags;"
-        data = overpass(f"[out:json][timeout:55];{AREAS}({selector}(area.r););{out}")
+        data = overpass(f"[out:json][timeout:300];{AREAS}({selector}(area.r););{out}")
         print(f"{label}: {len(data['elements'])}", file=sys.stderr)
         for element in data["elements"]:
             key = f"{element['type'][0]}{element['id']}"
