@@ -139,6 +139,9 @@ public enum RuleZoneKind: String, Codable, Sendable {
     case river
     case delta
     case restZone = "rest_zone"
+    /// Все водоёмы области или района: на карте — контур области, заметный только во время запрета.
+    /// Старые сборки этот вид не знают и такие зоны пропускают (`Lenient`).
+    case region
 }
 
 /// Зона правил — строка `rule_zones`. Граница приблизительная (OpenStreetMap).
@@ -425,6 +428,23 @@ public struct RulesPack: Codable, Hashable, Sendable {
 
     public func zones(containing point: GeoPoint) -> [RuleZone] {
         zones.filter { $0.contains(point) }
+    }
+
+    /// Главная зона в точке — для ссылки «Правила здесь»: водоём или река важнее области вокруг.
+    public func mainZone(containing point: GeoPoint) -> RuleZone? {
+        let here = zones(containing: point)
+        return here.first { $0.kind != .region } ?? here.first
+    }
+
+    /// Зоны по бассейнам в порядке справочника (бассейн — по первой его зоне).
+    public static func groupedByBasin(_ zones: [RuleZone]) -> [(basin: String, zones: [RuleZone])] {
+        var order: [String] = []
+        var groups: [String: [RuleZone]] = [:]
+        for zone in zones {
+            if groups[zone.basin] == nil { order.append(zone.basin) }
+            groups[zone.basin, default: []].append(zone)
+        }
+        return order.map { (basin: $0, zones: groups[$0] ?? []) }
     }
 
     /// Правила зоны.

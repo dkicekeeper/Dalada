@@ -148,4 +148,37 @@ struct RulesTests {
         let cached = try JSONDecoder().decode(RulesPack.self, from: JSONEncoder().encode(pack))
         #expect(cached == pack)
     }
+
+    @Test func regionZonesGiveWayToWaters() throws {
+        let region = RuleZone(
+            id: "esil_waters", kind: .region, basin: "esil", name: LocalizedText(ru: "Область", kk: "Облыс", en: "Region"),
+            polygons: [GeoPolygon(rings: [square(70, 50, 72, 52)])], sortOrder: 400
+        )
+        let lake = RuleZone(
+            id: "lake", kind: .lake, basin: "esil", name: LocalizedText(ru: "Озеро", kk: "Көл", en: "Lake"),
+            polygons: [GeoPolygon(rings: [square(70.5, 50.5, 71, 51)])], sortOrder: 410
+        )
+        let pack = RulesPack(zones: [region, lake], regulations: [])
+        #expect(pack.mainZone(containing: GeoPoint(latitude: 50.7, longitude: 70.7))?.id == "lake", "водоём важнее области")
+        #expect(pack.mainZone(containing: GeoPoint(latitude: 51.5, longitude: 71.5))?.id == "esil_waters")
+        #expect(pack.mainZone(containing: GeoPoint(latitude: 40, longitude: 60)) == nil)
+
+        let json = """
+        [{"id": "esil_waters", "kind": "region", "basin": "esil", "name_ru": "Водоёмы", "geom": null}]
+        """
+        let zones = try JSONDecoder().decode([Lenient<RuleZone>].self, from: Data(json.utf8)).compactMap(\.value)
+        #expect(zones.first?.kind == .region)
+    }
+
+    @Test func groupsZonesByBasinInOrder() {
+        func zone(_ id: String, _ basin: String, _ sort: Int) -> RuleZone {
+            RuleZone(id: id, kind: .lake, basin: basin, name: text, polygons: [], sortOrder: sort)
+        }
+        let pack = RulesPack(zones: [zone("aral", "aral_syrdarya", 200), zone("kapshagay", "balkhash_alakol", 10),
+                                     zone("shardara", "aral_syrdarya", 210), zone("esil", "esil", 400)],
+                             regulations: [])
+        let groups = RulesPack.groupedByBasin(pack.zones)
+        #expect(groups.map(\.basin) == ["balkhash_alakol", "aral_syrdarya", "esil"])
+        #expect(groups[1].zones.map(\.id) == ["aral", "shardara"])
+    }
 }

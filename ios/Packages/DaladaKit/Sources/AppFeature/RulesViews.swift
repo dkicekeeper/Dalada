@@ -177,9 +177,10 @@ struct RulesListView: View {
                         ForEach(soon) { zone in zoneLink(zone, pack: pack, today: today) }
                     }
                 }
-                if !others.isEmpty {
-                    Section("rules.section.zones") {
-                        ForEach(others) { zone in zoneLink(zone, pack: pack, today: today) }
+                // Остальные зоны — по бассейнам приказа.
+                ForEach(RulesPack.groupedByBasin(others), id: \.basin) { group in
+                    Section(RuleBasinTitle.text(group.basin)) {
+                        ForEach(group.zones) { zone in zoneLink(zone, pack: pack, today: today) }
                     }
                 }
                 if !pack.generalRegulations.isEmpty {
@@ -230,6 +231,23 @@ struct RulesListView: View {
     private func mainBan(in zone: RuleZone, pack: RulesPack, today: CalendarDay) -> Regulation? {
         let bans = pack.regulations(inZone: zone.id).filter { $0.kind == .fishingBan }
         return bans.first { pack.status(of: $0, on: today).isInForce } ?? bans.first
+    }
+}
+
+/// Название бассейна из приказа № 78 для заголовка раздела.
+enum RuleBasinTitle {
+    static func text(_ basin: String) -> String {
+        switch basin {
+        case "balkhash_alakol": String(localized: "rules.basin.balkhashAlakol")
+        case "aral_syrdarya": String(localized: "rules.basin.aralSyrdarya")
+        case "zaysan_ertis": String(localized: "rules.basin.zaysanErtis")
+        case "esil": String(localized: "rules.basin.esil")
+        case "nura_sarysu": String(localized: "rules.basin.nuraSarysu")
+        case "tobyl_torgay": String(localized: "rules.basin.tobylTorgay")
+        case "zhaiyk_caspian": String(localized: "rules.basin.zhaiykCaspian")
+        case "shu_talas": String(localized: "rules.basin.shuTalas")
+        default: String(localized: "rules.section.zones")
+        }
     }
 }
 
@@ -387,7 +405,7 @@ struct PlaceRulesSection: View {
 
     var body: some View {
         Group {
-            if let pack = rules.pack, let zone = pack.zones(containing: coordinate).first {
+            if let pack = rules.pack, let zone = pack.mainZone(containing: coordinate) {
                 let today = RulesStore.today
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
                     SectionHeader(String(localized: "rules.here"))

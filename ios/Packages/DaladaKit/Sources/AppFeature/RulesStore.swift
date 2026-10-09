@@ -88,12 +88,25 @@ final class RulesStore {
     /// Зоны для карты с цветом по состоянию запрета на сегодня.
     func mapAreas(on day: CalendarDay = RulesStore.today) -> [MapRuleArea] {
         guard let pack else { return [] }
-        return pack.zones.compactMap { zone in
+        // Области — первыми, то есть под водоёмами: нажатие на водоём открывает его зону. Область
+        // видна, только пока запрет идёт или скоро начнётся, иначе вся страна была бы серой.
+        let zones = pack.zones.filter { $0.kind == .region } + pack.zones.filter { $0.kind != .region }
+        return zones.compactMap { zone in
             guard !zone.polygons.isEmpty else { return nil }
-            let state: MapRuleArea.State = switch pack.banState(ofZone: zone.id, on: day) {
-            case .active: .active
-            case .soon: .soon
-            case .none: .none
+            let ban = pack.banState(ofZone: zone.id, on: day)
+            let state: MapRuleArea.State
+            if zone.kind == .region {
+                switch ban {
+                case .active: state = .regionActive
+                case .soon: state = .regionSoon
+                case .none: return nil
+                }
+            } else {
+                state = switch ban {
+                case .active: .active
+                case .soon: .soon
+                case .none: .none
+                }
             }
             return MapRuleArea(id: zone.id, polygons: zone.polygons.map(\.rings), state: state)
         }

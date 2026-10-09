@@ -44,6 +44,10 @@ public struct MapRuleArea: Hashable, Sendable, Identifiable {
         case soon
         /// Запрета сейчас нет.
         case none
+        /// Запрет на всех водоёмах области действует — бледнее, чтобы не закрывать карту.
+        case regionActive
+        /// Запрет на всех водоёмах области скоро начнётся.
+        case regionSoon
         /// Национальный парк.
         case park
         /// Заповедник.
@@ -339,6 +343,8 @@ public struct DaladaMapView: UIViewRepresentable {
                 .active: .systemRed,
                 .soon: .systemOrange,
                 .none: .systemGray,
+                .regionActive: .systemRed,
+                .regionSoon: .systemOrange,
                 .park: .systemGreen,
                 .reserve: UIColor(red: 0.05, green: 0.45, blue: 0.3, alpha: 1),
                 .borderStrip: .systemPurple,
@@ -347,10 +353,11 @@ public struct DaladaMapView: UIViewRepresentable {
             return match(colors.mapValues { NSExpression(forConstantValue: $0) }, default: NSExpression(forConstantValue: UIColor.systemGray))
         }
 
-        /// Прозрачность заливки: запрет и погранполоса заметнее, нацпарки и погранзона — фоном.
+        /// Прозрачность заливки: запрет и погранполоса заметнее, нацпарки, погранзона и запреты на
+        /// всю область — фоном.
         static func ruleAreaOpacity() -> NSExpression {
             let opacity: [MapRuleArea.State: Double] = [
-                .active: 0.25, .soon: 0.2, .none: 0.08,
+                .active: 0.25, .soon: 0.2, .none: 0.08, .regionActive: 0.08, .regionSoon: 0.05,
                 .park: 0.12, .reserve: 0.2, .borderStrip: 0.3, .borderZone: 0.08,
             ]
             return match(opacity.mapValues { NSExpression(forConstantValue: $0) }, default: NSExpression(forConstantValue: 0.08))

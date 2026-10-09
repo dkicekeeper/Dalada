@@ -36,8 +36,8 @@ insert into auth.users (id, email) values ('11111111-1111-1111-1111-111111111111
 
 select is(
   (select count(*)::integer from public.rule_zones where geom is not null and extensions.st_isvalid(geom)),
-  10,
-  'у всех зон бассейна — корректные границы'
+  (select count(*)::integer from public.rule_zones where geom is not null),
+  'у всех нанесённых зон — корректные границы'
 );
 select is_empty(
   $$ select r.id from public.regulations r, unnest(r.zone_ids) z
@@ -64,9 +64,8 @@ select throws_ok(
 -- Доступ ----------------------------------------------------------------------------------------
 
 select pg_temp.act_as_anon();
-select is(
-  (select count(*)::integer from public.rule_zones),
-  10,
+select ok(
+  (select count(*) >= 10 from public.rule_zones),
   'гость читает зоны'
 );
 select ok(
