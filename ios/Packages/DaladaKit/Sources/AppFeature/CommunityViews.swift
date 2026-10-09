@@ -30,7 +30,7 @@ struct PlaceReviewsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             if showsHeader {
-                SectionHeader(String(localized: "reviews.title"), systemImage: "star.bubble")
+                SectionHeader(String(localized: "reviews.title"))
             }
             if let summary {
                 if summary.reviewsCount > 0 {
@@ -468,7 +468,7 @@ struct PlaceThreadsSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             if showsHeader {
-                SectionHeader(String(localized: "threads.title"), systemImage: "bubble.left.and.bubble.right") {
+                SectionHeader(String(localized: "threads.title")) {
                     if threads.count > 3 { allThreadsLink }
                 }
             } else {

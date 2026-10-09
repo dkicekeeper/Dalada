@@ -187,7 +187,7 @@ struct FriendsLiveSection: View {
         Group {
             if !friends.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                    SectionHeader(String(localized: "live.friendsTitle"), systemImage: "dot.radiowaves.left.and.right")
+                    SectionHeader(String(localized: "live.friendsTitle"))
                     ForEach(friends) { friend in
                         Button {
                             opened = friend

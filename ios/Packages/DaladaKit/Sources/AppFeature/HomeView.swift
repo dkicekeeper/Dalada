@@ -115,7 +115,7 @@ struct HomeView: View {
             }
         } else {
             if session.profile == nil {
-                SectionHeader(String(localized: "threads.title"), systemImage: "bubble.left.and.bubble.right")
+                SectionHeader(String(localized: "threads.title"))
             }
             ForEach(items) { item in
                 FeedPostCard(

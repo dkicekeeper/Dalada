@@ -138,7 +138,7 @@ struct PendingQueueSection: View {
     var body: some View {
         if !sync.pending.isEmpty || !sync.pendingTrips.isEmpty {
             VStack(alignment: .leading, spacing: AppSpacing.md) {
-                SectionHeader(String(localized: "pending.title"), systemImage: "icloud.and.arrow.up") {
+                SectionHeader(String(localized: "pending.title")) {
                     if sync.isSending {
                         // Отправка идёт — слои значка загораются по очереди (DesignKit).
                         Image(systemName: "arrow.triangle.2.circlepath")

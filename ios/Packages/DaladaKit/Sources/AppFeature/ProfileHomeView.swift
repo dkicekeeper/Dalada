@@ -133,11 +133,10 @@ struct ProfileHomeView: View {
 
 // MARK: - Разделы профиля
 
-/// Раздел профиля: заголовок со значком, «Все» (если есть куда) и карточка с содержимым.
+/// Раздел профиля: заголовок, «Все» (если есть куда) и карточка с содержимым.
 /// Во вкладке профиля заголовок не нужен — его роль играет чип (`showsTitle: false`).
 struct ProfileSection<Content: View, Destination: View>: View {
     let titleKey: String.LocalizationValue
-    let systemImage: String
     let showsAll: Bool
     let showsTitle: Bool
     let destination: Destination
@@ -145,14 +144,12 @@ struct ProfileSection<Content: View, Destination: View>: View {
 
     init(
         _ titleKey: String.LocalizationValue,
-        systemImage: String,
         showsAll: Bool = true,
         showsTitle: Bool = true,
         @ViewBuilder destination: () -> Destination,
         @ViewBuilder content: () -> Content
     ) {
         self.titleKey = titleKey
-        self.systemImage = systemImage
         self.showsAll = showsAll
         self.showsTitle = showsTitle
         self.destination = destination()
@@ -162,7 +159,7 @@ struct ProfileSection<Content: View, Destination: View>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             if showsTitle {
-                SectionHeader(String(localized: titleKey), systemImage: systemImage) {
+                SectionHeader(String(localized: titleKey)) {
                     if showsAll { allLink }
                 }
             } else if showsAll {
@@ -212,7 +209,7 @@ struct MyFriendsSection: View {
     @State private var isLoaded = false
 
     var body: some View {
-        ProfileSection("profile.friends.title", systemImage: "person.2") {
+        ProfileSection("profile.friends.title") {
             FriendsView(environment: environment)
         } content: {
             if incomingCount > 0 {
@@ -322,7 +319,7 @@ struct MyCatchesSection: View {
     @State private var isLoaded = false
 
     var body: some View {
-        ProfileSection("profile.catches.title", systemImage: "fish", showsAll: !catches.isEmpty, showsTitle: showsTitle) {
+        ProfileSection("profile.catches.title", showsAll: !catches.isEmpty, showsTitle: showsTitle) {
             MyCatchesView(environment: environment, userID: userID)
         } content: {
             if !catches.isEmpty {
@@ -461,7 +458,7 @@ struct MyPlacesSection: View {
     @State private var selected: PlaceSelection?
 
     var body: some View {
-        ProfileSection("places.mine.title", systemImage: "mappin.and.ellipse", showsAll: places.count > 3, showsTitle: showsTitle) {
+        ProfileSection("places.mine.title", showsAll: places.count > 3, showsTitle: showsTitle) {
             MyPlacesView(environment: environment)
         } content: {
             if !places.isEmpty {
