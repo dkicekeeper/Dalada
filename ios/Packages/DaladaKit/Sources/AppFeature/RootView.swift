@@ -270,6 +270,7 @@ public struct RootView: View {
                 lists.scheduleSync(after: .zero)
                 // Разрешение на уведомления могли дать в Настройках.
                 Task { await PushRegistrar.shared.update(userID: session.profile?.id, backend: environment.backend) }
+                Task { await DiagnosticsReporter.shared.flush(backend: environment.backend, isSignedIn: session.profile != nil) }
             case .background:
                 background.didEnterBackground()
             default:
@@ -285,6 +286,7 @@ public struct RootView: View {
             Task { await lists.switchUser(from: previous, to: current) }
             // Пуши: телефон получает уведомления вошедшего аккаунта (если разрешены).
             Task { await PushRegistrar.shared.update(userID: current, backend: environment.backend) }
+            Task { await DiagnosticsReporter.shared.flush(backend: environment.backend, isSignedIn: current != nil) }
         }
     }
 

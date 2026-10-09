@@ -77,6 +77,8 @@ public enum AppBootstrap {
         DesignKitPhotoLoader.cached = { PhotoCache.shared.cached($0) }
         // Просмотренные районы карты остаются доступны без сети.
         MapCache.configure()
+        // Отчёты iOS о сбоях и зависаниях (если человек разрешил делиться ими с разработчиками).
+        DiagnosticsReporter.shared.start()
     }
 }
 
