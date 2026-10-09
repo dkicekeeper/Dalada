@@ -7301,19 +7301,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fishing and outdoors in the Almaty region and Zhetysu: where to fish, what’s allowed and how to get there."
+            "value" : "Fishing and outdoors across Kazakhstan: where to fish, what’s allowed and how to get there."
           }
         },
         "kk" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Алматы облысы мен Жетісудағы балық аулау және табиғаттағы демалыс: қайда аулау керек, не рұқсат және қалай жетуге болады."
+            "state" : "needs_review",
+            "value" : "Қазақстан бойынша балық аулау және табиғаттағы демалыс: қайда аулау керек, не рұқсат және қалай жетуге болады."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Рыбалка и отдых на природе в Алматинской области и Жетісу: где ловить, что можно и как добраться."
+            "value" : "Рыбалка и отдых на природе по всему Казахстану: где ловить, что можно и как добраться."
           }
         }
       }
