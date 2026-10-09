@@ -57,10 +57,17 @@ TECHNICAL = re.compile(
     r"карантин|suv|gsm|tax free",
     re.I,
 )
-NUMBERED = re.compile(r"^(№\s*\d+|\d+\w?|к-\d+|озеро \d+|\d+-бис|\d+б)$", re.I)
+NUMBERED = re.compile(r"^(№\s*\d+\w?|\d+\w?|к-\d+|озеро \d+|родник \d+|\d+-бис|\d+б)$", re.I)
 NOT_CAMP = re.compile(r"зимовк|чабан|стойбищ|пионер|лагерь|ранч|ranch|клуб|трейл", re.I)
 NOT_BASE = re.compile(r"санатор|spa|аква|aqua|бан[ия]|арена|arena|pool|городище|аким|перекрыл|пионер", re.I)
-GENERIC_SPRING = re.compile(r"^(water|water source|родник|источник.*|бастау|исток)$", re.I)
+GENERIC_SPRING = re.compile(r"^(water|water source|spring|rodnik|родник|источник.*|бастау|исток)$", re.I)
+# Колодец или скважина — не родник.
+WELL = re.compile(r"скважин|колод[еи]ц|құдық|кудук|well", re.I)
+# Солёные и горько-солёные озёра, солончаки (сор, тұз, ащы): для рыбалки бесполезны. Водохранилища
+# с такими словами в названии (Терс-Ащыбулак) — пресные.
+SALT = re.compile(r"солон|солён|солен|сор\b|тұз|\bтуз|ащы|ащи|шор\b", re.I)
+# Название — только слово «озеро», «пруд» и т. п.
+GENERIC_WATER = re.compile(r"^(озеро|lake озеро|lake|пруд|водохранилище|старица|котлован|карьер|солончаковое озеро|көл|су)$", re.I)
 
 
 def overpass(query: str) -> dict:
@@ -165,6 +172,8 @@ def decide(label: str, name: str, tags: dict) -> tuple[str, str, str]:
         return place_type, "no", "номер вместо названия"
     if label == "shop":
         return (place_type, "yes", "") if tags.get("shop") == "fishing" else (place_type, "?", "охотничий магазин")
+    if label == "spring" and WELL.search(name):
+        return place_type, "no", "колодец или скважина"
     if label == "spring" and GENERIC_SPRING.match(name):
         return place_type, "?", "общее название"
     if label == "hot_spring" and NOT_BASE.search(name):
@@ -175,6 +184,14 @@ def decide(label: str, name: str, tags: dict) -> tuple[str, str, str]:
         return (place_type, "no", "не база отдыха") if NOT_BASE.search(name) else (place_type, "?", "")
     if label == "hut":
         return place_type, "?", "приют"
+    if label == "water" and SALT.search(name) and "водохранилище" not in name.lower():
+        return place_type, "no", "солёное озеро"
+    if label == "water" and GENERIC_WATER.match(name.removeprefix("озеро ").strip() or name):
+        return place_type, "no", "общее название"
+    if label == "water" and re.search(r"\bморе\b", name, re.I):
+        return place_type, "?", "море: точка может оказаться за границей"
+    if label == "water" and re.search(r"карьер|котлован", name, re.I):
+        return place_type, "?", "карьер"
     if label == "water" and tags.get("water") == "pond":
         return place_type, "?", "пруд"
     return place_type, "yes", ""
