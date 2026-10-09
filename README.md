@@ -25,7 +25,7 @@
 | 2. План по каждому разделу | [`docs/02-plan/`](docs/02-plan/README.md) | ✅ готово, решения приняты |
 | 3. Архитектура и стек | [`docs/03-architecture/`](docs/03-architecture/README.md) | ✅ готово, решения приняты (Supabase, TypeScript, MapLibre) |
 | 4–5. Спецификации и реализация по вехам | [`docs/04-beta/`](docs/04-beta/README.md) | 🔨 закрытая бета: вехи M0–M33, сборка 137 в TestFlight |
-| 6. Релиз 1.0 в App Store | [`docs/05-release/`](docs/05-release/README.md) | 📋 план: витрина, иконка, скриншоты, переезд в РК, запуск 20 мая 2027 |
+| 6. Релиз 1.0 в App Store | [`docs/05-release/`](docs/05-release/README.md) | 🔨 витрина и бэкапы, затем карта всего Казахстана и выход в App Store, как только готово |
 
 ## Документы
 
