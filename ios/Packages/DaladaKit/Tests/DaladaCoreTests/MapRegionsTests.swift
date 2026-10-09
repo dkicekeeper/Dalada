@@ -5,8 +5,9 @@ import Testing
 @Suite("MapRegions")
 struct MapRegionsTests {
     @Test func tileCountMatchesTheTileBuild() {
-        // Столько тайлов собирает workflow Map tiles для всего региона (масштабы 0–14).
-        #expect(MapRegions.coverage.tileCount(zooms: 0...14) == 185_490)
+        // Столько тайлов в прямоугольнике Казахстана на масштабах 0–14 (workflow Map tiles пишет
+        // только непустые).
+        #expect(MapRegions.coverage.tileCount(zooms: 0...14) == 2_568_965)
         #expect(MapRegions.coverage.tileCount(zooms: 0...0) == 1)
     }
 
@@ -45,7 +46,9 @@ struct MapRegionsTests {
         #expect(MapRegions.suggested(near: GeoPoint(latitude: 43.87, longitude: 77.07)).id == "kapshagay")
         // Ушарал — у Алаколя, вне всех районов: ближайший по центру.
         #expect(MapRegions.suggested(near: GeoPoint(latitude: 46.17, longitude: 80.94)).id == "alakol")
-        // Шымкент — далеко от всех: всё равно какой-то район, не падаем.
-        #expect(MapRegions.all.contains(MapRegions.suggested(near: GeoPoint(latitude: 42.32, longitude: 69.59))))
+        // Шымкент — свой район (M34).
+        #expect(MapRegions.suggested(near: GeoPoint(latitude: 42.32, longitude: 69.59)).id == "shymkent_mountains")
+        // Боровое — район Борового и Кокшетау.
+        #expect(MapRegions.suggested(near: GeoPoint(latitude: 53.08, longitude: 70.30)).id == "burabay_kokshetau")
     }
 }

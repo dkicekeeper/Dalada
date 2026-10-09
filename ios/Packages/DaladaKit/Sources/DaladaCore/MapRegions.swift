@@ -73,9 +73,8 @@ public struct MapRegion: Identifiable, Hashable, Sendable {
 }
 
 public enum MapRegions {
-    /// Всё, что есть на своих тайлах: Алматинская область, Жетісу и Алматы с запасом
-    /// (map/config.json → bounds).
-    public static let coverage = GeoBounds(south: 42.15, west: 73.6, north: 47.35, east: 82.7)
+    /// Всё, что есть на своих тайлах: весь Казахстан (map/config.json → bounds, M34).
+    public static let coverage = GeoBounds(south: 40.5, west: 46.4, north: 55.5, east: 87.4)
 
     public static let all: [MapRegion] = [
         MapRegion(id: "almaty_mountains", bounds: GeoBounds(south: 42.95, west: 76.55, north: 43.45, east: 77.75), maxZoom: 14, averageTileBytes: 13_500, reliefBytes: 15_600_000),
@@ -85,6 +84,28 @@ public enum MapRegions {
         MapRegion(id: "ile_delta_balkhash", bounds: GeoBounds(south: 44.70, west: 74.40, north: 46.40, east: 77.60), maxZoom: 13, averageTileBytes: 400, reliefBytes: 38_800_000),
         MapRegion(id: "taldykorgan", bounds: GeoBounds(south: 44.75, west: 77.80, north: 45.45, east: 79.00), maxZoom: 14, averageTileBytes: 1_000, reliefBytes: 11_300_000),
         MapRegion(id: "alakol", bounds: GeoBounds(south: 45.60, west: 80.50, north: 46.75, east: 82.30), maxZoom: 14, averageTileBytes: 400, reliefBytes: 19_200_000),
+        // Остальной Казахстан (M34). Размеры — оценка до первой сборки тайлов; после неё — из итогов
+        // workflow Map tiles (map/region_sizes.py).
+        // Юг
+        MapRegion(id: "shymkent_mountains", bounds: GeoBounds(south: 41.90, west: 69.30, north: 42.85, east: 70.90), maxZoom: 14, averageTileBytes: 3_000, reliefBytes: 15_000_000),
+        MapRegion(id: "taraz", bounds: GeoBounds(south: 42.70, west: 71.00, north: 43.20, east: 71.80), maxZoom: 14, averageTileBytes: 2_500, reliefBytes: 5_000_000),
+        // Запад
+        MapRegion(id: "mangystau", bounds: GeoBounds(south: 42.90, west: 50.90, north: 44.80, east: 55.10), maxZoom: 12, averageTileBytes: 500, reliefBytes: 20_000_000),
+        MapRegion(id: "atyrau", bounds: GeoBounds(south: 46.85, west: 51.60, north: 47.35, east: 52.40), maxZoom: 14, averageTileBytes: 1_500, reliefBytes: 0),
+        MapRegion(id: "uralsk", bounds: GeoBounds(south: 50.95, west: 50.90, north: 51.45, east: 51.90), maxZoom: 14, averageTileBytes: 2_000, reliefBytes: 0),
+        // Центр
+        MapRegion(id: "astana", bounds: GeoBounds(south: 50.95, west: 71.10, north: 51.40, east: 71.90), maxZoom: 14, averageTileBytes: 9_000, reliefBytes: 0),
+        MapRegion(id: "karkaraly", bounds: GeoBounds(south: 49.20, west: 75.15, north: 49.60, east: 75.80), maxZoom: 14, averageTileBytes: 1_500, reliefBytes: 5_000_000),
+        MapRegion(id: "balkhash_north", bounds: GeoBounds(south: 46.40, west: 73.40, north: 47.20, east: 76.20), maxZoom: 13, averageTileBytes: 600, reliefBytes: 0),
+        // Север
+        MapRegion(id: "burabay_kokshetau", bounds: GeoBounds(south: 52.55, west: 69.25, north: 53.35, east: 70.90), maxZoom: 14, averageTileBytes: 2_000, reliefBytes: 8_000_000),
+        MapRegion(id: "bayanaul", bounds: GeoBounds(south: 50.60, west: 75.40, north: 51.00, east: 76.10), maxZoom: 14, averageTileBytes: 1_500, reliefBytes: 6_000_000),
+        MapRegion(id: "pavlodar", bounds: GeoBounds(south: 52.05, west: 76.60, north: 52.55, east: 77.40), maxZoom: 14, averageTileBytes: 2_000, reliefBytes: 0),
+        MapRegion(id: "petropavl", bounds: GeoBounds(south: 54.55, west: 68.80, north: 55.10, east: 69.80), maxZoom: 14, averageTileBytes: 1_500, reliefBytes: 0),
+        // Восток
+        MapRegion(id: "oskemen_bukhtarma", bounds: GeoBounds(south: 48.80, west: 82.30, north: 50.10, east: 84.40), maxZoom: 13, averageTileBytes: 1_500, reliefBytes: 20_000_000),
+        MapRegion(id: "altai", bounds: GeoBounds(south: 48.90, west: 84.40, north: 50.20, east: 87.40), maxZoom: 13, averageTileBytes: 1_000, reliefBytes: 30_000_000),
+        MapRegion(id: "zaysan", bounds: GeoBounds(south: 47.30, west: 82.70, north: 48.40, east: 85.20), maxZoom: 13, averageTileBytes: 700, reliefBytes: 10_000_000),
     ]
 
     public static func region(id: String) -> MapRegion? {

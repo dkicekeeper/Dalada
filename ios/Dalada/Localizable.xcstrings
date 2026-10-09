@@ -10791,6 +10791,144 @@
         }
       }
     },
+    "offlineMaps.region.altai" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altai: Katon-Karagay, Belukha"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Алтай: Катонқарағай, Мұзтау"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Алтай: Катон-Карагай, Белуха"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.astana" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Astana"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Астана"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Астана"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.atyrau" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Atyrau"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Атырау"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Атырау"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.balkhash_north" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balkhash: town and northern shore"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Балқаш: қала және солтүстік жағалау"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Балхаш: город и северный берег"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.bayanaul" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bayanaul"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Баянауыл"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Баянаул"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.burabay_kokshetau" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Burabay and Kokshetau"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Бурабай және Көкшетау"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Боровое и Кокшетау"
+          }
+        }
+      }
+    },
     "offlineMaps.region.charyn_kolsay" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10883,6 +11021,144 @@
         }
       }
     },
+    "offlineMaps.region.karkaraly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Karkaraly"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Қарқаралы"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Каркаралы"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.mangystau" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mangystau: Aktau, Bozzhyra"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Маңғыстау: Ақтау, Бозжыра"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мангистау: Актау, Бозжыра"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.oskemen_bukhtarma" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oskemen and Bukhtarma"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Өскемен және Бұқтырма"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Усть-Каменогорск и Бухтарма"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.pavlodar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pavlodar and the Irtysh"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Павлодар және Ертіс"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Павлодар и Иртыш"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.petropavl" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Petropavl"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Петропавл"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Петропавловск"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.shymkent_mountains" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shymkent, Sairam-Ugam, Aksu-Zhabagly"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Шымкент, Сайрам-Өгем, Ақсу-Жабағылы"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Шымкент, Сайрам-Угам, Аксу-Жабаглы"
+          }
+        }
+      }
+    },
     "offlineMaps.region.taldykorgan" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10902,6 +11178,75 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Талдыкорган и Каратал"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.taraz" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taraz"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Тараз"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тараз"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.uralsk" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oral and the Ural River"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Орал және Жайық өзені"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уральск и река Урал"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.zaysan" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaysan"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Зайсан"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зайсан"
           }
         }
       }
