@@ -10791,29 +10791,6 @@
         }
       }
     },
-    "offlineMaps.region.altai" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Altai: Katon-Karagay, Belukha"
-          }
-        },
-        "kk" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Алтай: Катонқарағай, Мұзтау"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Алтай: Катон-Карагай, Белуха"
-          }
-        }
-      }
-    },
     "offlineMaps.region.astana" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -10902,6 +10879,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Баянаул"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.bukhtarma" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bukhtarma Reservoir"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Бұқтырма су қоймасы"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Бухтарминское водохранилище"
           }
         }
       }
@@ -11044,6 +11044,29 @@
         }
       }
     },
+    "offlineMaps.region.katon_karagay" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altai: Katon-Karagay, Belukha"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Алтай: Катонқарағай, Мұзтау"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Алтай: Катон-Карагай, Белуха"
+          }
+        }
+      }
+    },
     "offlineMaps.region.mangystau" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -11067,25 +11090,48 @@
         }
       }
     },
-    "offlineMaps.region.oskemen_bukhtarma" : {
+    "offlineMaps.region.markakol" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oskemen and Bukhtarma"
+            "value" : "Lake Markakol"
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "needs_review",
-            "value" : "Өскемен және Бұқтырма"
+            "value" : "Марқакөл"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Усть-Каменогорск и Бухтарма"
+            "value" : "Маркаколь"
+          }
+        }
+      }
+    },
+    "offlineMaps.region.oskemen" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oskemen"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Өскемен"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Усть-Каменогорск"
           }
         }
       }
