@@ -45,15 +45,25 @@ def render(template, title, description, image, url, large):
     return page
 
 
+# Сервер отдаёт не больше 1000 строк за запрос (max_rows), а мест больше: забираем страницами
+# (web_places отдаёт их по id, порядок устойчивый).
+PAGE = 1000
+
+
 def fetch_places(url, key):
-    request = urllib.request.Request(
-        url + "/rest/v1/rpc/web_places",
-        data=b"{}",
-        headers={"apikey": key, "Authorization": "Bearer " + key, "Content-Type": "application/json"},
-        method="POST",
-    )
-    with urllib.request.urlopen(request, timeout=60) as response:
-        return json.load(response)
+    places = []
+    while True:
+        request = urllib.request.Request(
+            url + "/rest/v1/rpc/web_places?limit=" + str(PAGE) + "&offset=" + str(len(places)),
+            data=b"{}",
+            headers={"apikey": key, "Authorization": "Bearer " + key, "Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=60) as response:
+            page = json.load(response)
+        places += page
+        if len(page) < PAGE:
+            return places
 
 
 def short(text, limit=200):
