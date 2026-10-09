@@ -301,7 +301,7 @@ struct RuleZoneView: View {
                 let bans = pack.regulations(inZone: zone.id).filter { $0.kind == .fishingBan && $0.window != nil }
                 if !bans.isEmpty {
                     VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                        SectionHeader(String(localized: "rules.calendar"), systemImage: "calendar")
+                        SectionHeader(String(localized: "rules.calendar"))
                         ZoneBanCalendar(bans: bans)
                     }
                 }
@@ -390,7 +390,7 @@ struct PlaceRulesSection: View {
             if let pack = rules.pack, let zone = pack.zones(containing: coordinate).first {
                 let today = RulesStore.today
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                    SectionHeader(String(localized: "rules.here"), systemImage: "exclamationmark.shield")
+                    SectionHeader(String(localized: "rules.here"))
                     ForEach(pack.activeBans(at: coordinate, on: today)) { ban in
                         RecommendationBox(
                             text: ban.title.text(for: RulesStore.language) + ": "

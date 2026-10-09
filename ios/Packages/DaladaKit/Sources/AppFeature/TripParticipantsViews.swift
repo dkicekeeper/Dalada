@@ -116,7 +116,7 @@ struct TripParticipantsSection: View {
                 tagButton
             } else if !visible.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
-                    SectionHeader(String(localized: "trip.participants.title"), systemImage: "person.2")
+                    SectionHeader(String(localized: "trip.participants.title"))
                     ForEach(visible) { participant in
                         row(participant)
                     }
@@ -308,7 +308,7 @@ struct TripInvitationsSection: View {
         Group {
             if !invitations.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
-                    SectionHeader(String(localized: "home.invitations.title"), systemImage: "person.2.badge.plus")
+                    SectionHeader(String(localized: "home.invitations.title"))
                     ForEach(invitations) { invitation in
                         NavigationLink {
                             TripDetailView(tripID: invitation.tripID, environment: environment)

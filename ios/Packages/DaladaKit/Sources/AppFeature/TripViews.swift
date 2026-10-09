@@ -583,7 +583,6 @@ struct MyTripsSection: View {
     var body: some View {
         ProfileSection(
             "trips.title",
-            systemImage: "point.topleft.down.to.point.bottomright.curvepath",
             showsAll: trips.count > 3,
             showsTitle: showsTitle
         ) {
@@ -924,7 +923,7 @@ struct TripDetailView: View {
 
                 if !checkins.isEmpty {
                     VStack(alignment: .leading, spacing: AppSpacing.md) {
-                        SectionHeader(String(localized: "trip.detail.checkins"), systemImage: "mappin.circle")
+                        SectionHeader(String(localized: "trip.detail.checkins"))
                         // Чекины по порядку на линии поездки: подтверждённые — зелёной печатью.
                         ActivityTimeline(checkins) { checkin in
                             checkin.verified

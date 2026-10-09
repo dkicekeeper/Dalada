@@ -25,7 +25,7 @@ struct AchievementsSection: View {
 
     var body: some View {
         let known = achievements.known
-        ProfileSection("achievements.title", systemImage: "rosette", showsAll: !known.isEmpty) {
+        ProfileSection("achievements.title", showsAll: !known.isEmpty) {
             AchievementsView(achievements: known)
         } content: {
             if !known.isEmpty {

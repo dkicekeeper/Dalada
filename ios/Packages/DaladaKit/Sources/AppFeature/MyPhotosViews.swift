@@ -36,7 +36,7 @@ struct MyPhotosSection: View {
     @State private var opened: MyPhoto?
 
     var body: some View {
-        ProfileSection("profile.photos.title", systemImage: "photo.on.rectangle", showsAll: photos.count > 6, showsTitle: showsTitle) {
+        ProfileSection("profile.photos.title", showsAll: photos.count > 6, showsTitle: showsTitle) {
             MyPhotosView(environment: environment, userID: userID)
         } content: {
             if !photos.isEmpty {

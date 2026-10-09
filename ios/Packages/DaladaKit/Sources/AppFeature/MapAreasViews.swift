@@ -108,7 +108,7 @@ struct MapAreaView: View {
             ("mapArea.fee.fishing", fees.fishing),
         ]
         return VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            SectionHeader(String(localized: "mapArea.fees"), systemImage: "banknote")
+            SectionHeader(String(localized: "mapArea.fees"))
             ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
                 if let mrp = row.1 {
                     HStack(alignment: .firstTextBaseline) {
