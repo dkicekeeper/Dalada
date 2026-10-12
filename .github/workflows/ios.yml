@@ -8,10 +8,14 @@ on:
     branches: [main, "claude/**"]
     paths:
       - "ios/**"
+      - "scripts/design_lint.py"
+      - "scripts/design-lint-baseline.json"
       - ".github/workflows/ios.yml"
   pull_request:
     paths:
       - "ios/**"
+      - "scripts/design_lint.py"
+      - "scripts/design-lint-baseline.json"
       - ".github/workflows/ios.yml"
   workflow_dispatch:
 
@@ -20,6 +24,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Без сырых значений дизайна (цвета, шрифты, отступы, скругления, анимации) вне токенов
+  # DesignKit. Падает только на значениях сверх scripts/design-lint-baseline.json (CLAUDE.md,
+  # «Компоненты интерфейса»).
+  design-lint:
+    name: Design lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - name: Нет сырых значений сверх базы
+        run: python3 scripts/design_lint.py
+
   build:
     name: Build app and run package tests
     runs-on: macos-26

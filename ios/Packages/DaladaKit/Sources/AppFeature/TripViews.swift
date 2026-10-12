@@ -101,7 +101,7 @@ struct StartTripView: View {
                         } label: {
                             VStack(spacing: AppSpacing.sm) {
                                 Image(systemName: item.systemImage)
-                                    .font(.system(size: 28))
+                                    .font(.system(size: 28)) // design-lint:ignore символ плитки вида поездки, размер плитки
                                 Text(LocalizedStringKey(item.titleKey))
                                     .font(AppTypography.bodyEmphasis)
                             }

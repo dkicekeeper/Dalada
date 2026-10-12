@@ -220,7 +220,7 @@ struct PlaceWeatherSheet: View {
         return Section("weather.now") {
             HStack(spacing: AppSpacing.md) {
                 Image(systemName: kind?.systemImage ?? "thermometer.medium")
-                    .font(.largeTitle)
+                    .font(.largeTitle) // design-lint:ignore символ размером с largeTitle, растёт с Dynamic Type
                     .foregroundStyle(AppColors.accent)
                 VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                     if let temperature = current.temperature {

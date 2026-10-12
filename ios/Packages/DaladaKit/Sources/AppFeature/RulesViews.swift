@@ -349,7 +349,7 @@ struct ZoneBanCalendar: View {
             itemName: { $0.title.text(for: RulesStore.language) }
         ) { _ in
             Image(systemName: "nosign")
-                .font(.system(size: 11, weight: .bold))
+                .font(.system(size: 11, weight: .bold)) // design-lint:ignore значок в клетке календаря, размер под клетку
                 .foregroundStyle(AppColors.destructive)
         }
         .task(id: bans.map(\.id)) {

@@ -1,0 +1,14 @@
+{
+  "ios/Packages/DaladaKit/Sources/AppFeature/ShareCardViews.swift": {
+    "raw-color": 3,
+    "raw-padding": 1,
+    "raw-spacing": 4,
+    "system-color": 1,
+    "system-font": 13
+  },
+  "ios/Packages/DaladaKit/Sources/TripLiveActivity/TripLiveActivity.swift": {
+    "raw-spacing": 3,
+    "system-color": 4,
+    "system-font": 9
+  }
+}

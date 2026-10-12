@@ -85,6 +85,16 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 
 Своё — только если в DesignKit нет подходящего (и тогда — сначала PR в DesignKit, см. ниже).
 
+Значения дизайна — только токены DesignKit: `AppColors` (и `AppColors.Palette` для карты),
+`AppTypography`, `AppSpacing`, `AppRadius`, `AppIconSize`, `AppAnimation`. Литералы (`Color(red:)`,
+`.orange`, `.font(.title2)`, `.font(.system(size: 14))`, `.padding(12)`, `spacing: 6`,
+`cornerRadius: 8`, `.easeInOut(duration:)`) ловит `python3 scripts/design_lint.py`, задача
+«Design lint» в CI (`ios.yml`). Падает только на значениях сверх
+`scripts/design-lint-baseline.json`; в базе намеренно два файла: картинка для Stories
+(`ShareCardViews`, холст фиксированного размера) и Live Activity (`TripLiveActivity`, системные
+стили текста по HIG). Оправданное исключение — `// design-lint:ignore <причина>` в той же
+строке (символ размером с текст, прицел поверх карты). Стало меньше — `--update-baseline`.
+
 Движение по правилам DesignKit (`docs/motion.md`): анимации — пружинами `AppAnimation.snappy`
 (ответ на касание) и `.smooth` (меняется содержимое), без голого `withAnimation {}`; появление —
 `.riseIn` (карточка, подсказка) и `.popIn` (чип, значок); данные сменяют скелетон через
