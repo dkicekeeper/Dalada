@@ -26,34 +26,23 @@ enum ConditionsText {
     }
 }
 
-/// Свой чекин, ещё не принятый сервером: как отчёт, но с состоянием отправки.
-/// В карточке места заголовок — «Вы», в профиле — название места.
+/// Свой чекин, ещё не принятый сервером: как отчёт, но с состоянием отправки
+/// (`PendingItemCard` из DesignKit). В карточке места заголовок — «Вы», в профиле — название места.
 struct PendingReportRow: View {
     let item: PendingCheckin
     var showsPlace = false
 
     @Environment(SpeciesStore.self) private var speciesStore
     @Environment(SyncEngine.self) private var sync
-    @State private var confirmsDiscard = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            HStack(spacing: AppSpacing.xs) {
-                if showsPlace {
-                    Text(verbatim: item.placeName)
-                        .font(AppTypography.bodyEmphasis)
-                } else {
-                    Text("report.you")
-                        .font(AppTypography.bodyEmphasis)
-                }
-                Spacer(minLength: 0)
-                Text(item.at, style: .relative)
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
-            }
-
-            status
-
+        PendingItemCard(
+            title: showsPlace ? item.placeName : String(localized: "report.you"),
+            date: item.at,
+            state: PendingItemState(item.state),
+            onRetry: { await sync.retry(item.id) },
+            onDiscard: { await sync.discard(item.id) }
+        ) {
             if let conditions = ConditionsText.make(item.conditions) {
                 Text(verbatim: conditions)
                     .font(AppTypography.caption)
@@ -86,43 +75,15 @@ struct PendingReportRow: View {
                 .foregroundStyle(AppColors.textSecondary)
             }
         }
-        .cardContentPadding()
-        .cardStyle()
-        .confirmationDialog("pending.discard.confirm", isPresented: $confirmsDiscard, titleVisibility: .visible) {
-            Button("pending.discard", role: .destructive) {
-                Task { await sync.discard(item.id) }
-            }
-        }
     }
+}
 
-    @ViewBuilder
-    private var status: some View {
-        switch item.state {
-        case .waiting:
-            Label("pending.waiting", systemImage: "icloud.and.arrow.up")
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.warning)
-        case .failed(let message):
-            VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                Label("pending.failed", systemImage: "exclamationmark.triangle.fill")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.destructive)
-                if !message.isEmpty {
-                    Text(verbatim: message)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
-                }
-                HStack(spacing: AppSpacing.md) {
-                    Button("common.retry") {
-                        Task { await sync.retry(item.id) }
-                    }
-                    .dsButton(.secondary)
-                    Button("pending.discard", role: .destructive) {
-                        confirmsDiscard = true
-                    }
-                    .dsButton(.secondary)
-                }
-            }
+extension PendingItemState {
+    /// Состояние из очереди отправки (чекины и поездки).
+    init(_ state: PendingCheckin.State) {
+        switch state {
+        case .waiting: self = .waiting
+        case .failed(let message): self = .failed(message: message)
         }
     }
 }

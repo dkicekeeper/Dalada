@@ -5,7 +5,7 @@ import SwiftUI
 
 // MARK: - Строка статьи
 
-/// Статья в списке: раздел, название, кратко, время чтения.
+/// Статья в списке: раздел, название, кратко, время чтения (`ItemRow` из DesignKit).
 struct ArticleRow: View {
     let article: Article
 
@@ -14,33 +14,24 @@ struct ArticleRow: View {
     private var language: String { PackingFormat.language }
 
     var body: some View {
-        HStack(alignment: .top, spacing: AppSpacing.md) {
-            Image(systemName: article.category.systemImage)
-                .font(.title3)
-                .foregroundStyle(AppColors.accent)
-                .frame(width: 28)
-            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                Text(verbatim: article.title.text(for: language))
-                    .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
-                Text(verbatim: article.summary.text(for: language))
-                    .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
-                    .lineLimit(2)
-                HStack(spacing: AppSpacing.xs) {
-                    Text(LocalizedStringKey(article.category.titleKey))
-                    Text(verbatim: "·")
-                    Text("article.minutes \(article.readingMinutes(language: language))")
-                    if store.isSaved(article) {
-                        Image(systemName: "bookmark.fill")
-                            .accessibilityLabel(Text("article.saved"))
-                    }
-                }
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textTertiary)
-            }
-        }
+        ItemRow(
+            article.title.text(for: language),
+            detail: article.summary.text(for: language),
+            meta: [MetaLine(meta, tint: AppColors.textTertiary)],
+            leading: .glyph(article.category.systemImage)
+        )
         .padding(.vertical, AppSpacing.xxs)
+    }
+
+    private var meta: [MetaItem] {
+        var items: [MetaItem] = [
+            .text(Text(LocalizedStringKey(article.category.titleKey))),
+            .text(Text("article.minutes \(article.readingMinutes(language: language))")),
+        ]
+        if store.isSaved(article) {
+            items.append(.symbol("bookmark.fill", accessibilityLabel: String(localized: "article.saved")))
+        }
+        return items
     }
 }
 

@@ -512,45 +512,30 @@ struct TripAccessoryModifier: ViewModifier {
 
 // MARK: - Мои поездки
 
-/// Строка поездки: вид, название, дата, дистанция и время в движении.
+/// Строка поездки: вид, название, дата, дистанция и время в движении (`ItemRow` из DesignKit).
 struct TripRow: View {
     let trip: TripSummary
     /// Автор чужой поездки, где я участник: «с @автор».
     var host: TripOwner?
 
     var body: some View {
-        HStack(spacing: AppSpacing.md) {
-            Image(systemName: trip.activity.systemImage)
-                .font(.system(size: AppIconSize.md))
-                .foregroundStyle(AppColors.accent)
-                .frame(width: AppIconSize.xxl, height: AppIconSize.xxl)
-                .background(AppColors.pale(AppColors.accent), in: Circle())
-            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                Text(verbatim: trip.title)
-                    .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
-                    .lineLimit(1)
-                Text(verbatim: [
-                    trip.startedAt.formatted(.dateTime.day().month().year()),
-                    TripFormat.distance(Double(trip.distanceM)),
-                    TripFormat.duration(Double(trip.movingSeconds)),
-                ].joined(separator: " · "))
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
-                if let host {
-                    Label {
-                        Text("trips.joined.with \(host.username.map { "@" + $0 } ?? host.displayName ?? "")")
-                    } icon: {
-                        Image(systemName: "person.2")
-                    }
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
-                }
-            }
-            Spacer(minLength: 0)
+        ItemRow(trip.title, meta: meta, leading: .symbol(trip.activity.systemImage), titleLineLimit: 1) {
             DisclosureChevron()
         }
-        .contentShape(Rectangle())
+    }
+
+    private var meta: [MetaLine] {
+        var lines = [MetaLine([
+            .text(trip.startedAt.formatted(.dateTime.day().month().year())),
+            .text(TripFormat.distance(Double(trip.distanceM))),
+            .text(TripFormat.duration(Double(trip.movingSeconds))),
+        ])]
+        if let host {
+            let name = host.username.map { "@" + $0 } ?? host.displayName ?? ""
+            lines.append(MetaLine([.label(Text("trips.joined.with \(name)"), systemImage: "person.2")],
+                                  tint: AppColors.textTertiary))
+        }
+        return lines
     }
 }
 
@@ -1133,58 +1118,21 @@ struct TripCheckinRow: View {
     }
 }
 
-/// Поездка из очереди отправки в профиле.
+/// Поездка из очереди отправки в профиле (`PendingItemCard` из DesignKit).
 struct PendingTripRow: View {
     let item: PendingTrip
 
     @Environment(SyncEngine.self) private var sync
-    @State private var confirmsDiscard = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            HStack(spacing: AppSpacing.sm) {
-                Image(systemName: item.activity.systemImage)
-                    .foregroundStyle(AppColors.accent)
-                Text(verbatim: item.title)
-                    .font(AppTypography.bodyEmphasis)
-                    .lineLimit(1)
-                Spacer(minLength: 0)
-                Text(item.startedAt, style: .relative)
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
-            }
-            switch item.state {
-            case .waiting:
-                Label("pending.waiting", systemImage: "icloud.and.arrow.up")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.warning)
-            case .failed(let message):
-                Label("pending.failed", systemImage: "exclamationmark.triangle.fill")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.destructive)
-                if !message.isEmpty {
-                    Text(verbatim: message)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
-                }
-                HStack(spacing: AppSpacing.md) {
-                    Button("common.retry") {
-                        Task { await sync.retry(item.id) }
-                    }
-                    .dsButton(.secondary)
-                    Button("pending.discard", role: .destructive) {
-                        confirmsDiscard = true
-                    }
-                    .dsButton(.secondary)
-                }
-            }
-        }
-        .cardContentPadding()
-        .cardStyle()
-        .confirmationDialog("trip.pending.discardConfirm", isPresented: $confirmsDiscard, titleVisibility: .visible) {
-            Button("pending.discard", role: .destructive) {
-                Task { await sync.discard(item.id) }
-            }
-        }
+        PendingItemCard(
+            title: item.title,
+            systemImage: item.activity.systemImage,
+            date: item.startedAt,
+            state: PendingItemState(item.state),
+            discardConfirmation: String(localized: "trip.pending.discardConfirm"),
+            onRetry: { await sync.retry(item.id) },
+            onDiscard: { await sync.discard(item.id) }
+        )
     }
 }

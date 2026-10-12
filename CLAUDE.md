@@ -67,6 +67,8 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 | Нужно | В DesignKit |
 |---|---|
 | Кнопки, карточки, строки | `DSButton` (иконка, загрузка, роль, размер), `cardStyle`, `UniversalRow`, `InfoRow`, `DisclosureChevron` |
+| Строка своего предмета | `ItemRow` (3.6.0): значок в кружке (`.symbol`) или сверху (`.glyph`), заголовок, описание, строки фактов `MetaLine` («12 окт. · 14,2 км · 3 ч», через «·»; ярлыки со значками — `separator: .space`), аксессуар справа; так нарисованы поездки, места, статьи, снаряжение. Факты под заголовком в других местах — тоже `MetaLine` |
+| Очередь отправки | `PendingItemCard` (3.6.0): «ждёт отправки» / «не удалось отправить» с «Повторить» и «Удалить», содержимое — слотом; `discardConfirmation:` — свой вопрос перед удалением (поездки) |
 | Бейджи, оценки, числа | `Badge`, `TrendBadge`, `StatTile`, `StatsStrip`, `StreakCard`, `Rating` / `RatingPicker` |
 | Выбор | `ChipPicker` (`allTitle:` — чип «Все», `inset: AppSpacing.lg` — в карточке формы), `SegmentedPicker`, `SelectionIndicator` |
 | Загрузка, пусто, ошибка | скелетоны (ниже), `EmptyState`, `RecommendationBox`, `LinearProgressBar(value:)` |
