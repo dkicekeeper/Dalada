@@ -80,6 +80,7 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 | Фото | `PhotoTile`, `PhotoStrip`, `PhotoGrid`, `PhotoCarousel`, `PhotoViewer` (с масштабом); фото по ссылке — `RemotePhoto` (скелетон, пока грузится; грузит `PhotoCache` через `DesignKitPhotoLoader`, подключён в `AppBootstrap`) |
 | Контент | `ThumbnailCard` / `ThumbnailRow`, `ArticleBody` (статьи), `ExpandableText`, `ActivityTimeline`, `MonthCalendar` |
 | Остальное | картинки для Stories — `ShareCardSheet` / `ShareCardFrame` со стилем `ShareCard.Style.dalada`; мини-плеер записи — `LiveSessionBar`; офлайн-карты — `DownloadRow`; вопрос и праймер перед системным запросом разрешения — `PromptSheet`; онбординг — `OnboardingPager` / `OnboardingPage`; меню «+» на карте — `GlassActionMenu` |
+| Цвета на карте | `AppColors.Palette` (3.7.0): глубокие оттенки с `UIColor`, одинаковые в обеих темах, белый символ на них читается; какой тип места или слой какого цвета — `MapEngine/MapColors.swift`. Зоны запретов — токены статусов (`AppColors.Status`). Системные цвета (`.systemTeal` и т. п.) на карте не используем |
 | Эффекты | `docs/motion.md` DesignKit: `.celebration`, `.completionMoment`, `.holographic` + `.interactiveTilt`, `.dissolve`, `AuroraBackground`, `.spotlight` и другие |
 
 Своё — только если в DesignKit нет подходящего (и тогда — сначала PR в DesignKit, см. ниже).

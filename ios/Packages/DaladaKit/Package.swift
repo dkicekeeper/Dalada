@@ -44,6 +44,8 @@ let package = Package(
             dependencies: [
                 "DaladaCore",
                 .product(name: "MapLibre", package: "maplibre-gl-native-distribution"),
+                // Цвета карты — палитра DesignKit (MapColors).
+                .product(name: "DesignKit", package: "DesignKit"),
             ]
         ),
 

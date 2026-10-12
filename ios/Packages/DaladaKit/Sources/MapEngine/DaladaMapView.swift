@@ -339,18 +339,8 @@ public struct DaladaMapView: UIViewRepresentable {
 
         /// Цвет зоны по виду. Функции MapLibre — только конструкторами (см. MapPlaceIcons.colorExpression).
         static func ruleAreaColor() -> NSExpression {
-            let colors: [MapRuleArea.State: UIColor] = [
-                .active: .systemRed,
-                .soon: .systemOrange,
-                .none: .systemGray,
-                .regionActive: .systemRed,
-                .regionSoon: .systemOrange,
-                .park: .systemGreen,
-                .reserve: UIColor(red: 0.05, green: 0.45, blue: 0.3, alpha: 1),
-                .borderStrip: .systemPurple,
-                .borderZone: .systemPurple,
-            ]
-            return match(colors.mapValues { NSExpression(forConstantValue: $0) }, default: NSExpression(forConstantValue: UIColor.systemGray))
+            let colors = Dictionary(uniqueKeysWithValues: MapRuleArea.State.allCases.map { ($0, MapColors.zone($0)) })
+            return match(colors.mapValues { NSExpression(forConstantValue: $0) }, default: NSExpression(forConstantValue: MapColors.zone(.none)))
         }
 
         /// Прозрачность заливки: запрет и погранполоса заметнее, нацпарки, погранзона и запреты на
@@ -417,7 +407,7 @@ public struct DaladaMapView: UIViewRepresentable {
             let routeSource = MLNShapeSource(identifier: Layer.routeSource, shape: nil, options: nil)
             style.addSource(routeSource)
             let routeLine = MLNLineStyleLayer(identifier: Layer.routeLine, source: routeSource)
-            routeLine.lineColor = NSExpression(forConstantValue: UIColor.systemBlue)
+            routeLine.lineColor = NSExpression(forConstantValue: MapColors.route)
             routeLine.lineWidth = NSExpression(forConstantValue: 7)
             routeLine.lineOpacity = NSExpression(forConstantValue: 0.55)
             routeLine.lineCap = NSExpression(forConstantValue: "round")
@@ -430,7 +420,7 @@ public struct DaladaMapView: UIViewRepresentable {
             let trackSource = MLNShapeSource(identifier: Layer.trackSource, shape: nil, options: nil)
             style.addSource(trackSource)
             let trackLine = MLNLineStyleLayer(identifier: Layer.trackLine, source: trackSource)
-            trackLine.lineColor = NSExpression(forConstantValue: UIColor.systemOrange)
+            trackLine.lineColor = NSExpression(forConstantValue: MapColors.track)
             trackLine.lineWidth = NSExpression(forConstantValue: 4)
             trackLine.lineCap = NSExpression(forConstantValue: "round")
             trackLine.lineJoin = NSExpression(forConstantValue: "round")
@@ -458,7 +448,7 @@ public struct DaladaMapView: UIViewRepresentable {
             }
             let photoPoints = MLNCircleStyleLayer(identifier: Layer.photoPoints, source: photoSource)
             photoPoints.circleRadius = NSExpression(forConstantValue: 11)
-            photoPoints.circleColor = NSExpression(forConstantValue: UIColor.systemPink)
+            photoPoints.circleColor = NSExpression(forConstantValue: MapColors.photo)
             photoPoints.circleStrokeColor = NSExpression(forConstantValue: UIColor.white)
             photoPoints.circleStrokeWidth = NSExpression(forConstantValue: 2)
             style.addLayer(photoPoints)
@@ -478,7 +468,7 @@ public struct DaladaMapView: UIViewRepresentable {
         /// Линия слоя «Мои треки»: тонкая, полупрозрачная, чтобы десятки поездок не закрывали карту.
         static func historyLayer(source: MLNSource) -> MLNLineStyleLayer {
             let line = MLNLineStyleLayer(identifier: Layer.historyLine, source: source)
-            line.lineColor = NSExpression(forConstantValue: UIColor.systemPurple)
+            line.lineColor = NSExpression(forConstantValue: MapColors.history)
             line.lineWidth = NSExpression(
                 forMLNInterpolating: NSExpression(forVariable: "zoomLevel"),
                 curveType: .linear,
@@ -498,9 +488,9 @@ public struct DaladaMapView: UIViewRepresentable {
         static func placeLayers(source: MLNSource) -> [MLNStyleLayer] {
             let areas = MLNFillStyleLayer(identifier: Layer.areas, source: source)
             areas.predicate = NSPredicate(format: "kind == 'area'")
-            areas.fillColor = NSExpression(forConstantValue: UIColor.systemIndigo)
+            areas.fillColor = NSExpression(forConstantValue: MapColors.area)
             areas.fillOpacity = NSExpression(forConstantValue: 0.18)
-            areas.fillOutlineColor = NSExpression(forConstantValue: UIColor.systemIndigo)
+            areas.fillOutlineColor = NSExpression(forConstantValue: MapColors.area)
 
             // Мелкий масштаб: точки цвета типа; свои — с оранжевой обводкой.
             let points = MLNCircleStyleLayer(identifier: Layer.points, source: source)
@@ -511,7 +501,7 @@ public struct DaladaMapView: UIViewRepresentable {
             // Точки без типа (центр зоны приватности) — при любом масштабе.
             let plainPoints = MLNCircleStyleLayer(identifier: Layer.plainPoints, source: source)
             plainPoints.predicate = NSPredicate(format: "kind == 'plain'")
-            stylePoints(plainPoints, color: NSExpression(forConstantValue: UIColor.systemIndigo))
+            stylePoints(plainPoints, color: NSExpression(forConstantValue: MapColors.area))
 
             // Крупный масштаб: значок типа (свои — с оранжевой обводкой).
             let icons = MLNSymbolStyleLayer(identifier: Layer.icons, source: source)
@@ -545,7 +535,7 @@ public struct DaladaMapView: UIViewRepresentable {
             let draft = MLNCircleStyleLayer(identifier: Layer.draft, source: source)
             draft.predicate = NSPredicate(format: "kind == 'draft'")
             draft.circleRadius = NSExpression(forConstantValue: 9)
-            draft.circleColor = NSExpression(forConstantValue: UIColor.systemRed)
+            draft.circleColor = NSExpression(forConstantValue: MapColors.draft)
             draft.circleStrokeColor = NSExpression(forConstantValue: UIColor.white)
             draft.circleStrokeWidth = NSExpression(forConstantValue: 3)
 
@@ -563,7 +553,7 @@ public struct DaladaMapView: UIViewRepresentable {
             layer.circleColor = color
             layer.circleStrokeColor = NSExpression(
                 format: "TERNARY(own == YES, %@, %@)",
-                UIColor.systemOrange,
+                MapColors.own,
                 UIColor.white
             )
             layer.circleStrokeWidth = NSExpression(format: "TERNARY(own == YES, 3, 2)")

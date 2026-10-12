@@ -3,7 +3,8 @@ import Foundation
 import MapLibre
 import UIKit
 
-/// Значки мест на карте: круг цвета типа с белым символом типа; у своих мест — оранжевая обводка.
+/// Значки мест на карте: круг цвета типа (`MapColors`) с белым символом типа; у своих мест —
+/// оранжевая обводка.
 /// Рисуются из SF Symbols при загрузке стиля, поэтому работают и без сети.
 enum MapPlaceIcons {
     /// С этого масштаба вместо точек — значки (≈ район города).
@@ -19,17 +20,7 @@ enum MapPlaceIcons {
     }
 
     static func color(for type: PlaceType) -> UIColor {
-        switch type {
-        case .fishingSpot: .systemBlue
-        case .waterBody: .systemTeal
-        case .campsite: .systemGreen
-        case .paidPond: .systemIndigo
-        case .base: .systemBrown
-        case .parking: .systemGray
-        case .spring: .systemCyan
-        case .tackleShop: .systemPurple
-        case .landmark: .systemPink
-        }
+        MapColors.place(type)
     }
 
     /// Цвет точки по атрибуту `type` фичи. Только конструктором MapLibre: на iOS 26
@@ -43,7 +34,7 @@ enum MapPlaceIcons {
         return NSExpression(
             forMLNMatchingKey: NSExpression(forKeyPath: "type"),
             in: colors,
-            default: NSExpression(forConstantValue: UIColor.systemIndigo)
+            default: NSExpression(forConstantValue: MapColors.area)
         )
     }
 
@@ -61,7 +52,7 @@ enum MapPlaceIcons {
             let cg = context.cgContext
             cg.saveGState()
             cg.setShadow(offset: CGSize(width: 0, height: 0.5), blur: shadow, color: UIColor.black.withAlphaComponent(0.35).cgColor)
-            (own ? UIColor.systemOrange : UIColor.white).setFill()
+            (own ? MapColors.own : UIColor.white).setFill()
             cg.fillEllipse(in: circle)
             cg.restoreGState()
 
