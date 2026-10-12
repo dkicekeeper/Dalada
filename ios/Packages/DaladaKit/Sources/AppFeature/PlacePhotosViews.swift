@@ -88,6 +88,10 @@ struct PlacePhotosGrid: View {
                         RemotePhoto(path: photo.thumbnailPath, url: urls[photo.thumbnailPath])
                     }
                     .transition(.skeletonReveal)
+                    // Следующая страница: скелетон ряда, пока грузится, «Повторить» при ошибке (DesignKit).
+                    LoadMoreFooter(state: loadState, rows: 1, onLoad: loadNextPage) {
+                        PhotoGridSkeleton(count: 3, style: .edgeToEdge)
+                    }
                 }
             }
             .padding(.vertical, AppSpacing.md)
@@ -112,6 +116,21 @@ struct PlacePhotosGrid: View {
             let signed = (try? await backend.signedMediaURLs(paths: loaded.flatMap { [$0.thumbnailPath, $0.path] })) ?? [:]
             urls.merge(signed) { _, new in new }
             editorial = loaded
+        }
+        await loadMore()
+    }
+
+    private var loadState: LoadMoreState {
+        if isLoading { return .loading }
+        if loadError != nil { return .failed(message: nil) }
+        return hasMore ? .more : .end
+    }
+
+    /// Следующая страница; после ошибки — та же страница заново.
+    private func loadNextPage() async {
+        if loadError != nil {
+            loadError = nil
+            hasMore = true
         }
         await loadMore()
     }

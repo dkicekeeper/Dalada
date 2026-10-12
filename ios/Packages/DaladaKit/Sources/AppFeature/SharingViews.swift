@@ -129,6 +129,8 @@ struct UserTripsListView: View {
     @State private var trips: [TripSummary] = []
     @State private var hasMore = true
     @State private var isLoaded = false
+    @State private var isLoadingMore = false
+    @State private var loadFailed = false
 
     var body: some View {
         Group {
@@ -146,9 +148,10 @@ struct UserTripsListView: View {
                         } label: {
                             TripRow(trip: trip)
                         }
-                        .onAppear {
-                            if trip.id == trips.last?.id { Task { await loadMore() } }
-                        }
+                    }
+                    // Следующая страница — когда низ списка на экране (DesignKit).
+                    LoadMoreFooter(state: loadState, onLoad: loadMore) {
+                        TripRowSkeleton()
                     }
                 }
             }
@@ -167,13 +170,27 @@ struct UserTripsListView: View {
         hasMore = page.count >= Self.pageSize
     }
 
+    private var loadState: LoadMoreState {
+        if isLoadingMore { return .loading }
+        if loadFailed { return .failed(message: nil) }
+        return hasMore && !trips.isEmpty ? .more : .end
+    }
+
     private func loadMore() async {
-        guard hasMore, let backend = environment.backend, let last = trips.last,
-              let page = try? await backend.userTrips(userID, limit: Self.pageSize, before: last.startedAt)
-        else { return }
-        let known = Set(trips.map(\.id))
-        trips += page.filter { !known.contains($0.id) }
-        hasMore = page.count >= Self.pageSize
+        guard hasMore, !isLoadingMore, let backend = environment.backend, let last = trips.last else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        do {
+            let page = try await backend.userTrips(userID, limit: Self.pageSize, before: last.startedAt)
+            let known = Set(trips.map(\.id))
+            trips += page.filter { !known.contains($0.id) }
+            hasMore = page.count >= Self.pageSize
+            loadFailed = false
+        } catch is CancellationError {
+            return
+        } catch {
+            loadFailed = true
+        }
     }
 }
 

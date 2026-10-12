@@ -113,37 +113,17 @@ struct PlaceReviewsSection: View {
     }
 }
 
-/// Средняя оценка, число отзывов и полоски по звёздам.
+/// Средняя оценка, число отзывов и полоски по звёздам (`RatingSummary` из DesignKit).
 struct ReviewSummaryView: View {
     let summary: ReviewSummary
 
     var body: some View {
-        HStack(alignment: .center, spacing: AppSpacing.lg) {
-            VStack(spacing: AppSpacing.xxs) {
-                Text(verbatim: (summary.ratingAverage ?? 0).formatted(.number.precision(.fractionLength(1))))
-                    .font(AppTypography.h2)
-                    .monospacedDigit()
-                Rating(rating: summary.ratingAverage ?? 0, size: 12)
-                Text("reviews.count \(summary.reviewsCount)")
-                    .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-            VStack(spacing: AppSpacing.xxs) {
-                ForEach((1...5).reversed(), id: \.self) { star in
-                    HStack(spacing: AppSpacing.xs) {
-                        Text(verbatim: "\(star)")
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
-                            .frame(width: 12)
-                        LinearProgressBar(value: summary.share(of: star), color: AppColors.warning, height: 6)
-                    }
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel(Text("reviews.bar.accessibility \(star) \(summary.stars[star - 1])"))
-                }
-            }
-        }
-        .cardContentPadding()
-        .cardStyle()
+        RatingSummary(
+            average: summary.ratingAverage,
+            count: summary.reviewsCount,
+            distribution: summary.stars,
+            countLabel: String(localized: "reviews.count \(summary.reviewsCount)")
+        )
     }
 }
 
@@ -207,6 +187,8 @@ struct ReviewsListView: View {
     @State private var sort: ReviewSort = .new
     @State private var reviews: [PlaceReview] = []
     @State private var hasMore = true
+    @State private var isLoadingMore = false
+    @State private var loadFailed = false
 
     var body: some View {
         List {
@@ -224,9 +206,10 @@ struct ReviewsListView: View {
                     reviews.removeAll { $0.author.id == blocked }
                 }
                     .listRowSeparator(.hidden)
-                    .onAppear {
-                        if review.id == reviews.last?.id { Task { await loadMore() } }
-                    }
+            }
+            // Следующая страница — когда низ списка на экране (DesignKit).
+            LoadMoreFooter(state: loadState, onLoad: loadMore) {
+                ReviewCardSkeleton()
             }
         }
         .listStyle(.plain)
@@ -245,14 +228,28 @@ struct ReviewsListView: View {
         seed(page)
     }
 
+    private var loadState: LoadMoreState {
+        if isLoadingMore { return .loading }
+        if loadFailed { return .failed(message: nil) }
+        return hasMore && !reviews.isEmpty ? .more : .end
+    }
+
     private func loadMore() async {
-        guard hasMore, let backend = environment.backend,
-              let page = try? await backend.placeReviews(placeID, sort: sort, limit: Self.pageSize, offset: reviews.count)
-        else { return }
-        let known = Set(reviews.map(\.id))
-        reviews += page.filter { !known.contains($0.id) }
-        hasMore = page.count >= Self.pageSize
-        seed(page)
+        guard hasMore, !isLoadingMore, let backend = environment.backend else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        do {
+            let page = try await backend.placeReviews(placeID, sort: sort, limit: Self.pageSize, offset: reviews.count)
+            let known = Set(reviews.map(\.id))
+            reviews += page.filter { !known.contains($0.id) }
+            hasMore = page.count >= Self.pageSize
+            loadFailed = false
+            seed(page)
+        } catch is CancellationError {
+            return
+        } catch {
+            loadFailed = true
+        }
     }
 
     private func seed(_ page: [PlaceReview]) {
@@ -300,14 +297,12 @@ struct ReviewFormView: View {
                             .padding(.vertical, AppSpacing.md)
                     }
 
-                    FormSection(
-                        header: String(localized: "reviews.form.text"),
-                        footer: text.count > ReviewDraft.bodyLimit - 200 ? "\(text.count) / \(ReviewDraft.bodyLimit)" : nil
-                    ) {
+                    FormSection(header: String(localized: "reviews.form.text")) {
                         FormTextField(
                             text: $text,
                             placeholder: String(localized: "reviews.form.placeholder"),
-                            style: .rowMultiline(min: 3, max: 10)
+                            style: .rowMultiline(min: 3, max: 10),
+                            limit: ReviewDraft.bodyLimit
                         )
                     }
 
@@ -555,6 +550,8 @@ struct ThreadsListView: View {
     @Environment(SessionStore.self) private var session
     @State private var threads: [ThreadSummary] = []
     @State private var hasMore = true
+    @State private var isLoadingMore = false
+    @State private var loadFailed = false
     @State private var showsForm = false
 
     var body: some View {
@@ -566,9 +563,9 @@ struct ThreadsListView: View {
                     ThreadRow(thread: thread)
                 }
                 .listRowSeparator(.hidden)
-                .onAppear {
-                    if thread.id == threads.last?.id { Task { await loadMore() } }
-                }
+            }
+            LoadMoreFooter(state: loadState, onLoad: loadMore) {
+                ThreadCardSkeleton()
             }
         }
         .listStyle(.plain)
@@ -598,13 +595,27 @@ struct ThreadsListView: View {
         hasMore = page.count >= Self.pageSize
     }
 
+    private var loadState: LoadMoreState {
+        if isLoadingMore { return .loading }
+        if loadFailed { return .failed(message: nil) }
+        return hasMore && !threads.isEmpty ? .more : .end
+    }
+
     private func loadMore() async {
-        guard hasMore, let backend = environment.backend,
-              let page = try? await backend.placeThreads(placeID, limit: Self.pageSize, offset: threads.count)
-        else { return }
-        let known = Set(threads.map(\.id))
-        threads += page.filter { !known.contains($0.id) }
-        hasMore = page.count >= Self.pageSize
+        guard hasMore, !isLoadingMore, let backend = environment.backend else { return }
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        do {
+            let page = try await backend.placeThreads(placeID, limit: Self.pageSize, offset: threads.count)
+            let known = Set(threads.map(\.id))
+            threads += page.filter { !known.contains($0.id) }
+            hasMore = page.count >= Self.pageSize
+            loadFailed = false
+        } catch is CancellationError {
+            return
+        } catch {
+            loadFailed = true
+        }
     }
 }
 
@@ -640,14 +651,16 @@ struct ThreadFormView: View {
                         FormTextField(
                             text: $title,
                             placeholder: String(localized: "threads.form.titlePlaceholder"),
-                            style: .row
+                            style: .row,
+                            limit: ThreadDraft.titleRange.upperBound
                         )
                     }
                     FormSection(header: String(localized: "threads.form.text")) {
                         FormTextField(
                             text: $text,
                             placeholder: String(localized: "threads.form.textPlaceholder"),
-                            style: .rowMultiline(min: 4, max: 12)
+                            style: .rowMultiline(min: 4, max: 12),
+                            limit: ThreadDraft.bodyLimit
                         )
                     }
                     if let saveError {
@@ -851,6 +864,7 @@ struct ThreadView: View {
             isSending: isSending,
             canSend: replyDraft.isValid,
             errorMessage: sendError,
+            limit: PostDraft.bodyLimit,
             focus: $isReplyFocused,
             onCancelQuote: { replyQuote = nil }
         ) {
