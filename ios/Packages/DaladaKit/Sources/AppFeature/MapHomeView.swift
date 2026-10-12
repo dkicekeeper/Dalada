@@ -128,7 +128,7 @@ struct MapHomeView: View {
         .overlay(alignment: .top) {
             if !longPressHintSeen && session.profile != nil {
                 longPressHint
-                    .padding(.top, 64)
+                    .padding(.top, 64) // design-lint:ignore под верхними кнопками карты (их высота)
                     .screenPadding()
                     .transition(.riseIn)
             }

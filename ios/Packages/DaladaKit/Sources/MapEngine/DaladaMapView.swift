@@ -525,7 +525,7 @@ public struct DaladaMapView: UIViewRepresentable {
             labels.text = NSExpression(forKeyPath: "name")
             labels.textFontNames = NSExpression(forConstantValue: ["Noto Sans Regular"])
             labels.textFontSize = NSExpression(forConstantValue: 12)
-            labels.textColor = NSExpression(forConstantValue: UIColor(white: 0.15, alpha: 1))
+            labels.textColor = NSExpression(forConstantValue: UIColor(white: 0.15, alpha: 1)) // design-lint:ignore подписи на светлой подложке карты, с белым ореолом
             labels.textHaloColor = NSExpression(forConstantValue: UIColor.white)
             labels.textHaloWidth = NSExpression(forConstantValue: 1.5)
             labels.textAnchor = NSExpression(forConstantValue: "top")

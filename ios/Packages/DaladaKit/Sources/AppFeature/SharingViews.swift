@@ -381,7 +381,7 @@ struct PrivacyZoneEditorView: View {
                             onRegionChange: { box in draft.wrappedValue.center = box.center }
                         )
                         Image(systemName: "plus")
-                            .font(.system(size: 28, weight: .light))
+                            .font(.system(size: 28, weight: .light)) // design-lint:ignore прицел поверх карты, не растёт с текстом
                             .foregroundStyle(AppColors.textPrimary)
                             .allowsHitTesting(false)
                             .accessibilityHidden(true)
