@@ -20,7 +20,7 @@ let package = Package(
     dependencies: [
         // DesignKit — точная версия: обновление приходит только сменой номера здесь (CI DesignKit
         // собирает Dalada с каждым своим изменением, так что новая версия уже проверена на нас).
-        .package(url: "https://github.com/dkicekeeper/DesignKit", exact: "3.6.0"),
+        .package(url: "https://github.com/dkicekeeper/DesignKit", exact: "3.7.0"),
         .package(url: "https://github.com/maplibre/maplibre-gl-native-distribution", from: "6.31.0"),
         .package(url: "https://github.com/supabase/supabase-swift", from: "2.55.3"),
         .package(url: "https://github.com/groue/GRDB.swift", from: "7.11.1"),
@@ -44,6 +44,8 @@ let package = Package(
             dependencies: [
                 "DaladaCore",
                 .product(name: "MapLibre", package: "maplibre-gl-native-distribution"),
+                // Цвета карты — палитра DesignKit (MapColors).
+                .product(name: "DesignKit", package: "DesignKit"),
             ]
         ),
 
