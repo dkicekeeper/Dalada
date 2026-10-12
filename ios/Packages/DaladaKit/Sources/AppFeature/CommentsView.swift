@@ -153,6 +153,7 @@ struct CommentsView: View {
                     isSending: isSending,
                     canSend: draft.isValid,
                     errorMessage: sendError,
+                    limit: CommentDraft.maxLength,
                     focus: $isFocused
                 ) {
                     Task { await send() }

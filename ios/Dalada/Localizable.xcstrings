@@ -8468,6 +8468,29 @@
         }
       }
     },
+    "loadMore.failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t load more"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Қосымша жүктеу мүмкін болмады"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось загрузить ещё"
+          }
+        }
+      }
+    },
     "map.layers" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17844,6 +17867,29 @@
         }
       }
     },
+    "rating.bar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rating %1$lld: %2$lld reviews"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Баға %1$lld: %2$lld пікір"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оценка %1$lld — отзывов: %2$lld"
+          }
+        }
+      }
+    },
     "rating.pick %lld %lld" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -18714,29 +18760,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Все отзывы (%lld)"
-          }
-        }
-      }
-    },
-    "reviews.bar.accessibility %lld %lld" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rating %1$lld: %2$lld reviews"
-          }
-        },
-        "kk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Баға %1$lld: %2$lld пікір"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Оценка %1$lld — отзывов: %2$lld"
           }
         }
       }
@@ -21884,6 +21907,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ещё"
+          }
+        }
+      }
+    },
+    "textInput.characterCount" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld of %2$lld characters"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld / %2$lld таңба"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld из %2$lld символов"
           }
         }
       }

@@ -85,6 +85,8 @@ struct MyPhotosView: View {
     @State private var urls: [String: URL] = [:]
     @State private var hasMore = true
     @State private var isLoaded = false
+    @State private var isLoadingMore = false
+    @State private var loadFailed = false
     @State private var opened: MyPhoto?
 
     var body: some View {
@@ -104,10 +106,11 @@ struct MyPhotosView: View {
                         PhotoGrid(photos: month.photos, urls: urls) { opened = $0 }
                     }
                 }
-                if hasMore && !photos.isEmpty {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .task { await loadMore() }
+                if !photos.isEmpty {
+                    // Следующая страница — когда низ на экране (DesignKit).
+                    LoadMoreFooter(state: loadState, rows: 1, onLoad: loadMore) {
+                        PhotoGridSkeleton(count: 3)
+                    }
                 }
             }
             .screenPadding()
@@ -130,17 +133,32 @@ struct MyPhotosView: View {
         await loadURLs(for: page)
     }
 
+    private var loadState: LoadMoreState {
+        if isLoadingMore { return .loading }
+        if loadFailed { return .failed(message: nil) }
+        return hasMore ? .more : .end
+    }
+
     private func loadMore() async {
-        guard hasMore, let backend = environment.backend, let last = photos.last,
-              let page = try? await backend.myPhotos(limit: MyPhotosLoader.pageSize, after: last)
-        else {
+        guard hasMore, !isLoadingMore else { return }
+        guard let backend = environment.backend, let last = photos.last else {
             hasMore = false
             return
         }
-        let known = Set(photos.map(\.id))
-        photos += page.filter { !known.contains($0.id) }
-        hasMore = page.count >= MyPhotosLoader.pageSize
-        await loadURLs(for: page)
+        isLoadingMore = true
+        defer { isLoadingMore = false }
+        do {
+            let page = try await backend.myPhotos(limit: MyPhotosLoader.pageSize, after: last)
+            let known = Set(photos.map(\.id))
+            photos += page.filter { !known.contains($0.id) }
+            hasMore = page.count >= MyPhotosLoader.pageSize
+            loadFailed = false
+            await loadURLs(for: page)
+        } catch is CancellationError {
+            return
+        } catch {
+            loadFailed = true
+        }
     }
 
     private func loadURLs(for page: [MyPhoto]) async {

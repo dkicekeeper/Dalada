@@ -24,6 +24,7 @@ struct HomeView: View {
     @State private var photoURLs: [String: URL] = [:]
     @State private var isLoaded = false
     @State private var isLoadingMore = false
+    @State private var loadMoreFailed = false
     @State private var loadError: String?
     @State private var selectedPlace: PlaceSelection?
     @State private var showsFindPeople = false
@@ -126,14 +127,10 @@ struct HomeView: View {
                 ) { placeID in
                     selectedPlace = PlaceSelection(id: placeID)
                 }
-                .onAppear {
-                    if item.id == items.last?.id { Task { await loadMore() } }
-                }
+                // Карточки высокие: следующую страницу просим за пару постов до конца.
+                .onReachEnd(of: item, in: items, threshold: 2) { Task { await loadMore() } }
             }
-            if isLoadingMore {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-            }
+            LoadMoreFooter(state: loadMoreState, onLoad: loadMore)
         }
     }
 
@@ -176,11 +173,26 @@ struct HomeView: View {
         isLoaded = true
     }
 
+    private var loadMoreState: LoadMoreState {
+        if isLoadingMore { return .loading }
+        if loadMoreFailed { return .failed(message: nil) }
+        return next != nil ? .more : .end
+    }
+
     private func loadMore() async {
         guard let cursor = next, !isLoadingMore, let backend = environment.backend else { return }
         isLoadingMore = true
         defer { isLoadingMore = false }
-        guard let page = try? await backend.homeFeed(limit: Self.pageSize, after: cursor) else { return }
+        let page: FeedPage
+        do {
+            page = try await backend.homeFeed(limit: Self.pageSize, after: cursor)
+            loadMoreFailed = false
+        } catch is CancellationError {
+            return
+        } catch {
+            loadMoreFailed = true
+            return
+        }
         let known = Set(items.map(\.id))
         let fresh = page.items.filter { !known.contains($0.id) }
         items += fresh
