@@ -27,7 +27,7 @@ Features              Onboarding · Auth · Profile · Social · Map · Places �
 Services              Backend · Persistence · Sync · Location · MapEngine · Media ·
   │                   Regulations · Contacts · Notifications · Analytics
   │
-Core + UI             Core (доменные модели, форматтеры, i18n-хелперы) · DaladaUI (компоненты)
+Core + UI             Core (доменные модели, форматтеры, i18n-хелперы) · DaladaUI (заглушки разделов)
   │
 External              DesignKit · MapLibre · GRDB · supabase-swift · Nuke
 ```
@@ -35,7 +35,7 @@ External              DesignKit · MapLibre · GRDB · supabase-swift · Nuke
 | Модуль | Отвечает за |
 |--------|-------------|
 | **Core** | Доменные типы (`Place`, `Trip`, `Catch`, `Visibility`…), единицы измерения, форматтеры, идентификаторы (UUIDv7) |
-| **DaladaUI** | Компоненты приложения поверх DesignKit: карточки места/поездки/улова, рейтинг, бейдж видимости, строка чеклиста, обобщённая карточка статистики. Универсальные — со временем переносим в DesignKit |
+| **DaladaUI** | `PlaceholderScreen` — заглушка раздела, который появится позже (поверх `EmptyState`). Своих компонентов здесь нет: общие — в DesignKit, экраны и тонкие переходники над моделями Dalada (`RuleStatus` → `Badge`, `ShareCard.Style.dalada`) — в `AppFeature` |
 | **Backend** | Обёртка над supabase-swift: вход, таблицы, RPC, подписанные ссылки Storage; адрес и ключ бэкенда — из удалённой конфигурации (см. ниже). Фичи не знают о Supabase — только о протоколах |
 | **Persistence** | GRDB: схема, миграции, репозитории, наблюдение за изменениями |
 | **Sync** | Очередь операций (outbox), загрузка медиа и треков, получение изменений |
@@ -184,22 +184,26 @@ External              DesignKit · MapLibre · GRDB · supabase-swift · Nuke
 
 ## Дизайн-система
 
-- DesignKit подключаем как SPM-зависимость с точной версией (`exact: "0.2.0"` в
+- DesignKit подключаем как SPM-зависимость с точной версией (`exact: "X.Y.Z"` в
   `ios/Packages/DaladaKit/Package.swift`). Новая версия приходит только сменой номера; CI DesignKit
   собирает Dalada с каждым своим изменением, так что сломать сборку Dalada незаметно нельзя.
 - Обновление автоматическое: workflow **DesignKit update** (`.github/workflows/designkit.yml`) раз в
   сутки сверяет версию с последним релизом DesignKit, при новом релизе собирает приложение и тесты
   пакета и, если всё зелёное, коммитит новую версию в `main`. Вручную — Actions → DesignKit update
   → Run workflow.
-- Правила и каталог компонентов — в DesignKit: `CLAUDE.md`, `docs/design-system.md`,
-  `docs/localization-keys.md` (ключи, которые компоненты берут из нашего `Localizable.xcstrings`).
-  Галерея компонентов с темой Dalada — в TestFlight («DesignKit Gallery»).
+- Правила и каталог компонентов — в DesignKit: `CLAUDE.md`, `docs/design-system.md` (§0 — список
+  компонентов), `docs/motion.md` (движение и эффекты), `docs/localization-keys.md` (ключи, которые
+  компоненты берут из нашего `Localizable.xcstrings`). Галерея компонентов с темой Dalada — в
+  TestFlight («DesignKit Gallery»). Какой компонент DesignKit брать для задачи Dalada — таблица в
+  `CLAUDE.md`, раздел «Компоненты интерфейса».
 - **Акцент Dalada — зелёный** (`AccentColor` в `Assets.xcassets`: светлая тема #2E8B57, тёмная
   #3CB371). `AppBootstrap.configure()` передаёт его в DesignKit (`DesignKitTheme.accent`), и тот же
   цвет красит системные элементы (`ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME`).
-- **Ещё нужно в DesignKit:** «outdoor»-палитра для категорий мест и статусов правил — токенами.
-- Компоненты приложения — в `DaladaUI`; универсальные (карточка статистики со значением и единицей,
-  рейтинг, строка-чекбокс) — кандидаты в DesignKit.
+- **Ещё нужно в DesignKit:** «outdoor»-палитра для типов мест и статусов правил — токенами. Пока
+  цвета точек на карте — системные (`MapEngine/MapPlaceIcons.swift`, MapLibre берёт `UIColor`).
+- Универсальные компоненты, которые раньше были кандидатами (карточка статистики, рейтинг,
+  строка-чекбокс), уже в DesignKit: `StatTile`, `Rating` / `RatingPicker`, `ChecklistRow`. В
+  приложении — экраны и переходники над моделями; правило переноса — `CLAUDE.md`.
 
 ## Тестирование
 

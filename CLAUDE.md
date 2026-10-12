@@ -60,34 +60,26 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 ## Компоненты интерфейса: DesignKit или Dalada
 
 Дизайн-система — пакет [DesignKit](https://github.com/dkicekeeper/DesignKit) (общий с Tenra). Перед
-тем как писать новый компонент, ищи готовый в DesignKit (Gallery в TestFlight, `docs/design-system.md`
-в DesignKit): кнопки, карточки (`cardStyle`), строки (`UniversalRow`, `InfoRow`), бейджи
-(`Badge`, `TrendBadge`), `StatTile`, `Avatar`, `Rating`/`RatingPicker`, `ChipPicker`,
-`SelectionIndicator`, `LinearProgressBar(value:)`, `EmptyState`, `RecommendationBox`,
-`DisclosureChevron`, скелетоны загрузки (`SkeletonRow`, `.skeletonLoadingLabel()`),
-`DSButton` (кнопка с иконкой, загрузкой, ролью и размером), `ExpandableText`, `ActivityTimeline`, `MonthCalendar`,
-`PromptSheet` (вопрос и праймер перед системным запросом разрешения), `OnboardingPager` /
-`OnboardingPage`, поле сообщения `MessageComposer`, `PersonRow`, `CommentRow`, `ThreadCard`,
-`ReviewCard`, `ReactionButton`, значки достижений (`AchievementMedal`, `AchievementTile`,
-`AchievementProgressRow`), `ChecklistRow` / `ChecklistSummaryRow`, `StatsStrip`, `StreakCard`,
-`ThumbnailCard` / `ThumbnailRow`; с 2.8.0 — фото (`PhotoTile`, `PhotoStrip`, `PhotoGrid`,
-`PhotoCarousel`, `PhotoViewer` с масштабом), картинки для Stories (`ShareCardSheet`,
-`ShareCardFrame` со стилем `ShareCard.Style.dalada`), `LiveSessionBar` (мини-плеер записи),
-`DownloadRow` (офлайн-карты), `ArticleBody` (статьи), `ChipPicker(allTitle:)`, `PersonRow(style:
-.card)` (шапка профиля); с 3.0.0 — формы: `EditSheetContainer(wrapInForm: false)` (✕ и ✓ в
-тулбаре, `isSaving:` — индикатор вместо ✓, `saveTitle:` — имя ✓ для VoiceOver) поверх `ScrollView`
-с карточками `FormSection` и строками `FormTextField(style: .row / .rowMultiline)`,
-`MenuPickerRow`, `NavigationPickerRow` (длинный список с поиском), `StepperRow`, `DatePickerRow`,
-`ToggleSettingsRow` / `ActionSettingsRow` / `CheckmarkRow` с `config: .standard`, `SegmentedPicker`,
-ошибки — `InlineStatusText`; с 3.1.0 — чипы в карточке `ChipPicker(…, inset: AppSpacing.lg)`,
-подпись-строка для `PhotosPicker` — `ActionRowLabel`, фото по ссылке — `RemotePhoto` DesignKit
-(скелетон, пока грузится; грузит `PhotoCache` через `DesignKitPhotoLoader`, подключён в
-`AppBootstrap`), строка со слайдером — `SliderRow`; с 3.2.0 `SectionHeader` рисует `systemImage`
-в любом стиле (раньше только в `.large`), поэтому заголовки разделов Dalada — без значка, пока
-он не нужен на экране. Системный `Form` в новых экранах не используем. Эффекты — в
-`docs/motion.md` DesignKit: `.celebration`,
-`.completionMoment`, `.holographic` + `.interactiveTilt`, `.dissolve`, `AuroraBackground`,
-`.spotlight` и другие. Своё — только если в DesignKit нет подходящего.
+тем как писать новый компонент, ищи готовый в DesignKit: Gallery в TestFlight (у каждого компонента —
+стили, состояния и скелетон) и `docs/design-system.md` в DesignKit (§0 — полный список). Что уже
+есть для задач Dalada:
+
+| Нужно | В DesignKit |
+|---|---|
+| Кнопки, карточки, строки | `DSButton` (иконка, загрузка, роль, размер), `cardStyle`, `UniversalRow`, `InfoRow`, `DisclosureChevron` |
+| Бейджи, оценки, числа | `Badge`, `TrendBadge`, `StatTile`, `StatsStrip`, `StreakCard`, `Rating` / `RatingPicker` |
+| Выбор | `ChipPicker` (`allTitle:` — чип «Все», `inset: AppSpacing.lg` — в карточке формы), `SegmentedPicker`, `SelectionIndicator` |
+| Загрузка, пусто, ошибка | скелетоны (ниже), `EmptyState`, `RecommendationBox`, `LinearProgressBar(value:)` |
+| Формы | `EditSheetContainer(wrapInForm: false)` (✕ и ✓ в тулбаре, `isSaving:` — индикатор вместо ✓, `saveTitle:` — имя ✓ для VoiceOver) поверх `ScrollView` с карточками `FormSection`; строки `FormTextField(style: .row / .rowMultiline)`, `MenuPickerRow`, `NavigationPickerRow` (длинный список с поиском), `StepperRow`, `DatePickerRow`, `SliderRow`, `ToggleSettingsRow` / `ActionSettingsRow` / `CheckmarkRow` с `config: .standard`; подпись-строка для `PhotosPicker` — `ActionRowLabel`; ошибки — `InlineStatusText`. Системный `Form` в новых экранах не используем |
+| Заголовки разделов | `SectionHeader`; с 3.2.0 он рисует `systemImage` в любом стиле (раньше только в `.large`), поэтому заголовки Dalada — без значка, пока он не нужен на экране |
+| Люди и сообщество | `Avatar`, `PersonRow` (`style: .card` — шапка профиля), `CommentRow`, `ThreadCard`, `ReviewCard`, `ReactionButton`, поле сообщения `MessageComposer` |
+| Достижения и прогресс | `AchievementMedal`, `AchievementTile`, `AchievementProgressRow`, `ChecklistRow` / `ChecklistSummaryRow` |
+| Фото | `PhotoTile`, `PhotoStrip`, `PhotoGrid`, `PhotoCarousel`, `PhotoViewer` (с масштабом); фото по ссылке — `RemotePhoto` (скелетон, пока грузится; грузит `PhotoCache` через `DesignKitPhotoLoader`, подключён в `AppBootstrap`) |
+| Контент | `ThumbnailCard` / `ThumbnailRow`, `ArticleBody` (статьи), `ExpandableText`, `ActivityTimeline`, `MonthCalendar` |
+| Остальное | картинки для Stories — `ShareCardSheet` / `ShareCardFrame` со стилем `ShareCard.Style.dalada`; мини-плеер записи — `LiveSessionBar`; офлайн-карты — `DownloadRow`; вопрос и праймер перед системным запросом разрешения — `PromptSheet`; онбординг — `OnboardingPager` / `OnboardingPage`; меню «+» на карте — `GlassActionMenu` |
+| Эффекты | `docs/motion.md` DesignKit: `.celebration`, `.completionMoment`, `.holographic` + `.interactiveTilt`, `.dissolve`, `AuroraBackground`, `.spotlight` и другие |
+
+Своё — только если в DesignKit нет подходящего (и тогда — сначала PR в DesignKit, см. ниже).
 
 Движение по правилам DesignKit (`docs/motion.md`): анимации — пружинами `AppAnimation.snappy`
 (ответ на касание) и `.smooth` (меняется содержимое), без голого `withAnimation {}`; появление —
@@ -98,7 +90,8 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 сохранения — `HapticManager.play(.confirm)` / `.fail`. Меню «+» на карте — `GlassActionMenu`.
 
 У каждого компонента DesignKit с данными есть скелетон `<Имя>Skeleton` той же формы: пока данные
-грузятся, показывай его на месте компонента, а не `ProgressView()`.
+грузятся, показывай его на месте компонента, а не `ProgressView()`. Строка без своего скелетона —
+`SkeletonRow`; на скелетон целиком — `.skeletonLoadingLabel()` (VoiceOver читает его одним элементом, ключ `skeleton.loading`).
 
 Компонент идёт в DesignKit, если выполнены оба условия (правило «двух потребителей» отменено
 владельцем в октябре 2026: общим делается всё, что может быть общим, даже если нужно одному
