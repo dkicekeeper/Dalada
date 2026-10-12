@@ -2,6 +2,7 @@ import Backend
 import DaladaCore
 import DaladaUI
 import DesignComponents
+import DesignSupport
 import DesignTokens
 import MapEngine
 import Persistence
@@ -18,8 +19,25 @@ struct PlacesHomeView: View {
     @Environment(PlacesStore.self) private var store
     @State private var query = PlaceQuery()
     @State private var selected: PlaceSelection?
+    /// Недавние запросы под полем поиска (DesignKit 3.5.0).
+    @AppStorage("places.recentSearches") private var recentSearches = RecentSearches()
 
     private var viewerID: UUID? { session.profile?.id }
+
+    /// Подсказки под полем поиска: места из подборок, без повторов. Типы мест — чипы на экране.
+    private var placeSuggestions: [SearchSuggestion] {
+        var seen = Set<UUID>()
+        return PlacesStore.allItems(store.discovery).compactMap { item in
+            guard seen.insert(item.id).inserted else { return nil }
+            return SearchSuggestion(
+                item.name,
+                subtitle: String(localized: String.LocalizationValue(item.type.titleKey)),
+                icon: .sfSymbol(item.type.systemImage),
+                tint: AppColors.accent,
+                id: item.id.uuidString
+            )
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -41,6 +59,16 @@ struct PlacesHomeView: View {
             }
             .navigationTitle("tab.places")
             .searchable(text: $query.text, prompt: Text("places.search.prompt"))
+            .dsSearchSuggestions(
+                text: $query.text,
+                recent: $recentSearches,
+                suggestions: placeSuggestions,
+                onSelect: { suggestion in
+                    if let id = UUID(uuidString: suggestion.id) {
+                        selected = PlaceSelection(id: id)
+                    }
+                }
+            )
             .navigationDestination(for: PlaceListRoute.self) { route in
                 PlaceListScreen(route: route, environment: environment)
             }

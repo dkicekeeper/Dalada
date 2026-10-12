@@ -3,6 +3,7 @@ import CoreImage.CIFilterBuiltins
 import DaladaCore
 import DaladaUI
 import DesignComponents
+import DesignSupport
 import DesignTokens
 import SwiftUI
 
@@ -171,6 +172,8 @@ struct FindPeopleView: View {
     let environment: AppEnvironment
 
     @State private var query = ""
+    /// Недавние запросы под полем поиска (DesignKit 3.5.0).
+    @AppStorage("friends.recentSearches") private var recentSearches = RecentSearches()
     @State private var results: [PublicProfile] = []
     @State private var searched = false
     @State private var suggestions: [FriendSuggestion] = []
@@ -205,6 +208,7 @@ struct FindPeopleView: View {
         }
         .navigationTitle("friends.find")
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: Text("friends.search.prompt"))
+        .dsSearchSuggestions(text: $query, recent: $recentSearches)
         .textInputAutocapitalization(.never)
         .autocorrectionDisabled()
         .task(id: trimmed) { await search() }
