@@ -299,23 +299,8 @@ private struct PlaceItemMeta: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-            HStack(spacing: AppSpacing.xs) {
-                Text(LocalizedStringKey(item.type.titleKey))
-                if let distance = item.distanceM {
-                    Text(verbatim: "·")
-                    Text(verbatim: TripFormat.distance(Double(distance)))
-                }
-                if let rating = item.ratingAvg {
-                    Text(verbatim: "·")
-                    Label {
-                        Text(verbatim: rating.formatted(.number.precision(.fractionLength(1))))
-                    } icon: {
-                        Image(systemName: "star.fill")
-                    }
-                    .labelStyle(.titleAndIcon)
-                }
-            }
-            .lineLimit(1)
+            MetaLine(facts)
+                .lineLimit(1)
             if let last = item.lastReportAt {
                 Text("places.item.lastReport \(Text(last, format: .relative(presentation: .named)))")
                     .lineLimit(1)
@@ -327,6 +312,18 @@ private struct PlaceItemMeta: View {
         }
         .font(AppTypography.caption)
         .foregroundStyle(AppColors.textSecondary)
+    }
+
+    /// «Озеро · 12 км · ★ 4,5» (`MetaLine` из DesignKit).
+    private var facts: [MetaItem] {
+        var facts: [MetaItem] = [.text(Text(LocalizedStringKey(item.type.titleKey)))]
+        if let distance = item.distanceM {
+            facts.append(.text(TripFormat.distance(Double(distance))))
+        }
+        if let rating = item.ratingAvg {
+            facts.append(.label(rating.formatted(.number.precision(.fractionLength(1))), systemImage: "star.fill"))
+        }
+        return facts
     }
 }
 

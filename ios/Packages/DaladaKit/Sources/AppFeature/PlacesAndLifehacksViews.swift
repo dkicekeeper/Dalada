@@ -7,35 +7,24 @@ import MapEngine
 import Persistence
 import SwiftUI
 
-/// Строка места: иконка типа, название, видимость, статус модерации.
+/// Строка места: иконка типа, название, видимость, статус модерации (`ItemRow` из DesignKit).
 struct PlaceRow: View {
     let place: PlaceSummary
 
     var body: some View {
-        HStack(spacing: AppSpacing.md) {
-            Image(systemName: place.type.systemImage)
-                .font(.system(size: AppIconSize.md))
-                .foregroundStyle(AppColors.accent)
-                .frame(width: AppIconSize.xxl, height: AppIconSize.xxl)
-                .background(AppColors.pale(AppColors.accent), in: Circle())
-            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                Text(verbatim: place.name)
-                    .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
-                HStack(spacing: AppSpacing.sm) {
-                    Label(LocalizedStringKey(place.visibility.titleKey), systemImage: place.visibility.systemImage)
-                    if place.status == .pending {
-                        Label("place.status.pending", systemImage: "hourglass")
-                            .foregroundStyle(AppColors.warning)
-                    }
-                }
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
-            }
-            Spacer(minLength: 0)
+        ItemRow(place.name, meta: [MetaLine(labels, separator: .space)], leading: .symbol(place.type.systemImage)) {
             DisclosureChevron()
         }
-        .contentShape(Rectangle())
+    }
+
+    private var labels: [MetaItem] {
+        var labels: [MetaItem] = [
+            .label(Text(LocalizedStringKey(place.visibility.titleKey)), systemImage: place.visibility.systemImage),
+        ]
+        if place.status == .pending {
+            labels.append(.label(Text("place.status.pending"), systemImage: "hourglass", tint: AppColors.warning))
+        }
+        return labels
     }
 }
 

@@ -410,20 +410,21 @@ private struct MyCatchRow: View {
                     lengthMillimeters: item.lengthMillimeters,
                     released: item.released
                 )
-                HStack(spacing: AppSpacing.xs) {
-                    if let placeName = item.placeName {
-                        Text(verbatim: placeName)
-                        Text(verbatim: "·")
-                    }
-                    Text(item.at, format: .dateTime.day().month().year())
-                }
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
+                MetaLine(facts)
+                    .font(AppTypography.caption)
             }
             // Картинка улова для Stories и Telegram.
             CatchShareCardButton(catchID: item.id, isPublic: item.visibility == .public)
         }
         .task { await speciesStore.loadIfNeeded() }
+    }
+
+    /// «Капшагай · 12 окт. 2026» (`MetaLine` из DesignKit).
+    private var facts: [MetaItem] {
+        var facts: [MetaItem] = []
+        if let placeName = item.placeName { facts.append(.text(placeName)) }
+        facts.append(.text(Text(item.at, format: .dateTime.day().month().year())))
+        return facts
     }
 }
 

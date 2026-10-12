@@ -147,39 +147,27 @@ struct GearSummaryView: View {
     }
 }
 
-/// Предмет: название, бренд, количество, вес, статус (если не «в порядке»).
+/// Предмет: название, бренд, количество, вес, статус (если не «в порядке»); `ItemRow` из DesignKit.
 struct GearRow: View {
     let item: GearItem
 
     var body: some View {
-        HStack(spacing: AppSpacing.sm) {
-            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                Text(verbatim: item.name)
-                    .font(AppTypography.body)
-                    .foregroundStyle(AppColors.textPrimary)
-                if let details {
-                    Text(verbatim: details)
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
-            }
-            Spacer(minLength: 0)
+        ItemRow(item.name, meta: details.isEmpty ? [] : [MetaLine(details)], titleFont: AppTypography.body) {
             if item.status != .ok {
                 Label(LocalizedStringKey(item.status.titleKey), systemImage: item.status.systemImage)
                     .labelStyle(.iconOnly)
                     .foregroundStyle(item.status == .repair ? AppColors.warning : AppColors.accent)
             }
         }
-        .contentShape(Rectangle())
     }
 
     /// «Shimano · ×2 · 620 г».
-    private var details: String? {
-        var parts: [String] = []
-        if let brand = item.brand { parts.append(brand) }
-        if item.quantity > 1 { parts.append("×\(item.quantity)") }
-        if let total = item.totalWeightGrams { parts.append(GearFormat.weight(total)) }
-        return parts.isEmpty ? nil : parts.joined(separator: " · ")
+    private var details: [MetaItem] {
+        var parts: [MetaItem] = []
+        if let brand = item.brand { parts.append(.text(brand)) }
+        if item.quantity > 1 { parts.append(.text("×\(item.quantity)")) }
+        if let total = item.totalWeightGrams { parts.append(.text(GearFormat.weight(total))) }
+        return parts
     }
 }
 
