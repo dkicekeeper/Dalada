@@ -123,7 +123,10 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 
 Признаки, что компонент остаётся в Dalada: в названии слово предметной области (Place, Trip,
 Catch, Rule, Gear), или он сам загружает данные и управляет навигацией. Новая версия DesignKit
-приходит сама (workflow **DesignKit update**), визуальные изменения перечислены в её release notes.
+приходит сама (workflow **DesignKit update**). Что добавлено и изменилось в каждой версии и как на
+неё перейти: [CHANGELOG.md](https://github.com/dkicekeeper/DesignKit/blob/main/CHANGELOG.md)
+DesignKit (тот же текст: её release notes и экран Updates в Gallery). Визуальные изменения в
+разделе **Changed**, замены старого на новое в **Migration**.
 
 ## Секреты
 
