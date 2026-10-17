@@ -34,8 +34,16 @@ struct GearListView: View {
     @Environment(ListsStore.self) private var lists
     @State private var editing: GearItem?
     @State private var addsPopular = false
+    /// Выбранная метка: в списке и сводке — только предметы с ней.
+    @State private var tag: String?
 
-    private var summaries: [GearCategorySummary] { GearCategorySummary.make(lists.gear) }
+    private var tags: [String] { GearItem.allTags(lists.gear) }
+    /// Предметы с выбранной меткой (без метки — все).
+    private var shown: [GearItem] {
+        guard let tag else { return lists.gear }
+        return lists.gear.filter { $0.hasTag(tag) }
+    }
+    private var summaries: [GearCategorySummary] { GearCategorySummary.make(shown) }
 
     var body: some View {
         List {
@@ -52,12 +60,15 @@ struct GearListView: View {
                 .listRowBackground(Color.clear)
             } else {
                 Section {
-                    GearSummaryView(items: lists.gear)
+                    if !tags.isEmpty {
+                        GearTagFilter(tags: tags, selection: $tag)
+                    }
+                    GearSummaryView(items: shown)
                 }
 
                 ForEach(summaries) { summary in
                     Section {
-                        ForEach(lists.gear.filter { $0.category == summary.category }) { item in
+                        ForEach(shown.filter { $0.category == summary.category }) { item in
                             Button {
                                 editing = item
                             } label: {
@@ -66,7 +77,7 @@ struct GearListView: View {
                             .buttonStyle(.plain)
                         }
                         .onDelete { offsets in
-                            let inCategory = lists.gear.filter { $0.category == summary.category }
+                            let inCategory = shown.filter { $0.category == summary.category }
                             for item in offsets.map({ inCategory[$0] }) {
                                 lists.delete(item)
                             }
@@ -81,6 +92,12 @@ struct GearListView: View {
             }
         }
         .navigationTitle("gear.title")
+        // Метку убрали со всех предметов — фильтр снимается.
+        .onChange(of: tags) { _, tags in
+            if let tag, !tags.contains(where: { $0.caseInsensitiveCompare(tag) == .orderedSame }) {
+                self.tag = nil
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Menu {
@@ -147,6 +164,31 @@ struct GearSummaryView: View {
     }
 }
 
+/// Метки снаряжения чипами в несколько строк (`FlowLayout` DesignKit): нажатие — показать только
+/// предметы с меткой, повторное — все.
+struct GearTagFilter: View {
+    let tags: [String]
+    @Binding var selection: String?
+
+    var body: some View {
+        FlowLayout(spacing: AppSpacing.xs, lineSpacing: AppSpacing.xs) {
+            ForEach(tags, id: \.self) { tag in
+                let isSelected = selection.map { $0.caseInsensitiveCompare(tag) == .orderedSame } ?? false
+                Button {
+                    withAnimation(AppAnimation.snappy) { selection = isSelected ? nil : tag }
+                } label: {
+                    Text(verbatim: tag)
+                        .font(AppTypography.bodySmall)
+                }
+                .buttonStyle(.plain)
+                .filterChipStyle(isSelected: isSelected)
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
+            }
+        }
+        .padding(.vertical, AppSpacing.xxs)
+    }
+}
+
 /// Предмет: название, бренд, количество, вес, статус (если не «в порядке»); `ItemRow` из DesignKit.
 struct GearRow: View {
     let item: GearItem
@@ -173,7 +215,7 @@ struct GearRow: View {
 
 // MARK: - Предмет
 
-/// Новый предмет или правка: название, категория, бренд, вес, количество, статус, заметка.
+/// Новый предмет или правка: название, категория, бренд, вес, количество, статус, метки, заметка.
 struct GearFormView: View {
     let isNew: Bool
 
@@ -195,7 +237,19 @@ struct GearFormView: View {
         var item = draft
         item.brand = brand.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
         item.note = note.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+        item.tags = GearItem.normalizedTags(draft.tags)
         return item
+    }
+
+    /// Подсказки меток: свои, уже поставленные другим предметам, затем — из готового набора.
+    private var tagSuggestions: [String] {
+        let own = GearItem.allTags(lists.gear)
+        let common = String(localized: "gear.tags.suggestions")
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+        return GearItem.normalizedTags(own + common.filter { tag in
+            !own.contains { $0.caseInsensitiveCompare(tag) == .orderedSame }
+        })
     }
 
     var body: some View {
@@ -244,6 +298,16 @@ struct GearFormView: View {
                             options: GearStatus.allCases.map {
                                 (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                             }
+                        )
+                        .padding(AppSpacing.md)
+                    }
+
+                    FormSection(header: String(localized: "gear.form.tags"), footer: String(localized: "gear.form.tagsFooter")) {
+                        TagInput(
+                            String(localized: "gear.form.tagsPlaceholder"),
+                            tags: $draft.tags,
+                            suggestions: tagSuggestions,
+                            maxTags: GearItem.tagLimit
                         )
                         .padding(AppSpacing.md)
                     }

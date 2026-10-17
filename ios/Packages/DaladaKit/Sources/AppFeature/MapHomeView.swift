@@ -37,9 +37,10 @@ struct MapHomeView: View {
     /// Нацпарк, заповедник или погранзона, открытые с карты.
     @State private var selectedArea: RuleZoneSelection?
     @State private var showsLayers = false
-    /// Подсказка «долгое нажатие — новое место»: показываем, пока человек не поставил место или
-    /// не закрыл её.
-    @AppStorage("map.longPressHintSeen") private var longPressHintSeen = false
+    /// Знакомство с кнопками карты — один раз, после знакомства с приложением.
+    @AppStorage("map.tourSeen") private var tourSeen = false
+    @AppStorage("intro.completed") private var introCompleted = false
+    @State private var tourStep: MapTourStep?
     /// «Где я»: каждое нажатие — новое значение, карта едет к пользователю.
     @State private var locateRequest = 0
 
@@ -87,6 +88,7 @@ struct MapHomeView: View {
                     .font(AppTypography.bodyEmphasis)
             }
             .dsButton(.secondary)
+            .spotlightAnchor(MapTourStep.layers)
             .padding(.leading, AppSpacing.lg)
             .padding(.top, AppSpacing.sm)
         }
@@ -125,14 +127,6 @@ struct MapHomeView: View {
         .fullScreenCover(item: $openedPhoto) { point in
             MapPhotoViewer(point: point, environment: environment)
         }
-        .overlay(alignment: .top) {
-            if !longPressHintSeen && session.profile != nil {
-                longPressHint
-                    .padding(.top, 64) // design-lint:ignore под верхними кнопками карты (их высота)
-                    .screenPadding()
-                    .transition(.riseIn)
-            }
-        }
         .overlay(alignment: .bottomLeading) {
             Button {
                 locateRequest += 1
@@ -150,6 +144,7 @@ struct MapHomeView: View {
         // (во время записи — открыть её). Чекин — из карточки места: ему нужно место.
         .overlay(alignment: .bottomTrailing) {
             GlassActionMenu(items: createActions)
+                .spotlightAnchor(MapTourStep.create)
                 .padding(.trailing, AppSpacing.lg)
                 .padding(.bottom, AppSpacing.lg)
         }
@@ -165,6 +160,21 @@ struct MapHomeView: View {
             Button("common.ok") {}
         } message: {
             Text("map.signInRequired.message")
+        }
+        // Первое открытие карты: что за кнопки «Слои» и «+» (а место — ещё и долгим нажатием).
+        // Подсветка и подсказка — `.spotlight` DesignKit; нажатие — следующий шаг.
+        .spotlight($tourStep, message: { $0.message }) {
+            tourStep = tourStep?.next
+        }
+        .task(id: introCompleted) {
+            guard introCompleted, !tourSeen else { return }
+            // Кнопки успевают встать на места.
+            try? await Task.sleep(for: .milliseconds(600))
+            guard !Task.isCancelled, tourStep == nil else { return }
+            tourStep = .layers
+        }
+        .onChange(of: tourStep) { old, new in
+            if old != nil && new == nil { tourSeen = true }
         }
     }
 
@@ -203,31 +213,25 @@ struct MapHomeView: View {
             showsSignInHint = true
             return
         }
-        longPressHintSeen = true
         model.newPlace = NewPlaceRequest(coordinate: coordinate)
     }
+}
 
-    /// Что место можно поставить долгим нажатием, иначе не узнать: меню «+» ставит его в центр.
-    private var longPressHint: some View {
-        HStack(alignment: .top, spacing: AppSpacing.sm) {
-            Image(systemName: "hand.tap")
-                .foregroundStyle(AppColors.accent)
-            Text("map.longPressHint")
-                .font(AppTypography.bodySmall)
-                .foregroundStyle(AppColors.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            Button {
-                withAnimation(AppAnimation.smooth) { longPressHintSeen = true }
-            } label: {
-                Image(systemName: "xmark")
-                    .foregroundStyle(AppColors.textSecondary)
-                    .frame(width: 28, height: 28)
-                    .contentShape(Rectangle())
-                    .accessibilityLabel(Text("common.close"))
-            }
-            .buttonStyle(.borderless)
+/// Шаг знакомства с кнопками карты.
+enum MapTourStep: Hashable {
+    case layers, create
+
+    var next: MapTourStep? {
+        switch self {
+        case .layers: .create
+        case .create: nil
         }
-        .cardContentPadding()
-        .cardStyle()
+    }
+
+    var message: String {
+        switch self {
+        case .layers: String(localized: "map.tour.layers")
+        case .create: String(localized: "map.tour.create")
+        }
     }
 }

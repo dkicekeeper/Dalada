@@ -130,28 +130,33 @@ struct CatchFormView: View {
     }
 
     /// Фото улова: само фото с кнопкой удаления, плитка-скелетон, пока фото сжимается, или выбор фото.
-    @ViewBuilder
     private var photoRow: some View {
-        if let photo = draft.photo {
-            UniversalRow(config: .standard) {
-                PhotoDraftThumbnail(photo: photo)
-            } trailing: {
-                DSButton(String(localized: "photo.remove"), appearance: .flat, role: .destructive) {
-                    draft.photo = nil
+        Group {
+            if let photo = draft.photo {
+                UniversalRow(config: .standard) {
+                    PhotoDraftThumbnail(photo: photo)
+                } trailing: {
+                    DSButton(String(localized: "photo.remove"), appearance: .flat, role: .destructive) {
+                        draft.photo = nil
+                    }
                 }
+                .transition(.skeletonReveal)
+            } else if isProcessingPhoto {
+                UniversalRow(config: .standard) {
+                    PhotoTileSkeleton()
+                } trailing: {
+                    EmptyView()
+                }
+                .transition(.opacity)
+            } else {
+                PhotosPicker(selection: $pickerItem, matching: .images) {
+                    ActionRowLabel(String(localized: "catch.form.addPhoto"), systemImage: "camera", titleColor: AppColors.textPrimary)
+                }
+                .buttonStyle(.plain)
             }
-        } else if isProcessingPhoto {
-            UniversalRow(config: .standard) {
-                PhotoTileSkeleton()
-            } trailing: {
-                EmptyView()
-            }
-        } else {
-            PhotosPicker(selection: $pickerItem, matching: .images) {
-                ActionRowLabel(String(localized: "catch.form.addPhoto"), systemImage: "camera", titleColor: AppColors.textPrimary)
-            }
-            .buttonStyle(.plain)
         }
+        // Сжатое фото проявляется на месте скелетона.
+        .animation(AppAnimation.smooth, value: isProcessingPhoto)
     }
 
     /// Число в строке формы, справа, как `FormTextField(.inline)`: у DesignKit нет поля с форматом

@@ -105,6 +105,8 @@ struct TripParticipantsSection: View {
     @State private var showsActionError = false
     @State private var confirmsLeave = false
     @State private var showsInviteLink = false
+    /// Список участников раскрыт (свёрнутый — аватары и имена одной строкой).
+    @State private var isExpanded = false
 
     var body: some View {
         Group {
@@ -117,8 +119,12 @@ struct TripParticipantsSection: View {
             } else if !visible.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
                     SectionHeader(String(localized: "trip.participants.title"))
-                    ForEach(visible) { participant in
-                        row(participant)
+                    summaryRow
+                    if isExpanded {
+                        ForEach(visible) { participant in
+                            row(participant)
+                                .transition(.riseIn)
+                        }
                     }
                     if isOwn {
                         tagButton
@@ -174,6 +180,41 @@ struct TripParticipantsSection: View {
     /// Себя-ждущего показываем приглашением, а не строкой списка.
     private var visible: [TripParticipant] {
         participants.filter { !($0.isMe && $0.status == .pending) }
+    }
+
+    /// Аватары участников (`AvatarGroup` DesignKit) и имена; нажатие раскрывает список.
+    private var summaryRow: some View {
+        Button {
+            withAnimation(AppAnimation.snappy) { isExpanded.toggle() }
+        } label: {
+            HStack(spacing: AppSpacing.md) {
+                AvatarGroup(names: visible.map { $0.displayName ?? $0.username })
+                Text(verbatim: Self.names(visible))
+                    .font(AppTypography.bodySmall)
+                    .foregroundStyle(AppColors.textPrimary)
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                Image(systemName: "chevron.down")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textTertiary)
+                    .rotationEffect(.degrees(isExpanded ? 180 : 0))
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint(Text(isExpanded ? "trip.participants.collapse" : "trip.participants.expand"))
+    }
+
+    /// «Айан, Дана и Ерлан»; больше трёх — «Айан, Дана и ещё 3».
+    static func names(_ participants: [TripParticipant]) -> String {
+        let names = participants.map { $0.displayName ?? $0.username.map { "@" + $0 } ?? "" }
+        guard names.count > 3 else {
+            let formatter = ListFormatter()
+            formatter.locale = Locale(identifier: AppConfig.interfaceLanguage)
+            return formatter.string(from: names) ?? names.joined(separator: ", ")
+        }
+        let first = names.prefix(2).joined(separator: ", ")
+        return String(localized: "trip.participants.more \(first) \(names.count - 2)")
     }
 
     /// «Отметить друзей» — компактной кнопкой: это нечастое действие, не повод для большой кнопки.

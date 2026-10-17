@@ -20,9 +20,9 @@ final class ScreenshotTests: XCTestCase {
         app.launchArguments += [
             "-AppleLanguages", "(\(language))",
             "-AppleLocale", language == "ru" ? "ru_KZ" : "en_KZ",
-            // Знакомство и подсказка о долгом нажатии — уже пройдены.
+            // Знакомство с приложением и с кнопками карты — уже пройдены.
             "-intro.completed", "YES",
-            "-map.longPressHintSeen", "YES",
+            "-map.tourSeen", "YES",
         ]
         app.launchEnvironment["DALADA_SCREENSHOT_EMAIL"] = environment["SCREENSHOT_EMAIL"] ?? ""
         app.launchEnvironment["DALADA_SCREENSHOT_PASSWORD"] = environment["SCREENSHOT_PASSWORD"] ?? ""

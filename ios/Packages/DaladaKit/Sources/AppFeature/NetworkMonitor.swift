@@ -22,6 +22,19 @@ enum NetworkMonitor {
         }
     }
 
+    /// Состояние сети на каждое изменение; первое — сразу после подписки.
+    static func statuses() -> AsyncStream<NetworkStatus> {
+        AsyncStream { continuation in
+            let monitor = NWPathMonitor()
+            monitor.pathUpdateHandler = { path in
+                continuation.yield(NetworkStatus(isAvailable: path.status == .satisfied, isExpensive: path.isExpensive))
+            }
+            let holder = MonitorHolder(monitor: monitor)
+            continuation.onTermination = { _ in holder.monitor.cancel() }
+            monitor.start(queue: DispatchQueue(label: "app.dalada.network.status"))
+        }
+    }
+
     /// Последнее состояние сети; меняется только на очереди монитора.
     private final class LastStatus: @unchecked Sendable {
         var satisfied: Bool?
@@ -31,4 +44,10 @@ enum NetworkMonitor {
         let monitor: NWPathMonitor
         init(monitor: NWPathMonitor) { self.monitor = monitor }
     }
+}
+
+/// Есть ли связь и платная ли она (мобильная сеть, точка доступа на телефоне).
+struct NetworkStatus: Equatable, Sendable {
+    var isAvailable: Bool
+    var isExpensive: Bool
 }

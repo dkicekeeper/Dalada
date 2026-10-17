@@ -1,6 +1,12 @@
 import DaladaCore
+import DesignComponents
 import DesignTokens
 import SwiftUI
+
+/// Шаги после первого входа: согласие с условиями, затем username (`OnboardingStepIndicator`).
+enum SignUpSteps {
+    static let symbols = ["checkmark.shield", "at"]
+}
 
 /// Выбор username после первого входа. Проверка формата — сразу, занятости — на сервере
 /// через 0,4 с после последнего ввода.
@@ -24,6 +30,8 @@ struct UsernameOnboardingView: View {
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                OnboardingStepIndicator(currentStep: 2, symbols: SignUpSteps.symbols)
+                    .frame(maxWidth: .infinity)
                 Text("onboarding.username.subtitle")
                     .font(AppTypography.body)
                     .foregroundStyle(AppColors.textSecondary)

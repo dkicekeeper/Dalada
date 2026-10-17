@@ -3811,6 +3811,29 @@
         }
       }
     },
+    "common.back" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Артқа"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Назад"
+          }
+        }
+      }
+    },
     "common.cancel" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6333,6 +6356,75 @@
         }
       }
     },
+    "gear.form.tags" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tags"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Белгілер"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Метки"
+          }
+        }
+      }
+    },
+    "gear.form.tagsFooter" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your own words on top of the category: filter your gear by tag and see what it weighs."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Санаттан тыс өз сөздеріңіз: белгілер бойынша жабдықты іріктеп, салмағын білуге болады."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свои слова сверх категории: по меткам можно отобрать снаряжение и узнать его вес."
+          }
+        }
+      }
+    },
+    "gear.form.tagsPlaceholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New tag"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жаңа белгі"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новая метка"
+          }
+        }
+      }
+    },
     "gear.form.weight" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6605,6 +6697,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Вес указан не у всех предметов."
+          }
+        }
+      }
+    },
+    "gear.tags.suggestions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Winter, Summer, Boat, Overnight, With kids, To buy, To rent"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Қыс, Жаз, Қайық, Түнеу, Балалармен, Сатып алу, Жалға алу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зима, Лето, Лодка, Ночёвка, С детьми, Купить, Взять напрокат"
           }
         }
       }
@@ -8767,29 +8882,6 @@
         }
       }
     },
-    "map.longPressHint" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Press and hold on the map to put a new place right there."
-          }
-        },
-        "kk" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Картаны басып тұрыңыз — жаңа орын дәл сол жерге қойылады."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Удерживайте палец на карте — новое место встанет именно там."
-          }
-        }
-      }
-    },
     "map.newPlaceHere" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8878,6 +8970,52 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Нужен вход"
+          }
+        }
+      }
+    },
+    "map.tour.create" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A new place or a trip. You can also drop a place by pressing and holding the map."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Жаңа орын немесе сапар. Орынды картаны ұзақ басып та қоюға болады."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новое место или поездка. Место можно поставить и долгим нажатием на карту."
+          }
+        }
+      }
+    },
+    "map.tour.layers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Layers: fishing ban zones, national parks, the border zone and your tracks. This is also where you choose which places to show."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Қабаттар: балық аулауға тыйым салынған аймақтар, ұлттық парктер, шекаралық аймақ және сіздің тректеріңіз. Мұнда қандай орындарды көрсету керегін де таңдайсыз."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Слои: зоны запретов на рыбалку, нацпарки, погранзона и ваши треки. Здесь же — какие места показывать."
           }
         }
       }
@@ -10561,6 +10699,75 @@
         }
       }
     },
+    "offlineMaps.banner.cellular" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You’re on mobile data: areas take tens of megabytes, so Wi‑Fi is better for downloading."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Сіз мобильді желідесіз: аудандар ондаған мегабайт тартады, Wi‑Fi арқылы жүктеген ыңғайлы."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы в мобильной сети: районы весят десятки мегабайт, удобнее скачивать по Wi‑Fi."
+          }
+        }
+      }
+    },
+    "offlineMaps.banner.failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Some areas didn’t download. Tap to try again."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Барлық аудандар жүктелмеді. Қайта көру үшін басыңыз."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не все районы скачались. Нажмите, чтобы попробовать ещё раз."
+          }
+        }
+      }
+    },
+    "offlineMaps.banner.offline" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No connection. You can download areas once you’re back online; maps you’ve already downloaded work anyway."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Желі жоқ. Аудандарды байланыс пайда болғанда жүктеуге болады; жүктелген карталар онсыз да жұмыс істейді."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет сети. Скачать районы можно, когда появится связь; уже скачанные карты работают и так."
+          }
+        }
+      }
+    },
     "offlineMaps.delete" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -11408,6 +11615,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Всего на телефоне"
+          }
+        }
+      }
+    },
+    "onboarding.stepIndicator.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %ld of %ld"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%ld-қадам, барлығы %ld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Шаг %ld из %ld"
           }
         }
       }
@@ -13570,6 +13800,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Название"
+          }
+        }
+      }
+    },
+    "place.form.step.place" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Place"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Орын"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Место"
           }
         }
       }
@@ -21520,6 +21773,29 @@
         }
       }
     },
+    "steps.position" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Step %lld of %lld"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%lld-қадам, барлығы %lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Шаг %lld из %lld"
+          }
+        }
+      }
+    },
     "steward.count %lld %lld" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -21861,6 +22137,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Профиль"
+          }
+        }
+      }
+    },
+    "tags.remove" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove “%@”"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "«%@» алып тастау"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Убрать «%@»"
           }
         }
       }
@@ -23521,6 +23820,52 @@
         }
       }
     },
+    "trip.participants.collapse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collapses the list"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Тізімді жию"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Свернуть список"
+          }
+        }
+      }
+    },
+    "trip.participants.expand" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows all participants"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Барлық қатысушыларды көрсету"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Показать всех участников"
+          }
+        }
+      }
+    },
     "trip.participants.failed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -23609,6 +23954,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Поездка пропадёт из ваших поездок, и снова отметить вас в ней будет нельзя."
+          }
+        }
+      }
+    },
+    "trip.participants.more %@ %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ and %2$lld more"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "%1$@ және тағы %2$lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ и ещё %2$lld"
           }
         }
       }

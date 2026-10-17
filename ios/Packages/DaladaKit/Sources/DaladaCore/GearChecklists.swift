@@ -117,8 +117,14 @@ public struct GearItem: SyncedRecord, Hashable {
     public var quantity: Int
     public var status: GearStatus
     public var note: String?
+    /// Свои метки сверх категории: «зима», «лодка», «с детьми».
+    public var tags: [String]
     public var updatedAt: Date
     public var deletedAt: Date?
+
+    /// Сколько меток и какой длины принимает сервер.
+    public static let tagLimit = 10
+    public static let tagLengthLimit = 30
 
     public init(
         id: UUID = UUID(),
@@ -129,6 +135,7 @@ public struct GearItem: SyncedRecord, Hashable {
         quantity: Int = 1,
         status: GearStatus = .ok,
         note: String? = nil,
+        tags: [String] = [],
         updatedAt: Date = SyncClock.now(),
         deletedAt: Date? = nil
     ) {
@@ -140,8 +147,23 @@ public struct GearItem: SyncedRecord, Hashable {
         self.quantity = quantity
         self.status = status
         self.note = note
+        self.tags = tags
         self.updatedAt = updatedAt
         self.deletedAt = deletedAt
+    }
+
+    /// Метки, как их примет сервер: без пробелов по краям, не длиннее 30 знаков, без пустых и
+    /// повторов (без учёта регистра), не больше 10.
+    public static func normalizedTags(_ tags: [String]) -> [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+        for raw in tags {
+            let tag = String(raw.trimmingCharacters(in: .whitespacesAndNewlines).prefix(tagLengthLimit))
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !tag.isEmpty, seen.insert(tag.lowercased()).inserted else { continue }
+            result.append(tag)
+        }
+        return Array(result.prefix(tagLimit))
     }
 
     /// Можно сохранить: есть название, количество от 1 до 999, вес в разумных пределах.
@@ -152,6 +174,7 @@ public struct GearItem: SyncedRecord, Hashable {
             && (weightGrams.map { (0...1_000_000).contains($0) } ?? true)
             && (brand?.count ?? 0) <= 100
             && (note?.count ?? 0) <= 1000
+            && Self.normalizedTags(tags) == tags
     }
 
     /// Общий вес всех штук, г.
@@ -160,7 +183,7 @@ public struct GearItem: SyncedRecord, Hashable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case id, name, category, brand, quantity, status, note
+        case id, name, category, brand, quantity, status, note, tags
         case weightGrams = "weight_grams"
         case updatedAt = "updated_at"
         case deletedAt = "deleted_at"
@@ -176,6 +199,8 @@ public struct GearItem: SyncedRecord, Hashable {
         quantity = try c.decodeIfPresent(Int.self, forKey: .quantity) ?? 1
         status = (try? c.decode(GearStatus.self, forKey: .status)) ?? .ok
         note = try c.decodeIfPresent(String.self, forKey: .note)
+        // Записи, сохранённые до меток, и ответ старого сервера — без них.
+        tags = (try? c.decodeIfPresent([String].self, forKey: .tags)) ?? []
         updatedAt = try c.decode(Date.self, forKey: .updatedAt)
         deletedAt = try c.decodeIfPresent(Date.self, forKey: .deletedAt)
     }
@@ -191,8 +216,32 @@ public struct GearItem: SyncedRecord, Hashable {
         try c.encode(quantity, forKey: .quantity)
         try c.encode(status, forKey: .status)
         try c.encode(note, forKey: .note)
+        try c.encode(tags, forKey: .tags)
         try c.encode(updatedAt, forKey: .updatedAt)
         try c.encode(deletedAt, forKey: .deletedAt)
+    }
+}
+
+extension GearItem {
+    /// Метки всех предметов (без удалённых), как написаны впервые: частые — раньше, равные — по алфавиту.
+    public static func allTags(_ items: [GearItem]) -> [String] {
+        var counts: [String: Int] = [:]
+        var spelling: [String: String] = [:]
+        for item in items where !item.isDeleted {
+            for tag in item.tags {
+                let key = tag.lowercased()
+                counts[key, default: 0] += 1
+                if spelling[key] == nil { spelling[key] = tag }
+            }
+        }
+        return counts.keys
+            .sorted { counts[$0]! != counts[$1]! ? counts[$0]! > counts[$1]! : $0 < $1 }
+            .compactMap { spelling[$0] }
+    }
+
+    /// Есть ли у предмета метка (без учёта регистра).
+    public func hasTag(_ tag: String) -> Bool {
+        tags.contains { $0.caseInsensitiveCompare(tag) == .orderedSame }
     }
 }
 

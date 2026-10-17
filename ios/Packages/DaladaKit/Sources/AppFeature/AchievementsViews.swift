@@ -30,8 +30,10 @@ struct AchievementsSection: View {
         } content: {
             if !known.isEmpty {
                 summary(known)
+                    .transition(.skeletonReveal)
             } else if isLoaded {
                 ProfileSectionHint(text: String(localized: "achievements.empty"))
+                    .transition(.skeletonReveal)
             } else {
                 // Значки и строка «ближе всего» той же формы, пока грузятся.
                 VStack(spacing: AppSpacing.md) {
@@ -40,8 +42,11 @@ struct AchievementsSection: View {
                     }
                     AchievementProgressRowSkeleton()
                 }
+                .transition(.opacity)
             }
         }
+        // Значки проявляются на месте скелетона.
+        .animation(AppAnimation.smooth, value: isLoaded)
         .task(id: userID) { await load() }
         .onChange(of: sync.sentCount) { _, _ in
             Task { await load() }

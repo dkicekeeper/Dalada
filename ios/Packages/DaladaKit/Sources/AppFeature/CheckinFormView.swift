@@ -159,6 +159,7 @@ struct CheckinFormView: View {
                             }
                             .contentMargins(.horizontal, AppSpacing.lg, for: .scrollContent)
                             .padding(.vertical, AppSpacing.md)
+                            .transition(.skeletonReveal)
                         }
                         if isProcessingPhotos {
                             // Фото сжимаются: плитка-скелетон на месте будущего фото.
@@ -166,6 +167,7 @@ struct CheckinFormView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, AppSpacing.lg)
                                 .padding(.vertical, AppSpacing.md)
+                                .transition(.opacity)
                         } else if draft.photos.count < CheckinDraft.photoLimit {
                             PhotosPicker(
                                 selection: $pickerItems,
@@ -177,6 +179,8 @@ struct CheckinFormView: View {
                             .buttonStyle(.plain)
                         }
                     }
+                    // Сжатые фото проявляются на месте скелетона.
+                    .animation(AppAnimation.smooth, value: isProcessingPhotos)
                     if photoFailed {
                         InlineStatusText(message: String(localized: "photo.failed"), type: .error)
                     }

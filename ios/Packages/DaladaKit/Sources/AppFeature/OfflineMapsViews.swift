@@ -9,9 +9,19 @@ struct OfflineMapsView: View {
     let environment: AppEnvironment
 
     @State private var maps = OfflineMaps.shared
+    @State private var network: NetworkStatus?
 
     var body: some View {
         List {
+            if let banner {
+                Section {
+                    banner
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                        .transition(.riseIn)
+                }
+            }
+
             Section {
                 ForEach(MapRegions.all) { region in
                     OfflineRegionRow(
@@ -34,8 +44,52 @@ struct OfflineMapsView: View {
                 }
             }
         }
+        .animation(AppAnimation.smooth, value: bannerKind)
         .navigationTitle("offlineMaps.title")
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            for await status in NetworkMonitor.statuses() {
+                network = status
+            }
+        }
+    }
+
+    /// Районы, которые не скачались.
+    private var failedRegions: [MapRegion] {
+        MapRegions.all.filter {
+            if case .failed = maps.state(of: $0) { true } else { false }
+        }
+    }
+
+    /// Какая плашка над районами: нет сети, районы не скачались, мобильная сеть — или никакой.
+    private var bannerKind: BannerKind? {
+        guard let network else { return nil }
+        if !network.isAvailable { return .offline }
+        if !failedRegions.isEmpty { return .failed }
+        if network.isExpensive { return .cellular }
+        return nil
+    }
+
+    private enum BannerKind {
+        case offline, failed, cellular
+    }
+
+    /// Плашка `StatusBanner` из DesignKit; «не скачались» — нажатие повторяет скачивание.
+    private var banner: StatusBanner? {
+        switch bannerKind {
+        case .offline:
+            StatusBanner(String(localized: "offlineMaps.banner.offline"), status: .warning, systemImage: "wifi.slash")
+        case .failed:
+            StatusBanner(String(localized: "offlineMaps.banner.failed"), status: .negative) {
+                for region in failedRegions {
+                    maps.download(region, styleURL: environment.config.mapStyleURL)
+                }
+            }
+        case .cellular:
+            StatusBanner(String(localized: "offlineMaps.banner.cellular"), status: .info, systemImage: "antenna.radiowaves.left.and.right")
+        case nil:
+            nil
+        }
     }
 }
 

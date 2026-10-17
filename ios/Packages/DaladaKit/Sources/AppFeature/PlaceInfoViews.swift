@@ -112,18 +112,22 @@ struct PlaceInfoSection: View {
             fishing.append(.init(titleKey: "place.info.species", systemImage: "fish", value: speciesText))
         }
         if !info.methods.isEmpty {
+            let methods = PlaceAttributes.Method.allCases.filter { info.methods.contains($0) }
             fishing.append(.init(
                 titleKey: "place.info.methods",
                 systemImage: "figure.fishing",
-                value: Self.titles(PlaceAttributes.Method.allCases.filter { info.methods.contains($0) }, \.titleKey)
+                value: Self.titles(methods, \.titleKey),
+                tags: methods.map { .init(title: String(localized: String.LocalizationValue($0.titleKey))) }
             ))
         }
         var other: [PlaceInfoRow.Model] = []
         if !info.access.isEmpty {
+            let access = PlaceAttributes.Access.allCases.filter { info.access.contains($0) }
             other.append(.init(
                 titleKey: "place.info.access",
                 systemImage: "car",
-                value: Self.titles(PlaceAttributes.Access.allCases.filter { info.access.contains($0) }, \.titleKey)
+                value: Self.titles(access, \.titleKey),
+                tags: access.map { .init(title: String(localized: String.LocalizationValue($0.titleKey))) }
             ))
         }
         if let fee = feeText {
@@ -133,10 +137,14 @@ struct PlaceInfoSection: View {
             other.append(.init(titleKey: "place.info.contact", systemImage: "phone", value: contact, isSelectable: true))
         }
         if !info.amenities.isEmpty {
+            let amenities = PlaceAttributes.Amenity.allCases.filter { info.amenities.contains($0) }
             other.append(.init(
                 titleKey: "place.info.amenities",
                 systemImage: "checklist",
-                value: Self.titles(PlaceAttributes.Amenity.allCases.filter { info.amenities.contains($0) }, \.titleKey)
+                value: Self.titles(amenities, \.titleKey),
+                tags: amenities.map {
+                    .init(title: String(localized: String.LocalizationValue($0.titleKey)), systemImage: $0.systemImage)
+                }
             ))
         }
         if let signal = info.signal {
@@ -191,13 +199,20 @@ struct PlaceInfoSection: View {
     }
 }
 
-/// Строка «Информации»: значок, подпись, значение.
+/// Строка «Информации»: значок, подпись, значение; у списков (способы ловли, подъезд, удобства) —
+/// метки в несколько строк (`Badge` в `FlowLayout` DesignKit).
 private struct PlaceInfoRow: View {
     struct Model {
         let titleKey: String
         let systemImage: String
         let value: String
         var isSelectable = false
+        var tags: [Tag] = []
+    }
+
+    struct Tag: Hashable {
+        let title: String
+        var systemImage: String?
     }
 
     let row: Model
@@ -211,7 +226,17 @@ private struct PlaceInfoRow: View {
                 Text(LocalizedStringKey(row.titleKey))
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
-                if row.isSelectable {
+                if !row.tags.isEmpty {
+                    FlowLayout(spacing: AppSpacing.xs, lineSpacing: AppSpacing.xs) {
+                        ForEach(row.tags, id: \.self) { tag in
+                            Badge(tag.title, systemImage: tag.systemImage)
+                        }
+                    }
+                    .padding(.top, AppSpacing.xxs)
+                    // VoiceOver читает список одной строкой.
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(Text(verbatim: row.value))
+                } else if row.isSelectable {
                     Text(verbatim: row.value)
                         .font(AppTypography.bodySmall)
                         .textSelection(.enabled)

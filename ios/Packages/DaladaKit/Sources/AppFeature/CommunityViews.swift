@@ -25,6 +25,7 @@ struct PlaceReviewsSection: View {
     @Environment(ReactionStore.self) private var reactions
     @State private var summary: ReviewSummary?
     @State private var reviews: [PlaceReview] = []
+    @State private var isLoaded = false
     @State private var showsForm = false
 
     var body: some View {
@@ -32,9 +33,18 @@ struct PlaceReviewsSection: View {
             if showsHeader {
                 SectionHeader(String(localized: "reviews.title"))
             }
+            if summary == nil && !isLoaded {
+                // Оценка и отзыв той же формы, пока грузятся.
+                VStack(alignment: .leading, spacing: AppSpacing.md) {
+                    RatingSummarySkeleton()
+                    ReviewCardSkeleton()
+                }
+                .transition(.opacity)
+            }
             if let summary {
                 if summary.reviewsCount > 0 {
                     ReviewSummaryView(summary: summary)
+                        .transition(.skeletonReveal)
                     reviewAction(summary)
                 } else {
                     // Пусто — сразу и что делать: «Оставить отзыв», если уже можно.
@@ -46,6 +56,7 @@ struct PlaceReviewsSection: View {
                         actionTitle: canWrite ? String(localized: "reviews.write") : nil,
                         action: { showsForm = true }
                     )
+                    .transition(.skeletonReveal)
                     if !canWrite {
                         reviewAction(summary)
                     }
@@ -55,6 +66,7 @@ struct PlaceReviewsSection: View {
                 ReviewRow(review: review, environment: environment) { blocked in
                     reviews.removeAll { $0.author.id == blocked }
                 }
+                .transition(.skeletonReveal)
             }
             if let summary, summary.reviewsCount > reviews.count {
                 NavigationLink {
@@ -65,6 +77,8 @@ struct PlaceReviewsSection: View {
                 }
             }
         }
+        // Отзывы проявляются на месте скелетона.
+        .animation(AppAnimation.smooth, value: isLoaded)
         .task(id: place.id) { await load() }
         // Чекин из очереди дошёл до сервера — теперь можно оставить отзыв.
         .onChange(of: sync.sentCount) { _, _ in
@@ -103,6 +117,7 @@ struct PlaceReviewsSection: View {
     }
 
     private func load() async {
+        defer { isLoaded = true }
         guard let backend = environment.backend else { return }
         summary = try? await backend.reviewSummary(place.id)
         reviews = (try? await backend.placeReviews(place.id, sort: .helpful, limit: 3)) ?? []
@@ -187,6 +202,7 @@ struct ReviewsListView: View {
     @State private var sort: ReviewSort = .new
     @State private var reviews: [PlaceReview] = []
     @State private var hasMore = true
+    @State private var isLoaded = false
     @State private var isLoadingMore = false
     @State private var loadFailed = false
 
@@ -201,11 +217,19 @@ struct ReviewsListView: View {
                     }
                 )
             }
+            if reviews.isEmpty && !isLoaded {
+                ForEach(0..<3, id: \.self) { _ in
+                    ReviewCardSkeleton()
+                        .listRowSeparator(.hidden)
+                        .transition(.opacity)
+                }
+            }
             ForEach(reviews) { review in
                 ReviewRow(review: review, environment: environment) { blocked in
                     reviews.removeAll { $0.author.id == blocked }
                 }
-                    .listRowSeparator(.hidden)
+                .listRowSeparator(.hidden)
+                .transition(.skeletonReveal)
             }
             // Следующая страница — когда низ списка на экране (DesignKit).
             LoadMoreFooter(state: loadState, onLoad: loadMore) {
@@ -213,6 +237,8 @@ struct ReviewsListView: View {
             }
         }
         .listStyle(.plain)
+        // Отзывы проявляются на месте скелетонов.
+        .animation(AppAnimation.smooth, value: isLoaded)
         .navigationTitle(Text(verbatim: placeName))
         .navigationBarTitleDisplayMode(.inline)
         .task(id: sort) { await reload() }
@@ -220,6 +246,7 @@ struct ReviewsListView: View {
     }
 
     private func reload() async {
+        defer { isLoaded = true }
         guard let backend = environment.backend,
               let page = try? await backend.placeReviews(placeID, sort: sort, limit: Self.pageSize)
         else { return }
@@ -324,6 +351,7 @@ struct ReviewFormView: View {
                             }
                             .contentMargins(.horizontal, AppSpacing.lg, for: .scrollContent)
                             .padding(.vertical, AppSpacing.md)
+                            .transition(.skeletonReveal)
                         }
                         if isProcessingPhotos {
                             // Фото сжимаются: плитка-скелетон на месте будущего фото.
@@ -331,6 +359,7 @@ struct ReviewFormView: View {
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal, AppSpacing.lg)
                                 .padding(.vertical, AppSpacing.md)
+                                .transition(.opacity)
                         } else if photos.count < ReviewDraft.photoLimit {
                             PhotosPicker(
                                 selection: $pickerItems,
@@ -342,6 +371,8 @@ struct ReviewFormView: View {
                             .buttonStyle(.plain)
                         }
                     }
+                    // Сжатые фото проявляются на месте скелетона.
+                    .animation(AppAnimation.smooth, value: isProcessingPhotos)
                     if photoFailed {
                         InlineStatusText(message: String(localized: "photo.failed"), type: .error)
                     }
@@ -484,6 +515,13 @@ struct PlaceThreadsSection: View {
                     actionTitle: session.profile != nil ? String(localized: "threads.new") : nil,
                     action: { showsForm = true }
                 )
+                .transition(.skeletonReveal)
+            } else if !isLoaded {
+                // Обсуждения той же формы, пока грузятся.
+                VStack(spacing: AppSpacing.md) {
+                    ForEach(0..<2, id: \.self) { _ in ThreadCardSkeleton() }
+                }
+                .transition(.opacity)
             }
             ForEach(threads.prefix(3)) { thread in
                 NavigationLink {
@@ -492,6 +530,7 @@ struct PlaceThreadsSection: View {
                     ThreadRow(thread: thread)
                 }
                 .buttonStyle(.plain)
+                .transition(.skeletonReveal)
             }
             if session.profile != nil && !threads.isEmpty {
                 Button {
@@ -503,6 +542,8 @@ struct PlaceThreadsSection: View {
                 .dsButton(.secondary)
             }
         }
+        // Обсуждения проявляются на месте скелетонов.
+        .animation(AppAnimation.smooth, value: isLoaded)
         .task(id: place.id) { await load() }
         .sheet(isPresented: $showsForm, onDismiss: { Task { await load() } }) {
             ThreadFormView(placeID: place.id, placeName: place.name, environment: environment)
@@ -550,12 +591,20 @@ struct ThreadsListView: View {
     @Environment(SessionStore.self) private var session
     @State private var threads: [ThreadSummary] = []
     @State private var hasMore = true
+    @State private var isLoaded = false
     @State private var isLoadingMore = false
     @State private var loadFailed = false
     @State private var showsForm = false
 
     var body: some View {
         List {
+            if threads.isEmpty && !isLoaded {
+                ForEach(0..<4, id: \.self) { _ in
+                    ThreadCardSkeleton()
+                        .listRowSeparator(.hidden)
+                        .transition(.opacity)
+                }
+            }
             ForEach(threads) { thread in
                 NavigationLink {
                     ThreadView(threadID: thread.id, environment: environment)
@@ -563,12 +612,15 @@ struct ThreadsListView: View {
                     ThreadRow(thread: thread)
                 }
                 .listRowSeparator(.hidden)
+                .transition(.skeletonReveal)
             }
             LoadMoreFooter(state: loadState, onLoad: loadMore) {
                 ThreadCardSkeleton()
             }
         }
         .listStyle(.plain)
+        // Обсуждения проявляются на месте скелетонов.
+        .animation(AppAnimation.smooth, value: isLoaded)
         .navigationTitle("threads.title")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -588,6 +640,7 @@ struct ThreadsListView: View {
     }
 
     private func reload() async {
+        defer { isLoaded = true }
         guard let backend = environment.backend,
               let page = try? await backend.placeThreads(placeID, limit: Self.pageSize)
         else { return }
@@ -722,16 +775,21 @@ struct ThreadView: View {
     @State private var mentioned: MentionedUser?
     @FocusState private var isReplyFocused: Bool
 
+    /// Обсуждение ещё грузится: на экране скелетон.
+    private var isLoading: Bool { thread == nil && !isNotFound && loadError == nil }
+
     var body: some View {
         Group {
             if let thread {
                 content(thread)
+                    .transition(.skeletonReveal)
             } else if isNotFound {
                 EmptyState(
                     icon: "bubble.left.and.exclamationmark.bubble.right",
                     title: String(localized: "threads.notFound"),
                     description: String(localized: "threads.notFound.description")
                 )
+                .transition(.skeletonReveal)
             } else if let loadError {
                 EmptyState(
                     icon: "wifi.slash",
@@ -741,6 +799,7 @@ struct ThreadView: View {
                     action: { Task { await load() } },
                     style: .error
                 )
+                .transition(.skeletonReveal)
             } else {
                 VStack(spacing: AppSpacing.lg) {
                     ForEach(0..<4, id: \.self) { _ in CommentRowSkeleton() }
@@ -749,8 +808,11 @@ struct ThreadView: View {
                 .padding(.vertical, AppSpacing.lg)
                 .frame(maxHeight: .infinity, alignment: .top)
                 .skeletonLoadingLabel()
+                .transition(.opacity)
             }
         }
+        // Обсуждение проявляется на месте скелетона.
+        .animation(AppAnimation.smooth, value: isLoading)
         .navigationTitle(Text(verbatim: thread?.placeName ?? ""))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

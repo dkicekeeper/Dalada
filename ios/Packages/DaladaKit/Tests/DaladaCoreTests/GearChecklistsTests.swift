@@ -101,6 +101,30 @@ struct GearChecklistsTests {
         #expect(!GearItem(name: "Грузила", quantity: 0).isValid)
     }
 
+    @Test func gearTags() throws {
+        #expect(GearItem.normalizedTags([" Зима ", "зима", "", "Лодка", String(repeating: "а", count: 40)])
+            == ["Зима", "Лодка", String(repeating: "а", count: 30)])
+        #expect(GearItem.normalizedTags((1...12).map(String.init)).count == GearItem.tagLimit)
+        #expect(GearItem(name: "Палатка", tags: ["Зима"]).isValid)
+        #expect(!GearItem(name: "Палатка", tags: ["Зима", "зима"]).isValid, "повтор не примет сервер")
+
+        let items = [
+            GearItem(name: "Палатка", tags: ["Зима", "С детьми"]),
+            GearItem(name: "Бур", tags: ["зима"]),
+            GearItem(name: "Лодка", tags: ["Лодка"]),
+            GearItem(name: "Старый бур", tags: ["Ремонт"], deletedAt: Date()),
+        ]
+        #expect(GearItem.allTags(items) == ["Зима", "Лодка", "С детьми"])
+        #expect(items[1].hasTag("ЗИМА"))
+
+        let old = """
+        {"id": "aaaaaaaa-0000-0000-0000-000000000001", "name": "Нож", "updated_at": 0}
+        """
+        #expect(try JSONDecoder().decode(GearItem.self, from: Data(old.utf8)).tags.isEmpty, "запись до меток")
+        let json = try #require(String(data: JSONEncoder().encode(items[0]), encoding: .utf8))
+        #expect(json.contains("\"tags\":[\"Зима\",\"С детьми\"]"))
+    }
+
     @Test func popularItemsHaveNoDuplicates() {
         let other = ChecklistTemplate(
             id: "paid_pond",

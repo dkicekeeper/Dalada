@@ -19,6 +19,11 @@ struct ConsentView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                    // Первый вход: дальше — username. Согласие на изменённые документы — без шагов.
+                    if session.needsUsername {
+                        OnboardingStepIndicator(currentStep: 1, symbols: SignUpSteps.symbols)
+                            .frame(maxWidth: .infinity)
+                    }
                     Text("consent.body")
                         .font(AppTypography.body)
                         .foregroundStyle(AppColors.textPrimary)

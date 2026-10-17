@@ -89,16 +89,19 @@ struct CommentsView: View {
                     ForEach(0..<3, id: \.self) { _ in
                         CommentRowSkeleton()
                             .listRowSeparator(.hidden)
+                            .transition(.opacity)
                     }
                 } else {
                     Text(verbatim: loadError ?? String(localized: "comments.empty"))
                         .font(AppTypography.bodySmall)
                         .foregroundStyle(AppColors.textSecondary)
                         .listRowSeparator(.hidden)
+                        .transition(.skeletonReveal)
                 }
             }
             ForEach(comments) { comment in
                 commentRow(comment)
+                    .transition(.skeletonReveal)
                     .swipeActions(edge: .trailing) {
                         if comment.canDelete {
                             Button("comments.delete", systemImage: "trash", role: .destructive) {
@@ -116,6 +119,8 @@ struct CommentsView: View {
             }
         }
         .listStyle(.plain)
+        // Комментарии проявляются на месте скелетонов.
+        .animation(AppAnimation.smooth, value: isLoaded)
         .navigationTitle("comments.title")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

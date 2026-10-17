@@ -2,7 +2,7 @@ import DesignComponents
 import DesignTokens
 import SwiftUI
 
-/// Заглушка раздела, который появится в следующих этапах: иконка, заголовок, пояснение.
+/// Пустой экран: крупный символ на круге (`HeroSymbol` DesignKit), заголовок, пояснение.
 /// Тексты передаются уже локализованными (EmptyState принимает `String`).
 public struct PlaceholderScreen: View {
     private let icon: String
@@ -16,9 +16,11 @@ public struct PlaceholderScreen: View {
     }
 
     public var body: some View {
-        EmptyState(icon: icon, title: title, description: description)
-            .padding(AppSpacing.xxl)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        EmptyState(title: title, description: description) {
+            HeroSymbol(systemImage: icon)
+        }
+        .padding(AppSpacing.xxl)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

@@ -23,12 +23,14 @@ struct CloseFriendsView: View {
                     description: String(localized: "closeFriends.empty")
                 )
                 .listRowBackground(Color.clear)
+                .transition(.skeletonReveal)
             } else if !isLoaded {
                 Section {
                     ForEach(0..<5, id: \.self) { _ in
                         PersonRowSkeleton()
                     }
                 }
+                .transition(.opacity)
             } else {
                 Section {
                     ForEach(friends) { friend in
@@ -48,6 +50,7 @@ struct CloseFriendsView: View {
                 } footer: {
                     Text("closeFriends.footer")
                 }
+                .transition(.skeletonReveal)
             }
         }
         // Друзья проявляются на месте скелетонов.
