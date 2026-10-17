@@ -63,6 +63,8 @@ struct MapHomeView: View {
             // Слои снизу вверх: погранзона, нацпарки, зоны запретов.
             ruleAreas: rules.mapLayerAreas(parks: showsParks, border: showsBorder) + (showsRules ? rules.mapAreas() : []),
             photos: showsPhotos && session.profile != nil ? photosLayer.mapPhotos : [],
+            // Внизу — «Где я» и «+»: ⓘ и компас MapLibre — сверху справа, чтобы не перехватывали нажатия.
+            ornaments: .top,
             onRegionChange: { model.visibleAreaChanged($0, viewer: session.profile?.id) },
             onPlaceTap: { model.selectedPlace = PlaceSelection(id: $0) },
             onRuleAreaTap: { id in

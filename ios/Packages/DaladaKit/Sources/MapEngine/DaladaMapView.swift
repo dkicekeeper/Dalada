@@ -1,5 +1,6 @@
 import CoreLocation
 import DaladaCore
+import DesignTokens
 import MapLibre
 import SwiftUI
 import UIKit
@@ -90,6 +91,15 @@ public enum MapCameraMode: Hashable, Sendable {
     case fitTrack
 }
 
+/// Где карта держит свои кнопки: ⓘ (авторство данных) и компас.
+public enum MapOrnamentPlacement: Hashable, Sendable {
+    /// Как у MapLibre: ⓘ снизу справа, компас сверху справа.
+    case standard
+    /// Обе сверху справа: внизу у главной карты свои кнопки («Где я», «+»), и ⓘ под «+»
+    /// перехватывала бы нажатие.
+    case top
+}
+
 /// Карта Dalada — SwiftUI-обёртка над `MLNMapView`.
 ///
 /// Места рисуются слоями стиля из одного GeoJSON-источника: круги приблизительных мест, точки мест
@@ -116,6 +126,7 @@ public struct DaladaMapView: UIViewRepresentable {
     let ruleAreas: [MapRuleArea]
     /// Слой «Мои фото» — над местами.
     let photos: [MapPhoto]
+    let ornaments: MapOrnamentPlacement
     let onRegionChange: @MainActor (GeoBoundingBox) -> Void
     let onPlaceTap: @MainActor (UUID) -> Void
     let onRuleAreaTap: @MainActor (String) -> Void
@@ -136,6 +147,7 @@ public struct DaladaMapView: UIViewRepresentable {
         locateRequest: Int = 0,
         ruleAreas: [MapRuleArea] = [],
         photos: [MapPhoto] = [],
+        ornaments: MapOrnamentPlacement = .standard,
         onRegionChange: @escaping @MainActor (GeoBoundingBox) -> Void = { _ in },
         onPlaceTap: @escaping @MainActor (UUID) -> Void = { _ in },
         onRuleAreaTap: @escaping @MainActor (String) -> Void = { _ in },
@@ -155,6 +167,7 @@ public struct DaladaMapView: UIViewRepresentable {
         self.locateRequest = locateRequest
         self.ruleAreas = ruleAreas
         self.photos = photos
+        self.ornaments = ornaments
         self.onRegionChange = onRegionChange
         self.onPlaceTap = onPlaceTap
         self.onRuleAreaTap = onRuleAreaTap
@@ -177,6 +190,13 @@ public struct DaladaMapView: UIViewRepresentable {
         // Запрос разрешения на геолокацию MapLibre делает сам; текст — в InfoPlist.xcstrings.
         mapView.showsUserLocation = showsUserLocation
         mapView.delegate = context.coordinator
+        if ornaments == .top {
+            // ⓘ — на уровне кнопок у верхнего края, компас (виден, когда карту повернули) — под ней.
+            mapView.attributionButtonPosition = .topRight
+            mapView.attributionButtonMargins = CGPoint(x: AppSpacing.xl, y: AppSpacing.xl)
+            mapView.compassViewPosition = .topRight
+            mapView.compassViewMargins = CGPoint(x: AppSpacing.lg, y: AppSpacing.xl * 3)
+        }
 
         let tap = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
         // Одиночный тап срабатывает, только если это не двойной тап (зум).
