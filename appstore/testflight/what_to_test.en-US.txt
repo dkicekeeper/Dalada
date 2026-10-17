@@ -4,7 +4,7 @@ New:
 • Fishing bans cover all of Kazakhstan: ban dates for all eight basins, with region zones on the map. In Tips → Rules and bans the zones are grouped by basin.
 • About 1,400 editorial places across the country.
 • The first time you open the map it highlights the Layers and “+” buttons — tap to go on.
-• A new place takes three steps: place, description, who can see it. ✓ saves as soon as there is a name.
+• A new place takes three steps: place, description, who can see it. You can save as soon as there is a name.
 • Gear tags: Tips → My gear → an item → Tags (your own words or suggestions). A tag filter above the list, and the summary shows what the filtered gear weighs.
 • Offline maps: a banner when there is no connection, you are on mobile data or a region did not download (tap to retry). The Altai is split into Oskemen, Bukhtarma, Katon-Karagay with Belukha, and Markakol.
 • Trip participants in one row with avatars; tap to see the list.
