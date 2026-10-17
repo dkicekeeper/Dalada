@@ -1,6 +1,7 @@
 Browse places on the Map tab, sign in with Apple or Google, add your own place, post a report with a catch and a photo (I’m here on a place card), record a trip (the “+” button on the map → Start a trip), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
 
 New:
+• The “+” button on the map opens its menu again: the “i” button (map attribution) and the compass are now at the top right.
 • Fishing bans cover all of Kazakhstan: ban dates for all eight basins, with region zones on the map. In Tips → Rules and bans the zones are grouped by basin.
 • About 1,400 editorial places across the country.
 • The first time you open the map it highlights the Layers and “+” buttons — tap to go on.
