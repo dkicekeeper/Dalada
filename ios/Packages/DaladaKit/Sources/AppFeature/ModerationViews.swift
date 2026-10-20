@@ -119,13 +119,12 @@ struct ReportView: View {
                         FormSection(header: String(localized: "moderation.report.reason")) {
                             let options = ReportReason.options(for: target)
                             ForEach(options) { option in
-                                CheckmarkRow(
+                                UniversalRow(
                                     String(localized: String.LocalizationValue(option.titleKey)),
-                                    isSelected: reason == option,
-                                    config: .standard
-                                ) {
-                                    reason = option
-                                }
+                                    accessory: .checkmark(isSelected: reason == option) {
+                                        reason = option
+                                    }
+                                )
                                 if option.id != options.last?.id {
                                     Divider().padding(.leading, AppSpacing.lg)
                                 }

@@ -75,12 +75,11 @@ struct PlaceFormView: View {
             FormSection {
                 FormTextField(text: $draft.name, placeholder: String(localized: "place.form.name"), style: .row)
                 Divider().padding(.leading, AppSpacing.lg)
-                MenuPickerRow(
-                    title: String(localized: "place.form.type"),
-                    selection: $draft.type,
-                    options: PlaceType.allCases.map {
+                UniversalRow(
+                    String(localized: "place.form.type"),
+                    accessory: .menu($draft.type, options: PlaceType.allCases.map {
                         (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
-                    }
+                    })
                 )
             }
 
@@ -119,10 +118,9 @@ struct PlaceFormView: View {
             )
             .padding(AppSpacing.md)
             Divider().padding(.leading, AppSpacing.lg)
-            ToggleSettingsRow(
-                title: String(localized: "place.form.approximate"),
-                config: .standard,
-                isOn: $draft.isApproximate
+            UniversalRow(
+                String(localized: "place.form.approximate"),
+                accessory: .toggle($draft.isApproximate)
             )
             .disabled(draft.visibility == .private)
         }

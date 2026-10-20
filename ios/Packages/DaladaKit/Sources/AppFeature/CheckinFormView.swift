@@ -174,7 +174,12 @@ struct CheckinFormView: View {
                                 maxSelectionCount: CheckinDraft.photoLimit - draft.photos.count,
                                 matching: .images
                             ) {
-                                ActionRowLabel(String(localized: "checkin.form.addPhotos"), systemImage: "photo.on.rectangle.angled")
+                                UniversalRow(
+                                    String(localized: "checkin.form.addPhotos"),
+                                    icon: "photo.on.rectangle.angled",
+                                    titleColor: AppColors.accent
+                                )
+                                .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
                         }

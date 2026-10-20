@@ -334,12 +334,11 @@ struct TripFinishView: View {
                     FormSection(header: String(localized: "trip.finish.name")) {
                         FormTextField(text: $title, placeholder: String(localized: "trip.finish.name"), style: .row)
                         Divider().padding(.leading, AppSpacing.lg)
-                        MenuPickerRow(
-                            title: String(localized: "trip.finish.activity"),
-                            selection: $activity,
-                            options: TripActivity.allCases.map {
+                        UniversalRow(
+                            String(localized: "trip.finish.activity"),
+                            accessory: .menu($activity, options: TripActivity.allCases.map {
                                 (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
-                            }
+                            })
                         )
                     }
 
@@ -398,13 +397,13 @@ struct TripFinishView: View {
                     }
 
                     FormSection {
-                        ActionSettingsRow(
-                            title: String(localized: "trip.finish.discard"),
-                            isDestructive: true,
-                            config: .standard
-                        ) {
-                            confirmsDiscard = true
-                        }
+                        UniversalRow(
+                            String(localized: "trip.finish.discard"),
+                            role: .destructive,
+                            accessory: .action {
+                                confirmsDiscard = true
+                            }
+                        )
                     }
                 }
                 .screenPadding()

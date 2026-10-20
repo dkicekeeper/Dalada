@@ -268,12 +268,11 @@ struct GearFormView: View {
                     FormSection {
                         FormTextField(text: $draft.name, placeholder: String(localized: "gear.form.name"), style: .row)
                         Divider().padding(.leading, AppSpacing.lg)
-                        MenuPickerRow(
-                            title: String(localized: "gear.form.category"),
-                            selection: $draft.category,
-                            options: GearCategory.allCases.map {
+                        UniversalRow(
+                            String(localized: "gear.form.category"),
+                            accessory: .menu($draft.category, options: GearCategory.allCases.map {
                                 (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
-                            }
+                            })
                         )
                         Divider().padding(.leading, AppSpacing.lg)
                         FormTextField(text: $brand, placeholder: String(localized: "gear.form.brand"), style: .row)
@@ -288,7 +287,10 @@ struct GearFormView: View {
                                 .foregroundStyle(AppColors.textPrimary)
                         }
                         Divider().padding(.leading, AppSpacing.lg)
-                        StepperRow(title: String(localized: "gear.form.quantity"), value: $draft.quantity, in: 1...999)
+                        UniversalRow(
+                            String(localized: "gear.form.quantity"),
+                            accessory: .stepper($draft.quantity, in: 1...999)
+                        )
                     }
 
                     FormSection(header: String(localized: "gear.form.status")) {
@@ -322,13 +324,13 @@ struct GearFormView: View {
 
                     if !isNew {
                         FormSection {
-                            ActionSettingsRow(
-                                title: String(localized: "gear.delete"),
-                                isDestructive: true,
-                                config: .standard
-                            ) {
-                                confirmsDelete = true
-                            }
+                            UniversalRow(
+                                String(localized: "gear.delete"),
+                                role: .destructive,
+                                accessory: .action {
+                                    confirmsDelete = true
+                                }
+                            )
                         }
                     }
                 }

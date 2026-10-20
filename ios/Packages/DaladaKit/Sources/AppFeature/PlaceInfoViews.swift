@@ -534,12 +534,11 @@ struct PlaceEditView: View {
                 FormSection {
                     FormTextField(text: draft.fields.name, placeholder: String(localized: "place.form.name"), style: .row)
                     Divider().padding(.leading, AppSpacing.lg)
-                    MenuPickerRow(
-                        title: String(localized: "place.form.type"),
-                        selection: draft.fields.type,
-                        options: PlaceType.allCases.map {
+                    UniversalRow(
+                        String(localized: "place.form.type"),
+                        accessory: .menu(draft.fields.type, options: PlaceType.allCases.map {
                             (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
-                        }
+                        })
                     )
                 }
 
@@ -569,10 +568,9 @@ struct PlaceEditView: View {
                     )
                     .padding(AppSpacing.md)
                     Divider().padding(.leading, AppSpacing.lg)
-                    ToggleSettingsRow(
-                        title: String(localized: "place.form.approximate"),
-                        config: .standard,
-                        isOn: draft.isApproximate
+                    UniversalRow(
+                        String(localized: "place.form.approximate"),
+                        accessory: .toggle(draft.isApproximate)
                     )
                     .disabled(draft.wrappedValue.visibility == .private)
                 }
@@ -717,12 +715,11 @@ struct PlaceSuggestView: View {
         FormSection(footer: String(localized: "place.suggest.editHint")) {
             FormTextField(text: $draft.name, placeholder: String(localized: "place.form.name"), style: .row)
             Divider().padding(.leading, AppSpacing.lg)
-            MenuPickerRow(
-                title: String(localized: "place.form.type"),
-                selection: $draft.type,
-                options: PlaceType.allCases.map {
+            UniversalRow(
+                String(localized: "place.form.type"),
+                accessory: .menu($draft.type, options: PlaceType.allCases.map {
                     (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
-                }
+                })
             )
         }
 
@@ -741,13 +738,12 @@ struct PlaceSuggestView: View {
         FormSection(header: String(localized: "place.suggest.problem.what")) {
             let options = PlaceSuggestionKind.problems
             ForEach(options) { option in
-                CheckmarkRow(
+                UniversalRow(
                     String(localized: String.LocalizationValue(option.titleKey)),
-                    isSelected: kind == option,
-                    config: .standard
-                ) {
-                    kind = option
-                }
+                    accessory: .checkmark(isSelected: kind == option) {
+                        kind = option
+                    }
+                )
                 if option.id != options.last?.id {
                     Divider().padding(.leading, AppSpacing.lg)
                 }

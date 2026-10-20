@@ -39,13 +39,13 @@ struct MapLayersSheet: View {
                         .padding(.vertical, AppSpacing.md)
                         if !hiddenTypesStorage.isEmpty {
                             divider
-                            ActionSettingsRow(
+                            UniversalRow(
+                                String(localized: "map.layers.allTypes"),
                                 icon: "checklist.checked",
-                                title: String(localized: "map.layers.allTypes"),
-                                config: .standard
-                            ) {
-                                hiddenTypesStorage = ""
-                            }
+                                accessory: .action {
+                                    hiddenTypesStorage = ""
+                                }
+                            )
                         }
                     }
                     FormSection(header: String(localized: "map.layers.overlays")) {
@@ -77,7 +77,11 @@ struct MapLayersSheet: View {
     }
 
     private func toggle(_ key: String.LocalizationValue, systemImage: String, isOn: Binding<Bool>) -> some View {
-        ToggleSettingsRow(icon: systemImage, title: String(localized: key), config: .standard, isOn: isOn)
+        UniversalRow(
+            String(localized: key),
+            icon: systemImage,
+            accessory: .toggle(isOn)
+        )
     }
 
     private var divider: some View {
