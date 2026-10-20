@@ -334,10 +334,9 @@ struct ReviewFormView: View {
                     }
 
                     FormSection {
-                        DatePickerRow(
-                            title: String(localized: "reviews.form.visitedOn"),
-                            selection: $visitedDate,
-                            maxDate: Date()
+                        UniversalRow(
+                            String(localized: "reviews.form.visitedOn"),
+                            accessory: .date($visitedDate, through: Date())
                         )
                     }
 
@@ -366,7 +365,12 @@ struct ReviewFormView: View {
                                 maxSelectionCount: ReviewDraft.photoLimit - photos.count,
                                 matching: .images
                             ) {
-                                ActionRowLabel(String(localized: "reviews.form.addPhotos"), systemImage: "photo.on.rectangle.angled")
+                                UniversalRow(
+                                    String(localized: "reviews.form.addPhotos"),
+                                    icon: "photo.on.rectangle.angled",
+                                    titleColor: AppColors.accent
+                                )
+                                .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
                         }
@@ -383,13 +387,13 @@ struct ReviewFormView: View {
 
                     if existing != nil {
                         FormSection {
-                            ActionSettingsRow(
-                                title: String(localized: "reviews.delete"),
-                                isDestructive: true,
-                                config: .standard
-                            ) {
-                                confirmsDelete = true
-                            }
+                            UniversalRow(
+                                String(localized: "reviews.delete"),
+                                role: .destructive,
+                                accessory: .action {
+                                    confirmsDelete = true
+                                }
+                            )
                         }
                     }
                 }

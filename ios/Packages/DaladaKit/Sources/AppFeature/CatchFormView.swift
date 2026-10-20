@@ -54,12 +54,11 @@ struct CatchFormView: View {
             ScrollView {
                 VStack(spacing: AppSpacing.lg) {
                     FormSection(header: String(localized: "catch.form.species")) {
-                        NavigationPickerRow(
-                            title: String(localized: "catch.form.species"),
-                            selection: $draft.speciesID,
-                            options: speciesStore.species.map {
+                        UniversalRow(
+                            String(localized: "catch.form.species"),
+                            accessory: .picker($draft.speciesID, options: speciesStore.species.map {
                                 (label: $0.name(for: SpeciesStore.languageCode), value: $0.id)
-                            }
+                            })
                         )
                     }
 
@@ -72,7 +71,10 @@ struct CatchFormView: View {
                             numberField("catch.form.lengthPlaceholder", value: $draft.lengthCm, fractionDigits: 0...1)
                         }
                         Divider().padding(.leading, AppSpacing.lg)
-                        StepperRow(title: String(localized: "catch.form.count"), value: $draft.count, in: 1...1000)
+                        UniversalRow(
+                            String(localized: "catch.form.count"),
+                            accessory: .stepper($draft.count, in: 1...1000)
+                        )
                     }
 
                     if isUndersized, let minSize {
@@ -93,17 +95,22 @@ struct CatchFormView: View {
                     }
 
                     FormSection(footer: String(localized: "catch.form.hideSizeFooter")) {
-                        MenuPickerRow(
-                            title: String(localized: "catch.form.method"),
-                            selection: $draft.method,
-                            options: methodOptions
+                        UniversalRow(
+                            String(localized: "catch.form.method"),
+                            accessory: .menu($draft.method, options: methodOptions)
                         )
                         Divider().padding(.leading, AppSpacing.lg)
                         FormTextField(text: $draft.bait, placeholder: String(localized: "catch.form.bait"), style: .row)
                         Divider().padding(.leading, AppSpacing.lg)
-                        ToggleSettingsRow(title: String(localized: "catch.form.released"), config: .standard, isOn: $draft.released)
+                        UniversalRow(
+                            String(localized: "catch.form.released"),
+                            accessory: .toggle($draft.released)
+                        )
                         Divider().padding(.leading, AppSpacing.lg)
-                        ToggleSettingsRow(title: String(localized: "catch.form.hideSize"), config: .standard, isOn: $draft.hideSize)
+                        UniversalRow(
+                            String(localized: "catch.form.hideSize"),
+                            accessory: .toggle($draft.hideSize)
+                        )
                     }
                 }
                 .screenPadding()
@@ -150,7 +157,12 @@ struct CatchFormView: View {
                 .transition(.opacity)
             } else {
                 PhotosPicker(selection: $pickerItem, matching: .images) {
-                    ActionRowLabel(String(localized: "catch.form.addPhoto"), systemImage: "camera", titleColor: AppColors.textPrimary)
+                    UniversalRow(
+                        String(localized: "catch.form.addPhoto"),
+                        icon: "camera",
+                        titleColor: AppColors.textPrimary
+                    )
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }

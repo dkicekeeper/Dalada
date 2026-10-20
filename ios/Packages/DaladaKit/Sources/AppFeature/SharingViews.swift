@@ -431,18 +431,18 @@ struct PrivacyZoneEditorView: View {
 
                 FormSection(footer: String(localized: "privacyZones.radiusHint")) {
                     // Строка со слайдером DesignKit, как в Tenra: щелчок на каждом шаге.
-                    SliderRow(
+                    UniversalRow(
                         String(localized: "privacyZones.radiusTitle"),
-                        value: Binding(
-                            get: { Double(draft.wrappedValue.radiusM) },
-                            set: { draft.wrappedValue.radiusM = Int($0.rounded()) }
-                        ),
-                        in: Double(PrivacyZone.radiusRange.lowerBound)...Double(PrivacyZone.radiusRange.upperBound),
-                        step: Double(PrivacyZone.radiusStep),
-                        valueText: TripFormat.distance(Double(draft.wrappedValue.radiusM))
+                        accessory: .slider(
+                            Binding(
+                                get: { Double(draft.wrappedValue.radiusM) },
+                                set: { draft.wrappedValue.radiusM = Int($0.rounded()) }
+                            ),
+                            in: Double(PrivacyZone.radiusRange.lowerBound)...Double(PrivacyZone.radiusRange.upperBound),
+                            step: Double(PrivacyZone.radiusStep),
+                            valueText: TripFormat.distance(Double(draft.wrappedValue.radiusM))
+                        )
                     )
-                    .padding(.horizontal, AppSpacing.lg)
-                    .padding(.vertical, AppSpacing.sm)
                 }
 
                 if let saveError {
@@ -451,13 +451,13 @@ struct PrivacyZoneEditorView: View {
 
                 if zone != nil {
                     FormSection {
-                        ActionSettingsRow(
-                            title: String(localized: "privacyZones.delete"),
-                            isDestructive: true,
-                            config: .standard
-                        ) {
-                            confirmsDelete = true
-                        }
+                        UniversalRow(
+                            String(localized: "privacyZones.delete"),
+                            role: .destructive,
+                            accessory: .action {
+                                confirmsDelete = true
+                            }
+                        )
                     }
                 }
             }

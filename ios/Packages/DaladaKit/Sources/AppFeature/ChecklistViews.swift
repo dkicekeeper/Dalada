@@ -497,22 +497,26 @@ struct PackingDateFields: View {
 
     var body: some View {
         FormSection(footer: footer) {
-            ToggleSettingsRow(title: String(localized: "packing.form.hasDate"), config: .standard, isOn: $hasDate)
+            UniversalRow(
+                String(localized: "packing.form.hasDate"),
+                accessory: .toggle($hasDate)
+            )
             if hasDate {
                 Divider().padding(.leading, AppSpacing.lg)
-                DatePickerRow(
-                    title: String(localized: "packing.form.date"),
-                    selection: $tripDay,
-                    minDate: Calendar.current.startOfDay(for: Date())
+                UniversalRow(
+                    String(localized: "packing.form.date"),
+                    accessory: .date($tripDay, from: Calendar.current.startOfDay(for: Date()))
                 )
                 Divider().padding(.leading, AppSpacing.lg)
-                ToggleSettingsRow(title: String(localized: "packing.form.remind"), config: .standard, isOn: $reminds)
+                UniversalRow(
+                    String(localized: "packing.form.remind"),
+                    accessory: .toggle($reminds)
+                )
                 if reminds {
                     Divider().padding(.leading, AppSpacing.lg)
-                    DatePickerRow(
-                        title: String(localized: "packing.form.remindTime"),
-                        selection: $remindTime,
-                        displayedComponents: .hourAndMinute
+                    UniversalRow(
+                        String(localized: "packing.form.remindTime"),
+                        accessory: .date($remindTime, components: .hourAndMinute)
                     )
                 }
             }
@@ -566,10 +570,9 @@ struct StartPackingView: View {
             ScrollView {
                 VStack(spacing: AppSpacing.lg) {
                     FormSection(footer: String(localized: "packing.form.sourceFooter")) {
-                        NavigationPickerRow(
-                            title: String(localized: "packing.form.source"),
-                            selection: $source,
-                            options: sourceOptions
+                        UniversalRow(
+                            String(localized: "packing.form.source"),
+                            accessory: .picker($source, options: sourceOptions)
                         )
                         Divider().padding(.leading, AppSpacing.lg)
                         FormTextField(text: $title, placeholder: String(localized: "packing.form.title"), style: .row)

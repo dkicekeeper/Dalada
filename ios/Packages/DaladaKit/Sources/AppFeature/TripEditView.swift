@@ -45,12 +45,11 @@ struct TripEditView: View {
                     FormSection(header: String(localized: "trip.finish.name")) {
                         FormTextField(text: $title, placeholder: String(localized: "trip.finish.name"), style: .row)
                         Divider().padding(.leading, AppSpacing.lg)
-                        MenuPickerRow(
-                            title: String(localized: "trip.finish.activity"),
-                            selection: $activity,
-                            options: TripActivity.allCases.map {
+                        UniversalRow(
+                            String(localized: "trip.finish.activity"),
+                            accessory: .menu($activity, options: TripActivity.allCases.map {
                                 (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
-                            }
+                            })
                         )
                     }
                     FormSection(header: String(localized: "checkin.form.note")) {
