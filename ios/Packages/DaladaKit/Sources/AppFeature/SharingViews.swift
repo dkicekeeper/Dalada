@@ -297,7 +297,7 @@ struct PrivacyZonesView: View {
             allIDs: zones.map(\.id),
             canReorder: false,
             addLabel: String(localized: "privacyZones.add"),
-            onAdd: canAdd ? addZone : nil,
+            onAdd: addAction,
             onDeleteSelected: { pendingDelete = zones.filter { selection.contains($0.id) } }
         )
         .task { await load() }
@@ -326,8 +326,11 @@ struct PrivacyZonesView: View {
         isLoaded && loadError == nil && zones.count < PrivacyZone.limit
     }
 
-    private func addZone() {
-        editing = EditorRequest(zone: nil)
+    /// «+» в панели, пока можно добавить зону. Тип задан здесь: в тернарном операторе ссылка на
+    /// метод (`@MainActor () -> ()`) и `nil` не сводились к `(() -> Void)?` в Swift 6.
+    private var addAction: (() -> Void)? {
+        guard canAdd else { return nil }
+        return { editing = EditorRequest(zone: nil) }
     }
 
     private func zoneRow(_ zone: PrivacyZone) -> some View {
