@@ -11,7 +11,7 @@ import Persistence
 @MainActor
 @Observable
 final class ListsStore {
-    /// Предметы экипировки: по категориям, внутри — по названию.
+    /// Предметы экипировки: по категориям, внутри — по своему порядку, потом по названию.
     private(set) var gear: [GearItem] = []
     /// Чеклисты и сборы (без удалённых).
     private(set) var checklists: [Checklist] = []
@@ -63,7 +63,7 @@ final class ListsStore {
     }
 
     var ownLists: [Checklist] {
-        checklists.filter { $0.kind == .list }
+        checklists.filter { $0.kind == .list }.sorted(by: Self.listOrder)
     }
 
     /// Ближайшие сборы: поездка сегодня или позже (или без даты), ещё не собрано.
@@ -92,11 +92,27 @@ final class ListsStore {
         }
     }
 
+    /// Свои чеклисты: ещё не расставленные — сверху, новые первыми; потом — на своих местах.
+    private static func listOrder(_ a: Checklist, _ b: Checklist) -> Bool {
+        switch (a.sortOrder, b.sortOrder) {
+        case let (x?, y?): x == y ? a.updatedAt > b.updatedAt : x < y
+        case (.none, .some): true
+        case (.some, .none): false
+        case (.none, .none): a.updatedAt > b.updatedAt
+        }
+    }
+
+    /// По категориям; внутри — расставленные на своих местах, потом остальные по названию.
     private static func gearOrder(_ a: GearItem, _ b: GearItem) -> Bool {
         let ai = GearCategory.allCases.firstIndex(of: a.category) ?? 0
         let bi = GearCategory.allCases.firstIndex(of: b.category) ?? 0
         if ai != bi { return ai < bi }
-        return a.name.localizedStandardCompare(b.name) == .orderedAscending
+        switch (a.sortOrder, b.sortOrder) {
+        case let (x?, y?) where x != y: return x < y
+        case (.some, .none): return true
+        case (.none, .some): return false
+        default: return a.name.localizedStandardCompare(b.name) == .orderedAscending
+        }
     }
 
     // MARK: Экипировка
@@ -119,6 +135,16 @@ final class ListsStore {
         var item = item
         item.deletedAt = SyncClock.now()
         save(item)
+    }
+
+    /// Свой порядок внутри категории перетаскиванием: предметы категории встают по местам.
+    func moveGear(in category: GearCategory, from source: IndexSet, to destination: Int) {
+        var items = gear.filter { $0.category == category }
+        items.move(fromOffsets: source, toOffset: destination)
+        for (index, var item) in items.enumerated() where item.sortOrder != index {
+            item.sortOrder = index
+            save(item)
+        }
     }
 
     /// Быстрое добавление популярных предметов на языке интерфейса (уже добавленные не повторяются).
@@ -149,6 +175,15 @@ final class ListsStore {
         var checklist = checklist
         checklist.deletedAt = SyncClock.now()
         save(checklist)
+    }
+
+    /// Свой порядок чеклистов перетаскиванием: все свои чеклисты встают по местам.
+    func moveOwnLists(from source: IndexSet, to destination: Int) {
+        var ordered = ownLists
+        ordered.move(fromOffsets: source, toOffset: destination)
+        for (index, list) in ordered.enumerated() where list.sortOrder != index {
+            update(list.id) { $0.sortOrder = index }
+        }
     }
 
     /// Изменить чеклист по id (отметка, новый пункт и т. п.).

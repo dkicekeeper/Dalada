@@ -71,12 +71,16 @@ struct GearCategoryHeader: View {
     let category: GearCategory
     var trailing: String?
 
+    // DesignKit 8.0.0: один заголовок секции — жирный, как в предложении.
     var body: some View {
-        HStack {
-            Label(LocalizedStringKey(category.titleKey), systemImage: category.systemImage)
-            Spacer(minLength: 0)
+        SectionHeader(
+            String(localized: String.LocalizationValue(category.titleKey)),
+            systemImage: category.systemImage
+        ) {
             if let trailing {
                 Text(verbatim: trailing)
+                    .font(AppTypography.bodySmall)
+                    .foregroundStyle(AppColors.textSecondary)
             }
         }
     }
@@ -91,81 +95,75 @@ struct ChecklistsView: View {
     @State private var createsList = false
     @State private var opened: UUID?
 
+    @State private var mode: CardListMode = .browsing
+    @State private var selection: Set<UUID> = []
+    /// Чеклисты и сборы, удаление которых ждёт подтверждения.
+    @State private var pendingDelete: [Checklist] = []
+    @State private var editing: Checklist?
+
+    // DesignKit 8.0.0: сборы и свои чеклисты — CardList в стеклянных секциях; долгое нажатие —
+    // «Изменить» и «Удалить», в панели — выбор нескольких, свой порядок чеклистов и «+»
+    // (до этого List со смахиванием). Сборы — по дате поездки.
     var body: some View {
-        List {
-            Section {
-                ForEach(lists.packingLists) { packing in
-                    NavigationLink {
-                        ChecklistDetailView(checklistID: packing.id)
-                    } label: {
-                        ChecklistSummaryRow(checklist: packing)
-                    }
-                }
-                .onDelete { offsets in
-                    for packing in offsets.map({ lists.packingLists[$0] }) {
-                        lists.delete(packing)
-                    }
-                }
-                Button {
-                    startsPacking = true
-                } label: {
-                    Label("packing.start", systemImage: "bag.badge.plus")
-                }
-            } header: {
-                Text("checklists.section.packing")
-            } footer: {
-                if lists.packingLists.isEmpty {
-                    Text("checklists.packing.empty")
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                section(
+                    title: String(localized: "checklists.section.packing"),
+                    items: lists.packingLists,
+                    emptyText: "checklists.packing.empty",
+                    onMove: nil
+                )
+                section(
+                    title: String(localized: "checklists.section.mine"),
+                    items: lists.ownLists,
+                    emptyText: "checklists.mine.empty",
+                    onMove: { lists.moveOwnLists(from: $0, to: $1) }
+                )
+                if mode == .browsing {
+                    templatesSection
                 }
             }
-
-            Section {
-                ForEach(lists.ownLists) { list in
-                    NavigationLink {
-                        ChecklistDetailView(checklistID: list.id)
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
+        }
+        .cardListToolbar(
+            mode: $mode,
+            selection: $selection,
+            allIDs: (lists.packingLists + lists.ownLists).map(\.id),
+            canReorder: lists.ownLists.count > 1,
+            onDeleteSelected: {
+                pendingDelete = (lists.packingLists + lists.ownLists).filter { selection.contains($0.id) }
+            }
+        )
+        .toolbar {
+            if mode == .browsing {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Button("packing.start", systemImage: "bag.badge.plus") { startsPacking = true }
+                        Button("checklists.new", systemImage: "plus") { createsList = true }
                     } label: {
-                        ChecklistSummaryRow(checklist: list)
+                        Image(systemName: "plus")
+                            .accessibilityLabel(Text("checklists.new"))
                     }
-                }
-                .onDelete { offsets in
-                    for list in offsets.map({ lists.ownLists[$0] }) {
-                        lists.delete(list)
-                    }
-                }
-                Button {
-                    createsList = true
-                } label: {
-                    Label("checklists.new", systemImage: "plus")
-                }
-            } header: {
-                Text("checklists.section.mine")
-            } footer: {
-                if lists.ownLists.isEmpty {
-                    Text("checklists.mine.empty")
                 }
             }
-
-            Section {
-                ForEach(lists.templates) { template in
-                    NavigationLink {
-                        TemplateDetailView(template: template)
-                    } label: {
-                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                            Text(verbatim: template.title.text(for: PackingFormat.language))
-                                .font(AppTypography.bodyEmphasis)
-                            Text("checklist.itemCount \(template.items.count)")
-                                .font(AppTypography.caption)
-                                .foregroundStyle(AppColors.textSecondary)
-                        }
-                    }
-                }
-                if lists.templates.isEmpty {
-                    Text("checklists.templates.unavailable")
-                        .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
-            } header: {
-                Text("checklists.section.templates")
+        }
+        .sheet(item: $editing) { checklist in
+            ChecklistEditView(checklist: checklist)
+                .environment(lists)
+        }
+        .confirmationDialog(
+            pendingDelete.count == 1
+                ? LocalizedStringKey("checklist.deleteConfirm")
+                : LocalizedStringKey("common.deleteSelectedConfirm \(pendingDelete.count)"),
+            isPresented: Binding(get: { !pendingDelete.isEmpty }, set: { if !$0 { pendingDelete = [] } }),
+            titleVisibility: .visible
+        ) {
+            Button("common.delete", role: .destructive) {
+                for item in pendingDelete { lists.delete(item) }
+                pendingDelete = []
+                selection = []
+                mode = .browsing
             }
         }
         .navigationTitle("checklists.title")
@@ -181,6 +179,76 @@ struct ChecklistsView: View {
             ChecklistDetailView(checklistID: id)
         }
         .task { await lists.loadTemplates() }
+    }
+
+    /// Сборы или свои чеклисты: заголовок, карточка со строками, подсказка, когда пусто.
+    private func section(
+        title: String,
+        items: [Checklist],
+        emptyText: LocalizedStringKey,
+        onMove: ((IndexSet, Int) -> Void)?
+    ) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            SectionHeader(title)
+            if items.isEmpty {
+                Text(emptyText)
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .padding(.horizontal, AppSpacing.lg)
+            } else {
+                CardList(items, layout: .section, mode: mode, selection: $selection, onMove: onMove) { checklist in
+                    NavigationLink {
+                        ChecklistDetailView(checklistID: checklist.id)
+                    } label: {
+                        ChecklistSummaryRow(checklist: checklist)
+                            .padding(.vertical, AppSpacing.md)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .contextMenu {
+                        Button("common.edit", systemImage: "pencil") { editing = checklist }
+                        Button("common.delete", systemImage: "trash", role: .destructive) {
+                            pendingDelete = [checklist]
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// Шаблоны редакции: только открыть.
+    private var templatesSection: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            SectionHeader(String(localized: "checklists.section.templates"))
+            if lists.templates.isEmpty {
+                Text("checklists.templates.unavailable")
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .padding(.horizontal, AppSpacing.lg)
+            } else {
+                CardList(lists.templates, layout: .section) { template in
+                    NavigationLink {
+                        TemplateDetailView(template: template)
+                    } label: {
+                        HStack(spacing: AppSpacing.md) {
+                            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                                Text(verbatim: template.title.text(for: PackingFormat.language))
+                                    .font(AppTypography.bodyEmphasis)
+                                    .foregroundStyle(AppColors.textPrimary)
+                                Text("checklist.itemCount \(template.items.count)")
+                                    .font(AppTypography.caption)
+                                    .foregroundStyle(AppColors.textSecondary)
+                            }
+                            Spacer(minLength: 0)
+                            DisclosureChevron()
+                        }
+                        .padding(.vertical, AppSpacing.md)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
     }
 }
 

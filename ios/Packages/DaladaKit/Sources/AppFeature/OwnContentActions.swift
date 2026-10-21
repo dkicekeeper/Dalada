@@ -9,14 +9,13 @@ extension Notification.Name {
     static let daladaPlaceDeleted = Notification.Name("dalada.placeDeleted")
 }
 
-/// «Изменить» и «Удалить» у своего улова: кнопка «…» в строке, долгое нажатие и смахивание в списке.
+/// «Изменить» и «Удалить» у своего улова: кнопка «…» в строке и долгое нажатие (DesignKit 8.0.0:
+/// без смахивания).
 /// Правка — та же форма улова, без фото (фото улова здесь не меняется). После правки или удаления —
 /// `onChanged`.
 struct OwnCatchActions: ViewModifier {
     let catchID: UUID
     let environment: AppEnvironment
-    /// В `List` — ещё и смахивание влево.
-    var inList = false
     let onChanged: @MainActor () -> Void
 
     @State private var editing: CatchDraft?
@@ -42,13 +41,6 @@ struct OwnCatchActions: ViewModifier {
             .contextMenu {
                 editButton
                 deleteButton
-            }
-            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                if inList {
-                    deleteButton
-                    editButton
-                        .tint(AppColors.accent)
-                }
             }
             .sheet(item: $editing) { draft in
                 CatchFormView(draft: draft, allowsPhoto: false) { edited in
@@ -126,9 +118,8 @@ extension View {
     func ownCatchActions(
         catchID: UUID,
         environment: AppEnvironment,
-        inList: Bool = false,
         onChanged: @escaping @MainActor () -> Void
     ) -> some View {
-        modifier(OwnCatchActions(catchID: catchID, environment: environment, inList: inList, onChanged: onChanged))
+        modifier(OwnCatchActions(catchID: catchID, environment: environment, onChanged: onChanged))
     }
 }

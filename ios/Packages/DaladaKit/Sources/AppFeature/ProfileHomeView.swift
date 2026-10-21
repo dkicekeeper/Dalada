@@ -363,22 +363,25 @@ struct MyCatchesView: View {
                     description: String(localized: "profile.catches.empty")
                 )
             } else {
-                List {
-                    if !records.isEmpty {
-                        PersonalRecordsSection(records: records)
-                    }
-                    Section {
-                        ForEach(catches) { item in
-                            MyCatchRow(item: item)
-                                .ownCatchActions(catchID: item.id, environment: environment, inList: true) {
-                                    Task { await load() }
-                                }
-                        }
-                    } header: {
+                // DesignKit 8.0.0: рекорды и уловы — стеклянные секции (до этого List со смахиванием);
+                // «Изменить» и «Удалить» — долгим нажатием и кнопкой «…».
+                ScrollView {
+                    VStack(alignment: .leading, spacing: AppSpacing.xl) {
                         if !records.isEmpty {
-                            Text("records.allCatches")
+                            PersonalRecordsSection(records: records)
+                        }
+                        FormSection(header: records.isEmpty ? nil : String(localized: "records.allCatches")) {
+                            ForEach(catches) { item in
+                                MyCatchRow(item: item)
+                                    .padding(.vertical, AppSpacing.md)
+                                    .ownCatchActions(catchID: item.id, environment: environment) {
+                                        Task { await load() }
+                                    }
+                            }
                         }
                     }
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.md)
                 }
             }
         }
