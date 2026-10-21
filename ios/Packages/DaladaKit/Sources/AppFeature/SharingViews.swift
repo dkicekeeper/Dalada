@@ -2,6 +2,7 @@ import Backend
 import DaladaCore
 import DaladaUI
 import DesignComponents
+import DesignSupport
 import DesignTokens
 import MapEngine
 import Persistence
@@ -227,6 +228,10 @@ struct PrivacyZonesView: View {
     @State private var isLoaded = false
     @State private var loadError: String?
     @State private var editing: EditorRequest?
+    @State private var mode: CardListMode = .browsing
+    @State private var selection: Set<PrivacyZone.ID> = []
+    /// Зоны, удаление которых ждёт подтверждения.
+    @State private var pendingDelete: [PrivacyZone] = []
 
     /// Открытый редактор: новая зона (`zone == nil`) или изменение.
     struct EditorRequest: Identifiable {
@@ -235,62 +240,110 @@ struct PrivacyZonesView: View {
     }
 
     var body: some View {
-        List {
-            Section {
-                Text("privacyZones.explanation")
-                    .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-
-            Section {
-                ForEach(zones) { zone in
-                    Button {
-                        editing = EditorRequest(zone: zone)
-                    } label: {
-                        HStack(spacing: AppSpacing.md) {
-                            Image(systemName: "house.circle.fill")
-                                .font(.system(size: AppIconSize.md))
-                                .foregroundStyle(AppColors.accent)
-                            VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                                Text(verbatim: zone.name)
-                                    .font(AppTypography.bodyEmphasis)
-                                    .foregroundStyle(AppColors.textPrimary)
-                                Text("privacyZones.radius \(TripFormat.distance(Double(zone.radiusM)))")
-                                    .font(AppTypography.caption)
-                                    .foregroundStyle(AppColors.textSecondary)
-                            }
-                            Spacer(minLength: 0)
+        // DesignKit 8.0.0: зоны — CardList в стеклянной секции; долгое нажатие — «Изменить» и
+        // «Удалить», в панели — выбор нескольких и «+» (до этого List со смахиванием).
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                if isLoaded && zones.isEmpty && loadError == nil {
+                    EmptyState(
+                        icon: "house.circle",
+                        title: String(localized: "privacyZones.title"),
+                        description: String(localized: "privacyZones.explanation"),
+                        actionTitle: String(localized: "privacyZones.add"),
+                        action: { editing = EditorRequest(zone: nil) }
+                    )
+                } else {
+                    if !zones.isEmpty {
+                        CardList(zones, layout: .section, mode: mode, selection: $selection) { zone in
+                            zoneRow(zone)
                         }
-                        .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
-                }
-                .onDelete { offsets in
-                    let removed = offsets.map { zones[$0] }
-                    Task { await delete(removed) }
-                }
-
-                if isLoaded && loadError == nil && zones.count < PrivacyZone.limit {
-                    Button {
-                        editing = EditorRequest(zone: nil)
-                    } label: {
-                        Label("privacyZones.add", systemImage: "plus.circle")
+                    Text(zones.count >= PrivacyZone.limit
+                        ? LocalizedStringKey("privacyZones.limit")
+                        : LocalizedStringKey("privacyZones.explanation"))
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.textSecondary)
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.xs)
+                    if let loadError {
+                        InlineStatusText(message: loadError, type: .error)
                     }
-                }
-            } footer: {
-                if let loadError {
-                    Text(verbatim: loadError)
-                        .foregroundStyle(AppColors.destructive)
-                } else if zones.count >= PrivacyZone.limit {
-                    Text("privacyZones.limit")
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("privacyZones.title")
+        .cardListToolbar(
+            mode: $mode,
+            selection: $selection,
+            allIDs: zones.map(\.id),
+            canReorder: false,
+            addLabel: String(localized: "privacyZones.add"),
+            onAdd: addAction,
+            onDeleteSelected: { pendingDelete = zones.filter { selection.contains($0.id) } }
+        )
         .task { await load() }
         .refreshable { await load() }
         .sheet(item: $editing, onDismiss: { Task { await load() } }) { request in
             PrivacyZoneEditorView(zone: request.zone, environment: environment)
+        }
+        .confirmationDialog(
+            "privacyZones.deleteConfirm",
+            isPresented: Binding(get: { !pendingDelete.isEmpty }, set: { if !$0 { pendingDelete = [] } }),
+            titleVisibility: .visible
+        ) {
+            Button("privacyZones.delete", role: .destructive) {
+                let removed = pendingDelete
+                pendingDelete = []
+                selection = []
+                mode = .browsing
+                Task { await delete(removed) }
+            }
+        }
+    }
+
+    private var canAdd: Bool {
+        isLoaded && loadError == nil && zones.count < PrivacyZone.limit
+    }
+
+    /// «+» в панели, пока можно добавить зону. Тип задан здесь: в тернарном операторе ссылка на
+    /// метод (`@MainActor () -> ()`) и `nil` не сводились к `(() -> Void)?` в Swift 6.
+    private var addAction: (() -> Void)? {
+        guard canAdd else { return nil }
+        return { editing = EditorRequest(zone: nil) }
+    }
+
+    private func zoneRow(_ zone: PrivacyZone) -> some View {
+        Button {
+            editing = EditorRequest(zone: zone)
+        } label: {
+            HStack(spacing: AppSpacing.md) {
+                Icon("house.circle.fill", size: AppIconSize.lg)
+                    .foregroundStyle(AppColors.accent)
+                VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                    Text(verbatim: zone.name)
+                        .font(AppTypography.bodyEmphasis)
+                        .foregroundStyle(AppColors.textPrimary)
+                    Text("privacyZones.radius \(TripFormat.distance(Double(zone.radiusM)))")
+                        .font(AppTypography.caption)
+                        .foregroundStyle(AppColors.textSecondary)
+                }
+                Spacer(minLength: 0)
+            }
+            .padding(.vertical, AppSpacing.md)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        // Метка кнопки не передаёт отступ разделителя наружу: значок и промежуток после него.
+        .rowDividerInset(AppIconSize.lg + AppSpacing.md)
+        .contextMenu {
+            Button("common.edit", systemImage: "pencil") {
+                editing = EditorRequest(zone: zone)
+            }
+            Button("common.delete", systemImage: "trash", role: .destructive) {
+                pendingDelete = [zone]
+            }
         }
     }
 

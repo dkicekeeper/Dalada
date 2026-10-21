@@ -27,167 +27,104 @@ struct ProfileSettingsView: View {
     @AppStorage(AutoPauseSetting.storageKey) private var autoPauseMinutes = AutoPauseSetting.defaultMinutes
 
     var body: some View {
-        List {
-            if let profile = session.profile {
-                Section {
-                    HStack(spacing: AppSpacing.lg) {
-                        PersonAvatar(name: profile.displayName ?? profile.username, path: profile.avatarPath, size: AppIconSize.Tile.xl)
-                        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                            PhotosPicker(selection: $photoItem, matching: .images) {
-                                Text(LocalizedStringKey(profile.avatarPath == nil ? "profile.photo.add" : "profile.photo.change"))
-                            }
-                            .buttonStyle(.borderless)
-                            if profile.avatarPath != nil {
-                                Button("profile.photo.remove", role: .destructive) {
-                                    Task { await removePhoto() }
-                                }
-                                .buttonStyle(.borderless)
-                            }
-                        }
-                        .disabled(isSavingPhoto)
-                        Spacer(minLength: 0)
-                        if isSavingPhoto {
-                            ProgressView()
-                        }
-                    }
-                } footer: {
-                    if let photoError {
-                        Text(verbatim: photoError)
-                            .foregroundStyle(AppColors.destructive)
-                    } else {
-                        Text("profile.photo.footer")
-                    }
+        // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
+        ScrollView {
+            VStack(spacing: AppSpacing.xl) {
+                if let profile = session.profile {
+                    photoSection(profile)
+                    nameSection(profile)
                 }
 
-                Section {
-                    TextField("account.name.placeholder", text: $name)
-                        .textContentType(.name)
-                        .submitLabel(.done)
-                        .onSubmit { Task { await saveName() } }
-                    LabeledContent("account.username") {
-                        Text(verbatim: profile.username.map { "@" + $0 } ?? "—")
-                    }
-                } header: {
-                    Text("account.name")
-                } footer: {
-                    if let nameError {
-                        Text(verbatim: nameError)
-                            .foregroundStyle(AppColors.destructive)
-                    } else if trimmedName.count > SessionStore.displayNameLimit {
-                        Text("place.info.tooLong \(SessionStore.displayNameLimit)")
-                            .foregroundStyle(AppColors.destructive)
-                    }
+                FormSection(footer: String(localized: "profile.settings.privacyZonesFooter")) {
+                    UniversalRow(String(localized: "privacyZones.title"), icon: "house.circle", accessory: .navigation {
+                        PrivacyZonesView(environment: environment)
+                    })
                 }
-            }
 
-            Section {
-                NavigationLink {
-                    PrivacyZonesView(environment: environment)
-                } label: {
-                    Label("privacyZones.title", systemImage: "house.circle")
-                }
-            } footer: {
-                Text("profile.settings.privacyZonesFooter")
-            }
-
-            if let profile = session.profile {
-                Section {
-                    Toggle(isOn: Binding(
-                        get: { privacyOverride ?? profile.isPrivate ?? false },
-                        set: { value in Task { await setPrivate(value) } }
-                    )) {
-                        Label("profile.private", systemImage: "lock")
+                if let profile = session.profile {
+                    FormSection(footer: privacyError == nil ? String(localized: "profile.private.footer") : nil) {
+                        UniversalRow(
+                            String(localized: "profile.private"),
+                            icon: "lock",
+                            accessory: .toggle(Binding(
+                                get: { privacyOverride ?? profile.isPrivate ?? false },
+                                set: { value in Task { await setPrivate(value) } }
+                            ))
+                        )
+                        .disabled(session.isWorking)
                     }
-                    .disabled(session.isWorking)
-                } footer: {
                     if let privacyError {
-                        Text(verbatim: privacyError)
-                            .foregroundStyle(AppColors.destructive)
-                    } else {
-                        Text("profile.private.footer")
+                        InlineStatusText(message: privacyError, type: .error)
+                    }
+
+                    FormSection(footer: String(localized: "export.data.footer")) {
+                        UniversalRow(String(localized: "export.data"), icon: "square.and.arrow.down", accessory: .action {
+                            exportsData = true
+                        })
                     }
                 }
-            }
 
-            if session.profile != nil {
-                Section {
-                    Button {
-                        exportsData = true
-                    } label: {
-                        Label("export.data", systemImage: "square.and.arrow.down")
-                    }
-                } footer: {
-                    Text("export.data.footer")
+                FormSection(footer: String(localized: "closeFriends.settingsFooter")) {
+                    UniversalRow(String(localized: "closeFriends.title"), icon: "star.circle", accessory: .navigation {
+                        CloseFriendsView(environment: environment)
+                    })
                 }
-            }
 
-            Section {
-                NavigationLink {
-                    CloseFriendsView(environment: environment)
-                } label: {
-                    Label("closeFriends.title", systemImage: "star.circle")
+                FormSection(footer: String(localized: "notifications.settings.footer")) {
+                    UniversalRow(String(localized: "notifications.title"), icon: "bell", accessory: .navigation {
+                        NotificationSettingsView()
+                    })
                 }
-            } footer: {
-                Text("closeFriends.settingsFooter")
-            }
 
-            Section {
-                NavigationLink {
-                    NotificationSettingsView()
-                } label: {
-                    Label("notifications.title", systemImage: "bell")
+                FormSection(
+                    header: String(localized: "settings.recording.title"),
+                    footer: String(localized: "settings.autoPause.footer")
+                ) {
+                    UniversalRow(
+                        String(localized: "settings.autoPause"),
+                        icon: "pause.circle",
+                        accessory: .menu($autoPauseMinutes, options: AutoPauseSetting.options.map { minutes in
+                            (
+                                label: minutes == 0
+                                    ? String(localized: "settings.autoPause.off")
+                                    : String(localized: "settings.autoPause.minutes \(minutes)"),
+                                value: minutes
+                            )
+                        })
+                    )
                 }
-            } footer: {
-                Text("notifications.settings.footer")
-            }
 
-            Section {
-                Picker(selection: $autoPauseMinutes) {
-                    ForEach(AutoPauseSetting.options, id: \.self) { minutes in
-                        if minutes == 0 {
-                            Text("settings.autoPause.off").tag(minutes)
-                        } else {
-                            Text("settings.autoPause.minutes \(minutes)").tag(minutes)
+                FormSection {
+                    UniversalRow(String(localized: "profile.signOut"), icon: "rectangle.portrait.and.arrow.right", accessory: .action {
+                        Task {
+                            await session.signOut()
+                            dismiss()
                         }
-                    }
-                } label: {
-                    Label("settings.autoPause", systemImage: "pause.circle")
+                    })
+                    .disabled(session.isWorking)
                 }
-            } header: {
-                Text("settings.recording.title")
-            } footer: {
-                Text("settings.autoPause.footer")
-            }
 
-            Section {
-                Button("profile.signOut", systemImage: "rectangle.portrait.and.arrow.right") {
-                    Task {
-                        await session.signOut()
-                        dismiss()
-                    }
-                }
-                .disabled(session.isWorking)
-            }
-
-            Section {
-                Button(role: .destructive) {
-                    confirmsDelete = true
-                } label: {
+                FormSection(footer: String(localized: "account.delete.footer")) {
                     if session.isWorking {
                         HStack(spacing: AppSpacing.sm) {
                             ProgressView()
                             Text("account.delete.progress")
+                                .font(AppTypography.body)
+                                .foregroundStyle(AppColors.textSecondary)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, AppSpacing.lg)
                     } else {
-                        Label("account.delete", systemImage: "trash")
+                        UniversalRow(String(localized: "account.delete"), icon: "trash", role: .destructive, accessory: .action {
+                            confirmsDelete = true
+                        })
                     }
                 }
-                .disabled(session.isWorking)
-            } footer: {
-                Text("account.delete.footer")
-            }
 
-            LegalLinksSection()
+                LegalLinksSection()
+            }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("profile.settings.title")
         .navigationBarTitleDisplayMode(.inline)
@@ -227,6 +164,59 @@ struct ProfileSettingsView: View {
             Button("common.ok", role: .cancel) {}
         } message: {
             Text(verbatim: deleteError ?? "")
+        }
+    }
+
+    // MARK: - Секции
+
+    private func photoSection(_ profile: UserProfile) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            FormSection(footer: photoError == nil ? String(localized: "profile.photo.footer") : nil) {
+                HStack(spacing: AppSpacing.lg) {
+                    PersonAvatar(name: profile.displayName ?? profile.username, path: profile.avatarPath, size: AppIconSize.Tile.xl)
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                        PhotosPicker(selection: $photoItem, matching: .images) {
+                            Text(LocalizedStringKey(profile.avatarPath == nil ? "profile.photo.add" : "profile.photo.change"))
+                        }
+                        .buttonStyle(.borderless)
+                        if profile.avatarPath != nil {
+                            Button("profile.photo.remove", role: .destructive) {
+                                Task { await removePhoto() }
+                            }
+                            .buttonStyle(.borderless)
+                        }
+                    }
+                    .disabled(isSavingPhoto)
+                    Spacer(minLength: 0)
+                    if isSavingPhoto {
+                        ProgressView()
+                    }
+                }
+                .padding(.vertical, AppSpacing.lg)
+            }
+            if let photoError {
+                InlineStatusText(message: photoError, type: .error)
+            }
+        }
+    }
+
+    private func nameSection(_ profile: UserProfile) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            FormSection(header: String(localized: "account.name")) {
+                FormTextField(text: $name, placeholder: String(localized: "account.name.placeholder"), style: .row)
+                    .textContentType(.name)
+                    .submitLabel(.done)
+                    .onSubmit { Task { await saveName() } }
+                UniversalRow(
+                    String(localized: "account.username"),
+                    value: profile.username.map { "@" + $0 } ?? "—"
+                )
+            }
+            if let nameError {
+                InlineStatusText(message: nameError, type: .error)
+            } else if trimmedName.count > SessionStore.displayNameLimit {
+                InlineStatusText(message: String(localized: "place.info.tooLong \(SessionStore.displayNameLimit)"), type: .error)
+            }
         }
     }
 
