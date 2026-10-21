@@ -10,9 +10,12 @@ import SwiftUI
 /// Строка места: иконка типа, название, видимость, статус модерации (`ItemRow` из DesignKit).
 struct PlaceRow: View {
     let place: PlaceSummary
+    /// Строка стеклянной секции отступает сама (DesignKit 8.1.0); в стопке со своими промежутками — 0.
+    var verticalPadding: CGFloat = AppSpacing.md
 
     var body: some View {
-        ItemRow(place.name, meta: [MetaLine(labels, separator: .space)], leading: .symbol(place.type.systemImage)) {
+        ItemRow(place.name, meta: [MetaLine(labels, separator: .space)], leading: .symbol(place.type.systemImage),
+                verticalPadding: verticalPadding) {
             DisclosureChevron()
         }
     }
@@ -170,7 +173,6 @@ struct LifehacksHomeView: View {
                                 ArticleView(article: article)
                             } label: {
                                 ArticleRow(article: article)
-                                    .padding(.vertical, AppSpacing.sm)
                                     .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)

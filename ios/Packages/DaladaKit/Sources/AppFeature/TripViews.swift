@@ -516,9 +516,12 @@ struct TripRow: View {
     let trip: TripSummary
     /// Автор чужой поездки, где я участник: «с @автор».
     var host: TripOwner?
+    /// Строка стеклянной секции отступает сама (DesignKit 8.1.0); в стопке со своими промежутками — 0.
+    var verticalPadding: CGFloat = AppSpacing.md
 
     var body: some View {
-        ItemRow(trip.title, meta: meta, leading: .symbol(trip.activity.systemImage), titleLineLimit: 1) {
+        ItemRow(trip.title, meta: meta, leading: .symbol(trip.activity.systemImage), titleLineLimit: 1,
+                verticalPadding: verticalPadding) {
             DisclosureChevron()
         }
     }
@@ -577,7 +580,8 @@ struct MyTripsSection: View {
                     NavigationLink {
                         TripDetailView(tripID: entry.id, environment: environment)
                     } label: {
-                        TripRow(trip: entry.summary, host: entry.host)
+                        // В карточке профиля со своими промежутками, не в стеклянной секции.
+                        TripRow(trip: entry.summary, host: entry.host, verticalPadding: 0)
                     }
                     .buttonStyle(.plain)
                     // Удалённая поездка рассыпается в пыль (DesignKit), новая проявляется из размытия.
@@ -639,11 +643,10 @@ struct TripsListView: View {
                             TripDetailView(tripID: entry.id, environment: environment)
                         } label: {
                             TripRow(trip: entry.summary, host: entry.host)
-                                .padding(.vertical, AppSpacing.md)
                                 .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
-                        .rowDividerInset(ItemRowMetrics.symbolInset)
+                        .rowDividerInset(ItemRowStyle.standard.symbolDividerInset)
                     }
                     .screenPadding()
                     .padding(.vertical, AppSpacing.md)

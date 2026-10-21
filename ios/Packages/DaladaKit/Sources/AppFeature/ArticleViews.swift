@@ -21,7 +21,9 @@ struct ArticleRow: View {
             article.title.text(for: language),
             detail: article.summary.text(for: language),
             meta: [MetaLine(meta, tint: AppColors.textTertiary)],
-            leading: .glyph(article.category.systemImage)
+            leading: .glyph(article.category.systemImage),
+            // Статьи плотнее других строк (описание под названием): sm и xxs, как до DesignKit 8.1.0.
+            verticalPadding: AppSpacing.sm
         )
         .padding(.vertical, AppSpacing.xxs)
     }
@@ -90,7 +92,6 @@ struct ArticlesListView: View {
                                 ArticleRow(article: article)
                                 DisclosureChevron()
                             }
-                            .padding(.vertical, AppSpacing.sm)
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)

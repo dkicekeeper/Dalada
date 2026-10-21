@@ -42,7 +42,8 @@ struct UserContentSections: View {
                             NavigationLink {
                                 TripDetailView(tripID: trip.id, environment: environment)
                             } label: {
-                                TripRow(trip: trip)
+                                // В карточке со своими промежутками, не в стеклянной секции.
+                                TripRow(trip: trip, verticalPadding: 0)
                             }
                             .buttonStyle(.plain)
                         }
@@ -68,7 +69,8 @@ struct UserContentSections: View {
                             Button {
                                 selectedPlace = PlaceSelection(id: place.id)
                             } label: {
-                                PlaceRow(place: place)
+                                // В карточке со своими промежутками, не в стеклянной секции.
+                                PlaceRow(place: place, verticalPadding: 0)
                             }
                             .buttonStyle(.plain)
                         }
@@ -150,11 +152,10 @@ struct UserTripsListView: View {
                                 TripDetailView(tripID: trip.id, environment: environment)
                             } label: {
                                 TripRow(trip: trip)
-                                    .padding(.vertical, AppSpacing.md)
                                     .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
-                            .rowDividerInset(ItemRowMetrics.symbolInset)
+                            .rowDividerInset(ItemRowStyle.standard.symbolDividerInset)
                         }
                         // Следующая страница — когда низ списка на экране (DesignKit).
                         LoadMoreFooter(state: loadState, onLoad: loadMore) {
@@ -219,11 +220,10 @@ struct UserPlacesListView: View {
                     selectedPlace = PlaceSelection(id: place.id)
                 } label: {
                     PlaceRow(place: place)
-                        .padding(.vertical, AppSpacing.md)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .rowDividerInset(ItemRowMetrics.symbolInset)
+                .rowDividerInset(ItemRowStyle.standard.symbolDividerInset)
             }
             .screenPadding()
             .padding(.vertical, AppSpacing.md)

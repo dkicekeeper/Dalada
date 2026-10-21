@@ -377,7 +377,6 @@ struct ChecklistDetailView: View {
                                 ChecklistItemRow(item: item) {
                                     lists.update(checklistID) { $0.toggle(itemID: item.id) }
                                 }
-                                .padding(.vertical, AppSpacing.sm)
                                 .contextMenu {
                                     Button("checklist.deleteItem", systemImage: "trash", role: .destructive) {
                                         lists.update(checklistID) { list in list.items.removeAll { $0.id == item.id } }

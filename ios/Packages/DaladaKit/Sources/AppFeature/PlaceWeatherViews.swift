@@ -224,7 +224,7 @@ struct PlaceWeatherSheet: View {
         let current = forecast.current
         let kind = WeatherKind(code: current.code)
         return FormSection(header: String(localized: "weather.now")) {
-            HStack(spacing: AppSpacing.md) {
+            HStack(spacing: AppSpacing.md) { // section-rows-lint:ignore сводка «сейчас»: крупный символ, строки под ней без значков
                 Image(systemName: kind?.systemImage ?? "thermometer.medium")
                     .font(.largeTitle) // design-lint:ignore символ размером с largeTitle, растёт с Dynamic Type
                     .foregroundStyle(AppColors.accent)
