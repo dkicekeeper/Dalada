@@ -96,6 +96,15 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 стили текста по HIG). Оправданное исключение — `// design-lint:ignore <причина>` в той же
 строке (символ размером с текст, прицел поверх карты). Стало меньше — `--update-baseline`.
 
+Строки стеклянной секции (`FormSection`, `CardList(layout: .section)`) стоят вплотную, поэтому
+каждая отступает сама: строки DesignKit — да (`UniversalRow`; `ItemRow` 12 pt и `ChecklistRow`
+8 pt с DesignKit 8.1.0, в стопке со своими промежутками — `verticalPadding: 0`), своя строка —
+`.padding(.vertical, AppSpacing.md)`. Кнопка или ссылка вокруг строки со значком слева несёт
+`.rowDividerInset(_:)` (метка не передаёт отступ наружу; для `ItemRow` с `.symbol` —
+`ItemRowStyle.standard.symbolDividerInset`). Это проверяет `python3 scripts/section_rows_lint.py`
+в той же задаче «Design lint»; исключение — `// section-rows-lint:ignore <причина>` на первой
+строке ряда (сводка погоды «сейчас»).
+
 Движение по правилам DesignKit (`docs/motion.md`): анимации — пружинами `AppAnimation.snappy`
 (ответ на касание) и `.smooth` (меняется содержимое), без голого `withAnimation {}`; появление —
 `.riseIn` (карточка, подсказка) и `.popIn` (чип, значок); данные сменяют скелетон через

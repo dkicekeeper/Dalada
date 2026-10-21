@@ -10,12 +10,14 @@ on:
       - "ios/**"
       - "scripts/design_lint.py"
       - "scripts/design-lint-baseline.json"
+      - "scripts/section_rows_lint.py"
       - ".github/workflows/ios.yml"
   pull_request:
     paths:
       - "ios/**"
       - "scripts/design_lint.py"
       - "scripts/design-lint-baseline.json"
+      - "scripts/section_rows_lint.py"
       - ".github/workflows/ios.yml"
   workflow_dispatch:
 
@@ -35,6 +37,10 @@ jobs:
       - uses: actions/checkout@v5
       - name: Нет сырых значений сверх базы
         run: python3 scripts/design_lint.py
+      # Строки стеклянных секций отступают сами и ставят разделитель под текстом (DesignKit 8.1.0;
+      # CLAUDE.md, «Компоненты интерфейса»).
+      - name: Строки стеклянных секций
+        run: python3 scripts/section_rows_lint.py
 
   build:
     name: Build app and run package tests

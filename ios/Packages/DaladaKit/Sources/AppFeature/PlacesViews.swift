@@ -709,11 +709,10 @@ struct MyPlacesView: View {
                         selected = PlaceSelection(id: place.id)
                     } label: {
                         PlaceRow(place: place)
-                            .padding(.vertical, AppSpacing.md)
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .rowDividerInset(ItemRowMetrics.symbolInset)
+                    .rowDividerInset(ItemRowStyle.standard.symbolDividerInset)
                 }
                 .screenPadding()
                 .padding(.vertical, AppSpacing.md)

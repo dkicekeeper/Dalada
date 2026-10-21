@@ -373,6 +373,8 @@ struct ReviewFormView: View {
                                 .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
+                            // Метка выбора фото не передаёт отступ разделителя: значок и промежуток.
+                            .rowDividerInset(AppIconSize.lg + AppSpacing.md)
                         }
                     }
                     // Сжатые фото проявляются на месте скелетона.

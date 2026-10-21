@@ -92,7 +92,6 @@ struct GearListView: View {
                                     editing = item
                                 } label: {
                                     GearRow(item: item)
-                                        .padding(.vertical, AppSpacing.md)
                                         .contentShape(Rectangle())
                                 }
                                 .buttonStyle(.plain)
@@ -537,7 +536,6 @@ struct GearPickerView: View {
                 SelectionIndicator(isSelected: isAdded || isSelected, tint: isSelected ? AppColors.accent : AppColors.textTertiary)
                 GearRow(item: item)
             }
-            .padding(.vertical, AppSpacing.md)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

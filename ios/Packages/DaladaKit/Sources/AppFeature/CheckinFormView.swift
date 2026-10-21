@@ -127,6 +127,8 @@ struct CheckinFormView: View {
                                 .padding(.vertical, AppSpacing.md)
                             }
                             .buttonStyle(.plain)
+                            // Под текстом: после рыбки (метка кнопки не передаёт отступ).
+                            .rowDividerInset(CatchSummaryRow.dividerInset)
                             // Удалить улов — долгим нажатием (DesignKit 8.0.0: без смахивания).
                             .contextMenu {
                                 removeCatchButton(catchDraft)
@@ -144,6 +146,7 @@ struct CheckinFormView: View {
                             .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
+                        .rowDividerInset(AppIconSize.lg + AppSpacing.md)
                     }
 
                     FormSection(
@@ -179,6 +182,7 @@ struct CheckinFormView: View {
                                 .contentShape(Rectangle())
                             }
                             .buttonStyle(.plain)
+                            .rowDividerInset(AppIconSize.lg + AppSpacing.md)
                         }
                     }
                     // Сжатые фото проявляются на месте скелетона.
@@ -364,10 +368,14 @@ struct CatchSummaryRow: View {
     let released: Bool
     var hasPhoto = false
 
+    /// Где начинается текст: после рыбки и промежутка.
+    static let dividerInset = AppIconSize.md + AppSpacing.sm
+
     var body: some View {
         HStack(spacing: AppSpacing.sm) {
-            Image(systemName: "fish")
+            Icon("fish", size: AppIconSize.md)
                 .foregroundStyle(AppColors.accent)
+                .accessibilityHidden(true)
             Text(verbatim: summary)
                 .font(AppTypography.bodySmall)
                 .foregroundStyle(AppColors.textPrimary)

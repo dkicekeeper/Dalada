@@ -420,6 +420,8 @@ struct SharedPackingView: View {
             Spacer(minLength: 0)
             assigneeButton(item)
         }
+        // Под названием: после круга и промежутка.
+        .rowDividerInset(AppIconSize.lg + AppSpacing.sm)
     }
 
     @ViewBuilder

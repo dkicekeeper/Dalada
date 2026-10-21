@@ -470,7 +470,8 @@ struct MyPlacesSection: View {
                     Button {
                         selected = PlaceSelection(id: place.id)
                     } label: {
-                        PlaceRow(place: place)
+                        // В карточке профиля со своими промежутками, не в стеклянной секции.
+                        PlaceRow(place: place, verticalPadding: 0)
                     }
                     .buttonStyle(.plain)
                 }
