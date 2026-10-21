@@ -328,12 +328,12 @@ struct TripFinishView: View {
                             }
                             .completionMoment(isComplete: celebrates, in: RoundedRectangle(cornerRadius: AppRadius.md), playsHaptic: false)
                         }
-                        .padding(AppSpacing.lg)
+                        // Бока отбивает карточка секции (DesignKit 8.0.0).
+                        .padding(.vertical, AppSpacing.lg)
                     }
 
                     FormSection(header: String(localized: "trip.finish.name")) {
                         FormTextField(text: $title, placeholder: String(localized: "trip.finish.name"), style: .row)
-                        Divider().padding(.leading, AppSpacing.lg)
                         UniversalRow(
                             String(localized: "trip.finish.activity"),
                             accessory: .menu($activity, options: TripActivity.allCases.map {
@@ -389,7 +389,7 @@ struct TripFinishView: View {
                                 (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                             }
                         )
-                        .padding(AppSpacing.md)
+                        .padding(.vertical, AppSpacing.md)
                     }
 
                     if let saveError {

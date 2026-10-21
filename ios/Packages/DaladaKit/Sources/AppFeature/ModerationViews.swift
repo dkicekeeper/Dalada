@@ -125,9 +125,6 @@ struct ReportView: View {
                                         reason = option
                                     }
                                 )
-                                if option.id != options.last?.id {
-                                    Divider().padding(.leading, AppSpacing.lg)
-                                }
                             }
                         }
 

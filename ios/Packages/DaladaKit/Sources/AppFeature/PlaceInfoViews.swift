@@ -318,6 +318,8 @@ struct PlaceAttributesFields: View {
                 }
             }
             .padding(.vertical, AppSpacing.md)
+            // Чипы прокручиваются под край карточки (DesignKit 8.0.0).
+            .fullWidthRow()
         }
 
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
@@ -325,7 +327,6 @@ struct PlaceAttributesFields: View {
                 ChipPicker(options: PlaceAttributes.Fee.allCases, selection: $attributes.fee, inset: AppSpacing.lg) { $0.title }
                     .padding(.vertical, AppSpacing.md)
                 if attributes.fee == .paid {
-                    Divider().padding(.leading, AppSpacing.lg)
                     UniversalRow(config: .standard) {
                         TextField("place.info.price", text: priceText)
                             .keyboardType(.numberPad)
@@ -339,7 +340,6 @@ struct PlaceAttributesFields: View {
                     ChipPicker(options: PlaceAttributes.PriceUnit.allCases, selection: $attributes.priceUnit, inset: AppSpacing.lg) { $0.title }
                         .padding(.bottom, AppSpacing.md)
                 }
-                Divider().padding(.leading, AppSpacing.lg)
                 FormTextField(
                     text: text(\.contact),
                     placeholder: String(localized: "place.info.contact.placeholder"),
@@ -398,6 +398,8 @@ struct PlaceAttributesFields: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        // Группа чипов на всю ширину карточки (DesignKit 8.0.0): строка держит её отступ сама.
+        .padding(.horizontal, AppSpacing.lg)
         ChipPicker(
             String(localized: "place.info.methods"),
             options: PlaceAttributes.Method.allCases,
@@ -502,7 +504,6 @@ struct PlaceEditView: View {
                         VStack(spacing: AppSpacing.lg) {
                             FormSection {
                                 UniversalRowSkeleton(iconStyle: nil)
-                                Divider().padding(.leading, AppSpacing.lg)
                                 UniversalRowSkeleton(iconStyle: nil, trailing: .value)
                             }
                             FormSection {
@@ -510,7 +511,6 @@ struct PlaceEditView: View {
                             }
                             FormSection {
                                 UniversalRowSkeleton(iconStyle: nil, trailing: .capsule)
-                                Divider().padding(.leading, AppSpacing.lg)
                                 UniversalRowSkeleton(iconStyle: nil, trailing: .toggle)
                             }
                         }
@@ -533,7 +533,6 @@ struct PlaceEditView: View {
             VStack(spacing: AppSpacing.lg) {
                 FormSection {
                     FormTextField(text: draft.fields.name, placeholder: String(localized: "place.form.name"), style: .row)
-                    Divider().padding(.leading, AppSpacing.lg)
                     UniversalRow(
                         String(localized: "place.form.type"),
                         accessory: .menu(draft.fields.type, options: PlaceType.allCases.map {
@@ -566,8 +565,7 @@ struct PlaceEditView: View {
                             (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                         }
                     )
-                    .padding(AppSpacing.md)
-                    Divider().padding(.leading, AppSpacing.lg)
+                    .padding(.vertical, AppSpacing.md)
                     UniversalRow(
                         String(localized: "place.form.approximate"),
                         accessory: .toggle(draft.isApproximate)
@@ -714,7 +712,6 @@ struct PlaceSuggestView: View {
     private var editFields: some View {
         FormSection(footer: String(localized: "place.suggest.editHint")) {
             FormTextField(text: $draft.name, placeholder: String(localized: "place.form.name"), style: .row)
-            Divider().padding(.leading, AppSpacing.lg)
             UniversalRow(
                 String(localized: "place.form.type"),
                 accessory: .menu($draft.type, options: PlaceType.allCases.map {
@@ -744,9 +741,6 @@ struct PlaceSuggestView: View {
                         kind = option
                     }
                 )
-                if option.id != options.last?.id {
-                    Divider().padding(.leading, AppSpacing.lg)
-                }
             }
         }
     }

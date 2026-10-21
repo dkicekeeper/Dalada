@@ -100,6 +100,8 @@ struct CheckinFormView: View {
                                 ChipPicker(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $draft.conditions.road, inset: AppSpacing.lg) { $0.title }
                             }
                             .padding(.vertical, AppSpacing.md)
+                            // Чипы прокручиваются под край карточки (DesignKit 8.0.0).
+                            .fullWidthRow()
                         }
                         if let weather = draft.conditions.weather, let summary = WeatherText.summary(weather) {
                             footerLabel(
@@ -122,7 +124,6 @@ struct CheckinFormView: View {
                                     released: catchDraft.released,
                                     hasPhoto: catchDraft.photo != nil
                                 )
-                                .padding(.horizontal, AppSpacing.lg)
                                 .padding(.vertical, AppSpacing.md)
                             }
                             .buttonStyle(.plain)
@@ -133,7 +134,6 @@ struct CheckinFormView: View {
                             .contextMenu {
                                 removeCatchButton(catchDraft)
                             }
-                            Divider().padding(.leading, AppSpacing.lg)
                         }
 
                         Button {
@@ -158,6 +158,7 @@ struct CheckinFormView: View {
                                 draft.photos.removeAll { $0.id == id }
                             }
                             .contentMargins(.horizontal, AppSpacing.lg, for: .scrollContent)
+                            .fullWidthRow()
                             .padding(.vertical, AppSpacing.md)
                             .transition(.skeletonReveal)
                         }
@@ -165,7 +166,6 @@ struct CheckinFormView: View {
                             // Фото сжимаются: плитка-скелетон на месте будущего фото.
                             PhotoTileSkeleton()
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, AppSpacing.lg)
                                 .padding(.vertical, AppSpacing.md)
                                 .transition(.opacity)
                         } else if draft.photos.count < CheckinDraft.photoLimit {
@@ -207,7 +207,7 @@ struct CheckinFormView: View {
                                     (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                                 }
                             )
-                            .padding(AppSpacing.md)
+                            .padding(.vertical, AppSpacing.md)
                         }
                         locationFooter
                     }
