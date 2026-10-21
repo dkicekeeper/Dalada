@@ -189,6 +189,8 @@ private struct PlaceShortcutRow: View {
         } trailing: {
             DisclosureChevron()
         }
+        // Строка отбивает только верх и низ, бока — карточка (DesignKit 8.0.0).
+        .padding(.horizontal, AppSpacing.lg)
         .cardStyle()
         .contentShape(Rectangle())
     }

@@ -74,7 +74,6 @@ struct PlaceFormView: View {
         VStack(spacing: AppSpacing.lg) {
             FormSection {
                 FormTextField(text: $draft.name, placeholder: String(localized: "place.form.name"), style: .row)
-                Divider().padding(.leading, AppSpacing.lg)
                 UniversalRow(
                     String(localized: "place.form.type"),
                     accessory: .menu($draft.type, options: PlaceType.allCases.map {
@@ -116,8 +115,7 @@ struct PlaceFormView: View {
                     (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                 }
             )
-            .padding(AppSpacing.md)
-            Divider().padding(.leading, AppSpacing.lg)
+            .padding(.vertical, AppSpacing.md)
             UniversalRow(
                 String(localized: "place.form.approximate"),
                 accessory: .toggle($draft.isApproximate)

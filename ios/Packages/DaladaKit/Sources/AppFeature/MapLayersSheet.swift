@@ -25,9 +25,7 @@ struct MapLayersSheet: View {
                 VStack(spacing: AppSpacing.lg) {
                     FormSection(header: String(localized: "map.layers.places")) {
                         toggle("map.layers.ownPlaces", systemImage: "person.crop.circle", isOn: $showsOwnPlaces)
-                        divider
                         toggle("map.layers.otherPlaces", systemImage: "mappin.and.ellipse", isOn: $showsOtherPlaces)
-                        divider
                         ChipPicker(
                             String(localized: "map.layers.types"),
                             options: PlaceType.allCases,
@@ -38,7 +36,6 @@ struct MapLayersSheet: View {
                         )
                         .padding(.vertical, AppSpacing.md)
                         if !hiddenTypesStorage.isEmpty {
-                            divider
                             UniversalRow(
                                 String(localized: "map.layers.allTypes"),
                                 icon: "checklist.checked",
@@ -50,14 +47,10 @@ struct MapLayersSheet: View {
                     }
                     FormSection(header: String(localized: "map.layers.overlays")) {
                         toggle("map.rules", systemImage: "exclamationmark.shield", isOn: $showsRules)
-                        divider
                         toggle("map.layers.parks", systemImage: "tree", isOn: $showsParks)
-                        divider
                         toggle("map.layers.border", systemImage: "flag", isOn: $showsBorder)
                         if isSignedIn {
-                            divider
                             toggle("map.layers.tracks", systemImage: "point.topleft.down.to.point.bottomright.curvepath", isOn: $showsTracks)
-                            divider
                             toggle("map.layers.photos", systemImage: "camera", isOn: $showsPhotos)
                         }
                     }
@@ -84,9 +77,6 @@ struct MapLayersSheet: View {
         )
     }
 
-    private var divider: some View {
-        Divider().padding(.leading, AppSpacing.lg)
-    }
 
     /// Видимые типы — выбранные чипы; хранятся скрытые, чтобы новые типы были видны сразу.
     private var shownTypes: Binding<Set<PlaceType>> {

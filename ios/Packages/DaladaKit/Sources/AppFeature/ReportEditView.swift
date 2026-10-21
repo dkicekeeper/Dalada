@@ -43,6 +43,8 @@ struct ReportEditView: View {
                             ChipPicker(String(localized: "conditions.road"), options: CheckinConditions.Road.allCases, selection: $edit.conditions.road, inset: AppSpacing.lg) { $0.title }
                         }
                         .padding(.vertical, AppSpacing.md)
+                        // Чипы прокручиваются под край карточки (DesignKit 8.0.0).
+                        .fullWidthRow()
                     }
 
                     FormSection(header: String(localized: "checkin.form.note")) {
@@ -61,7 +63,7 @@ struct ReportEditView: View {
                                 (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                             }
                         )
-                        .padding(AppSpacing.md)
+                        .padding(.vertical, AppSpacing.md)
                     }
 
                     if let saveError {

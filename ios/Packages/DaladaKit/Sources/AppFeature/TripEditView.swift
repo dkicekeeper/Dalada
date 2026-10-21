@@ -44,7 +44,6 @@ struct TripEditView: View {
                 VStack(spacing: AppSpacing.lg) {
                     FormSection(header: String(localized: "trip.finish.name")) {
                         FormTextField(text: $title, placeholder: String(localized: "trip.finish.name"), style: .row)
-                        Divider().padding(.leading, AppSpacing.lg)
                         UniversalRow(
                             String(localized: "trip.finish.activity"),
                             accessory: .menu($activity, options: TripActivity.allCases.map {

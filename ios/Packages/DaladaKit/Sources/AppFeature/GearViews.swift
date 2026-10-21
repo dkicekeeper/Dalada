@@ -267,14 +267,12 @@ struct GearFormView: View {
                 VStack(spacing: AppSpacing.lg) {
                     FormSection {
                         FormTextField(text: $draft.name, placeholder: String(localized: "gear.form.name"), style: .row)
-                        Divider().padding(.leading, AppSpacing.lg)
                         UniversalRow(
                             String(localized: "gear.form.category"),
                             accessory: .menu($draft.category, options: GearCategory.allCases.map {
                                 (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                             })
                         )
-                        Divider().padding(.leading, AppSpacing.lg)
                         FormTextField(text: $brand, placeholder: String(localized: "gear.form.brand"), style: .row)
                     }
 
@@ -286,7 +284,6 @@ struct GearFormView: View {
                                 .font(AppTypography.body)
                                 .foregroundStyle(AppColors.textPrimary)
                         }
-                        Divider().padding(.leading, AppSpacing.lg)
                         UniversalRow(
                             String(localized: "gear.form.quantity"),
                             accessory: .stepper($draft.quantity, in: 1...999)
@@ -301,7 +298,7 @@ struct GearFormView: View {
                                 (label: String(localized: String.LocalizationValue($0.titleKey)), value: $0)
                             }
                         )
-                        .padding(AppSpacing.md)
+                        .padding(.vertical, AppSpacing.md)
                     }
 
                     FormSection(header: String(localized: "gear.form.tags"), footer: String(localized: "gear.form.tagsFooter")) {
@@ -311,7 +308,7 @@ struct GearFormView: View {
                             suggestions: tagSuggestions,
                             maxTags: GearItem.tagLimit
                         )
-                        .padding(AppSpacing.md)
+                        .padding(.vertical, AppSpacing.md)
                     }
 
                     FormSection(header: String(localized: "gear.form.note")) {

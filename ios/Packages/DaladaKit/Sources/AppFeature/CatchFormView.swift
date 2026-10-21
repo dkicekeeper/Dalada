@@ -66,11 +66,9 @@ struct CatchFormView: View {
                         UniversalRow(title: String(localized: "catch.form.weight")) {
                             numberField("catch.form.weightPlaceholder", value: $draft.weightKg, fractionDigits: 0...3)
                         }
-                        Divider().padding(.leading, AppSpacing.lg)
                         UniversalRow(title: String(localized: "catch.form.length")) {
                             numberField("catch.form.lengthPlaceholder", value: $draft.lengthCm, fractionDigits: 0...1)
                         }
-                        Divider().padding(.leading, AppSpacing.lg)
                         UniversalRow(
                             String(localized: "catch.form.count"),
                             accessory: .stepper($draft.count, in: 1...1000)
@@ -99,14 +97,11 @@ struct CatchFormView: View {
                             String(localized: "catch.form.method"),
                             accessory: .menu($draft.method, options: methodOptions)
                         )
-                        Divider().padding(.leading, AppSpacing.lg)
                         FormTextField(text: $draft.bait, placeholder: String(localized: "catch.form.bait"), style: .row)
-                        Divider().padding(.leading, AppSpacing.lg)
                         UniversalRow(
                             String(localized: "catch.form.released"),
                             accessory: .toggle($draft.released)
                         )
-                        Divider().padding(.leading, AppSpacing.lg)
                         UniversalRow(
                             String(localized: "catch.form.hideSize"),
                             accessory: .toggle($draft.hideSize)

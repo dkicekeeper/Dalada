@@ -349,6 +349,7 @@ struct ReviewFormView: View {
                                 photos.removeAll { $0.id == id }
                             }
                             .contentMargins(.horizontal, AppSpacing.lg, for: .scrollContent)
+                            .fullWidthRow()
                             .padding(.vertical, AppSpacing.md)
                             .transition(.skeletonReveal)
                         }
@@ -356,7 +357,6 @@ struct ReviewFormView: View {
                             // Фото сжимаются: плитка-скелетон на месте будущего фото.
                             PhotoTileSkeleton()
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, AppSpacing.lg)
                                 .padding(.vertical, AppSpacing.md)
                                 .transition(.opacity)
                         } else if photos.count < ReviewDraft.photoLimit {

@@ -502,18 +502,15 @@ struct PackingDateFields: View {
                 accessory: .toggle($hasDate)
             )
             if hasDate {
-                Divider().padding(.leading, AppSpacing.lg)
                 UniversalRow(
                     String(localized: "packing.form.date"),
                     accessory: .date($tripDay, from: Calendar.current.startOfDay(for: Date()))
                 )
-                Divider().padding(.leading, AppSpacing.lg)
                 UniversalRow(
                     String(localized: "packing.form.remind"),
                     accessory: .toggle($reminds)
                 )
                 if reminds {
-                    Divider().padding(.leading, AppSpacing.lg)
                     UniversalRow(
                         String(localized: "packing.form.remindTime"),
                         accessory: .date($remindTime, components: .hourAndMinute)
@@ -574,7 +571,6 @@ struct StartPackingView: View {
                             String(localized: "packing.form.source"),
                             accessory: .picker($source, options: sourceOptions)
                         )
-                        Divider().padding(.leading, AppSpacing.lg)
                         FormTextField(text: $title, placeholder: String(localized: "packing.form.title"), style: .row)
                     }
 
