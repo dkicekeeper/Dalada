@@ -64,68 +64,75 @@ struct FriendsView: View {
     private var incoming: [FriendRequest] { requests.filter { $0.direction == .incoming } }
     private var outgoing: [FriendRequest] { requests.filter { $0.direction == .outgoing } }
 
+    // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
     var body: some View {
-        List {
-            if !incoming.isEmpty {
-                Section("friends.requests") {
-                    ForEach(incoming) { request in
-                        PersonRow(displayName: request.displayName, username: request.username, avatarPath: request.avatarPath) {
-                            HStack(spacing: AppSpacing.sm) {
-                                DSButton(String(localized: "friends.accept"), size: .small) {
-                                    Task { await respond(request, accept: true) }
-                                }
-                                DSButton(String(localized: "friends.decline"), appearance: .secondary, size: .small) {
-                                    Task { await respond(request, accept: false) }
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                if !incoming.isEmpty {
+                    FormSection(header: String(localized: "friends.requests")) {
+                        ForEach(incoming) { request in
+                            PersonRow(displayName: request.displayName, username: request.username, avatarPath: request.avatarPath) {
+                                HStack(spacing: AppSpacing.sm) {
+                                    DSButton(String(localized: "friends.accept"), size: .small) {
+                                        Task { await respond(request, accept: true) }
+                                    }
+                                    DSButton(String(localized: "friends.decline"), appearance: .secondary, size: .small) {
+                                        Task { await respond(request, accept: false) }
+                                    }
                                 }
                             }
+                            .padding(.vertical, AppSpacing.md)
                         }
                     }
                 }
-            }
 
-            Section("friends.title") {
-                if friends.isEmpty && isLoaded {
-                    Text(loadError ?? String(localized: "friends.empty"))
-                        .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
-                ForEach(friends) { friend in
-                    NavigationLink {
-                        if let username = friend.username {
-                            UserProfileView(username: username, environment: environment)
-                        }
-                    } label: {
-                        PersonRow(displayName: friend.displayName, username: friend.username, avatarPath: friend.avatarPath)
-                    }
-                }
-                NavigationLink {
-                    FindPeopleView(environment: environment)
-                } label: {
-                    Label("friends.find", systemImage: "magnifyingglass")
-                }
-            }
-
-            PeopleSuggestionsSection(environment: environment, suggestions: $suggestions)
-
-            if !outgoing.isEmpty {
-                Section("friends.outgoing") {
-                    ForEach(outgoing) { request in
-                        PersonRow(displayName: request.displayName, username: request.username, avatarPath: request.avatarPath) {
-                            DSButton(String(localized: "friends.cancel"), appearance: .secondary, size: .small) {
-                                Task { await cancel(request) }
+                FormSection(
+                    header: String(localized: "friends.title"),
+                    footer: friends.isEmpty && isLoaded ? (loadError ?? String(localized: "friends.empty")) : nil
+                ) {
+                    ForEach(friends) { friend in
+                        NavigationLink {
+                            if let username = friend.username {
+                                UserProfileView(username: username, environment: environment)
                             }
+                        } label: {
+                            PersonRow(displayName: friend.displayName, username: friend.username, avatarPath: friend.avatarPath) {
+                                DisclosureChevron()
+                            }
+                            .padding(.vertical, AppSpacing.md)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .rowDividerInset(ItemRowMetrics.symbolInset)
+                    }
+                    UniversalRow(String(localized: "friends.find"), icon: "magnifyingglass", accessory: .navigation {
+                        FindPeopleView(environment: environment)
+                    })
+                }
+
+                PeopleSuggestionsSection(environment: environment, suggestions: $suggestions)
+
+                if !outgoing.isEmpty {
+                    FormSection(header: String(localized: "friends.outgoing")) {
+                        ForEach(outgoing) { request in
+                            PersonRow(displayName: request.displayName, username: request.username, avatarPath: request.avatarPath) {
+                                DSButton(String(localized: "friends.cancel"), appearance: .secondary, size: .small) {
+                                    Task { await cancel(request) }
+                                }
+                            }
+                            .padding(.vertical, AppSpacing.md)
                         }
                     }
                 }
-            }
 
-            Section {
-                NavigationLink {
-                    BlockedUsersView(environment: environment)
-                } label: {
-                    Label("friends.blocked", systemImage: "hand.raised")
+                FormSection {
+                    UniversalRow(String(localized: "friends.blocked"), icon: "hand.raised", accessory: .navigation {
+                        BlockedUsersView(environment: environment)
+                    })
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("friends.title")
         .toolbar {
@@ -184,29 +191,44 @@ struct FindPeopleView: View {
         query.trimmingCharacters(in: CharacterSet(charactersIn: "@ ").union(.whitespacesAndNewlines))
     }
 
+    // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
     var body: some View {
-        List {
-            if trimmed.count < 2 {
-                Text("friends.search.hint")
-                    .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
-                PeopleSuggestionsSection(environment: environment, suggestions: $suggestions)
-            } else if results.isEmpty && searched {
-                Text("friends.search.empty")
-                    .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-            ForEach(results) { profile in
-                if let username = profile.username {
-                    NavigationLink {
-                        UserProfileView(username: username, environment: environment)
-                    } label: {
-                        PersonRow(displayName: profile.displayName, username: profile.username, avatarPath: profile.avatarPath) {
-                            RelationshipBadge(profile: profile)
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                if trimmed.count < 2 {
+                    Text("friends.search.hint")
+                        .font(AppTypography.bodySmall)
+                        .foregroundStyle(AppColors.textSecondary)
+                    PeopleSuggestionsSection(environment: environment, suggestions: $suggestions)
+                } else if results.isEmpty && searched {
+                    Text("friends.search.empty")
+                        .font(AppTypography.bodySmall)
+                        .foregroundStyle(AppColors.textSecondary)
+                }
+                let found = results.filter { $0.username != nil }
+                if !found.isEmpty {
+                    FormSection {
+                        ForEach(found) { profile in
+                            NavigationLink {
+                                if let username = profile.username {
+                                    UserProfileView(username: username, environment: environment)
+                                }
+                            } label: {
+                                PersonRow(displayName: profile.displayName, username: profile.username, avatarPath: profile.avatarPath) {
+                                    RelationshipBadge(profile: profile)
+                                }
+                                .padding(.vertical, AppSpacing.md)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .rowDividerInset(ItemRowMetrics.symbolInset)
                         }
                     }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("friends.find")
         .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: Text("friends.search.prompt"))

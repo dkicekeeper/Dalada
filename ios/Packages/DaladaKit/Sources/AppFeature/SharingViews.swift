@@ -288,7 +288,9 @@ struct PrivacyZonesView: View {
             PrivacyZoneEditorView(zone: request.zone, environment: environment)
         }
         .confirmationDialog(
-            "privacyZones.deleteConfirm",
+            pendingDelete.count == 1
+                ? LocalizedStringKey("privacyZones.deleteConfirm")
+                : LocalizedStringKey("common.deleteSelectedConfirm \(pendingDelete.count)"),
             isPresented: Binding(get: { !pendingDelete.isEmpty }, set: { if !$0 { pendingDelete = [] } }),
             titleVisibility: .visible
         ) {

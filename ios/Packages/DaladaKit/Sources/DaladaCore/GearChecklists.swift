@@ -119,6 +119,8 @@ public struct GearItem: SyncedRecord, Hashable {
     public var note: String?
     /// Свои метки сверх категории: «зима», «лодка», «с детьми».
     public var tags: [String]
+    /// Место внутри категории, перетаскиванием (`nil` — по названию, после расставленных).
+    public var sortOrder: Int?
     public var updatedAt: Date
     public var deletedAt: Date?
 
@@ -136,6 +138,7 @@ public struct GearItem: SyncedRecord, Hashable {
         status: GearStatus = .ok,
         note: String? = nil,
         tags: [String] = [],
+        sortOrder: Int? = nil,
         updatedAt: Date = SyncClock.now(),
         deletedAt: Date? = nil
     ) {
@@ -148,6 +151,7 @@ public struct GearItem: SyncedRecord, Hashable {
         self.status = status
         self.note = note
         self.tags = tags
+        self.sortOrder = sortOrder
         self.updatedAt = updatedAt
         self.deletedAt = deletedAt
     }
@@ -185,6 +189,7 @@ public struct GearItem: SyncedRecord, Hashable {
     enum CodingKeys: String, CodingKey {
         case id, name, category, brand, quantity, status, note, tags
         case weightGrams = "weight_grams"
+        case sortOrder = "sort_order"
         case updatedAt = "updated_at"
         case deletedAt = "deleted_at"
     }
@@ -201,6 +206,8 @@ public struct GearItem: SyncedRecord, Hashable {
         note = try c.decodeIfPresent(String.self, forKey: .note)
         // Записи, сохранённые до меток, и ответ старого сервера — без них.
         tags = (try? c.decodeIfPresent([String].self, forKey: .tags)) ?? []
+        // Записи до своего порядка и ответ старого сервера — без него.
+        sortOrder = try? c.decodeIfPresent(Int.self, forKey: .sortOrder)
         updatedAt = try c.decode(Date.self, forKey: .updatedAt)
         deletedAt = try c.decodeIfPresent(Date.self, forKey: .deletedAt)
     }
@@ -217,6 +224,8 @@ public struct GearItem: SyncedRecord, Hashable {
         try c.encode(status, forKey: .status)
         try c.encode(note, forKey: .note)
         try c.encode(tags, forKey: .tags)
+        // Только расставленный: правка с устройства, где порядок не меняли, его не стирает.
+        try c.encodeIfPresent(sortOrder, forKey: .sortOrder)
         try c.encode(updatedAt, forKey: .updatedAt)
         try c.encode(deletedAt, forKey: .deletedAt)
     }
@@ -358,6 +367,8 @@ public struct Checklist: SyncedRecord, Hashable {
     /// Напоминание накануне поездки в это время (минуты от полуночи); `nil` — без напоминания.
     public var remindMinutes: Int?
     public var items: [ChecklistItem]
+    /// Место в списке чеклистов, перетаскиванием (`nil` — новые сверху, перед расставленными).
+    public var sortOrder: Int?
     public var updatedAt: Date
     public var deletedAt: Date?
 
@@ -369,6 +380,7 @@ public struct Checklist: SyncedRecord, Hashable {
         tripDate: CalendarDay? = nil,
         remindMinutes: Int? = nil,
         items: [ChecklistItem] = [],
+        sortOrder: Int? = nil,
         updatedAt: Date = SyncClock.now(),
         deletedAt: Date? = nil
     ) {
@@ -379,6 +391,7 @@ public struct Checklist: SyncedRecord, Hashable {
         self.tripDate = tripDate
         self.remindMinutes = remindMinutes
         self.items = items
+        self.sortOrder = sortOrder
         self.updatedAt = updatedAt
         self.deletedAt = deletedAt
     }
@@ -461,6 +474,7 @@ public struct Checklist: SyncedRecord, Hashable {
         case templateID = "template_id"
         case tripDate = "trip_date"
         case remindMinutes = "remind_minutes"
+        case sortOrder = "sort_order"
         case updatedAt = "updated_at"
         case deletedAt = "deleted_at"
     }
@@ -478,6 +492,7 @@ public struct Checklist: SyncedRecord, Hashable {
         items = (try c.decodeIfPresent([Lenient<ChecklistItem>].self, forKey: .items) ?? [])
             .compactMap(\.value)
             .filter { seen.insert($0.id).inserted }
+        sortOrder = try? c.decodeIfPresent(Int.self, forKey: .sortOrder)
         updatedAt = try c.decode(Date.self, forKey: .updatedAt)
         deletedAt = try c.decodeIfPresent(Date.self, forKey: .deletedAt)
     }
@@ -491,6 +506,7 @@ public struct Checklist: SyncedRecord, Hashable {
         try c.encode(tripDate, forKey: .tripDate)
         try c.encode(remindMinutes, forKey: .remindMinutes)
         try c.encode(items, forKey: .items)
+        try c.encodeIfPresent(sortOrder, forKey: .sortOrder)
         try c.encode(updatedAt, forKey: .updatedAt)
         try c.encode(deletedAt, forKey: .deletedAt)
     }

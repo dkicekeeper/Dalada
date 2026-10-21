@@ -12,37 +12,37 @@ struct OfflineMapsView: View {
     @State private var network: NetworkStatus?
 
     var body: some View {
-        List {
-            if let banner {
-                Section {
+        // DesignKit 8.0.0: районы — стеклянная секция (до этого List); удалить — долгим нажатием.
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                if let banner {
                     banner
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
                         .transition(.riseIn)
                 }
-            }
 
-            Section {
-                ForEach(MapRegions.all) { region in
-                    OfflineRegionRow(
-                        region: region,
-                        state: maps.state(of: region),
-                        download: { maps.download(region, styleURL: environment.config.mapStyleURL) },
-                        pause: { maps.pause(region) },
-                        remove: { maps.remove(region) }
-                    )
+                FormSection(footer: String(localized: "offlineMaps.footer")) {
+                    ForEach(MapRegions.all) { region in
+                        OfflineRegionRow(
+                            region: region,
+                            state: maps.state(of: region),
+                            download: { maps.download(region, styleURL: environment.config.mapStyleURL) },
+                            pause: { maps.pause(region) },
+                            remove: { maps.remove(region) }
+                        )
+                    }
                 }
-            } footer: {
-                Text("offlineMaps.footer")
-            }
 
-            if maps.totalBytes > 0 {
-                Section {
-                    LabeledContent("offlineMaps.total") {
-                        Text(verbatim: OfflineMapsFormat.size(maps.totalBytes))
+                if maps.totalBytes > 0 {
+                    FormSection {
+                        UniversalRow(
+                            String(localized: "offlineMaps.total"),
+                            value: OfflineMapsFormat.size(maps.totalBytes)
+                        )
                     }
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .animation(AppAnimation.smooth, value: bannerKind)
         .navigationTitle("offlineMaps.title")
@@ -93,7 +93,7 @@ struct OfflineMapsView: View {
     }
 }
 
-/// Район: название, размер или ход скачивания, кнопка действия; смахнуть — удалить.
+/// Район: название, размер или ход скачивания, кнопка действия; долгое нажатие — удалить.
 /// `DownloadRow` из DesignKit над состоянием `OfflineMaps`.
 struct OfflineRegionRow: View {
     let region: MapRegion
@@ -112,7 +112,8 @@ struct OfflineRegionRow: View {
             downloadLabel: String(localized: "offlineMaps.download"),
             pauseLabel: String(localized: "offlineMaps.pause")
         )
-        .swipeActions {
+        .padding(.vertical, AppSpacing.md)
+        .contextMenu {
             if hasData {
                 Button("offlineMaps.delete", systemImage: "trash", role: .destructive, action: remove)
             }

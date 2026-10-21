@@ -44,25 +44,25 @@ struct PersonalRecordsSection: View {
 
     @Environment(SpeciesStore.self) private var speciesStore
 
+    // DesignKit 8.0.0: стеклянная секция (до этого секция List).
     var body: some View {
-        Section {
+        FormSection(header: String(localized: "records.title"), footer: String(localized: "records.footer")) {
             ForEach(records) { record in
                 row(record)
+                    .padding(.vertical, AppSpacing.md)
+                    .rowDividerInset(AppIconSize.md + AppSpacing.sm)
             }
-        } header: {
-            Text("records.title")
-        } footer: {
-            Text("records.footer")
         }
     }
 
     private func row(_ record: PersonalRecord) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: AppSpacing.sm) {
-            Image(systemName: "trophy")
+            Icon("trophy", size: AppIconSize.md)
                 .foregroundStyle(AppColors.warning)
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: speciesStore.name(for: record.speciesID))
                     .font(AppTypography.bodyEmphasis)
+                    .foregroundStyle(AppColors.textPrimary)
                 if let best = bestLine(record) {
                     Text(verbatim: best)
                         .font(AppTypography.bodySmall)

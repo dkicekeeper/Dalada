@@ -36,6 +36,10 @@ struct GearListView: View {
     @State private var addsPopular = false
     /// Выбранная метка: в списке и сводке — только предметы с ней.
     @State private var tag: String?
+    @State private var mode: CardListMode = .browsing
+    @State private var selection: Set<UUID> = []
+    /// Предметы, удаление которых ждёт подтверждения.
+    @State private var pendingDelete: [GearItem] = []
 
     private var tags: [String] { GearItem.allTags(lists.gear) }
     /// Предметы с выбранной меткой (без метки — все).
@@ -45,10 +49,13 @@ struct GearListView: View {
     }
     private var summaries: [GearCategorySummary] { GearCategorySummary.make(shown) }
 
+    // DesignKit 8.0.0: категории — CardList в стеклянных секциях; долгое нажатие — «Изменить» и
+    // «Удалить», в панели — выбор нескольких, свой порядок внутри категории и «+» (до этого List со
+    // смахиванием). Порядок меняется без фильтра по метке.
     var body: some View {
-        List {
-            if lists.gear.isEmpty {
-                Section {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                if lists.gear.isEmpty {
                     EmptyState(
                         icon: "backpack",
                         title: String(localized: "gear.empty.title"),
@@ -56,39 +63,71 @@ struct GearListView: View {
                         actionTitle: String(localized: "gear.addPopular"),
                         action: { addsPopular = true }
                     )
-                }
-                .listRowBackground(Color.clear)
-            } else {
-                Section {
-                    if !tags.isEmpty {
-                        GearTagFilter(tags: tags, selection: $tag)
+                } else {
+                    VStack(alignment: .leading, spacing: AppSpacing.md) {
+                        if !tags.isEmpty, mode == .browsing {
+                            GearTagFilter(tags: tags, selection: $tag)
+                        }
+                        GearSummaryView(items: shown)
                     }
-                    GearSummaryView(items: shown)
-                }
+                    .cardContentPadding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .cardStyle()
 
-                ForEach(summaries) { summary in
-                    Section {
-                        ForEach(shown.filter { $0.category == summary.category }) { item in
-                            Button {
-                                editing = item
-                            } label: {
-                                GearRow(item: item)
+                    ForEach(summaries) { summary in
+                        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                            GearCategoryHeader(
+                                category: summary.category,
+                                trailing: summary.weightGrams > 0 ? GearFormat.weight(summary.weightGrams) : nil
+                            )
+                            CardList(
+                                shown.filter { $0.category == summary.category },
+                                layout: .section,
+                                mode: mode,
+                                selection: $selection,
+                                onMove: tag == nil ? { lists.moveGear(in: summary.category, from: $0, to: $1) } : nil
+                            ) { item in
+                                Button {
+                                    editing = item
+                                } label: {
+                                    GearRow(item: item)
+                                        .padding(.vertical, AppSpacing.md)
+                                        .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+                                .contextMenu {
+                                    Button("common.edit", systemImage: "pencil") { editing = item }
+                                    Button("common.delete", systemImage: "trash", role: .destructive) {
+                                        pendingDelete = [item]
+                                    }
+                                }
                             }
-                            .buttonStyle(.plain)
                         }
-                        .onDelete { offsets in
-                            let inCategory = shown.filter { $0.category == summary.category }
-                            for item in offsets.map({ inCategory[$0] }) {
-                                lists.delete(item)
-                            }
-                        }
-                    } header: {
-                        GearCategoryHeader(
-                            category: summary.category,
-                            trailing: summary.weightGrams > 0 ? GearFormat.weight(summary.weightGrams) : nil
-                        )
                     }
                 }
+            }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
+        }
+        .cardListToolbar(
+            mode: $mode,
+            selection: $selection,
+            allIDs: shown.map(\.id),
+            canReorder: tag == nil,
+            onDeleteSelected: { pendingDelete = shown.filter { selection.contains($0.id) } }
+        )
+        .confirmationDialog(
+            pendingDelete.count == 1
+                ? LocalizedStringKey("gear.deleteConfirm")
+                : LocalizedStringKey("common.deleteSelectedConfirm \(pendingDelete.count)"),
+            isPresented: Binding(get: { !pendingDelete.isEmpty }, set: { if !$0 { pendingDelete = [] } }),
+            titleVisibility: .visible
+        ) {
+            Button("common.delete", role: .destructive) {
+                for item in pendingDelete { lists.delete(item) }
+                pendingDelete = []
+                selection = []
+                mode = .browsing
             }
         }
         .navigationTitle("gear.title")
@@ -99,21 +138,23 @@ struct GearListView: View {
             }
         }
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Menu {
-                    Button {
-                        editing = GearItem(name: "")
+            if mode == .browsing {
+                ToolbarItem(placement: .primaryAction) {
+                    Menu {
+                        Button {
+                            editing = GearItem(name: "")
+                        } label: {
+                            Label("gear.new", systemImage: "plus")
+                        }
+                        Button {
+                            addsPopular = true
+                        } label: {
+                            Label("gear.addPopular", systemImage: "list.bullet.rectangle")
+                        }
                     } label: {
-                        Label("gear.new", systemImage: "plus")
+                        Image(systemName: "plus")
+                            .accessibilityLabel(Text("gear.new"))
                     }
-                    Button {
-                        addsPopular = true
-                    } label: {
-                        Label("gear.addPopular", systemImage: "list.bullet.rectangle")
-                    }
-                } label: {
-                    Image(systemName: "plus")
-                        .accessibilityLabel(Text("gear.new"))
                 }
             }
         }

@@ -681,11 +681,18 @@ struct MyPlacesView: View {
             )
         } else if places.isEmpty {
             if isLoading {
-                VStack(spacing: 0) {
-                    ForEach(0..<5, id: \.self) { _ in SkeletonRow() }
+                ScrollView {
+                    FormSection {
+                        ForEach(0..<5, id: \.self) { _ in
+                            SkeletonRow()
+                                .padding(.vertical, AppSpacing.xs)
+                                .rowDividerInset(ItemRowMetrics.symbolInset)
+                        }
+                    }
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.md)
                 }
-                .screenPadding()
-                .frame(maxHeight: .infinity, alignment: .top)
+                .scrollDisabled(true)
                 .skeletonLoadingLabel()
             } else {
                 PlaceholderScreen(
@@ -695,15 +702,21 @@ struct MyPlacesView: View {
                 )
             }
         } else {
-            List {
-                ForEach(places) { place in
+            // DesignKit 8.0.0: места — строки в стеклянной секции (до этого List).
+            ScrollView {
+                CardList(places, layout: .section) { place in
                     Button {
                         selected = PlaceSelection(id: place.id)
                     } label: {
                         PlaceRow(place: place)
+                            .padding(.vertical, AppSpacing.md)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .rowDividerInset(ItemRowMetrics.symbolInset)
                 }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
         }
     }

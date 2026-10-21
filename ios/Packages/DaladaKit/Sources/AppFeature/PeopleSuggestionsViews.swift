@@ -5,7 +5,7 @@ import DesignTokens
 import SwiftUI
 
 /// «Возможно, вы знакомы»: друзья друзей и те, кто отчитывался в ваших местах. «Добавить» —
-/// запрос в друзья, смахнуть — больше не подсказывать. Пусто — секции нет. Загружает экран, где
+/// запрос в друзья, долгое нажатие — больше не подсказывать. Пусто — секции нет. Загружает экран, где
 /// секция стоит (`load`): у пустой секции `task` не срабатывает.
 struct PeopleSuggestionsSection: View {
     let environment: AppEnvironment
@@ -20,19 +20,21 @@ struct PeopleSuggestionsSection: View {
     var body: some View {
         Group {
             if !suggestions.isEmpty {
-                Section {
+                // DesignKit 8.0.0: стеклянная секция; «Не подсказывать» — долгим нажатием (без смахивания).
+                FormSection(
+                    header: String(localized: "friends.suggestions"),
+                    footer: String(localized: "friends.suggestions.footer")
+                ) {
                     ForEach(suggestions) { suggestion in
                         row(suggestion)
-                            .swipeActions(edge: .trailing) {
+                            .padding(.vertical, AppSpacing.md)
+                            .rowDividerInset(ItemRowMetrics.symbolInset)
+                            .contextMenu {
                                 Button("friends.suggestion.hide", systemImage: "eye.slash") {
                                     Task { await dismiss(suggestion) }
                                 }
                             }
                     }
-                } header: {
-                    Text("friends.suggestions")
-                } footer: {
-                    Text("friends.suggestions.footer")
                 }
             }
         }
@@ -60,7 +62,9 @@ struct PeopleSuggestionsSection: View {
                     }
                     Spacer(minLength: 0)
                 }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
             if requested.contains(suggestion.id) {
                 Label("friends.suggestion.requested", systemImage: "clock")
                     .labelStyle(.iconOnly)

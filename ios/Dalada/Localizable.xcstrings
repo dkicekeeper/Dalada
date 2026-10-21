@@ -3903,6 +3903,29 @@
         }
       }
     },
+    "common.deleteSelectedConfirm %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete the selected (%lld)?"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Таңдалғандарды (%lld) жою керек пе?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить выбранные (%lld)?"
+          }
+        }
+      }
+    },
     "common.done" : {
       "extractionState" : "manual",
       "localizations" : {

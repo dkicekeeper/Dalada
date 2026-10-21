@@ -632,12 +632,21 @@ struct TripsListView: View {
                     description: String(localized: "trips.empty.description")
                 )
             } else {
-                List(trips) { entry in
-                    NavigationLink {
-                        TripDetailView(tripID: entry.id, environment: environment)
-                    } label: {
-                        TripRow(trip: entry.summary, host: entry.host)
+                // DesignKit 8.0.0: поездки — строки в стеклянной секции (до этого List), по дате.
+                ScrollView {
+                    CardList(trips, layout: .section) { entry in
+                        NavigationLink {
+                            TripDetailView(tripID: entry.id, environment: environment)
+                        } label: {
+                            TripRow(trip: entry.summary, host: entry.host)
+                                .padding(.vertical, AppSpacing.md)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .rowDividerInset(ItemRowMetrics.symbolInset)
                     }
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.md)
                 }
             }
         }

@@ -28,12 +28,23 @@ struct SharedPackingsView: View {
                     action: { showsShare = true }
                 )
             } else {
-                List(packings) { packing in
-                    NavigationLink {
-                        SharedPackingView(packingID: packing.id, environment: environment)
-                    } label: {
-                        SharedPackingRow(packing: packing)
+                // DesignKit 8.0.0: сборы — строки в стеклянной секции (до этого List).
+                ScrollView {
+                    CardList(packings, layout: .section) { packing in
+                        NavigationLink {
+                            SharedPackingView(packingID: packing.id, environment: environment)
+                        } label: {
+                            HStack(spacing: AppSpacing.md) {
+                                SharedPackingRow(packing: packing)
+                                DisclosureChevron()
+                            }
+                            .padding(.vertical, AppSpacing.md)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.md)
                 }
             }
         }
@@ -83,6 +94,7 @@ struct SharedPackingRow: View {
         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
             Text(verbatim: packing.title)
                 .font(AppTypography.bodyEmphasis)
+                .foregroundStyle(AppColors.textPrimary)
             Text(verbatim: subtitle)
                 .font(AppTypography.caption)
                 .foregroundStyle(AppColors.textSecondary)
