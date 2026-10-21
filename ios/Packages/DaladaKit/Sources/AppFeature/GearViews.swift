@@ -85,7 +85,8 @@ struct GearListView: View {
                                 layout: .section,
                                 mode: mode,
                                 selection: $selection,
-                                onMove: tag == nil ? { lists.moveGear(in: summary.category, from: $0, to: $1) } : nil
+                                // Порядок меняют без фильтра: кнопка порядка в панели — только при нём.
+                                onMove: { lists.moveGear(in: summary.category, from: $0, to: $1) }
                             ) { item in
                                 Button {
                                     editing = item
