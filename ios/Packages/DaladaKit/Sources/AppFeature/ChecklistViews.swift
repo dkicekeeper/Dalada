@@ -275,45 +275,44 @@ struct TemplateDetailView: View {
         }
     }
 
+    // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
     var body: some View {
-        List {
-            if let note = template.note {
-                Section {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                if let note = template.note {
                     RecommendationBox(
                         text: note.text(for: PackingFormat.language),
                         color: AppColors.accent,
                         icon: "info.circle"
                     )
                 }
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-            }
 
-            Section {
-                Button {
-                    startsPacking = true
-                } label: {
-                    Label("packing.startFromThis", systemImage: "bag.badge.plus")
+                FormSection(footer: String(localized: "checklists.copyToMine.footer")) {
+                    UniversalRow(String(localized: "packing.startFromThis"), icon: "bag.badge.plus", accessory: .action {
+                        startsPacking = true
+                    })
+                    UniversalRow(String(localized: "checklists.copyToMine"), icon: "doc.on.doc", accessory: .action {
+                        opened = lists.copyToMyLists(template, language: PackingFormat.language).id
+                    })
                 }
-                Button {
-                    opened = lists.copyToMyLists(template, language: PackingFormat.language).id
-                } label: {
-                    Label("checklists.copyToMine", systemImage: "doc.on.doc")
-                }
-            } footer: {
-                Text("checklists.copyToMine.footer")
-            }
 
-            ForEach(groups) { group in
-                Section {
-                    ForEach(group.items) { item in
-                        Text(verbatim: item.title.text(for: PackingFormat.language))
-                            .font(AppTypography.body)
+                ForEach(groups) { group in
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                        GearCategoryHeader(category: group.category)
+                        FormSection {
+                            ForEach(group.items) { item in
+                                Text(verbatim: item.title.text(for: PackingFormat.language))
+                                    .font(AppTypography.body)
+                                    .foregroundStyle(AppColors.textPrimary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.vertical, AppSpacing.lg)
+                            }
+                        }
                     }
-                } header: {
-                    GearCategoryHeader(category: group.category)
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle(Text(verbatim: template.title.text(for: PackingFormat.language)))
         .sheet(isPresented: $startsPacking) {
@@ -359,65 +358,72 @@ struct ChecklistDetailView: View {
         }
     }
 
+    // DesignKit 8.0.0: стеклянные секции на странице (до этого List со смахиванием); удалить
+    // пункт — долгим нажатием.
     private func content(_ checklist: Checklist) -> some View {
-        List {
-            Section {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
                 ChecklistProgressHeader(checklist: checklist)
-            }
+                    .cardContentPadding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .cardStyle()
 
-            ForEach(checklist.sections) { section in
-                Section {
-                    ForEach(section.items) { item in
-                        ChecklistItemRow(item: item) {
-                            lists.update(checklistID) { $0.toggle(itemID: item.id) }
-                        }
-                    }
-                    .onDelete { offsets in
-                        let ids = Set(offsets.map { section.items[$0].id })
-                        lists.update(checklistID) { list in list.items.removeAll { ids.contains($0.id) } }
-                    }
-                } header: {
-                    GearCategoryHeader(category: section.category)
-                }
-            }
-
-            Section {
-                HStack(spacing: AppSpacing.sm) {
-                    TextField("checklist.newItem", text: $newItemTitle)
-                        .submitLabel(.done)
-                        .onSubmit(addItem)
-                    Menu {
-                        Picker("checklist.newItem.category", selection: $newItemCategory) {
-                            ForEach(GearCategory.allCases) { category in
-                                Label(LocalizedStringKey(category.titleKey), systemImage: category.systemImage)
-                                    .tag(category)
+                ForEach(checklist.sections) { section in
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                        GearCategoryHeader(category: section.category)
+                        FormSection {
+                            ForEach(section.items) { item in
+                                ChecklistItemRow(item: item) {
+                                    lists.update(checklistID) { $0.toggle(itemID: item.id) }
+                                }
+                                .padding(.vertical, AppSpacing.sm)
+                                .contextMenu {
+                                    Button("checklist.deleteItem", systemImage: "trash", role: .destructive) {
+                                        lists.update(checklistID) { list in list.items.removeAll { $0.id == item.id } }
+                                    }
+                                }
                             }
                         }
-                    } label: {
-                        Image(systemName: newItemCategory.systemImage)
-                            .accessibilityLabel(Text("checklist.newItem.category"))
-                    }
-                    Button(action: addItem) {
-                        Image(systemName: "plus.circle.fill")
-                            .accessibilityLabel(Text("checklist.addItem"))
-                    }
-                    .buttonStyle(.borderless)
-                    .disabled(newItemTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                }
-                if !lists.gear.isEmpty {
-                    Button {
-                        picksGear = true
-                    } label: {
-                        Label("checklist.addFromGear", systemImage: "backpack")
                     }
                 }
-            } header: {
-                Text("checklist.add")
-            } footer: {
-                if checklist.items.count >= Checklist.itemLimit {
-                    Text("checklist.limit")
+
+                FormSection(
+                    header: String(localized: "checklist.add"),
+                    footer: checklist.items.count >= Checklist.itemLimit ? String(localized: "checklist.limit") : nil
+                ) {
+                    HStack(spacing: AppSpacing.sm) {
+                        TextField("checklist.newItem", text: $newItemTitle)
+                            .font(AppTypography.body)
+                            .submitLabel(.done)
+                            .onSubmit(addItem)
+                        Menu {
+                            Picker("checklist.newItem.category", selection: $newItemCategory) {
+                                ForEach(GearCategory.allCases) { category in
+                                    Label(LocalizedStringKey(category.titleKey), systemImage: category.systemImage)
+                                        .tag(category)
+                                }
+                            }
+                        } label: {
+                            Icon(newItemCategory.systemImage, size: AppIconSize.lg)
+                                .accessibilityLabel(Text("checklist.newItem.category"))
+                        }
+                        Button(action: addItem) {
+                            Icon("plus.circle.fill", size: AppIconSize.lg)
+                                .accessibilityLabel(Text("checklist.addItem"))
+                        }
+                        .buttonStyle(.borderless)
+                        .disabled(newItemTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                    .padding(.vertical, AppSpacing.lg)
+                    if !lists.gear.isEmpty {
+                        UniversalRow(String(localized: "checklist.addFromGear"), icon: "backpack", accessory: .action {
+                            picksGear = true
+                        })
+                    }
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle(Text(verbatim: checklist.title))
         .navigationBarTitleDisplayMode(.inline)

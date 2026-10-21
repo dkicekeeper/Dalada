@@ -400,24 +400,30 @@ struct PopularGearView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                if items.isEmpty {
-                    Text("checklists.templates.unavailable")
-                        .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
-                ForEach(GearCategory.allCases) { category in
-                    let inCategory = items.filter { $0.category == category }
-                    if !inCategory.isEmpty {
-                        Section {
-                            ForEach(inCategory) { item in
-                                row(item)
+            // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                    if items.isEmpty {
+                        Text("checklists.templates.unavailable")
+                            .font(AppTypography.bodySmall)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+                    ForEach(GearCategory.allCases) { category in
+                        let inCategory = items.filter { $0.category == category }
+                        if !inCategory.isEmpty {
+                            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                                GearCategoryHeader(category: category)
+                                FormSection {
+                                    ForEach(inCategory) { item in
+                                        row(item)
+                                    }
+                                }
                             }
-                        } header: {
-                            GearCategoryHeader(category: category)
                         }
                     }
                 }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
             .navigationTitle("gear.addPopular")
             .navigationBarTitleDisplayMode(.inline)
@@ -459,9 +465,12 @@ struct PopularGearView: View {
                         .foregroundStyle(AppColors.textTertiary)
                 }
             }
+            .padding(.vertical, AppSpacing.lg)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        // Под текстом: после круга выбора и промежутка (метка кнопки не передаёт отступ).
+        .rowDividerInset(AppIconSize.lg + AppSpacing.md)
         .accessibilityAddTraits(isOwned || isSelected ? .isSelected : [])
         .disabled(isOwned)
     }
@@ -479,16 +488,22 @@ struct GearPickerView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(GearCategorySummary.make(lists.gear)) { summary in
-                    Section {
-                        ForEach(lists.gear.filter { $0.category == summary.category }) { item in
-                            row(item)
+            // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                    ForEach(GearCategorySummary.make(lists.gear)) { summary in
+                        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                            GearCategoryHeader(category: summary.category)
+                            FormSection {
+                                ForEach(lists.gear.filter { $0.category == summary.category }) { item in
+                                    row(item)
+                                }
+                            }
                         }
-                    } header: {
-                        GearCategoryHeader(category: summary.category)
                     }
                 }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
             .navigationTitle("checklist.addFromGear")
             .navigationBarTitleDisplayMode(.inline)
@@ -521,9 +536,12 @@ struct GearPickerView: View {
                 SelectionIndicator(isSelected: isAdded || isSelected, tint: isSelected ? AppColors.accent : AppColors.textTertiary)
                 GearRow(item: item)
             }
+            .padding(.vertical, AppSpacing.md)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        // Под текстом: после круга выбора и промежутка (метка кнопки не передаёт отступ).
+        .rowDividerInset(AppIconSize.lg + AppSpacing.md)
         .accessibilityAddTraits(isAdded || isSelected ? .isSelected : [])
         .disabled(isAdded)
     }

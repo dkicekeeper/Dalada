@@ -184,24 +184,30 @@ struct PlaceWeatherSheet: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                currentSection
-                if forecast.pressure.count > 1 {
-                    Section("weather.pressure") {
-                        pressureChart
+            // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                    currentSection
+                    if forecast.pressure.count > 1 {
+                        FormSection(header: String(localized: "weather.pressure")) {
+                            pressureChart
+                                .padding(.vertical, AppSpacing.lg)
+                        }
                     }
-                }
-                daysSection
-                sunSection
-                Section {
-                } footer: {
+                    daysSection
+                    sunSection
                     VStack(alignment: .leading, spacing: AppSpacing.xs) {
                         Text("weather.updated \(time(forecast.fetchedAt, zone: .current))")
                         Link(destination: OpenMeteo.attributionURL) {
                             Text("weather.attribution")
                         }
                     }
+                    .font(AppTypography.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .padding(.horizontal, AppSpacing.lg)
                 }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
             .navigationTitle("weather.title")
             .navigationBarTitleDisplayMode(.inline)
@@ -217,7 +223,7 @@ struct PlaceWeatherSheet: View {
     private var currentSection: some View {
         let current = forecast.current
         let kind = WeatherKind(code: current.code)
-        return Section("weather.now") {
+        return FormSection(header: String(localized: "weather.now")) {
             HStack(spacing: AppSpacing.md) {
                 Image(systemName: kind?.systemImage ?? "thermometer.medium")
                     .font(.largeTitle) // design-lint:ignore символ размером с largeTitle, растёт с Dynamic Type
@@ -233,7 +239,9 @@ struct PlaceWeatherSheet: View {
                             .foregroundStyle(AppColors.textSecondary)
                     }
                 }
+                Spacer(minLength: 0)
             }
+            .padding(.vertical, AppSpacing.lg)
             if let wind = WeatherText.wind(current) {
                 LabeledContent("weather.wind") {
                     VStack(alignment: .trailing, spacing: AppSpacing.xxs) {
@@ -245,6 +253,8 @@ struct PlaceWeatherSheet: View {
                         }
                     }
                 }
+                .font(AppTypography.body)
+                .padding(.vertical, AppSpacing.md)
             }
             if let pressure = current.pressure {
                 LabeledContent("weather.pressure") {
@@ -262,6 +272,8 @@ struct PlaceWeatherSheet: View {
                         }
                     }
                 }
+                .font(AppTypography.body)
+                .padding(.vertical, AppSpacing.md)
             }
         }
     }
@@ -287,32 +299,35 @@ struct PlaceWeatherSheet: View {
 
     private var daysSection: some View {
         let days = forecast.upcomingDays(from: .now)
-        return Section("weather.forecast") {
+        return FormSection(header: String(localized: "weather.forecast")) {
             ForEach(days) { day in
-                HStack(spacing: AppSpacing.sm) {
-                    Text(verbatim: dayTitle(day.date))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    if let kind = WeatherKind(code: day.code) {
-                        Image(systemName: kind.systemImage)
-                            .foregroundStyle(AppColors.accent)
-                            .accessibilityLabel(Text(LocalizedStringKey(kind.titleKey)))
+                VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                    HStack(spacing: AppSpacing.sm) {
+                        Text(verbatim: dayTitle(day.date))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        if let kind = WeatherKind(code: day.code) {
+                            Image(systemName: kind.systemImage)
+                                .foregroundStyle(AppColors.accent)
+                                .accessibilityLabel(Text(LocalizedStringKey(kind.titleKey)))
+                        }
+                        if let low = day.temperatureMin, let high = day.temperatureMax {
+                            Text(verbatim: WeatherText.temperature(low) + " … " + WeatherText.temperature(high))
+                                .monospacedDigit()
+                        }
+                        if let wind = day.windMax {
+                            Text("weather.windSpeed \(String(Int(wind.rounded())))")
+                                .font(AppTypography.caption)
+                                .foregroundStyle(AppColors.textSecondary)
+                        }
                     }
-                    if let low = day.temperatureMin, let high = day.temperatureMax {
-                        Text(verbatim: WeatherText.temperature(low) + " … " + WeatherText.temperature(high))
-                            .monospacedDigit()
-                    }
-                    if let wind = day.windMax {
-                        Text("weather.windSpeed \(String(Int(wind.rounded())))")
+                    .font(AppTypography.bodySmall)
+                    if let precipitation = day.precipitation, precipitation >= 0.5 {
+                        Text("weather.precipitation \(precipitation.formatted(.number.precision(.fractionLength(0...1))))")
                             .font(AppTypography.caption)
                             .foregroundStyle(AppColors.textSecondary)
                     }
                 }
-                .font(AppTypography.bodySmall)
-                if let precipitation = day.precipitation, precipitation >= 0.5 {
-                    Text("weather.precipitation \(precipitation.formatted(.number.precision(.fractionLength(0...1))))")
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
+                .padding(.vertical, AppSpacing.md)
             }
         }
     }
@@ -320,16 +335,12 @@ struct PlaceWeatherSheet: View {
     @ViewBuilder
     private var sunSection: some View {
         if let today = forecast.upcomingDays(from: .now, count: 1).first, today.sunrise != nil || today.sunset != nil {
-            Section("weather.sun") {
+            FormSection(header: String(localized: "weather.sun")) {
                 if let sunrise = today.sunrise {
-                    LabeledContent("weather.sunrise") {
-                        Text(verbatim: time(sunrise, zone: timeZone))
-                    }
+                    UniversalRow(String(localized: "weather.sunrise"), value: time(sunrise, zone: timeZone))
                 }
                 if let sunset = today.sunset {
-                    LabeledContent("weather.sunset") {
-                        Text(verbatim: time(sunset, zone: timeZone))
-                    }
+                    UniversalRow(String(localized: "weather.sunset"), value: time(sunset, zone: timeZone))
                 }
             }
         }

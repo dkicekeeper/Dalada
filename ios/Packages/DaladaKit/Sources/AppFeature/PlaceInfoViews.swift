@@ -436,25 +436,24 @@ private struct SpeciesSelectList: View {
     @Binding var selection: Set<String>
 
     var body: some View {
-        List(species) { item in
-            let isSelected = selection.contains(item.id)
-            Button {
-                if isSelected {
-                    selection.remove(item.id)
-                } else {
-                    selection.insert(item.id)
+        // DesignKit 8.0.0: стеклянная секция (до этого List).
+        ScrollView {
+            FormSection {
+                ForEach(species) { item in
+                    UniversalRow(
+                        item.name(for: SpeciesStore.languageCode),
+                        accessory: .checkmark(isSelected: selection.contains(item.id)) {
+                            if selection.contains(item.id) {
+                                selection.remove(item.id)
+                            } else {
+                                selection.insert(item.id)
+                            }
+                        }
+                    )
                 }
-            } label: {
-                HStack(spacing: AppSpacing.md) {
-                    SelectionIndicator(isSelected: isSelected)
-                    Text(verbatim: item.name(for: SpeciesStore.languageCode))
-                        .foregroundStyle(AppColors.textPrimary)
-                    Spacer(minLength: 0)
-                }
-                .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
-            .accessibilityAddTraits(isSelected ? .isSelected : [])
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("place.info.species")
         .navigationBarTitleDisplayMode(.inline)

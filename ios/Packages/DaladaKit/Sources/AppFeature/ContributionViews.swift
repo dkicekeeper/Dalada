@@ -92,36 +92,42 @@ struct ContributionDetailsSheet: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    row("level.kind.places", count: contribution.places, each: 20)
-                    row("level.kind.photos", count: contribution.photos, each: 5)
-                    row("level.kind.reports", count: contribution.reports, each: 5)
-                    row("level.kind.reviews", count: contribution.reviews, each: 10)
-                    row("level.kind.edits", count: contribution.edits, each: 10)
-                    row("level.kind.helpful", count: contribution.helpful, each: 5)
-                } header: {
-                    Text("level.points \(contribution.points)")
-                } footer: {
-                    Text("level.kinds.footer")
-                }
-                Section {
-                    ForEach(ContributorLevel.allCases, id: \.self) { level in
-                        HStack(spacing: AppSpacing.md) {
-                            Image(systemName: level.systemImage)
-                                .foregroundStyle(level == contribution.level ? AppColors.accent : AppColors.textTertiary)
-                                .frame(width: AppIconSize.md)
-                            Text(LocalizedStringKey(level.titleKey))
-                                .fontWeight(level == contribution.level ? .semibold : .regular)
-                            Spacer(minLength: 0)
-                            Text(verbatim: String(level.threshold))
-                                .monospacedDigit()
-                                .foregroundStyle(AppColors.textSecondary)
+            // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                    FormSection(
+                        header: String(localized: "level.points \(contribution.points)"),
+                        footer: String(localized: "level.kinds.footer")
+                    ) {
+                        row("level.kind.places", count: contribution.places, each: 20)
+                        row("level.kind.photos", count: contribution.photos, each: 5)
+                        row("level.kind.reports", count: contribution.reports, each: 5)
+                        row("level.kind.reviews", count: contribution.reviews, each: 10)
+                        row("level.kind.edits", count: contribution.edits, each: 10)
+                        row("level.kind.helpful", count: contribution.helpful, each: 5)
+                    }
+                    FormSection(footer: String(localized: "level.levels.footer")) {
+                        ForEach(ContributorLevel.allCases, id: \.self) { level in
+                            HStack(spacing: AppSpacing.md) {
+                                Icon(level.systemImage, size: AppIconSize.lg)
+                                    .foregroundStyle(level == contribution.level ? AppColors.accent : AppColors.textTertiary)
+                                Text(LocalizedStringKey(level.titleKey))
+                                    .font(AppTypography.body)
+                                    .fontWeight(level == contribution.level ? .semibold : .regular)
+                                    .foregroundStyle(AppColors.textPrimary)
+                                Spacer(minLength: 0)
+                                Text(verbatim: String(level.threshold))
+                                    .font(AppTypography.body)
+                                    .monospacedDigit()
+                                    .foregroundStyle(AppColors.textSecondary)
+                            }
+                            .padding(.vertical, AppSpacing.lg)
+                            .rowDividerInset(AppIconSize.lg + AppSpacing.md)
                         }
                     }
-                } footer: {
-                    Text("level.levels.footer")
                 }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
             .navigationTitle("level.title")
             .navigationBarTitleDisplayMode(.inline)
@@ -134,11 +140,15 @@ struct ContributionDetailsSheet: View {
     }
 
     private func row(_ titleKey: LocalizedStringKey, count: Int, each: Int) -> some View {
-        LabeledContent {
-            Text(verbatim: "\(count) × \(each) = \(count * each)")
-                .monospacedDigit()
-        } label: {
+        UniversalRow {
             Text(titleKey)
+                .font(AppTypography.body)
+                .foregroundStyle(AppColors.textPrimary)
+        } trailing: {
+            Text(verbatim: "\(count) × \(each) = \(count * each)")
+                .font(AppTypography.body)
+                .monospacedDigit()
+                .foregroundStyle(AppColors.textSecondary)
         }
     }
 }
@@ -156,47 +166,53 @@ struct SuggestionReviewView: View {
     @State private var errorText: String?
     @State private var openedPlace: PlaceSelection?
 
+    // DesignKit 8.0.0: правка — стеклянная секция с местом в заголовке (до этого List).
     var body: some View {
-        List {
-            if items.isEmpty && isLoaded {
-                EmptyState(
-                    icon: "checkmark.seal",
-                    title: String(localized: "review.empty.title"),
-                    description: String(localized: "review.empty")
-                )
-                .listRowBackground(Color.clear)
-            }
-            ForEach(items) { item in
-                Section {
-                    changes(item)
-                    if let note = item.note, !note.isEmpty {
-                        Text(verbatim: "«" + note + "»")
-                            .font(AppTypography.bodySmall)
-                            .foregroundStyle(AppColors.textSecondary)
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                if items.isEmpty && isLoaded {
+                    EmptyState(
+                        icon: "checkmark.seal",
+                        title: String(localized: "review.empty.title"),
+                        description: String(localized: "review.empty")
+                    )
+                }
+                ForEach(items) { item in
+                    FormSection(
+                        header: item.placeName,
+                        footer: [item.authorUsername.map { "@" + $0 }, item.createdAt.formatted(date: .abbreviated, time: .omitted)]
+                            .compactMap { $0 }
+                            .joined(separator: " · ")
+                    ) {
+                        changes(item)
+                        if let note = item.note, !note.isEmpty {
+                            Text(verbatim: "«" + note + "»")
+                                .font(AppTypography.bodySmall)
+                                .foregroundStyle(AppColors.textSecondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.vertical, AppSpacing.md)
+                        }
+                        HStack(spacing: AppSpacing.md) {
+                            DSButton(String(localized: "review.accept"), size: .medium) {
+                                Task { await decide(item, accept: true) }
+                            }
+                            DSButton(String(localized: "review.reject"), appearance: .secondary, role: .destructive, size: .medium) {
+                                Task { await decide(item, accept: false) }
+                            }
+                            Spacer(minLength: 0)
+                            Button("review.openPlace") {
+                                openedPlace = PlaceSelection(id: item.placeID)
+                            }
+                            .buttonStyle(.borderless)
+                        }
+                        .font(AppTypography.bodySmall)
+                        .disabled(working != nil)
+                        .padding(.vertical, AppSpacing.md)
                     }
-                    HStack(spacing: AppSpacing.md) {
-                        DSButton(String(localized: "review.accept"), size: .medium) {
-                            Task { await decide(item, accept: true) }
-                        }
-                        DSButton(String(localized: "review.reject"), appearance: .secondary, role: .destructive, size: .medium) {
-                            Task { await decide(item, accept: false) }
-                        }
-                        Spacer(minLength: 0)
-                        Button("review.openPlace") {
-                            openedPlace = PlaceSelection(id: item.placeID)
-                        }
-                        .buttonStyle(.borderless)
-                    }
-                    .font(AppTypography.bodySmall)
-                    .disabled(working != nil)
-                } header: {
-                    Text(verbatim: item.placeName)
-                } footer: {
-                    Text(verbatim: [item.authorUsername.map { "@" + $0 }, item.createdAt.formatted(date: .abbreviated, time: .omitted)]
-                        .compactMap { $0 }
-                        .joined(separator: " · "))
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("review.title")
         .task { await load() }
@@ -217,14 +233,13 @@ struct SuggestionReviewView: View {
     @ViewBuilder
     private func changes(_ item: SuggestionReviewItem) -> some View {
         if let name = item.newName {
-            LabeledContent("review.field.name") {
-                Text(verbatim: item.placeName + " → " + name)
-            }
+            UniversalRow(String(localized: "review.field.name"), value: item.placeName + " → " + name)
         }
         if let type = item.newType {
-            LabeledContent("review.field.type") {
-                Text(LocalizedStringKey(type.titleKey))
-            }
+            UniversalRow(
+                String(localized: "review.field.type"),
+                value: String(localized: String.LocalizationValue(type.titleKey))
+            )
         }
         if let description = item.newDescription {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
@@ -233,11 +248,13 @@ struct SuggestionReviewView: View {
                     .foregroundStyle(AppColors.textSecondary)
                 Text(verbatim: description.isEmpty ? String(localized: "review.field.descriptionRemoved") : description)
                     .font(AppTypography.bodySmall)
+                    .foregroundStyle(AppColors.textPrimary)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, AppSpacing.md)
         }
         if item.changesAttributes {
-            Label("review.field.attributes", systemImage: "info.circle")
-                .font(AppTypography.bodySmall)
+            UniversalRow(String(localized: "review.field.attributes"), icon: "info.circle")
         }
     }
 

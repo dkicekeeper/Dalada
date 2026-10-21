@@ -196,22 +196,31 @@ struct SharePackingSheet: View {
                     description: String(localized: "sharedPacking.noLists")
                 )
             } else {
-                List(candidates) { checklist in
-                    Button {
-                        chosen = checklist
-                    } label: {
-                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                            Text(verbatim: checklist.title)
-                                .font(AppTypography.bodyEmphasis)
-                                .foregroundStyle(AppColors.textPrimary)
-                            Text("sharedPacking.itemsCount \(checklist.items.count)")
-                                .font(AppTypography.caption)
-                                .foregroundStyle(AppColors.textSecondary)
+                // DesignKit 8.0.0: стеклянная секция (до этого List).
+                ScrollView {
+                    CardList(candidates, layout: .section) { checklist in
+                        Button {
+                            chosen = checklist
+                        } label: {
+                            HStack(spacing: AppSpacing.md) {
+                                VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                                    Text(verbatim: checklist.title)
+                                        .font(AppTypography.bodyEmphasis)
+                                        .foregroundStyle(AppColors.textPrimary)
+                                    Text("sharedPacking.itemsCount \(checklist.items.count)")
+                                        .font(AppTypography.caption)
+                                        .foregroundStyle(AppColors.textSecondary)
+                                }
+                                Spacer(minLength: 0)
+                                DisclosureChevron()
+                            }
+                            .padding(.vertical, AppSpacing.md)
+                            .contentShape(Rectangle())
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .contentShape(Rectangle())
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.md)
                 }
             }
         }
@@ -265,66 +274,83 @@ struct SharedPackingView: View {
     }
 
     var body: some View {
-        List {
-            if !members.isEmpty {
-                Section {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: AppSpacing.md) {
-                            ForEach(members) { member in
-                                VStack(spacing: AppSpacing.xxs) {
-                                    PersonAvatar(name: member.name, path: member.avatarPath, size: AppIconSize.xxl)
-                                    Text(verbatim: shortName(member))
-                                        .font(AppTypography.caption)
-                                        .lineLimit(1)
+        // DesignKit 8.0.0: стеклянные секции на странице (до этого List со смахиванием); убрать
+        // пункт — долгим нажатием.
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                if !members.isEmpty {
+                    VStack(alignment: .leading, spacing: AppSpacing.md) {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: AppSpacing.md) {
+                                ForEach(members) { member in
+                                    VStack(spacing: AppSpacing.xxs) {
+                                        PersonAvatar(name: member.name, path: member.avatarPath, size: AppIconSize.xxl)
+                                        Text(verbatim: shortName(member))
+                                            .font(AppTypography.caption)
+                                            .lineLimit(1)
+                                    }
+                                    .frame(width: AppIconSize.Tile.xxxl)
                                 }
-                                .frame(width: AppIconSize.Tile.xxxl)
+                            }
+                            .padding(.horizontal, AppSpacing.lg)
+                        }
+                        if !items.isEmpty {
+                            let done = items.filter(\.done).count
+                            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                                LinearProgressBar(value: Double(done) / Double(items.count))
+                                Text("sharedPacking.summary \(done) \(items.count) \(SharedPacking.unassignedCount(items))")
+                                    .font(AppTypography.caption)
+                                    .foregroundStyle(AppColors.textSecondary)
+                            }
+                            .padding(.horizontal, AppSpacing.lg)
+                        }
+                    }
+                    .padding(.vertical, AppSpacing.lg)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .cardStyle()
+                }
+                ForEach(SharedPacking.grouped(items), id: \.category) { group in
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                        if let category = group.category {
+                            GearCategoryHeader(category: category)
+                        } else {
+                            SectionHeader(String(localized: "sharedPacking.otherItems"))
+                        }
+                        FormSection {
+                            ForEach(group.items) { item in
+                                row(item)
+                                    .padding(.vertical, AppSpacing.md)
+                                    .contextMenu {
+                                        if canDelete(item) {
+                                            Button("sharedPacking.deleteItem", systemImage: "trash", role: .destructive) {
+                                                Task { await act { try await $0.deletePackingItem(item.id) } }
+                                            }
+                                        }
+                                    }
                             }
                         }
                     }
-                    if !items.isEmpty {
-                        let done = items.filter(\.done).count
-                        LinearProgressBar(value: Double(done) / Double(items.count))
-                        Text("sharedPacking.summary \(done) \(items.count) \(SharedPacking.unassignedCount(items))")
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                }
+                FormSection {
+                    HStack(spacing: AppSpacing.sm) {
+                        TextField("sharedPacking.addPlaceholder", text: $newTitle)
+                            .font(AppTypography.body)
+                            .submitLabel(.done)
+                            .onSubmit { Task { await addItem() } }
+                        Button {
+                            Task { await addItem() }
+                        } label: {
+                            Icon("plus.circle.fill", size: AppIconSize.lg)
+                                .accessibilityLabel(Text("sharedPacking.add"))
+                        }
+                        .buttonStyle(.borderless)
+                        .disabled(newTitle.trimmingCharacters(in: .whitespaces).isEmpty)
                     }
+                    .padding(.vertical, AppSpacing.lg)
                 }
             }
-            ForEach(SharedPacking.grouped(items), id: \.category) { group in
-                Section {
-                    ForEach(group.items) { item in
-                        row(item)
-                            .swipeActions(edge: .trailing) {
-                                if canDelete(item) {
-                                    Button("sharedPacking.deleteItem", systemImage: "trash", role: .destructive) {
-                                        Task { await act { try await $0.deletePackingItem(item.id) } }
-                                    }
-                                }
-                            }
-                    }
-                } header: {
-                    if let category = group.category {
-                        Label(LocalizedStringKey(category.titleKey), systemImage: category.systemImage)
-                    } else {
-                        Text("sharedPacking.otherItems")
-                    }
-                }
-            }
-            Section {
-                HStack {
-                    TextField("sharedPacking.addPlaceholder", text: $newTitle)
-                        .submitLabel(.done)
-                        .onSubmit { Task { await addItem() } }
-                    Button {
-                        Task { await addItem() }
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .accessibilityLabel(Text("sharedPacking.add"))
-                    }
-                    .buttonStyle(.borderless)
-                    .disabled(newTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-                }
-            }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("sharedPacking.title")
         .navigationBarTitleDisplayMode(.inline)

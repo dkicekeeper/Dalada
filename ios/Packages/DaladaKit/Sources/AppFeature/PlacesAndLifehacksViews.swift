@@ -35,8 +35,14 @@ private struct LifehackRow: View {
     let systemImage: String
     var subtitle: String?
 
+    /// Переход на экран — с шевроном; действие («Собраться») — без.
+    var showsChevron = true
+
+    /// Где начинается текст: после значка 24 pt и промежутка (метка ссылки не передаёт отступ).
+    static let dividerInset = AppIconSize.lg + AppSpacing.md
+
     var body: some View {
-        UniversalRow(config: .settings, leadingIcon: .sfSymbol(systemImage, color: AppColors.accent)) {
+        UniversalRow(leadingIcon: .sfSymbol(systemImage, color: AppColors.accent, size: AppIconSize.lg)) {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(titleKey)
                     .font(AppTypography.bodyEmphasis)
@@ -48,8 +54,11 @@ private struct LifehackRow: View {
                 }
             }
         } trailing: {
-            EmptyView()
+            if showsChevron {
+                DisclosureChevron()
+            }
         }
+        .contentShape(Rectangle())
     }
 }
 
@@ -67,100 +76,125 @@ struct LifehacksHomeView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section {
-                    // Ближайшие сборы с прогрессом.
-                    if let packing = lists.upcomingPacking {
-                        NavigationLink {
-                            ChecklistDetailView(checklistID: packing.id)
-                        } label: {
-                            ChecklistSummaryRow(checklist: packing)
+            // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                    FormSection(
+                        header: String(localized: "lifehacks.section.prep"),
+                        footer: lists.hasUnsyncedChanges ? String(localized: "lists.unsynced") : nil
+                    ) {
+                        // Ближайшие сборы с прогрессом.
+                        if let packing = lists.upcomingPacking {
+                            NavigationLink {
+                                ChecklistDetailView(checklistID: packing.id)
+                            } label: {
+                                ChecklistSummaryRow(checklist: packing)
+                                    .padding(.vertical, AppSpacing.md)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
                         }
+                        Button {
+                            startsPacking = true
+                        } label: {
+                            LifehackRow(titleKey: "packing.start", systemImage: "bag.badge.plus", showsChevron: false)
+                        }
+                        .buttonStyle(.plain)
+                        .rowDividerInset(LifehackRow.dividerInset)
+                        NavigationLink {
+                            ChecklistsView()
+                        } label: {
+                            LifehackRow(
+                                titleKey: "checklists.title",
+                                systemImage: "checklist",
+                                subtitle: String(localized: "checklists.summary \(lists.packingLists.count) \(lists.ownLists.count)")
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .rowDividerInset(LifehackRow.dividerInset)
+                        // Общие сборы с друзьями: кто что берёт.
+                        NavigationLink {
+                            SharedPackingsView(environment: environment)
+                        } label: {
+                            LifehackRow(
+                                titleKey: "sharedPacking.title",
+                                systemImage: "person.2.badge.gearshape",
+                                subtitle: String(localized: "sharedPacking.subtitle")
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .rowDividerInset(LifehackRow.dividerInset)
+                        NavigationLink {
+                            GearListView()
+                        } label: {
+                            LifehackRow(
+                                titleKey: "gear.title",
+                                systemImage: "backpack",
+                                subtitle: lists.gear.isEmpty ? String(localized: "gear.summary.none") : GearFormat.summary(lists.gear)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .rowDividerInset(LifehackRow.dividerInset)
+                        NavigationLink {
+                            OfflineMapsView(environment: environment)
+                        } label: {
+                            LifehackRow(
+                                titleKey: "offlineMaps.title",
+                                systemImage: "map",
+                                subtitle: OfflineMapsFormat.summary(offlineMaps)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .rowDividerInset(LifehackRow.dividerInset)
+                        // Запреты проверяют перед выездом — рядом со сборами, а не среди статей.
+                        NavigationLink {
+                            RulesListView(environment: environment)
+                        } label: {
+                            LifehackRow(titleKey: "rules.title", systemImage: "exclamationmark.shield", subtitle: rulesSummary)
+                        }
+                        .buttonStyle(.plain)
+                        .rowDividerInset(LifehackRow.dividerInset)
                     }
-                    Button {
-                        startsPacking = true
-                    } label: {
-                        LifehackRow(titleKey: "packing.start", systemImage: "bag.badge.plus")
-                    }
-                    NavigationLink {
-                        ChecklistsView()
-                    } label: {
-                        LifehackRow(
-                            titleKey: "checklists.title",
-                            systemImage: "checklist",
-                            subtitle: String(localized: "checklists.summary \(lists.packingLists.count) \(lists.ownLists.count)")
-                        )
-                    }
-                    // Общие сборы с друзьями: кто что берёт.
-                    NavigationLink {
-                        SharedPackingsView(environment: environment)
-                    } label: {
-                        LifehackRow(
-                            titleKey: "sharedPacking.title",
-                            systemImage: "person.2.badge.gearshape",
-                            subtitle: String(localized: "sharedPacking.subtitle")
-                        )
-                    }
-                    NavigationLink {
-                        GearListView()
-                    } label: {
-                        LifehackRow(
-                            titleKey: "gear.title",
-                            systemImage: "backpack",
-                            subtitle: lists.gear.isEmpty ? String(localized: "gear.summary.none") : GearFormat.summary(lists.gear)
-                        )
-                    }
-                    NavigationLink {
-                        OfflineMapsView(environment: environment)
-                    } label: {
-                        LifehackRow(
-                            titleKey: "offlineMaps.title",
-                            systemImage: "map",
-                            subtitle: OfflineMapsFormat.summary(offlineMaps)
-                        )
-                    }
-                    // Запреты проверяют перед выездом — рядом со сборами, а не среди статей.
-                    NavigationLink {
-                        RulesListView(environment: environment)
-                    } label: {
-                        LifehackRow(titleKey: "rules.title", systemImage: "exclamationmark.shield", subtitle: rulesSummary)
-                    }
-                } header: {
-                    Text("lifehacks.section.prep")
-                } footer: {
-                    if lists.hasUnsyncedChanges {
-                        Label("lists.unsynced", systemImage: "icloud.slash")
-                    }
-                }
 
-                Section {
-                    NavigationLink {
-                        FishGuideView()
-                    } label: {
-                        LifehackRow(titleKey: "fish.guide.title", systemImage: "fish")
-                    }
-                    // Три последние статьи и ссылка на все.
-                    ForEach(articles.articles.prefix(3)) { article in
+                    FormSection(header: String(localized: "lifehacks.section.knowledge")) {
                         NavigationLink {
-                            ArticleView(article: article)
+                            FishGuideView()
                         } label: {
-                            ArticleRow(article: article)
+                            LifehackRow(titleKey: "fish.guide.title", systemImage: "fish")
+                        }
+                        .buttonStyle(.plain)
+                        .rowDividerInset(LifehackRow.dividerInset)
+                        // Три последние статьи и ссылка на все.
+                        ForEach(articles.articles.prefix(3)) { article in
+                            NavigationLink {
+                                ArticleView(article: article)
+                            } label: {
+                                ArticleRow(article: article)
+                                    .padding(.vertical, AppSpacing.sm)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .rowDividerInset(ArticleRow.dividerInset)
+                        }
+                        if articles.articles.isEmpty {
+                            Text("articles.empty")
+                                .font(AppTypography.bodySmall)
+                                .foregroundStyle(AppColors.textSecondary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.vertical, AppSpacing.lg)
+                        } else {
+                            NavigationLink {
+                                ArticlesListView()
+                            } label: {
+                                LifehackRow(titleKey: "articles.all", systemImage: "books.vertical")
+                            }
+                            .buttonStyle(.plain)
+                            .rowDividerInset(LifehackRow.dividerInset)
                         }
                     }
-                    if articles.articles.isEmpty {
-                        Text("articles.empty")
-                            .font(AppTypography.bodySmall)
-                            .foregroundStyle(AppColors.textSecondary)
-                    } else {
-                        NavigationLink {
-                            ArticlesListView()
-                        } label: {
-                            LifehackRow(titleKey: "articles.all", systemImage: "books.vertical")
-                        }
-                    }
-                } header: {
-                    Text("lifehacks.section.knowledge")
                 }
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
             }
             .navigationTitle("tab.lifehacks")
             .navigationDestination(item: $opened) { id in

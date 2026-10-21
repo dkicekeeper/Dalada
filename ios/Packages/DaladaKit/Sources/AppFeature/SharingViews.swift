@@ -141,18 +141,27 @@ struct UserTripsListView: View {
                     description: String(localized: "person.friendsOnlyHint")
                 )
             } else {
-                List {
-                    ForEach(trips) { trip in
-                        NavigationLink {
-                            TripDetailView(tripID: trip.id, environment: environment)
-                        } label: {
-                            TripRow(trip: trip)
+                // DesignKit 8.0.0: поездки — строки в стеклянной секции (до этого List).
+                ScrollView {
+                    VStack(spacing: AppSpacing.md) {
+                        CardList(trips, layout: .section) { trip in
+                            NavigationLink {
+                                TripDetailView(tripID: trip.id, environment: environment)
+                            } label: {
+                                TripRow(trip: trip)
+                                    .padding(.vertical, AppSpacing.md)
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .rowDividerInset(ItemRowMetrics.symbolInset)
+                        }
+                        // Следующая страница — когда низ списка на экране (DesignKit).
+                        LoadMoreFooter(state: loadState, onLoad: loadMore) {
+                            TripRowSkeleton()
                         }
                     }
-                    // Следующая страница — когда низ списка на экране (DesignKit).
-                    LoadMoreFooter(state: loadState, onLoad: loadMore) {
-                        TripRowSkeleton()
-                    }
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.md)
                 }
             }
         }
@@ -202,13 +211,21 @@ struct UserPlacesListView: View {
     @State private var selectedPlace: PlaceSelection?
 
     var body: some View {
-        List(places) { place in
-            Button {
-                selectedPlace = PlaceSelection(id: place.id)
-            } label: {
-                PlaceRow(place: place)
+        // DesignKit 8.0.0: места — строки в стеклянной секции (до этого List).
+        ScrollView {
+            CardList(places, layout: .section) { place in
+                Button {
+                    selectedPlace = PlaceSelection(id: place.id)
+                } label: {
+                    PlaceRow(place: place)
+                        .padding(.vertical, AppSpacing.md)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .rowDividerInset(ItemRowMetrics.symbolInset)
             }
-            .buttonStyle(.plain)
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("person.places")
         .sheet(item: $selectedPlace) { selection in
