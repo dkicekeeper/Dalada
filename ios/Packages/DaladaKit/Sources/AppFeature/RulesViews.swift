@@ -155,50 +155,42 @@ struct RulesListView: View {
     @Environment(RulesStore.self) private var rules
     @Environment(SpeciesStore.self) private var speciesStore
 
+    // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
     var body: some View {
-        List {
-            Section {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
                 RulesDisclaimer()
-                    .listRowInsets(EdgeInsets())
-                    .listRowBackground(Color.clear)
-            }
-            if let pack = rules.pack {
-                let today = RulesStore.today
-                let active = pack.zones.filter { pack.banState(ofZone: $0.id, on: today) == .active }
-                let soon = pack.zones.filter { pack.banState(ofZone: $0.id, on: today) == .soon }
-                let others = pack.zones.filter { pack.banState(ofZone: $0.id, on: today) == .none }
-                if !active.isEmpty {
-                    Section("rules.section.now") {
-                        ForEach(active) { zone in zoneLink(zone, pack: pack, today: today) }
+                if let pack = rules.pack {
+                    let today = RulesStore.today
+                    let active = pack.zones.filter { pack.banState(ofZone: $0.id, on: today) == .active }
+                    let soon = pack.zones.filter { pack.banState(ofZone: $0.id, on: today) == .soon }
+                    let others = pack.zones.filter { pack.banState(ofZone: $0.id, on: today) == .none }
+                    if !active.isEmpty {
+                        zoneSection(String(localized: "rules.section.now"), zones: active, pack: pack, today: today)
                     }
-                }
-                if !soon.isEmpty {
-                    Section("rules.section.soon") {
-                        ForEach(soon) { zone in zoneLink(zone, pack: pack, today: today) }
+                    if !soon.isEmpty {
+                        zoneSection(String(localized: "rules.section.soon"), zones: soon, pack: pack, today: today)
                     }
-                }
-                // Остальные зоны — по бассейнам приказа.
-                ForEach(RulesPack.groupedByBasin(others), id: \.basin) { group in
-                    Section(RuleBasinTitle.text(group.basin)) {
-                        ForEach(group.zones) { zone in zoneLink(zone, pack: pack, today: today) }
+                    // Остальные зоны — по бассейнам приказа.
+                    ForEach(RulesPack.groupedByBasin(others), id: \.basin) { group in
+                        zoneSection(RuleBasinTitle.text(group.basin), zones: group.zones, pack: pack, today: today)
                     }
-                }
-                if !pack.generalRegulations.isEmpty {
-                    Section("rules.section.general") {
-                        ForEach(pack.generalRegulations) { regulation in
-                            RegulationCard(regulation: regulation, status: pack.status(of: regulation, on: today))
-                                .listRowInsets(EdgeInsets(top: AppSpacing.xs, leading: 0, bottom: AppSpacing.xs, trailing: 0))
-                                .listRowBackground(Color.clear)
+                    if !pack.generalRegulations.isEmpty {
+                        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                            SectionHeader(String(localized: "rules.section.general"))
+                            ForEach(pack.generalRegulations) { regulation in
+                                RegulationCard(regulation: regulation, status: pack.status(of: regulation, on: today))
+                            }
                         }
                     }
-                }
-            } else {
-                Section {
+                } else {
                     Text("rules.unavailable")
                         .font(AppTypography.bodySmall)
                         .foregroundStyle(AppColors.textSecondary)
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("rules.title")
         .task { await rules.loadIfNeeded() }
@@ -206,13 +198,35 @@ struct RulesListView: View {
         .refreshable { await rules.loadIfNeeded() }
     }
 
+    private func zoneSection(_ title: String, zones: [RuleZone], pack: RulesPack, today: CalendarDay) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.sm) {
+            SectionHeader(title)
+            CardList(zones, layout: .section) { zone in
+                zoneLink(zone, pack: pack, today: today)
+            }
+        }
+    }
+
     private func zoneLink(_ zone: RuleZone, pack: RulesPack, today: CalendarDay) -> some View {
         NavigationLink {
             RuleZoneView(zoneID: zone.id, environment: environment)
         } label: {
+            HStack(spacing: AppSpacing.md) {
+                zoneLabel(zone, pack: pack, today: today)
+                DisclosureChevron()
+            }
+            .padding(.vertical, AppSpacing.md)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func zoneLabel(_ zone: RuleZone, pack: RulesPack, today: CalendarDay) -> some View {
+        Group {
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 Text(verbatim: zone.name.text(for: RulesStore.language))
                     .font(AppTypography.bodyEmphasis)
+                    .foregroundStyle(AppColors.textPrimary)
                 if let ban = mainBan(in: zone, pack: pack, today: today) {
                     HStack(spacing: AppSpacing.sm) {
                         Text(verbatim: ban.title.text(for: RulesStore.language))
@@ -464,21 +478,34 @@ struct FishGuideView: View {
     @Environment(RulesStore.self) private var rules
 
     var body: some View {
-        List(speciesStore.species) { species in
-            NavigationLink {
-                FishDetailView(species: species)
-            } label: {
-                VStack(alignment: .leading, spacing: AppSpacing.xxs) {
-                    Text(verbatim: species.name(for: SpeciesStore.languageCode))
-                        .font(AppTypography.bodyEmphasis)
-                    if let latin = species.nameLatin {
-                        Text(verbatim: latin)
-                            .font(AppTypography.caption)
-                            .italic()
-                            .foregroundStyle(AppColors.textSecondary)
+        // DesignKit 8.0.0: виды — строки в стеклянной секции (до этого List).
+        ScrollView {
+            CardList(speciesStore.species, layout: .section) { species in
+                NavigationLink {
+                    FishDetailView(species: species)
+                } label: {
+                    HStack(spacing: AppSpacing.md) {
+                        VStack(alignment: .leading, spacing: AppSpacing.xxs) {
+                            Text(verbatim: species.name(for: SpeciesStore.languageCode))
+                                .font(AppTypography.bodyEmphasis)
+                                .foregroundStyle(AppColors.textPrimary)
+                            if let latin = species.nameLatin {
+                                Text(verbatim: latin)
+                                    .font(AppTypography.caption)
+                                    .italic()
+                                    .foregroundStyle(AppColors.textSecondary)
+                            }
+                        }
+                        Spacer(minLength: 0)
+                        DisclosureChevron()
                     }
+                    .padding(.vertical, AppSpacing.md)
+                    .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("fish.guide.title")
         .task { await speciesStore.loadIfNeeded() }
@@ -493,34 +520,35 @@ struct FishDetailView: View {
     @Environment(RulesStore.self) private var rules
 
     var body: some View {
-        List {
-            Section {
-                LabeledContent("fish.name.ru") { Text(verbatim: species.nameRu) }
-                LabeledContent("fish.name.kk") { Text(verbatim: species.nameKk) }
-                LabeledContent("fish.name.en") { Text(verbatim: species.nameEn) }
-                if let latin = species.nameLatin {
-                    LabeledContent("fish.name.latin") { Text(verbatim: latin).italic() }
-                }
-            }
-            Section {
-                if sizes.isEmpty {
-                    Text("fish.minSize.none")
-                        .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
-                }
-                ForEach(sizes, id: \.zone) { item in
-                    LabeledContent {
-                        Text("rules.minSize.cm \(item.cm)")
-                            .monospacedDigit()
-                    } label: {
-                        Text(verbatim: item.zone)
+        // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.xl) {
+                FormSection {
+                    UniversalRow(String(localized: "fish.name.ru"), value: species.nameRu)
+                    UniversalRow(String(localized: "fish.name.kk"), value: species.nameKk)
+                    UniversalRow(String(localized: "fish.name.en"), value: species.nameEn)
+                    if let latin = species.nameLatin {
+                        UniversalRow(String(localized: "fish.name.latin"), value: latin)
                     }
                 }
-            } header: {
-                Text("fish.minSize.title")
-            } footer: {
-                Text("fish.minSize.footer")
+                FormSection(
+                    header: String(localized: "fish.minSize.title"),
+                    footer: String(localized: "fish.minSize.footer")
+                ) {
+                    if sizes.isEmpty {
+                        Text("fish.minSize.none")
+                            .font(AppTypography.bodySmall)
+                            .foregroundStyle(AppColors.textSecondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, AppSpacing.lg)
+                    }
+                    ForEach(sizes, id: \.zone) { item in
+                        UniversalRow(item.zone, value: String(localized: "rules.minSize.cm \(item.cm)"))
+                    }
+                }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle(Text(verbatim: species.name(for: SpeciesStore.languageCode)))
         .task { await rules.loadIfNeeded() }

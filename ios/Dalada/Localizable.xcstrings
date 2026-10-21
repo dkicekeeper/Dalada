@@ -2876,6 +2876,29 @@
         }
       }
     },
+    "checklist.deleteItem" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete item"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тармақты жою"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить пункт"
+          }
+        }
+      }
+    },
     "checklist.edit" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -42,14 +42,15 @@ struct FriendPickerView: View {
                     description: String(localized: "friendPicker.empty.description")
                 )
             } else {
-                List {
-                    Section {
+                // DesignKit 8.0.0: стеклянная секция (до этого List).
+                ScrollView {
+                    FormSection(footer: String(localized: "friendPicker.limit \(limit)")) {
                         ForEach(available) { friend in
                             row(friend)
                         }
-                    } footer: {
-                        Text("friendPicker.limit \(limit)")
                     }
+                    .screenPadding()
+                    .padding(.vertical, AppSpacing.md)
                 }
             }
         }
@@ -78,9 +79,12 @@ struct FriendPickerView: View {
                 SelectionIndicator(isSelected: isSelected, tint: AppColors.accent)
                 PersonRow(displayName: friend.displayName, username: friend.username, avatarPath: friend.avatarPath)
             }
+            .padding(.vertical, AppSpacing.md)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        // Под текстом: после круга выбора, аватара и промежутков.
+        .rowDividerInset(AppIconSize.lg + AppSpacing.md + ItemRowMetrics.symbolInset)
         .disabled(isFull)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }

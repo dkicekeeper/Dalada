@@ -127,10 +127,7 @@ struct CheckinFormView: View {
                                 .padding(.vertical, AppSpacing.md)
                             }
                             .buttonStyle(.plain)
-                            // Удалить улов: смахиванием (iOS 27) и долгим нажатием.
-                            .swipeActions {
-                                removeCatchButton(catchDraft)
-                            }
+                            // Удалить улов — долгим нажатием (DesignKit 8.0.0: без смахивания).
                             .contextMenu {
                                 removeCatchButton(catchDraft)
                             }
@@ -219,7 +216,6 @@ struct CheckinFormView: View {
                 .screenPadding()
                 .padding(.vertical, AppSpacing.md)
             }
-            .swipeActionsContainerIfAvailable()
         }
         .sheet(item: $editingCatch) { catchDraft in
             CatchFormView(draft: catchDraft, minSizes: minSizes) { updated in

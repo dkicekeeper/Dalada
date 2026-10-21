@@ -13,6 +13,9 @@ struct ArticleRow: View {
 
     private var language: String { PackingFormat.language }
 
+    /// Где начинается текст: после значка раздела и промежутка (метка ссылки не передаёт отступ).
+    static let dividerInset = AppIconSize.lg + AppSpacing.xs + AppSpacing.md
+
     var body: some View {
         ItemRow(
             article.title.text(for: language),
@@ -57,9 +60,10 @@ struct ArticlesListView: View {
         }
     }
 
+    // DesignKit 8.0.0: стеклянная секция на странице (до этого List).
     var body: some View {
-        List {
-            Section {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: AppSpacing.sm) {
                         chip(Text("articles.filter.all"), .all)
@@ -70,24 +74,32 @@ struct ArticlesListView: View {
                     }
                     .padding(.vertical, AppSpacing.xxs)
                 }
-            }
-            .listRowBackground(Color.clear)
-            .listRowInsets(EdgeInsets(top: 0, leading: AppSpacing.md, bottom: 0, trailing: AppSpacing.md))
+                .contentMargins(.horizontal, AppSpacing.lg, for: .scrollContent)
+                .padding(.horizontal, -AppSpacing.lg)
 
-            Section {
                 if shown.isEmpty {
                     Text(filter == .saved ? LocalizedStringKey("articles.saved.empty") : LocalizedStringKey("articles.empty"))
                         .font(AppTypography.bodySmall)
                         .foregroundStyle(AppColors.textSecondary)
-                }
-                ForEach(shown) { article in
-                    NavigationLink {
-                        ArticleView(article: article)
-                    } label: {
-                        ArticleRow(article: article)
+                } else {
+                    CardList(shown, layout: .section) { article in
+                        NavigationLink {
+                            ArticleView(article: article)
+                        } label: {
+                            HStack(spacing: AppSpacing.md) {
+                                ArticleRow(article: article)
+                                DisclosureChevron()
+                            }
+                            .padding(.vertical, AppSpacing.sm)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .rowDividerInset(ArticleRow.dividerInset)
                     }
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("articles.title")
         .task { await store.loadIfNeeded() }

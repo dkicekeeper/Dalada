@@ -65,7 +65,8 @@ struct CommentsButton: View {
 }
 
 /// Комментарии поста (поездки, отчёта, отзыва): список, поле ввода. Удалить можно свой комментарий
-/// и любой под своим постом (смахнуть влево); у чужих — «Пожаловаться» и «Заблокировать».
+/// и любой под своим постом (долгим нажатием, DesignKit 8.0.0: без смахивания); у чужих —
+/// «Пожаловаться» и «Заблокировать».
 struct CommentsView: View {
     let key: ReactionKey
 
@@ -102,13 +103,6 @@ struct CommentsView: View {
             ForEach(comments) { comment in
                 commentRow(comment)
                     .transition(.skeletonReveal)
-                    .swipeActions(edge: .trailing) {
-                        if comment.canDelete {
-                            Button("comments.delete", systemImage: "trash", role: .destructive) {
-                                Task { await delete(comment) }
-                            }
-                        }
-                    }
                     .contextMenu {
                         if comment.canDelete {
                             Button("comments.delete", systemImage: "trash", role: .destructive) {
