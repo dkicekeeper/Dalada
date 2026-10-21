@@ -36,6 +36,8 @@ struct PersonRow<Trailing: View>: View {
         ) {
             trailing
         }
+        // В стеклянной секции разделитель под текстом: после аватара и промежутка.
+        .rowDividerInset(AppIconSize.xxl + AppSpacing.md)
     }
 }
 
@@ -568,22 +570,32 @@ struct BlockedUsersView: View {
     @State private var isLoaded = false
 
     var body: some View {
-        List {
-            if blocked.isEmpty && isLoaded {
-                Text("friends.blocked.empty")
-                    .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-            ForEach(blocked) { user in
-                PersonRow(displayName: user.displayName, username: user.username, avatarPath: user.avatarPath) {
-                    DSButton(String(localized: "person.unblock"), appearance: .secondary, size: .small) {
-                        Task {
-                            try? await environment.backend?.unblock(user.id)
-                            await load()
+        // DesignKit 8.0.0: стеклянная секция на странице (до этого List).
+        ScrollView {
+            Group {
+                if blocked.isEmpty && isLoaded {
+                    Text("friends.blocked.empty")
+                        .font(AppTypography.bodySmall)
+                        .foregroundStyle(AppColors.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else if !blocked.isEmpty {
+                    FormSection {
+                        ForEach(blocked) { user in
+                            PersonRow(displayName: user.displayName, username: user.username, avatarPath: user.avatarPath) {
+                                DSButton(String(localized: "person.unblock"), appearance: .secondary, size: .small) {
+                                    Task {
+                                        try? await environment.backend?.unblock(user.id)
+                                        await load()
+                                    }
+                                }
+                            }
+                            .padding(.vertical, AppSpacing.md)
                         }
                     }
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("friends.blocked")
         .task { await load() }

@@ -15,43 +15,50 @@ struct CloseFriendsView: View {
     @State private var errorText: String?
 
     var body: some View {
-        List {
-            if friends.isEmpty && isLoaded {
-                EmptyState(
-                    icon: "person.2",
-                    title: String(localized: "closeFriends.empty.title"),
-                    description: String(localized: "closeFriends.empty")
-                )
-                .listRowBackground(Color.clear)
-                .transition(.skeletonReveal)
-            } else if !isLoaded {
-                Section {
-                    ForEach(0..<5, id: \.self) { _ in
-                        PersonRowSkeleton()
-                    }
-                }
-                .transition(.opacity)
-            } else {
-                Section {
-                    ForEach(friends) { friend in
-                        Button {
-                            Task { await toggle(friend.id) }
-                        } label: {
-                            PersonRow(displayName: friend.displayName, username: friend.username, avatarPath: friend.avatarPath) {
-                                Image(systemName: close.contains(friend.id) ? "star.circle.fill" : "circle")
-                                    .foregroundStyle(close.contains(friend.id) ? AppColors.accent : AppColors.textTertiary)
-                                    .font(AppTypography.bodyEmphasis)
-                            }
-                            .contentShape(Rectangle())
+        // DesignKit 8.0.0: стеклянная секция на странице (до этого List).
+        ScrollView {
+            Group {
+                if friends.isEmpty && isLoaded {
+                    EmptyState(
+                        icon: "person.2",
+                        title: String(localized: "closeFriends.empty.title"),
+                        description: String(localized: "closeFriends.empty")
+                    )
+                    .transition(.skeletonReveal)
+                } else if !isLoaded {
+                    FormSection {
+                        ForEach(0..<5, id: \.self) { _ in
+                            PersonRowSkeleton()
+                                .padding(.vertical, AppSpacing.md)
+                                .rowDividerInset(AppIconSize.xxl + AppSpacing.md)
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityAddTraits(close.contains(friend.id) ? .isSelected : [])
                     }
-                } footer: {
-                    Text("closeFriends.footer")
+                    .transition(.opacity)
+                } else {
+                    FormSection(footer: String(localized: "closeFriends.footer")) {
+                        ForEach(friends) { friend in
+                            Button {
+                                Task { await toggle(friend.id) }
+                            } label: {
+                                PersonRow(displayName: friend.displayName, username: friend.username, avatarPath: friend.avatarPath) {
+                                    Image(systemName: close.contains(friend.id) ? "star.circle.fill" : "circle")
+                                        .foregroundStyle(close.contains(friend.id) ? AppColors.accent : AppColors.textTertiary)
+                                        .font(AppTypography.bodyEmphasis)
+                                }
+                                .padding(.vertical, AppSpacing.md)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            // Метка кнопки не передаёт отступ разделителя наружу.
+                            .rowDividerInset(AppIconSize.xxl + AppSpacing.md)
+                            .accessibilityAddTraits(close.contains(friend.id) ? .isSelected : [])
+                        }
+                    }
+                    .transition(.skeletonReveal)
                 }
-                .transition(.skeletonReveal)
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         // Друзья проявляются на месте скелетонов.
         .animation(AppAnimation.smooth, value: isLoaded)

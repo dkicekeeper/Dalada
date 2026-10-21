@@ -1,4 +1,5 @@
 import DaladaCore
+import DesignComponents
 import DesignTokens
 import SwiftUI
 
@@ -11,63 +12,62 @@ struct NotificationSettingsView: View {
     @State private var saveTask: Task<Void, Never>?
 
     var body: some View {
-        List {
-            NotificationsSection()
+        // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
+        ScrollView {
+            VStack(spacing: AppSpacing.xl) {
+                NotificationsSection()
 
-            if session.profile != nil {
-                Section {
-                    Toggle("notifications.kind.replies", isOn: binding(\.replies))
-                    Toggle("notifications.kind.friendRequests", isOn: binding(\.friendRequests))
-                    Toggle("notifications.kind.comments", isOn: binding(\.comments))
-                    Toggle("notifications.kind.friendPosts", isOn: binding(\.friendPosts))
-                    Toggle("notifications.kind.tripTags", isOn: binding(\.tripTags))
-                    Toggle("notifications.kind.reactions", isOn: binding(\.reactions))
-                    Toggle("notifications.kind.liveShare", isOn: binding(\.liveShare))
-                } header: {
-                    Text("notifications.section.people")
-                } footer: {
-                    Text("notifications.people.footer")
-                }
+                if session.profile != nil {
+                    FormSection(
+                        header: String(localized: "notifications.section.people"),
+                        footer: String(localized: "notifications.people.footer")
+                    ) {
+                        toggleRow("notifications.kind.replies", \.replies)
+                        toggleRow("notifications.kind.friendRequests", \.friendRequests)
+                        toggleRow("notifications.kind.comments", \.comments)
+                        toggleRow("notifications.kind.friendPosts", \.friendPosts)
+                        toggleRow("notifications.kind.tripTags", \.tripTags)
+                        toggleRow("notifications.kind.reactions", \.reactions)
+                        toggleRow("notifications.kind.liveShare", \.liveShare)
+                    }
 
-                Section {
-                    Toggle("notifications.kind.bans", isOn: binding(\.bans))
-                    Toggle("notifications.kind.placeActivity", isOn: binding(\.placeActivity))
-                    Toggle("notifications.kind.steward", isOn: binding(\.steward))
-                } header: {
-                    Text("notifications.section.places")
-                } footer: {
-                    Text("notifications.places.footer")
-                }
+                    FormSection(
+                        header: String(localized: "notifications.section.places"),
+                        footer: String(localized: "notifications.places.footer")
+                    ) {
+                        toggleRow("notifications.kind.bans", \.bans)
+                        toggleRow("notifications.kind.placeActivity", \.placeActivity)
+                        toggleRow("notifications.kind.steward", \.steward)
+                    }
 
-                Section {
-                    Toggle("notifications.kind.streak", isOn: binding(\.streak))
-                } header: {
-                    Text("notifications.section.reminders")
-                } footer: {
-                    Text("notifications.reminders.footer")
-                }
+                    FormSection(
+                        header: String(localized: "notifications.section.reminders"),
+                        footer: String(localized: "notifications.reminders.footer")
+                    ) {
+                        toggleRow("notifications.kind.streak", \.streak)
+                    }
 
-                Section {
-                    Toggle("notifications.quiet.toggle", isOn: quietBinding)
-                    if settings.quietHours != nil {
-                        Picker("notifications.quiet.from", selection: hourBinding(\.from)) {
-                            hourOptions
-                        }
-                        Picker("notifications.quiet.to", selection: hourBinding(\.to)) {
-                            hourOptions
+                    FormSection(footer: quietFooter) {
+                        UniversalRow(String(localized: "notifications.quiet.toggle"), accessory: .toggle(quietBinding))
+                        if settings.quietHours != nil {
+                            UniversalRow(
+                                String(localized: "notifications.quiet.from"),
+                                accessory: .menu(hourBinding(\.from), options: hourOptions)
+                            )
+                            UniversalRow(
+                                String(localized: "notifications.quiet.to"),
+                                accessory: .menu(hourBinding(\.to), options: hourOptions)
+                            )
                         }
                     }
-                } footer: {
+
                     if let error {
-                        Text(verbatim: error)
-                            .foregroundStyle(AppColors.destructive)
-                    } else if let quiet = settings.quietHours, quiet.from == quiet.to {
-                        Text("notifications.quiet.same")
-                    } else {
-                        Text("notifications.quiet.footer")
+                        InlineStatusText(message: error, type: .error)
                     }
                 }
             }
+            .screenPadding()
+            .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("notifications.title")
         .navigationBarTitleDisplayMode(.inline)
@@ -78,10 +78,20 @@ struct NotificationSettingsView: View {
         }
     }
 
-    private var hourOptions: some View {
-        ForEach(0..<24, id: \.self) { hour in
-            Text(verbatim: Self.hourLabel(hour)).tag(hour)
+    private var hourOptions: [(label: String, value: Int)] {
+        (0..<24).map { (label: Self.hourLabel($0), value: $0) }
+    }
+
+    private var quietFooter: String {
+        if let quiet = settings.quietHours, quiet.from == quiet.to {
+            String(localized: "notifications.quiet.same")
+        } else {
+            String(localized: "notifications.quiet.footer")
         }
+    }
+
+    private func toggleRow(_ title: LocalizedStringResource, _ keyPath: WritableKeyPath<NotificationSettings, Bool>) -> some View {
+        UniversalRow(String(localized: title), accessory: .toggle(binding(keyPath)))
     }
 
     private func binding(_ keyPath: WritableKeyPath<NotificationSettings, Bool>) -> Binding<Bool> {

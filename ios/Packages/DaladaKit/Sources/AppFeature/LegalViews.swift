@@ -89,36 +89,80 @@ struct LegalLinksSection: View {
     }
 
     var body: some View {
-        Section {
-            Link(destination: LegalDocuments.support(language: language)) {
-                Label("legal.support", systemImage: "questionmark.circle")
-            }
-            Link(destination: LegalDocuments.supportMailURL) {
-                LabeledContent {
-                    Text(verbatim: LegalDocuments.supportEmail)
-                } label: {
-                    Label("legal.contact", systemImage: "envelope")
+        FormSection(
+            header: String(localized: "about.title"),
+            footer: String(localized: "legal.version \(version)")
+        ) {
+            LinkRow(
+                String(localized: "legal.support"),
+                icon: "questionmark.circle",
+                destination: LegalDocuments.support(language: language)
+            )
+            LinkRow(
+                String(localized: "legal.contact"),
+                icon: "envelope",
+                value: LegalDocuments.supportEmail,
+                destination: LegalDocuments.supportMailURL
+            )
+            LinkRow(
+                String(localized: "legal.terms"),
+                icon: "doc.text",
+                destination: LegalDocuments.terms(language: language)
+            )
+            LinkRow(
+                String(localized: "legal.privacy"),
+                icon: "lock.shield",
+                destination: LegalDocuments.privacyPolicy(language: language)
+            )
+        }
+    }
+}
+
+/// Строка-ссылка в стеклянной секции (DesignKit 8.0.0): значок, название, стрелка наружу.
+struct LinkRow: View {
+    let title: String
+    let icon: String
+    var value: String?
+    let destination: URL
+
+    init(_ title: String, icon: String, value: String? = nil, destination: URL) {
+        self.title = title
+        self.icon = icon
+        self.value = value
+        self.destination = destination
+    }
+
+    var body: some View {
+        Link(destination: destination) {
+            UniversalRow(leadingIcon: .sfSymbol(icon, color: AppColors.accent, size: AppIconSize.lg)) {
+                Text(verbatim: title)
+                    .font(AppTypography.body)
+                    .foregroundStyle(AppColors.textPrimary)
+            } trailing: {
+                HStack(spacing: AppSpacing.sm) {
+                    if let value {
+                        Text(verbatim: value)
+                            .font(AppTypography.body)
+                            .foregroundStyle(AppColors.textSecondary)
+                            .lineLimit(1)
+                    }
+                    Icon("arrow.up.right", size: AppIconSize.sm)
+                        .foregroundStyle(AppColors.textSecondary)
                 }
             }
-            Link(destination: LegalDocuments.terms(language: language)) {
-                Label("legal.terms", systemImage: "doc.text")
-            }
-            Link(destination: LegalDocuments.privacyPolicy(language: language)) {
-                Label("legal.privacy", systemImage: "lock.shield")
-            }
-        } header: {
-            Text("about.title")
-        } footer: {
-            Text("legal.version \(version)")
         }
+        // Метка ссылки не передаёт отступ разделителя наружу: значок и промежуток после него.
+        .rowDividerInset(AppIconSize.lg + AppSpacing.md)
     }
 }
 
 /// «О приложении» для гостя: поддержка и документы.
 struct AboutView: View {
     var body: some View {
-        List {
+        ScrollView {
             LegalLinksSection()
+                .screenPadding()
+                .padding(.vertical, AppSpacing.md)
         }
         .navigationTitle("about.title")
         .navigationBarTitleDisplayMode(.inline)
@@ -134,13 +178,16 @@ struct NotificationsSection: View {
     @State private var status: UNAuthorizationStatus?
 
     var body: some View {
-        Section {
-            HStack {
-                Label("notifications.title", systemImage: "bell")
-                Spacer(minLength: 0)
+        FormSection(footer: String(localized: "notifications.footer")) {
+            UniversalRow(leadingIcon: .sfSymbol("bell", color: AppColors.accent, size: AppIconSize.lg)) {
+                Text("notifications.title")
+                    .font(AppTypography.body)
+                    .foregroundStyle(AppColors.textPrimary)
+            } trailing: {
                 switch status {
                 case .some(let current) where PushRegistrar.isAllowed(current):
                     Text("notifications.on")
+                        .font(AppTypography.body)
                         .foregroundStyle(AppColors.textSecondary)
                 case .some(.denied):
                     Button("notifications.openSettings") {
@@ -161,8 +208,6 @@ struct NotificationsSection: View {
                     ProgressView()
                 }
             }
-        } footer: {
-            Text("notifications.footer")
         }
         .task { await refresh() }
         .onChange(of: scenePhase) { _, phase in
