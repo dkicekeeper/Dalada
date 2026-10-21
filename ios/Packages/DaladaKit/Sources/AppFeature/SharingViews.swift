@@ -297,7 +297,7 @@ struct PrivacyZonesView: View {
             allIDs: zones.map(\.id),
             canReorder: false,
             addLabel: String(localized: "privacyZones.add"),
-            onAdd: canAdd ? { editing = EditorRequest(zone: nil) } : nil,
+            onAdd: canAdd ? addZone : nil,
             onDeleteSelected: { pendingDelete = zones.filter { selection.contains($0.id) } }
         )
         .task { await load() }
@@ -324,6 +324,10 @@ struct PrivacyZonesView: View {
 
     private var canAdd: Bool {
         isLoaded && loadError == nil && zones.count < PrivacyZone.limit
+    }
+
+    private func addZone() {
+        editing = EditorRequest(zone: nil)
     }
 
     private func zoneRow(_ zone: PrivacyZone) -> some View {
