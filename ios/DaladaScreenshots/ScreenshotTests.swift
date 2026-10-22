@@ -33,7 +33,10 @@ final class ScreenshotTests: XCTestCase {
         pause(12)
 
         tab(1)
-        pause(10)
+        allowLocation(timeout: 10)
+        // «Где я» — карта едет к точке у Капшагая (её ставит workflow): водоёмы и места с иконками.
+        app.buttons[language == "ru" ? "Где я" : "My location"].tapIfPresent()
+        pause(15)
         snap("01-map")
 
         app.open(Self.placeLink)
@@ -50,7 +53,6 @@ final class ScreenshotTests: XCTestCase {
         snap("04-profile")
         app.swipeUp()
         pause(4)
-        snap("05-profile-content")
         // Первая своя поездка из раздела профиля, если есть.
         let trip = app.buttons.matching(NSPredicate(format: "label CONTAINS[c] %@", language == "ru" ? "км" : "km")).firstMatch
         if trip.exists && trip.isHittable {
@@ -58,15 +60,18 @@ final class ScreenshotTests: XCTestCase {
             pause(8)
             snap("06-trip")
             app.navigationBars.buttons.element(boundBy: 0).tapIfPresent()
+            pause(3)
         }
+        // «Ваши места видите только вы» — свои места с пометкой «Только я».
+        app.buttons[language == "ru" ? "Мои места" : "My places"].tapIfPresent()
+        pause(4)
+        snap("05-profile-content")
 
         tab(3)
         pause(6)
         snap("07-lifehacks")
-
-        tab(0)
-        pause(8)
-        snap("08-home")
+        // «Главная» (08-home) — когда будет витринный аккаунт с друзьями: у демо-аккаунта в ленте
+        // только свои записи, а подпись обещает друзей.
     }
 
     // MARK: - Помощники
@@ -85,11 +90,29 @@ final class ScreenshotTests: XCTestCase {
         pause(2)
     }
 
+    /// Системный вопрос о геопозиции — «При использовании приложения». Окно рисует SpringBoard на
+    /// языке симулятора, поэтому ищем кнопку по-английски и по-русски.
+    private func allowLocation(timeout: TimeInterval) {
+        let alert = XCUIApplication(bundleIdentifier: "com.apple.springboard").alerts.firstMatch
+        guard alert.waitForExistence(timeout: timeout) else { return }
+        let allow = alert.buttons.matching(NSPredicate(
+            format: "label CONTAINS[c] %@ OR label CONTAINS[c] %@", "While Using", "использовании"
+        )).firstMatch
+        if allow.exists {
+            allow.tap()
+        } else {
+            alert.buttons.element(boundBy: 1).tapIfPresent()
+        }
+        pause(2)
+    }
+
     private func pause(_ seconds: TimeInterval) {
         _ = XCTWaiter.wait(for: [XCTestExpectation(description: "pause")], timeout: seconds)
     }
 
     private func snap(_ name: String) {
+        // Системное окно поверх приложения на витрину не годится.
+        allowLocation(timeout: 1)
         let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
         attachment.name = name
         attachment.lifetime = .keepAlways
