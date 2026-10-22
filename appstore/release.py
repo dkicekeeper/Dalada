@@ -160,7 +160,10 @@ def update_availability(app_id: str) -> None:
     print(f"Доступность: только Казахстан (изменено стран: {changed}) — готово")
 
 
-def update_review_detail(version: dict) -> None:
+CONTACT = ("contactFirstName", "contactLastName", "contactPhone", "contactEmail")
+
+
+def update_review_detail(app_id: str, version: dict) -> None:
     try:
         detail = call("GET", f"/appStoreVersions/{version['id']}/appStoreReviewDetail")["data"]
     except ApiError as error:
@@ -168,26 +171,43 @@ def update_review_detail(version: dict) -> None:
             raise
         detail = None
     attributes = {"notes": text("review_notes.txt")}
+    if not detail:
+        # Без имени и телефона Apple данные для проверки не создаёт: берём контакт бета-проверки,
+        # который владелец уже заполнил в TestFlight (в лог не выводится).
+        beta = call("GET", f"/apps/{app_id}/betaAppReviewDetail")["data"]["attributes"]
+        attributes.update({key: beta[key] for key in CONTACT if beta.get(key)})
+        if not all(attributes.get(key) for key in CONTACT[:3]):
+            todo.append("контакт для проверки: имя, фамилия, телефон (App Store Connect → версия → "
+                        "App Review Information), затем снова App Store release — допишет заметки")
+            return
     demo_user = os.environ.get("DEMO_USER", "").strip()
     demo_password = os.environ.get("DEMO_PASSWORD", "")
     if demo_user and demo_password:
         attributes.update({"demoAccountRequired": True, "demoAccountName": demo_user,
                            "demoAccountPassword": demo_password})
     current = detail["attributes"] if detail else {}
-    if not current.get("contactEmail"):
+    if not current.get("contactEmail") and not attributes.get("contactEmail"):
         attributes["contactEmail"] = FEEDBACK_EMAIL
-    if detail:
-        call("PATCH", f"/appStoreReviewDetails/{detail['id']}",
-             {"data": {"type": "appStoreReviewDetails", "id": detail["id"], "attributes": attributes}})
-    else:
-        call("POST", "/appStoreReviewDetails", {"data": {
-            "type": "appStoreReviewDetails", "attributes": attributes,
-            "relationships": {"appStoreVersion": {"data": {"type": "appStoreVersions", "id": version["id"]}}}}})
+    try:
+        if detail:
+            call("PATCH", f"/appStoreReviewDetails/{detail['id']}",
+                 {"data": {"type": "appStoreReviewDetails", "id": detail["id"], "attributes": attributes}})
+        else:
+            call("POST", "/appStoreReviewDetails", {"data": {
+                "type": "appStoreReviewDetails", "attributes": attributes,
+                "relationships": {"appStoreVersion": {"data": {"type": "appStoreVersions", "id": version["id"]}}}}})
+    except ApiError as error:
+        # Чаще всего — телефон не в формате «+7 …»; текст ошибки Apple контактов не содержит.
+        todo.append(f"данные для проверки не сохранились ({error.code}): проверить имя и телефон «+7 …» "
+                    "в App Store Connect → версия → App Review Information")
+        print(f"::warning::Данные для проверки: {error}")
+        return
     print("Данные для проверки: заметки" + (", демо-аккаунт" if demo_user and demo_password else "") + " — готово")
-    if not (demo_user and demo_password) and not (current.get("demoAccountRequired") and current.get("demoAccountName")):
+    merged = {**current, **attributes}
+    if not (merged.get("demoAccountRequired") and merged.get("demoAccountName")):
         todo.append("демо-аккаунт для проверки: секреты ASC_DEMO_USER и ASC_DEMO_PASSWORD (Guideline 2.1)")
     missing = [label for key, label in (("contactFirstName", "имя"), ("contactLastName", "фамилия"),
-                                        ("contactPhone", "телефон")) if not current.get(key)]
+                                        ("contactPhone", "телефон")) if not merged.get(key)]
     if missing:
         todo.append(f"контакт для проверки: {', '.join(missing)} (App Store Connect → версия → App Review Information)")
 
@@ -228,13 +248,15 @@ def main() -> None:
     app_id = apps[0]["id"]
     version_string = marketing_version()
     version = editable_version(app_id, version_string)
+    # Номер нужен сайту в день выхода (APP_STORE_ID в .github/scripts/build_site.py).
+    print(f"Apple ID приложения: {app_id}")
 
     update_version(version, version_string)
     update_content_rights(app_id)
     update_age_rating(app_id)
     update_price(app_id)
     update_availability(app_id)
-    update_review_detail(version)
+    update_review_detail(app_id, version)
     if args.build:
         attach_build(app_id, version, version_string, args.build)
     else:
