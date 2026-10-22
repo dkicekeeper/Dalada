@@ -4,7 +4,9 @@
 - _site/s/index.html и _site/404.html — страница места, поездки, улова (данные грузит браузер);
 - _site/p/<id>/index.html — статическая страница каждого публичного места с превью для Telegram
   (название, тип, описание, фото редакции);
-- _site/s/config.js — адрес Supabase и публичный ключ гостя из секретов (в репозитории их нет).
+- _site/s/config.js — адрес Supabase и публичный ключ гостя из секретов (в репозитории их нет);
+- после выхода в App Store (APP_STORE_ID) — кнопка App Store вместо приглашения в бету и баннер
+  Safari (Smart App Banner) на всех страницах.
 
 Без секретов или без сети сайт всё равно собирается — только без страниц мест.
 Ключ и адрес в журнал не печатаем: репозиторий публичный.
@@ -12,6 +14,7 @@
 import html
 import json
 import os
+import re
 import shutil
 import sys
 import urllib.request
@@ -22,12 +25,28 @@ BASE = os.environ.get("SITE_BASE", "/Dalada/")
 ORIGIN = os.environ.get("SITE_ORIGIN", "https://dkicekeeper.github.io")
 PHOTOS = "https://pub-06c03b3c9f2e4de7b1a196206e04c258.r2.dev"
 TEMPLATE = os.path.join(SOURCE, "s", "page.template.html")
+# Apple ID приложения в App Store. Пусто, пока приложения там нет: на сайте — приглашение в бету.
+# В день выхода вписать номер (его печатает workflow App Store release): появятся кнопка App Store
+# и баннер Safari, пропадут слова о бете (docs/05-release/README.md, R3).
+APP_STORE_ID = os.environ.get("APP_STORE_ID", "")
+APP_STORE_URL = "https://apps.apple.com/kz/app/dalada/id" + APP_STORE_ID if APP_STORE_ID else ""
 
 TYPES = {
     "base": "База отдыха", "campsite": "Стоянка", "fishing_spot": "Точка ловли",
     "landmark": "Достопримечательность", "paid_pond": "Платник", "parking": "Съезд, парковка",
     "spring": "Родник", "tackle_shop": "Снасти и наживка", "water_body": "Водоём",
 }
+
+
+def release(page):
+    """После выхода: без блоков <!-- beta -->…<!-- /beta -->, с блоками <!-- appstore …appstore -->
+    и баннером Safari. До выхода страница не меняется."""
+    if not APP_STORE_ID:
+        return page
+    page = re.sub(r"<!-- beta -->.*?<!-- /beta -->\n?", "", page, flags=re.S)
+    page = re.sub(r"<!-- appstore\n?(.*?)appstore -->\n?", r"\1", page, flags=re.S)
+    page = page.replace("{{APP_STORE_URL}}", APP_STORE_URL)
+    return page.replace("</head>", '  <meta name="apple-itunes-app" content="app-id=' + APP_STORE_ID + '">\n</head>', 1)
 
 
 def render(template, title, description, image, url, large):
@@ -75,20 +94,29 @@ def main():
     shutil.rmtree(OUTPUT, ignore_errors=True)
     shutil.copytree(SOURCE, OUTPUT)
     os.remove(os.path.join(OUTPUT, "s", "page.template.html"))
-    template = open(TEMPLATE, encoding="utf-8").read()
+    for folder, _, files in os.walk(OUTPUT):
+        for name in files:
+            if name.endswith(".html"):
+                path = os.path.join(folder, name)
+                with open(path, encoding="utf-8") as f:
+                    page = f.read()
+                with open(path, "w", encoding="utf-8") as f:
+                    f.write(release(page))
+    template = release(open(TEMPLATE, encoding="utf-8").read())
 
     host = os.environ.get("SUPABASE_HOST", "").strip()
     key = os.environ.get("SUPABASE_KEY", "").strip()
     url = ("https://" + host) if host and not host.startswith("http") else host
     config = {"url": url, "key": key, "photos": PHOTOS} if url and key else {}
+    browser = dict(config, appStore=APP_STORE_URL) if APP_STORE_URL else config
     with open(os.path.join(OUTPUT, "s", "config.js"), "w", encoding="utf-8") as out:
-        out.write("window.DALADA = " + json.dumps(config) + ";\n")
+        out.write("window.DALADA = " + json.dumps(browser) + ";\n")
 
     generic_image = ORIGIN + BASE + "s/og.png"
     generic = render(
         template,
         "Dalada — рыбалка и отдых на природе",
-        "Место, поездка или улов в Dalada — карта рыбалки и отдыха в Алматинской области и Жетісу.",
+        "Место, поездка или улов в Dalada — карта рыбалки и отдыха по всему Казахстану.",
         generic_image,
         ORIGIN + BASE + "s/",
         False,

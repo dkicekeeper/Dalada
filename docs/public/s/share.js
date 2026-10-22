@@ -20,7 +20,7 @@
 
   var T = {
     ru: {
-      open: "Открыть в Dalada", route: "Маршрут", getApp: "Как попасть в бету Dalada",
+      open: "Открыть в Dalada", route: "Маршрут", getApp: "Как попасть в бету Dalada", getAppStore: "Скачать Dalada в App Store",
       invite: "Вас зовут в поездку", inviteHint: "Установите Dalada, войдите и откройте эту ссылку в приложении — вы станете участником поездки.",
       inviteJoin: "Присоединиться в Dalada",
       notFound: "Запись недоступна", notFoundHint: "Её удалили или она видна не всем. Откройте ссылку в приложении Dalada.",
@@ -34,7 +34,7 @@
       hours: "ч", minutes: "мин", kg: "кг", g: "г", cm: "см"
     },
     kk: {
-      open: "Dalada-да ашу", route: "Бағыт", getApp: "Dalada бетасына қалай қосылуға болады",
+      open: "Dalada-да ашу", route: "Бағыт", getApp: "Dalada бетасына қалай қосылуға болады", getAppStore: "Dalada-ны App Store-дан жүктеу",
       invite: "Сізді сапарға шақырады", inviteHint: "Dalada-ны орнатып, кіріңіз де, осы сілтемені қосымшада ашыңыз — сапарға қатысушы боласыз.",
       inviteJoin: "Dalada-да қосылу",
       notFound: "Жазба қолжетімсіз", notFoundHint: "Ол жойылған немесе барлығына көрінбейді. Сілтемені Dalada қосымшасында ашыңыз.",
@@ -48,7 +48,7 @@
       hours: "сағ", minutes: "мин", kg: "кг", g: "г", cm: "см"
     },
     en: {
-      open: "Open in Dalada", route: "Directions", getApp: "How to join the Dalada beta",
+      open: "Open in Dalada", route: "Directions", getApp: "How to join the Dalada beta", getAppStore: "Get Dalada on the App Store",
       invite: "You’re invited on a trip", inviteHint: "Install Dalada, sign in and open this link in the app — you’ll join the trip.",
       inviteJoin: "Join in Dalada",
       notFound: "Not available", notFoundHint: "It was deleted or isn’t visible to everyone. Open the link in the Dalada app.",
@@ -78,6 +78,13 @@
     }
     return null;
   })();
+
+  // До выхода — как попасть в бету (главная сайта), после — App Store (config.appStore).
+  function getAppLink() {
+    return config.appStore
+      ? el("a", { class: "button", href: config.appStore, text: T.getAppStore })
+      : el("a", { class: "button", href: base, text: T.getApp });
+  }
 
   function el(tag, attrs, children) {
     var node = document.createElement(tag);
@@ -126,7 +133,7 @@
     var links = [];
     if (deepLink) links.push(el("a", { class: "button primary", href: deepLink, text: T.open }));
     (extra || []).forEach(function (link) { links.push(link); });
-    links.push(el("a", { class: "button", href: base, text: T.getApp }));
+    links.push(getAppLink());
     return el("div", { class: "actions" }, links);
   }
 
@@ -268,7 +275,7 @@
       el("p", { class: "desc", text: T.inviteHint }),
       el("div", { class: "actions" }, [
         el("a", { class: "button primary", href: "dalada://trip-invite/" + target.id, text: T.inviteJoin }),
-        el("a", { class: "button", href: base, text: T.getApp })
+        getAppLink()
       ])
     ]);
   }
