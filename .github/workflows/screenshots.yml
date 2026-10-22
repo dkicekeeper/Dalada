@@ -2,10 +2,16 @@ name: Screenshots
 
 # Скриншоты для App Store (docs/05-release/README.md#скриншоты): UI-тест DaladaScreenshots на
 # симуляторе iPhone 6,9″ под демо-аккаунтом — по-русски и по-английски → рамки с подписями
-# (appstore/screenshots/frame.py, captions.json) → артефакт «screenshots» (готовые и сырые снимки).
+# (appstore/screenshots/frame.py, captions.json) → артефакт «screenshots» (готовые и сырые снимки);
+# с галочкой «upload» (из main) — ещё и в App Store Connect, вместо прежних (appstore/screenshots_upload.py).
 # Вручную: Actions → Screenshots → Run workflow. Логи публичные: данные входа — только из секретов.
 on:
   workflow_dispatch:
+    inputs:
+      upload:
+        description: "Загрузить в App Store Connect (заменит скриншоты версии)"
+        type: boolean
+        default: false
 
 concurrency:
   group: screenshots
@@ -123,3 +129,20 @@ jobs:
           name: screenshots
           path: ${{ runner.temp }}/screenshots
           retention-days: 30
+
+      - name: Upload to App Store Connect
+        if: inputs.upload && github.ref == 'refs/heads/main'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/asc"
+          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/asc/AuthKey.p8"
+          export ASC_KEY_PATH="$RUNNER_TEMP/asc/AuthKey.p8"
+          "$RUNNER_TEMP/venv/bin/pip" install --quiet pyjwt cryptography
+          "$RUNNER_TEMP/venv/bin/python" appstore/screenshots_upload.py "$RUNNER_TEMP/screenshots/framed"
+
+      - name: Remove API key
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/asc"
