@@ -10,6 +10,8 @@ User-generated content (Guideline 1.2):
 
 Account deletion (5.1.1(v)): Profile -> tap the header with your name (Profile settings) -> Delete account. It deletes the account and all its data at once.
 
-Location: "When In Use" only. The background location mode records the track of a trip the user starts explicitly (Map tab -> Start a trip -> Start); recording shows a Live Activity and stops with Finish.
+Location: "When In Use" only. The background location mode records the track of a trip the user starts explicitly (Map tab -> "+" button -> Start a trip -> Start, or Start a trip on the Home tab); recording shows a Live Activity and stops with Finish. Sharing your location with friends works only during such a trip and only after the user turns it on.
+
+The app is for Kazakhstan: maps, places and fishing rules cover Kazakhstan. The interface is in Russian, Kazakh and English and follows the device language (iOS Settings -> Dalada -> Language). Map data: OpenStreetMap contributors and OpenMapTiles ("i" button at the top right of the map).
 
 Privacy policy: https://dkicekeeper.github.io/Dalada/privacy-policy.html

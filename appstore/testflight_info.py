@@ -36,7 +36,8 @@ BUNDLE_ID = "app.dalada.ios"
 LOCALES = ["en-US", "ru"]
 FEEDBACK_EMAIL = "dakacom@gmail.com"
 PRIVACY_POLICY = "https://dkicekeeper.github.io/Dalada/privacy-policy.html"
-API = "https://api.appstoreconnect.apple.com/v1"
+API_ROOT = "https://api.appstoreconnect.apple.com"
+API = API_ROOT + "/v1"
 
 _token = {"value": "", "exp": 0}
 
@@ -61,8 +62,9 @@ class ApiError(Exception):
 
 
 def call(method: str, path: str, body: dict | None = None) -> dict:
+    # Пути «/v2/…» (доступность по странам) — от корня API, остальные — от /v1.
     request = urllib.request.Request(
-        API + path,
+        (API_ROOT if path.startswith("/v2/") else API) + path,
         method=method,
         data=json.dumps(body).encode() if body is not None else None,
         headers={"Authorization": "Bearer " + token(), "Content-Type": "application/json"},
@@ -132,10 +134,10 @@ def update_app_information(app_id: str) -> bool:
     if not demo_ready:
         print("::warning::Демо-аккаунт для бета-проверки не задан (секреты ASC_DEMO_USER и ASC_DEMO_PASSWORD) — "
               "без него Apple не проверит бету (Guideline 2.1(a)). См. docs/04-beta/testflight.md.")
-    return demo_ready
     if missing:
         print(f"::warning::Контакт для бета-проверки: не заполнено — {', '.join(missing)}. "
               "App Store Connect → TestFlight → Test Information → Beta App Review Information.")
+    return demo_ready
 
 
 def builds(app_id: str, limit: int = 15) -> list[dict]:

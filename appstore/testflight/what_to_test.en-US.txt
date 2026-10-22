@@ -1,21 +1,14 @@
-Browse places on the Map tab, sign in with Apple or Google, add your own place, post a report with a catch and a photo (I’m here on a place card), record a trip (the “+” button on the map → Start a trip), add a friend by username, write a review or start a discussion, open checklists and articles in the Tips tab.
+This is version 1.0.0 — the one going to the App Store. Please go through everything: sign in with Apple or Google, browse places on the map, add your own place, post a report with a catch and a photo (I’m here on a place card), record a trip (the “+” button on the map → Start a trip), add a friend, write a review or start a discussion, open the Tips tab. Tell us about anything that looks odd or gets in the way.
 
 New:
-• The “+” button on the map opens its menu again: the “i” button (map attribution) and the compass are now at the top right.
-• Fishing bans cover all of Kazakhstan: ban dates for all eight basins, with region zones on the map. In Tips → Rules and bans the zones are grouped by basin.
-• About 1,400 editorial places across the country.
-• The first time you open the map it highlights the Layers and “+” buttons — tap to go on.
-• A new place takes three steps: place, description, who can see it. You can save as soon as there is a name.
-• Gear tags: Tips → My gear → an item → Tags (your own words or suggestions). A tag filter above the list, and the summary shows what the filtered gear weighs.
-• Offline maps: a banner when there is no connection, you are on mobile data or a region did not download (tap to retry). The Altai is split into Oskemen, Bukhtarma, Katon-Karagay with Belukha, and Markakol.
-• Trip participants in one row with avatars; tap to see the list.
-• On a place card, fishing methods, access and amenities are tags; reviews and discussions load with outlines.
-• Empty screens, loading and the steps after the first sign-in have a new look.
+• Screens and lists have a new look — glass sections. No more swiping: edit or delete with a long press (trips, places, catches, gear, checklists, offline maps, comments).
+• Gear and checklists: select several and set your own order by dragging (in the toolbar); the order is the same on all your devices.
+• The “+” button on the map opens its menu; the “i” button (map attribution) and the compass are at the top right.
 
 Earlier:
-• A new icon — a float on the water; the map, offline regions, national parks and reserves cover all of Kazakhstan.
-• Crash reports (if Share with App Developers is on in iOS), not linked to your account.
-• The “+” menu on the map, new forms, full-screen photos with zoom; Share gives a page that opens without the app; invite to a trip by link.
-• Contributor level and Review place edits, notes in your places, the My photos layer, weekly streaks, weather at a place, Show friends where I am, private profile and Close friends, Download GPX and Download my data, shared packing.
+• Fishing bans across Kazakhstan, about 1,400 editorial places, the map and offline regions for the whole country.
+• A tour of the map buttons on first launch, a new place in steps, gear tags, trip participants with avatars, banners in Offline maps.
+• A new icon — a float on the water; crash reports not linked to your account.
+• Friends and the feed, Share as a page that opens without the app, invite to a trip by link, contributor level, notes in your places, weekly streaks, weather at a place, Show friends where I am, private profile and Close friends, Download GPX and Download my data, shared packing.
 
 Feedback: the Send Beta Feedback button in TestFlight or dakacom@gmail.com.

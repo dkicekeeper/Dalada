@@ -1,0 +1,58 @@
+name: App Store release
+
+# Версия для App Store (appstore/release.py): номер из MARKETING_VERSION, ручной выпуск, авторские
+# права, права на контент, возрастной рейтинг, цена (бесплатно), доступность (только Казахстан),
+# данные для проверки Apple и сборка, если указан номер. Сначала — тексты страницы
+# (appstore/listing.py). На проверку НЕ отправляет: это решение владельца (docs/05-release/README.md).
+# Запуск вручную из main: Actions → App Store release → Run workflow.
+on:
+  workflow_dispatch:
+    inputs:
+      build:
+        description: "Номер сборки, которую привязать к версии (пусто — не привязывать)"
+        required: false
+        default: ""
+
+concurrency:
+  group: appstore-listing
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Prepare the App Store version
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check texts
+        run: python3 appstore/listing.py --check
+
+      - name: Update App Store Connect
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          # Демо-аккаунт для проверяющих Apple; в лог не выводится.
+          DEMO_USER: ${{ secrets.ASC_DEMO_USER }}
+          DEMO_PASSWORD: ${{ secrets.ASC_DEMO_PASSWORD }}
+          BUILD: ${{ inputs.build }}
+        run: |
+          if [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY_P8" ]; then
+            echo "::error::Нет секретов ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8 (docs/04-beta/testflight.md)"
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/asc"
+          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/asc/AuthKey.p8"
+          export ASC_KEY_PATH="$RUNNER_TEMP/asc/AuthKey.p8"
+          python3 -m venv "$RUNNER_TEMP/ascenv"
+          "$RUNNER_TEMP/ascenv/bin/pip" install --quiet pyjwt cryptography
+          "$RUNNER_TEMP/ascenv/bin/python" appstore/listing.py
+          args=()
+          if [ -n "$BUILD" ]; then args+=(--build "$BUILD"); fi
+          "$RUNNER_TEMP/ascenv/bin/python" appstore/release.py "${args[@]}"
+
+      - name: Remove API key
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/asc"

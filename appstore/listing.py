@@ -10,8 +10,9 @@
   support_url.txt, marketing_url.txt, privacy_policy_url.txt — общие для всех локалей.
 Локали: ru (основной язык приложения) и en-US. Категории: «Спорт» и «Путешествия».
 
-Версию (по умолчанию 1.0) берёт ту, что готовится к отправке, или создаёт. Сборку к версии не
-привязывает и на проверку не отправляет — это отдельный шаг (docs/05-release/README.md, R3).
+Версию берёт ту, что готовится к отправке, или создаёт (номер — MARKETING_VERSION из
+ios/project.yml). Сборку к версии не привязывает и на проверку не отправляет — это
+appstore/release.py (docs/05-release/README.md, R3).
 Нужны ASC_KEY_ID, ASC_ISSUER_ID и ASC_KEY_PATH — как у appstore/testflight_info.py.
 """
 
@@ -115,7 +116,7 @@ def upload(version_string: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--check", action="store_true", help="только проверить файлы")
-    parser.add_argument("--version", default="1.0", help="версия, если её ещё нет (по умолчанию 1.0)")
+    parser.add_argument("--version", help="версия, если её ещё нет (по умолчанию — MARKETING_VERSION)")
     args = parser.parse_args()
     problems = check()
     for problem in problems:
@@ -124,7 +125,8 @@ def main() -> None:
         sys.exit(1)
     print("Файлы страницы App Store в порядке")
     if not args.check:
-        upload(args.version)
+        from release import marketing_version
+        upload(args.version or marketing_version())
 
 
 if __name__ == "__main__":
