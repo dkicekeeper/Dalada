@@ -92,7 +92,7 @@ def update_age_rating(app_id: str) -> None:
         print(f"::warning::Этих вопросов в анкете больше нет: {', '.join(unknown)} (listing/age_rating.json)")
     unanswered = sorted(key for key, value in known.items()
                         if value is None and key not in answers and not key.endswith(("Override", "OverrideV2", "Url"))
-                        and key != "kidsAgeBand")
+                        and key not in ("kidsAgeBand", "gracRatingClassificationNumber"))
     if unanswered:
         todo.append(f"возрастной рейтинг: новые вопросы без ответа — {', '.join(unanswered)} (listing/age_rating.json)")
 
