@@ -36,11 +36,16 @@ final class ScreenshotTests: XCTestCase {
         allowLocation(timeout: 10)
         // «Где я» — карта едет к точке у Капшагая (её ставит workflow): водоёмы и места с иконками.
         app.buttons[language == "ru" ? "Где я" : "My location"].tapIfPresent()
-        pause(15)
+        pause(6)
+        // Чуть дальше, чем «Где я» (масштаб 13): в кадре — Капшагай и места вокруг.
+        app.pinch(withScale: 0.4, velocity: -1)
+        pause(12)
         snap("01-map")
 
         app.open(Self.placeLink)
-        pause(8)
+        pause(6)
+        expandSheet()
+        pause(4)
         snap("02-place")
         closeSheet()
 
@@ -80,6 +85,13 @@ final class ScreenshotTests: XCTestCase {
         let buttons = app.tabBars.firstMatch.buttons
         guard buttons.count > index else { return }
         buttons.element(boundBy: index).tap()
+    }
+
+    /// Лист (карточка места) — во весь экран: тянем от верха листа (на половине экрана) вверх.
+    private func expandSheet() {
+        let start = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        let end = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.08))
+        start.press(forDuration: 0.1, thenDragTo: end)
     }
 
     /// Лист (карточка места) закрываем жестом вниз.
