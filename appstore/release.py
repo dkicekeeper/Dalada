@@ -122,9 +122,15 @@ def update_price(app_id: str) -> None:
         if error.code != 404:
             raise
         schedule = None
+    # Расписание цен у приложения бывает и пустым: App Store Connect заводит его сам, а цену не ставит
+    # («Необходимо указать ценовой ярус»). Задана ли цена — смотрим по ручным ценам расписания.
     if schedule:
-        print("Цена уже задана — не трогаю")
-        return
+        prices = call("GET", f"/appPriceSchedules/{schedule['id']}/manualPrices?include=appPricePoint&limit=50")
+        points = [i for i in prices.get("included", []) if i["type"] == "appPricePoints"]
+        if prices["data"]:
+            price = points[0]["attributes"].get("customerPrice") if points else "?"
+            print(f"Цена уже задана ({price}) — не трогаю")
+            return
     points = call("GET", f"/apps/{app_id}/appPricePoints?filter[territory]={TERRITORY}&limit=200")["data"]
     free = next((p for p in points if float(p["attributes"]["customerPrice"]) == 0), None)
     if free is None:
