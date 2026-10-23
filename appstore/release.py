@@ -299,7 +299,8 @@ def main() -> None:
     print("Анкета приватности (App Privacy): в API её нет — опубликована ли, смотреть в App Store Connect "
           "(ответы — docs/05-release/README.md, «Анкеты»)")
 
-    lines = ["Осталось до отправки на проверку:"] + [f"- {item}" for item in todo]
+    lines = (["Осталось до отправки на проверку:"] + [f"- {item}" for item in todo] if todo
+             else ["Всё, что есть в API, заполнено: версию можно отправлять на проверку (владелец)."])
     print("\n".join(lines))
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
