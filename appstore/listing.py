@@ -25,8 +25,6 @@ LOCALES = ["ru", "en-US"]
 LIMITS = {"name": 30, "subtitle": 30, "keywords": 100, "promotional_text": 170, "description": 4000}
 SHARED = ["support_url", "marketing_url", "privacy_policy_url"]
 CATEGORIES = {"primaryCategory": "SPORTS", "secondaryCategory": "TRAVEL"}
-# Версия, в которую ещё можно писать тексты.
-EDITABLE = {"PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED", "INVALID_BINARY"}
 
 
 def read(name: str, locale: str | None = None) -> str:
@@ -69,6 +67,9 @@ def upload(version_string: str) -> None:
     if not apps:
         sys.exit(f"Приложение {BUNDLE_ID} не найдено в App Store Connect")
     app_id = apps[0]["id"]
+    # Версия: та, что готовится к отправке, или новая. Пока версия на проверке, тексты не меняются.
+    from release import editable_version
+    version = editable_version(app_id, version_string)
 
     # Информация о приложении: название, подзаголовок, политика, категории.
     infos = call("GET", f"/apps/{app_id}/appInfos")["data"]
@@ -85,15 +86,6 @@ def upload(version_string: str) -> None:
         name: {"data": {"type": "appCategories", "id": category}} for name, category in CATEGORIES.items()}}})
     print("Категории: Спорт, Путешествия — готово")
 
-    # Версия: та, что готовится к отправке, или новая.
-    versions = call("GET", f"/apps/{app_id}/appStoreVersions?filter[platform]=IOS&limit=20")["data"]
-    version = next((v for v in versions if v["attributes"].get("appStoreState") in EDITABLE), None)
-    if version is None:
-        version = call("POST", "/appStoreVersions", {"data": {
-            "type": "appStoreVersions",
-            "attributes": {"platform": "IOS", "versionString": version_string},
-            "relationships": {"app": {"data": {"type": "apps", "id": app_id}}}}})["data"]
-        print(f"Создана версия {version_string}")
     print(f"Версия {version['attributes']['versionString']} ({version['attributes'].get('appStoreState')})")
 
     current = {v["attributes"]["locale"]: v for v in

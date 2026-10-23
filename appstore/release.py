@@ -48,11 +48,29 @@ def marketing_version() -> str:
     return match.group(1)
 
 
+# Версия ушла дальше подготовки, но ещё не в App Store: проверка, ожидание выпуска.
+FINISHED = {"READY_FOR_SALE", "READY_FOR_DISTRIBUTION", "REPLACED_WITH_NEW_VERSION", "REMOVED_FROM_SALE",
+            "DEVELOPER_REMOVED_FROM_SALE"}
+
+
 def editable_version(app_id: str, version_string: str) -> dict:
-    """Версия, которая готовится к отправке (с нужным номером), или новая."""
+    """Версия, которая готовится к отправке (с нужным номером), или новая.
+
+    Пока версия на проверке или ждёт выпуска, менять в App Store Connect нечего (и новую версию не
+    создать), как и когда версия с этим номером уже в App Store: печатаем состояние и выходим без
+    ошибки. Для обновления после выхода — поднять MARKETING_VERSION.
+    """
     versions = call("GET", f"/apps/{app_id}/appStoreVersions?filter[platform]=IOS&limit=20")["data"]
     version = next((v for v in versions if v["attributes"].get("appStoreState") in EDITABLE), None)
     if version is None:
+        in_flight = next((v for v in versions if v["attributes"].get("appStoreState") not in FINISHED), None)
+        same = next((v for v in versions if v["attributes"]["versionString"] == version_string), None)
+        if in_flight or same:
+            blocker = in_flight or same
+            print(f"Версия {blocker['attributes']['versionString']}: {blocker['attributes'].get('appStoreState')} — "
+                  + ("на проверке или ждёт выпуска, менять нечего" if in_flight
+                     else "уже в App Store; для обновления поднимите MARKETING_VERSION"))
+            sys.exit(0)
         version = call("POST", "/appStoreVersions", {"data": {
             "type": "appStoreVersions",
             "attributes": {"platform": "IOS", "versionString": version_string},
