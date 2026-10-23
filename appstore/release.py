@@ -14,8 +14,8 @@
     из секретов ASC_DEMO_USER / ASC_DEMO_PASSWORD (в лог не выводится);
   - сборку с --build (её версия должна совпадать с версией в App Store Connect).
 На проверку не отправляет — это решение владельца (docs/05-release/README.md, R3). В конце
-печатает, что осталось сделать руками: анкета приватности (в API её нет), имя и телефон для связи,
-скриншоты.
+печатает, что осталось сделать руками: имя и телефон для связи, скриншоты, сборка; анкету
+приватности (в API её нет) — напоминает.
 
 Нужны ASC_KEY_ID, ASC_ISSUER_ID и ASC_KEY_PATH — как у appstore/testflight_info.py. Контактные
 данные и пароль демо-аккаунта в лог не выводятся: логи Actions открытого репозитория видны всем.
@@ -284,9 +284,20 @@ def main() -> None:
     if args.build:
         attach_build(app_id, version, version_string, args.build)
     else:
-        todo.append("сборка: привязать (workflow App Store release с номером сборки)")
+        try:
+            attached = call("GET", f"/appStoreVersions/{version['id']}/build")["data"]
+        except ApiError as error:
+            if error.code != 404:
+                raise
+            attached = None
+        if attached:
+            print(f"Сборка {attached['attributes']['version']} привязана раньше")
+        else:
+            todo.append("сборка: привязать (workflow App Store release с номером сборки)")
     check_screenshots(version)
-    todo.append("анкета приватности (App Privacy): в API её нет — ответы в docs/05-release/README.md, «Анкеты»")
+    # Анкеты приватности в API нет: опубликована ли она, отсюда не видно.
+    print("Анкета приватности (App Privacy): в API её нет — опубликована ли, смотреть в App Store Connect "
+          "(ответы — docs/05-release/README.md, «Анкеты»)")
 
     lines = ["Осталось до отправки на проверку:"] + [f"- {item}" for item in todo]
     print("\n".join(lines))
