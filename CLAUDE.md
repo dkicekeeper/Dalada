@@ -1,7 +1,8 @@
 # Dalada — заметки для Claude
 
-iOS-приложение для рыбалки и отдыха на природе в Казахстане. Документы — в `docs/`
-(начать с `README.md` и `docs/04-beta/README.md` — текущий план по вехам).
+iOS-приложение для рыбалки и отдыха на природе в Казахстане; версия 1.0.0 в App Store Казахстана с
+2026-11-01. Документы — в `docs/` (начать с `README.md` и `docs/05-release/README.md` — текущее
+состояние, план после выхода и выпуск обновлений; вехи беты и их спецификации — `docs/04-beta/`).
 
 ## Язык и стиль
 
@@ -55,7 +56,9 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 
 Настоящую сборку приложения и тесты пакета делает GitHub Actions на macOS (`.github/workflows/ios.yml`,
 в том числе на ветках `claude/**`). Код iOS попадает в `main` только после зелёной сборки на рабочей
-ветке. Сборка в TestFlight — `.github/workflows/testflight.yml` (вручную, см. `docs/04-beta/testflight.md`).
+ветке. Сборка в TestFlight — `.github/workflows/testflight.yml` (вручную, см. `docs/04-beta/testflight.md`);
+обновление в App Store — `docs/05-release/README.md`, «Выпуск обновлений» (сначала поднять
+`MARKETING_VERSION`).
 
 ## Компоненты интерфейса: DesignKit или Dalada
 
