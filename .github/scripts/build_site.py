@@ -25,10 +25,9 @@ BASE = os.environ.get("SITE_BASE", "/Dalada/")
 ORIGIN = os.environ.get("SITE_ORIGIN", "https://dkicekeeper.github.io")
 PHOTOS = "https://pub-06c03b3c9f2e4de7b1a196206e04c258.r2.dev"
 TEMPLATE = os.path.join(SOURCE, "s", "page.template.html")
-# Apple ID приложения в App Store. Пусто, пока приложения там нет: на сайте — приглашение в бету.
-# В день выхода вписать номер (его печатает workflow App Store release): появятся кнопка App Store
-# и баннер Safari, пропадут слова о бете (docs/05-release/README.md, R3).
-APP_STORE_ID = os.environ.get("APP_STORE_ID", "")
+# Apple ID приложения в App Store (вышло 2026-11-01): кнопка App Store и баннер Safari вместо
+# приглашения в бету (docs/05-release/README.md, R3). Пустой APP_STORE_ID в окружении — снова бета.
+APP_STORE_ID = os.environ.get("APP_STORE_ID", "6817603558")
 APP_STORE_URL = "https://apps.apple.com/kz/app/dalada/id" + APP_STORE_ID if APP_STORE_ID else ""
 
 TYPES = {
