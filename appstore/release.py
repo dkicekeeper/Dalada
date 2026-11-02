@@ -12,7 +12,9 @@
   - доступность: только Казахстан, в новых странах — нет;
   - данные для проверки Apple: заметки (testflight/review_notes.txt), почту для связи, демо-аккаунт
     из секретов ASC_DEMO_USER / ASC_DEMO_PASSWORD (в лог не выводится);
-  - сборку с --build (её версия должна совпадать с версией в App Store Connect).
+  - сборку с --build (её версия должна совпадать с версией в App Store Connect);
+  - у обновлений — поэтапный выпуск за 7 дней и проверку «Что нового» (сам текст отправляет
+    listing.py из listing/<локаль>/whats_new/<версия>.txt).
 На проверку не отправляет — это решение владельца (docs/05-release/README.md, R3). В конце
 печатает, что осталось сделать руками: имя и телефон для связи, скриншоты, сборка; анкету
 приватности (в API её нет) — напоминает.
@@ -77,6 +79,14 @@ def editable_version(app_id: str, version_string: str) -> dict:
             "relationships": {"app": {"data": {"type": "apps", "id": app_id}}}}})["data"]
         print(f"Создана версия {version_string}")
     return version
+
+
+def is_update(app_id: str, version_string: str) -> bool:
+    """Есть ли у приложения уже выпущенная версия, кроме этой. У обновления обязательно «Что нового»
+    и есть поэтапный выпуск; у первой версии — ни того ни другого."""
+    versions = call("GET", f"/apps/{app_id}/appStoreVersions?filter[platform]=IOS&limit=20")["data"]
+    return any(v["attributes"].get("appStoreState") in FINISHED and v["attributes"]["versionString"] != version_string
+               for v in versions)
 
 
 def update_version(version: dict, version_string: str) -> None:
@@ -249,6 +259,39 @@ def attach_build(app_id: str, version: dict, version_string: str, number: str) -
     print(f"Сборка {number} привязана к версии {version_string} — готово")
 
 
+def update_phased_release(version: dict) -> None:
+    """Обновление выходит поэтапно, за 7 дней (docs/05-release/README.md, R4): ошибка в новой версии
+    не дойдёт сразу до всех. Включаем до отправки — начнётся, когда владелец нажмёт Release; в App Store
+    Connect его можно приостановить или выпустить сразу всем."""
+    try:
+        phased = call("GET", f"/appStoreVersions/{version['id']}/appStoreVersionPhasedRelease")["data"]
+    except ApiError as error:
+        if error.code != 404:
+            raise
+        phased = None
+    if phased:
+        print(f"Поэтапный выпуск: уже включён ({phased['attributes'].get('phasedReleaseState')})")
+        return
+    try:
+        call("POST", "/appStoreVersionPhasedReleases", {"data": {
+            "type": "appStoreVersionPhasedReleases",
+            "relationships": {"appStoreVersion": {"data": {"type": "appStoreVersions", "id": version["id"]}}}}})
+    except ApiError as error:
+        todo.append(f"поэтапный выпуск: API не включил ({error}) — App Store Connect → версия → Phased Release")
+        return
+    print("Поэтапный выпуск (7 дней): включён, начнётся после выпуска — готово")
+
+
+def check_whats_new(version: dict, version_string: str) -> None:
+    for localization in call("GET", f"/appStoreVersions/{version['id']}/appStoreVersionLocalizations")["data"]:
+        locale = localization["attributes"]["locale"]
+        if (localization["attributes"].get("whatsNew") or "").strip():
+            print(f"Что нового ({locale}): есть")
+        else:
+            todo.append(f"«Что нового» ({locale}): нет текста — appstore/listing/{locale}/whats_new/{version_string}.txt "
+                        "и снова App Store release")
+
+
 def check_screenshots(version: dict) -> None:
     for localization in call("GET", f"/appStoreVersions/{version['id']}/appStoreVersionLocalizations")["data"]:
         locale = localization["attributes"]["locale"]
@@ -294,6 +337,11 @@ def main() -> None:
             print(f"Сборка {attached['attributes']['version']} привязана раньше")
         else:
             todo.append("сборка: привязать (workflow App Store release с номером сборки)")
+    if is_update(app_id, version_string):
+        update_phased_release(version)
+        check_whats_new(version, version_string)
+    else:
+        print("Первая версия: «Что нового» и поэтапного выпуска у неё нет")
     check_screenshots(version)
     # Анкеты приватности в API нет: опубликована ли она, отсюда не видно.
     print("Анкета приватности (App Privacy): в API её нет — опубликована ли, смотреть в App Store Connect "

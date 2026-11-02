@@ -7,6 +7,8 @@
 Файлы:
   <локаль>/name.txt (30), subtitle.txt (30) — информация о приложении;
   <локаль>/keywords.txt (100), promotional_text.txt (170), description.txt (4000) — версия;
+  <локаль>/whats_new/<версия>.txt (4000) — «Что нового» у обновления: у первой версии этого поля
+  нет, у остальных App Store без него на проверку не примет;
   support_url.txt, marketing_url.txt, privacy_policy_url.txt — общие для всех локалей.
 Локали: ru (основной язык приложения) и en-US. Категории: «Спорт» и «Путешествия».
 
@@ -17,12 +19,14 @@ appstore/release.py (docs/05-release/README.md, R3).
 """
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
 LISTING = Path(__file__).resolve().parent / "listing"
 LOCALES = ["ru", "en-US"]
 LIMITS = {"name": 30, "subtitle": 30, "keywords": 100, "promotional_text": 170, "description": 4000}
+WHATS_NEW_LIMIT = 4000
 SHARED = ["support_url", "marketing_url", "privacy_policy_url"]
 CATEGORIES = {"primaryCategory": "SPORTS", "secondaryCategory": "TRAVEL"}
 
@@ -30,6 +34,11 @@ CATEGORIES = {"primaryCategory": "SPORTS", "secondaryCategory": "TRAVEL"}
 def read(name: str, locale: str | None = None) -> str:
     path = LISTING / locale / f"{name}.txt" if locale else LISTING / f"{name}.txt"
     return path.read_text(encoding="utf-8").strip()
+
+
+def whats_new(locale: str, version: str) -> str | None:
+    path = LISTING / locale / "whats_new" / f"{version}.txt"
+    return path.read_text(encoding="utf-8").strip() if path.exists() else None
 
 
 def check() -> list[str]:
@@ -50,6 +59,19 @@ def check() -> list[str]:
             problems.append(f"{locale}/keywords.txt: пустое слово между запятыми")
         if len({k.lower() for k in keywords}) != len(keywords):
             problems.append(f"{locale}/keywords.txt: слова повторяются")
+    # «Что нового»: файл на каждую версию, у каждой версии — на всех языках.
+    found = {locale: {p.stem for p in (LISTING / locale / "whats_new").glob("*.txt")} for locale in LOCALES}
+    for version in sorted(set().union(*found.values())):
+        if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+            problems.append(f"whats_new/{version}.txt: имя файла — номер версии, например 1.0.1.txt")
+        for locale in LOCALES:
+            value = whats_new(locale, version)
+            if value is None:
+                problems.append(f"{locale}/whats_new/{version}.txt: нет файла (для другого языка есть)")
+            elif not value:
+                problems.append(f"{locale}/whats_new/{version}.txt: пусто")
+            elif len(value) > WHATS_NEW_LIMIT:
+                problems.append(f"{locale}/whats_new/{version}.txt: {len(value)} символов, можно {WHATS_NEW_LIMIT}")
     for name in SHARED:
         try:
             if not read(name).startswith("https://"):
@@ -68,8 +90,9 @@ def upload(version_string: str) -> None:
         sys.exit(f"Приложение {BUNDLE_ID} не найдено в App Store Connect")
     app_id = apps[0]["id"]
     # Версия: та, что готовится к отправке, или новая. Пока версия на проверке, тексты не меняются.
-    from release import editable_version
+    from release import editable_version, is_update
     version = editable_version(app_id, version_string)
+    update = is_update(app_id, version_string)
 
     # Информация о приложении: название, подзаголовок, политика, категории.
     infos = call("GET", f"/apps/{app_id}/appInfos")["data"]
@@ -98,11 +121,16 @@ def upload(version_string: str) -> None:
             "supportUrl": read("support_url"),
             "marketingUrl": read("marketing_url"),
         }
+        # «Что нового» есть только у обновлений; нет файла — release.py напомнит.
+        notes = whats_new(locale, version_string) if update else None
+        if notes:
+            attributes["whatsNew"] = notes
         if locale not in current:
             attributes["locale"] = locale
         upsert("appStoreVersionLocalizations", current.get(locale), attributes,
                ("appStoreVersion", "appStoreVersions", version["id"]))
-        print(f"Тексты версии ({locale}): описание, ключевые слова, промотекст, ссылки — готово")
+        print(f"Тексты версии ({locale}): описание, ключевые слова, промотекст, ссылки"
+              + (", что нового" if notes else "") + " — готово")
 
 
 def main() -> None:
