@@ -24,6 +24,10 @@ on:
         description: "Отправить: событие — на проверку Apple, номинацию — редакции App Store"
         type: boolean
         default: false
+      with_version:
+        description: "С submit: отправить на проверку вместе с версией MARKETING_VERSION (решение владельца)"
+        type: boolean
+        default: false
 
 concurrency:
   group: appstore-listing
@@ -49,6 +53,7 @@ jobs:
           EVENT: ${{ inputs.event }}
           ACTION: ${{ inputs.action }}
           SUBMIT: ${{ inputs.submit }}
+          WITH_VERSION: ${{ inputs.with_version }}
         run: |
           if [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY_P8" ]; then
             echo "::error::Нет секретов ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8 (docs/04-beta/testflight.md)"
@@ -65,6 +70,7 @@ jobs:
           "$RUNNER_TEMP/ascenv/bin/pip" install --quiet pyjwt cryptography
           args=("$ACTION" "$EVENT")
           if [ "$SUBMIT" = "true" ]; then args+=(--submit); fi
+          if [ "$SUBMIT" = "true" ] && [ "$WITH_VERSION" = "true" ]; then args+=(--with-version); fi
           "$RUNNER_TEMP/ascenv/bin/python" appstore/featuring.py "${args[@]}"
 
       - name: Remove API key
