@@ -138,8 +138,16 @@ public enum WebLink {
         URL(string: base.absoluteString + "s/?catch=" + id.uuidString.lowercased())!
     }
 
-    /// Приглашение в поездку: страница с «Открыть в Dalada» и «Как попасть в бету».
+    /// Приглашение в поездку: страница с «Присоединиться в Dalada» и кнопкой App Store.
     public static func tripInvite(_ token: String) -> URL {
         URL(string: base.absoluteString + "s/?invite=" + token)!
+    }
+
+    /// Приглашение в друзья (QR и «Поделиться»): страница «@ник зовёт вас в Dalada» с кнопками
+    /// «Открыть профиль в Dalada» и App Store — открывается и у тех, у кого приложения ещё нет.
+    /// `nil` — ник не по правилам.
+    public static func profileInvite(_ username: String) -> URL? {
+        guard UsernameRules.isValidFormat(username) else { return nil }
+        return URL(string: base.absoluteString + "s/?u=" + UsernameRules.normalized(username))
     }
 }

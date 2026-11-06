@@ -16,6 +16,9 @@ final class NotificationPrimer {
 
     private weak var presented: UIViewController?
 
+    /// Лист открыт — другие окна (запрос оценки) ждут.
+    var isShowing: Bool { presented != nil }
+
     private static let snoozeKey = "push.primer.snoozedUntil"
     private static let snooze: TimeInterval = 7 * 24 * 60 * 60
 

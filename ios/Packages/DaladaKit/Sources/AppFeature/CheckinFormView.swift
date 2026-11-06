@@ -341,6 +341,8 @@ struct CheckinFormView: View {
         dismiss()
         // Первый чекин — момент первой пользы: объясним, зачем уведомления.
         Task { await NotificationPrimer.shared.offer() }
+        // Удачный момент — счёт к запросу оценки.
+        Task { await ReviewRequester.shared.noteSuccess() }
     }
 }
 

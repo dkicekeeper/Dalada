@@ -7554,19 +7554,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show the QR code to a friend: they point the camera and open your profile in Dalada. Or send the link — or your @username to search for."
+            "value" : "Show the QR code to a friend: they point the camera and open the invite — even if they don’t have Dalada yet. Or send the link — or your @username to search for."
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "QR-кодты досыңызға көрсетіңіз: ол камераны бағыттап, Dalada-да профиліңізді ашады. Немесе сілтемені не іздеу үшін @username-іңізді жіберіңіз."
+            "value" : "QR-кодты досыңызға көрсетіңіз: ол камераны бағыттап, шақыруды ашады — Dalada әлі орнатылмаса да. Немесе сілтемені не іздеу үшін @username-іңізді жіберіңіз."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Покажите QR-код другу: он наведёт камеру и откроет ваш профиль в Dalada. Или отправьте ссылку — либо ваш @username для поиска."
+            "value" : "Покажите QR-код другу: он наведёт камеру и откроет приглашение — даже если Dalada у него ещё нет. Или отправьте ссылку — либо ваш @username для поиска."
           }
         }
       }
@@ -7646,19 +7646,19 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add me on Dalada — fishing and the outdoors around Almaty. My username: @%@"
+            "value" : "Add me on Dalada — fishing and the outdoors across Kazakhstan. My username: @%@"
           }
         },
         "kk" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dalada-да маған қосыл — Алматы маңындағы балық аулау мен табиғат. Менің никім: @%@"
+            "value" : "Dalada-да маған қосыл — бүкіл Қазақстан бойынша балық аулау мен табиғат. Менің никім: @%@"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавляйся ко мне в Dalada — рыбалка и природа рядом с Алматы. Мой ник: @%@"
+            "value" : "Добавляйся ко мне в Dalada — рыбалка и природа по всему Казахстану. Мой ник: @%@"
           }
         }
       }

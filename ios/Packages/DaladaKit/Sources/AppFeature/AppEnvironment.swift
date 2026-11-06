@@ -79,6 +79,8 @@ public enum AppBootstrap {
         MapCache.configure()
         // Отчёты iOS о сбоях и зависаниях (если человек разрешил делиться ими с разработчиками).
         DiagnosticsReporter.shared.start()
+        // Первый запуск — от него считаем дни до запроса оценки.
+        ReviewRequester.shared.noteLaunch()
     }
 }
 

@@ -155,11 +155,28 @@ public enum InviteLink {
         return URL(string: "\(scheme)://\(profileHost)/\(username)")
     }
 
-    /// Username из ссылки приглашения; `nil` — это не приглашение (например, возврат из входа).
+    /// Username из ссылки приглашения: `dalada://u/<ник>` или страница сайта `…/s/?u=<ник>`
+    /// (`WebLink.profileInvite`). `nil` — это не приглашение (например, возврат из входа).
     public static func username(from url: URL) -> String? {
-        guard url.scheme?.lowercased() == scheme, url.host?.lowercased() == profileHost else { return nil }
-        let username = url.pathComponents.dropFirst().first?.lowercased() ?? ""
+        let username: String
+        if url.scheme?.lowercased() == scheme, url.host?.lowercased() == profileHost {
+            username = url.pathComponents.dropFirst().first?.lowercased() ?? ""
+        } else if let web = webUsername(from: url) {
+            username = web
+        } else {
+            return nil
+        }
         return UsernameRules.isValidFormat(username) ? username : nil
+    }
+
+    private static func webUsername(from url: URL) -> String? {
+        guard let base = URLComponents(url: WebLink.base, resolvingAgainstBaseURL: false),
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              components.scheme?.lowercased() == "https",
+              components.host?.lowercased() == base.host?.lowercased(),
+              components.path == base.path + "s/" || components.path == base.path + "s"
+        else { return nil }
+        return components.queryItems?.first { $0.name == "u" }?.value?.lowercased()
     }
 }
 
