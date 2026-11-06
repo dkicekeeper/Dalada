@@ -39,13 +39,28 @@ APP_STORE_URL = "https://apps.apple.com/kz/app/dalada/id" + APP_STORE_ID if APP_
 # Метки кампаний (docs/05-release/promotion.md, «Метки кампаний»): pt — токен поставщика, один на
 # аккаунт разработчика (App Store Connect → Analytics → Acquisition → Campaigns → Generate Campaign
 # Link), ct — вид ссылки. App Store Connect показывает по ним только суммы. Без pt — ссылки без меток.
-APP_STORE_PT = os.environ.get("APP_STORE_PT", "").strip()
+
+
+def provider_token(raw):
+    """Токен поставщика из переменной: само число, «pt=…» или вся ссылка кампании из App Store Connect."""
+    raw = raw.strip().strip("\"'").strip()
+    if re.fullmatch(r"[0-9]{1,20}", raw):
+        return raw
+    found = re.search(r"(?:^|[?&\s])pt=([0-9]{1,20})(?:$|[&\s])", raw)
+    return found.group(1) if found else ""
+
+
+APP_STORE_PT_RAW = os.environ.get("APP_STORE_PT", "")
+APP_STORE_PT = provider_token(APP_STORE_PT_RAW)
 # Подтверждение сайта в Google Search Console метатегом на главной (код из Search Console).
 GOOGLE_SITE_VERIFICATION = os.environ.get("GOOGLE_SITE_VERIFICATION", "").strip()
 # Значения из переменных попадают в HTML — пропускаем только ожидаемый вид.
-if APP_STORE_PT and not re.fullmatch(r"[0-9]{1,20}", APP_STORE_PT):
-    print("APP_STORE_PT не похож на токен поставщика (только цифры) — ссылки без меток")
-    APP_STORE_PT = ""
+if APP_STORE_PT_RAW.strip() and not APP_STORE_PT:
+    # Само значение не печатаем: мало ли что туда вставили.
+    print("APP_STORE_PT: нужно число из pt=… ссылки кампании (например 123456789) или вся ссылка; сейчас "
+          + str(len(APP_STORE_PT_RAW.strip())) + " символов без pt=<цифры> — ссылки без меток")
+elif APP_STORE_PT:
+    print("Метки кампаний: включены")
 if GOOGLE_SITE_VERIFICATION and not re.fullmatch(r"[A-Za-z0-9_-]{10,100}", GOOGLE_SITE_VERIFICATION):
     print("GOOGLE_SITE_VERIFICATION не похож на код Search Console — метатег не добавлен")
     GOOGLE_SITE_VERIFICATION = ""
