@@ -42,10 +42,12 @@ APP_STORE_URL = "https://apps.apple.com/kz/app/dalada/id" + APP_STORE_ID if APP_
 
 
 def provider_token(raw):
-    """Токен поставщика из переменной: само число, «pt=…» или вся ссылка кампании из App Store Connect."""
+    """Токен поставщика из переменной: само число, «pt=…», вся ссылка кампании из App Store Connect или
+    кусок ссылки после «pt=» («128728453&ct=site»)."""
     raw = raw.strip().strip("\"'").strip()
-    if re.fullmatch(r"[0-9]{1,20}", raw):
-        return raw
+    leading = re.fullmatch(r"([0-9]{1,20})(?:&.*)?", raw)
+    if leading:
+        return leading.group(1)
     found = re.search(r"(?:^|[?&\s])pt=([0-9]{1,20})(?:$|[&\s])", raw)
     return found.group(1) if found else ""
 
