@@ -53,6 +53,8 @@ def marketing_version() -> str:
 # Версия ушла дальше подготовки, но ещё не в App Store: проверка, ожидание выпуска.
 FINISHED = {"READY_FOR_SALE", "READY_FOR_DISTRIBUTION", "REPLACED_WITH_NEW_VERSION", "REMOVED_FROM_SALE",
             "DEVELOPER_REMOVED_FROM_SALE"}
+# Версия, которую сейчас скачивают из App Store (у неё можно менять рекламный текст без проверки).
+LIVE = {"READY_FOR_SALE", "READY_FOR_DISTRIBUTION"}
 
 
 def editable_version(app_id: str, version_string: str) -> dict:

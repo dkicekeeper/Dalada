@@ -1,0 +1,72 @@
+name: App Store featuring
+
+# События App Store (In-App Events) и номинации на рекомендацию из appstore/events/<событие>/
+# (appstore/featuring.py, docs/05-release/promotion-texts.md). На любой ветке — проверка файлов;
+# вручную из main — отправка в App Store Connect: Actions → App Store featuring → Run workflow.
+# Ключ — те же секреты ASC_*, что у TestFlight (роль ключа: Admin, App Manager или Marketing).
+on:
+  push:
+    paths:
+      - "appstore/events/**"
+      - "appstore/featuring.py"
+      - ".github/workflows/appstore-featuring.yml"
+  workflow_dispatch:
+    inputs:
+      event:
+        description: "Папка события в appstore/events/"
+        default: "first_ice"
+      action:
+        description: "event — событие (черновик, тексты, картинки); nominate — номинация на рекомендацию"
+        type: choice
+        options: [event, nominate]
+        default: event
+      submit:
+        description: "Отправить: событие — на проверку Apple, номинацию — редакции App Store"
+        type: boolean
+        default: false
+
+concurrency:
+  group: appstore-listing
+  cancel-in-progress: false
+
+jobs:
+  featuring:
+    name: Check and upload events
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Check event files
+        run: python3 appstore/featuring.py --check
+
+      - name: Upload to App Store Connect
+        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          EVENT: ${{ inputs.event }}
+          ACTION: ${{ inputs.action }}
+          SUBMIT: ${{ inputs.submit }}
+        run: |
+          if [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY_P8" ]; then
+            echo "::error::Нет секретов ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8 (docs/04-beta/testflight.md)"
+            exit 1
+          fi
+          if ! [[ "$EVENT" =~ ^[a-z0-9_]{1,40}$ ]]; then
+            echo "::error::Имя события — латиница, цифры и «_»"
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/asc"
+          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/asc/AuthKey.p8"
+          export ASC_KEY_PATH="$RUNNER_TEMP/asc/AuthKey.p8"
+          python3 -m venv "$RUNNER_TEMP/ascenv"
+          "$RUNNER_TEMP/ascenv/bin/pip" install --quiet pyjwt cryptography
+          args=("$ACTION" "$EVENT")
+          if [ "$SUBMIT" = "true" ]; then args+=(--submit); fi
+          "$RUNNER_TEMP/ascenv/bin/python" appstore/featuring.py "${args[@]}"
+
+      - name: Remove API key
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/asc"

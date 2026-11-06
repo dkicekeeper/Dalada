@@ -51,6 +51,22 @@ struct FriendsTests {
         #expect(InviteLink.username(from: URL(string: "DALADA://U/Arman")!) == "arman")
     }
 
+    @Test func webInviteLinkRoundTrip() throws {
+        let url = try #require(WebLink.profileInvite("Arman_77"))
+        #expect(url.absoluteString == "https://dkicekeeper.github.io/Dalada/s/?u=arman_77")
+        #expect(InviteLink.username(from: url) == "arman_77")
+        #expect(InviteLink.username(from: URL(string: "https://dkicekeeper.github.io/Dalada/s?u=Arman")!) == "arman")
+        #expect(WebLink.profileInvite("no spaces") == nil)
+    }
+
+    @Test func otherWebLinksAreNotInvites() {
+        #expect(InviteLink.username(from: URL(string: "https://dkicekeeper.github.io/Dalada/s/?trip=aaaaaaaa-0000-0000-0000-000000000001")!) == nil)
+        #expect(InviteLink.username(from: URL(string: "https://dkicekeeper.github.io/Dalada/s/?u=a")!) == nil)
+        #expect(InviteLink.username(from: URL(string: "https://dkicekeeper.github.io/Other/s/?u=arman")!) == nil)
+        #expect(InviteLink.username(from: URL(string: "http://dkicekeeper.github.io/Dalada/s/?u=arman")!) == nil)
+        #expect(InviteLink.username(from: URL(string: "https://example.com/Dalada/s/?u=arman")!) == nil)
+    }
+
     @Test func otherLinksAreNotInvites() {
         #expect(InviteLink.username(from: URL(string: "dalada://auth-callback#access_token=x")!) == nil)
         #expect(InviteLink.username(from: URL(string: "dalada://u/")!) == nil)

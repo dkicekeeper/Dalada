@@ -53,6 +53,21 @@ struct ArticlesTests {
         #expect([older, article, sameDay].sorted(by: Article.newestFirst).map(\.id) == ["c", "a", "b"])
     }
 
+    @Test func webLinkFollowsTranslations() throws {
+        let article = Article(
+            id: "ice_safety", category: .safety,
+            title: LocalizedText(ru: "Т", kk: "", en: "T"),
+            summary: LocalizedText(ru: "С", kk: "", en: "S"),
+            body: LocalizedText(ru: "Текст", kk: "", en: "Text")
+        )
+        let base = "https://dkicekeeper.github.io/Dalada/a/ice_safety/"
+        #expect(WebLink.article(article, language: "ru")?.absoluteString == base)
+        #expect(WebLink.article(article, language: "en")?.absoluteString == base + "en.html")
+        #expect(WebLink.article(article, language: "kk")?.absoluteString == base, "нет перевода — русская страница")
+        let odd = Article(id: "Bad Id", category: .other, title: article.title, summary: article.summary, body: article.body)
+        #expect(WebLink.article(odd, language: "ru") == nil)
+    }
+
     @Test func decodesServerRowAndCaches() throws {
         let json = """
         [{"id": "ice_safety", "category": "safety", "sort_order": 10, "published_on": "2026-09-30",

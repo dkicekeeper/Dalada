@@ -461,6 +461,10 @@ struct TripFinishView: View {
                 participants: Array(participants)
             )
             await sync.enqueued()
+            // Настоящая поездка (как для праздника) — счёт к запросу оценки.
+            if isWorthCelebrating {
+                Task { await ReviewRequester.shared.noteSuccess() }
+            }
             onClose(true)
             dismiss()
         } catch {

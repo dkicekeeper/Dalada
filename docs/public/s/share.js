@@ -1,4 +1,5 @@
-// Страница «Поделиться» Dalada: место (/p/<id>/ или ?place=<id>), поездка (?trip=<id>), улов (?catch=<id>).
+// Страница «Поделиться» Dalada: место (/p/<id>/ или ?place=<id>), поездка (?trip=<id>), улов (?catch=<id>),
+// приглашение в поездку (?invite=<токен>) и в друзья (?u=<ник>).
 // Данные — ключом гостя через RPC web_trip, web_catch, place_card: только публичное. Текст из базы
 // вставляем только как textContent (никакого innerHTML с данными).
 (function () {
@@ -23,6 +24,9 @@
       open: "Открыть в Dalada", route: "Маршрут", getApp: "Как попасть в бету Dalada", getAppStore: "Скачать Dalada в App Store",
       invite: "Вас зовут в поездку", inviteHint: "Установите Dalada, войдите и откройте эту ссылку в приложении — вы станете участником поездки.",
       inviteJoin: "Присоединиться в Dalada",
+      friend: "Вас зовут в Dalada", friendOpen: "Открыть профиль в Dalada",
+      friendHint: "Установите Dalada, войдите и откройте эту ссылку ещё раз — откроется профиль, и его можно будет добавить в друзья.",
+      about: "Dalada — карта рыбалки и отдыха на природе по всему Казахстану: места, свежие отчёты, запреты на лов и карта без сети. Бесплатно, для iPhone.",
       notFound: "Запись недоступна", notFoundHint: "Её удалили или она видна не всем. Откройте ссылку в приложении Dalada.",
       failed: "Не удалось загрузить", failedHint: "Проверьте интернет и обновите страницу.",
       approximate: "Место показано приблизительно — в радиусе около километра.",
@@ -37,6 +41,9 @@
       open: "Dalada-да ашу", route: "Бағыт", getApp: "Dalada бетасына қалай қосылуға болады", getAppStore: "Dalada-ны App Store-дан жүктеу",
       invite: "Сізді сапарға шақырады", inviteHint: "Dalada-ны орнатып, кіріңіз де, осы сілтемені қосымшада ашыңыз — сапарға қатысушы боласыз.",
       inviteJoin: "Dalada-да қосылу",
+      friend: "Сізді Dalada-ға шақырады", friendOpen: "Профильді Dalada-да ашу",
+      friendHint: "Dalada-ны орнатып, кіріңіз де, осы сілтемені қайта ашыңыз — профиль ашылады, оны досқа қоса аласыз.",
+      about: "Dalada — бүкіл Қазақстан бойынша балық аулау мен табиғаттағы демалыс картасы: орындар, жаңа есептер, аулауға тыйымдар және байланыссыз карта. Тегін, iPhone үшін.",
       notFound: "Жазба қолжетімсіз", notFoundHint: "Ол жойылған немесе барлығына көрінбейді. Сілтемені Dalada қосымшасында ашыңыз.",
       failed: "Жүктеу мүмкін болмады", failedHint: "Интернетті тексеріп, бетті жаңартыңыз.",
       approximate: "Орын шамамен көрсетілген — шамамен бір шақырым радиуста.",
@@ -51,6 +58,9 @@
       open: "Open in Dalada", route: "Directions", getApp: "How to join the Dalada beta", getAppStore: "Get Dalada on the App Store",
       invite: "You’re invited on a trip", inviteHint: "Install Dalada, sign in and open this link in the app — you’ll join the trip.",
       inviteJoin: "Join in Dalada",
+      friend: "You’re invited to Dalada", friendOpen: "Open the profile in Dalada",
+      friendHint: "Install Dalada, sign in and open this link again — the profile opens and you can add them as a friend.",
+      about: "Dalada is a map for fishing and the outdoors across Kazakhstan: places, fresh reports, fishing bans and an offline map. Free, for iPhone.",
       notFound: "Not available", notFoundHint: "It was deleted or isn’t visible to everyone. Open the link in the Dalada app.",
       failed: "Couldn’t load", failedHint: "Check your connection and reload the page.",
       approximate: "The place is shown approximately, within about a kilometre.",
@@ -71,6 +81,9 @@
     var params = new URLSearchParams(location.search);
     var invite = params.get("invite");
     if (invite && /^[0-9a-f]{32}$/.test(invite)) return { kind: "invite", id: invite };
+    // Ник — по правилам приложения (UsernameRules): 3–30 символов, латиница, цифры, «_» и «.».
+    var username = (params.get("u") || "").trim().toLowerCase();
+    if (/^[a-z0-9_.]{3,30}$/.test(username)) return { kind: "friend", id: username };
     var kinds = ["place", "trip", "catch"];
     for (var i = 0; i < kinds.length; i++) {
       var value = params.get(kinds[i]);
@@ -79,10 +92,20 @@
     return null;
   })();
 
+  // Метка кампании App Store Connect (ct) по виду страницы — видно, сколько установок дали ссылки
+  // каждого вида (docs/05-release/promotion.md, «Метки кампаний»). Только суммы, без слежки.
+  var campaigns = { place: "site-place", trip: "site-share", "catch": "site-share", invite: "trip-invite", friend: "invite" };
+
+  function appStoreURL() {
+    if (!config.appStorePt) return config.appStore;
+    var campaign = (target && campaigns[target.kind]) || "site-share";
+    return config.appStore + "?pt=" + encodeURIComponent(config.appStorePt) + "&ct=" + campaign;
+  }
+
   // До выхода — как попасть в бету (главная сайта), после — App Store (config.appStore).
   function getAppLink() {
     return config.appStore
-      ? el("a", { class: "button", href: config.appStore, text: T.getAppStore })
+      ? el("a", { class: "button", href: appStoreURL(), text: T.getAppStore })
       : el("a", { class: "button", href: base, text: T.getApp });
   }
 
@@ -171,7 +194,8 @@
   }
 
   function renderPlace(place, photo) {
-    setTitle(place.name);
+    // У статической страницы /p/<id>/ заголовок уже собран для поиска (build_site.py) — не трогаем.
+    if (!/\/p\/[0-9a-f-]{36}\/?$/i.test(location.pathname)) setTitle(place.name);
     var nodes = [];
     if (photo) nodes.push(el("img", { class: "photo", src: photo, alt: "" }));
     nodes.push(el("h1", { text: place.name }));
@@ -280,8 +304,31 @@
     ]);
   }
 
+  // Приглашение в друзья: только ник из ссылки, без запросов к базе (закрытый профиль не раскрываем).
+  // Зовут чаще тех, у кого Dalada ещё нет, поэтому главная кнопка — App Store; у кого есть — «Открыть
+  // профиль» (и «Открыть» в баннере Safari сверху).
+  function renderFriend(username) {
+    setTitle("@" + username);
+    var store = getAppLink();
+    store.className = "button primary";
+    show([
+      el("p", { class: "sub", text: T.friend }),
+      el("h1", { text: "@" + username }),
+      el("p", { class: "desc", text: T.about }),
+      el("p", { class: "desc", text: T.friendHint }),
+      el("div", { class: "actions" }, [
+        store,
+        el("a", { class: "button", href: "dalada://u/" + username, text: T.friendOpen })
+      ])
+    ]);
+  }
+
   if (!target) {
     location.replace(base);
+    return;
+  }
+  if (target.kind === "friend") {
+    renderFriend(target.id);
     return;
   }
   if (!config.url || !config.key) {

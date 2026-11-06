@@ -57,7 +57,7 @@
 | Edge Functions | **Edge Functions** | Деплой `supabase/functions` при изменениях в `main` |
 | iOS | **iOS** | macOS: сборка приложения и тесты пакета `DaladaKit` на ветках `claude/**` и в `main`; задача **Design lint** — токены DesignKit и отступы строк. iOS-код попадает в `main` только после зелёной сборки |
 | Сборка в TestFlight | **TestFlight**, **TestFlight info** | Вручную: архив, облачная подпись, загрузка (номер сборки — 100 + номер запуска); тексты TestFlight и отправка внешним тестировщикам ([testflight.md](../04-beta/testflight.md)) |
-| App Store | **App Store page**, **App Store release**, **Screenshots** | Тексты страницы, версия, анкеты, сборка к версии, скриншоты ([05-release](../05-release/README.md#выпуск-обновлений)) |
+| App Store | **App Store page**, **App Store release**, **Screenshots**, **App Store featuring** | Тексты страницы, версия, анкеты, сборка к версии, скриншоты ([05-release](../05-release/README.md#выпуск-обновлений)); события App Store и номинации на рекомендацию ([promotion-texts](../05-release/promotion-texts.md)) |
 | Карта | **Map tiles**, **Editorial photos** | Тайлы из OpenStreetMap — раз в месяц и вручную; стили — при изменениях `map/`; фото мест редакции — на R2 |
 | Сайт | **Pages** | При изменениях `docs/public` и сборщика, и раз в сутки (страницы публичных мест) |
 | Бэкапы | **Backup** | Каждую ночь (ниже) |

@@ -518,7 +518,8 @@ struct UserProfileView: View {
 
 // MARK: - Приглашение
 
-/// QR-код и ссылка на свой профиль: друг наводит камеру — открывается Dalada.
+/// QR-код и ссылка на свой профиль: друг наводит камеру — открывается страница приглашения на сайте
+/// (`WebLink.profileInvite`): с приложением — «Открыть профиль в Dalada», без него — App Store.
 struct InviteView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(SessionStore.self) private var session
@@ -526,7 +527,7 @@ struct InviteView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: AppSpacing.xl) {
-                if let username = session.profile?.username, let url = InviteLink.url(username: username) {
+                if let username = session.profile?.username, let url = WebLink.profileInvite(username) {
                     if let qr = QRCode.image(for: url.absoluteString) {
                         Image(decorative: qr, scale: 1)
                             .interpolation(.none)
