@@ -1,0 +1,40 @@
+{
+  "referenceName": "First ice 2026",
+  "badge": "SPECIAL_EVENT",
+  "purpose": "APPROPRIATE_FOR_ALL_USERS",
+  "priority": "NORMAL",
+  "primaryLocale": "ru",
+  "territories": ["KAZ"],
+  "publishStart": "2026-11-17T10:00:00+05:00",
+  "eventStart": "2026-12-01T00:00:00+05:00",
+  "eventEnd": "2026-12-31T23:59:00+05:00",
+  "deepLink": null,
+  "localizations": {
+    "ru": {
+      "name": "Первый лёд",
+      "shortDescription": "Где ловить со льда и какой лёд держит",
+      "longDescription": "Подборка водоёмов для подлёдной рыбалки по всей стране, запреты на карте и памятка, какой лёд держит."
+    },
+    "en-US": {
+      "name": "First ice",
+      "shortDescription": "Where to fish on the ice and when it holds",
+      "longDescription": "Waters for ice fishing across Kazakhstan, fishing bans on the map and a guide to when the ice is safe."
+    }
+  },
+  "media": {
+    "EVENT_CARD": "card.jpg",
+    "EVENT_DETAILS_PAGE": "details.jpg"
+  },
+  "nomination": {
+    "name": "First ice — ice fishing season in Kazakhstan",
+    "type": "NEW_CONTENT",
+    "publishStart": "2026-12-01T00:00:00+05:00",
+    "publishEnd": "2026-12-31T23:59:00+05:00",
+    "deviceFamilies": ["IPHONE"],
+    "locales": ["ru", "en-US"],
+    "territories": ["KAZ"],
+    "supplementalMaterialsUris": ["https://dkicekeeper.github.io/Dalada/press.html"],
+    "description": "Dalada is a free, ad-free map for fishing and the outdoors across Kazakhstan, in Kazakh, Russian and English. It launched on 1 November 2026. On 1 December we start “First ice”, an in-app event for the ice fishing season: a curated collection of well-known waters for ice fishing from Bukhtarma and Zaysan in the east to Kapshagay and Balkhash in the south, the 2026 fishing bans of all eight basins on the map, an offline map for places without a signal, and a guide to when the ice is safe. Ice fishing is one of the most popular winter pastimes in Kazakhstan, and local information is scattered across chats and government orders — Dalada puts it on one map. Places people mark stay private unless they choose to share them; the app has no behavioural analytics.",
+    "notes": "Independent developer from Kazakhstan. The app is fully localized in Kazakh (Cyrillic). Privacy-first: approximate places, privacy zones and per-item visibility."
+  }
+}
