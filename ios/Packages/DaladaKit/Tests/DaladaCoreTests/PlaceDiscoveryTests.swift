@@ -110,4 +110,16 @@ struct PlaceDiscoveryTests {
         #expect(PlaceQuery(types: [.spring]).isActive)
         #expect(PlaceQuery(text: String(repeating: "а", count: 120)).trimmedText.count == 80)
     }
+
+    @Test func collectionLinks() throws {
+        let url = try #require(CollectionLink.url(slug: "ice_fishing"))
+        #expect(url.absoluteString == "dalada://collection/ice_fishing")
+        #expect(CollectionLink.slug(from: url) == "ice_fishing")
+        #expect(CollectionLink.slug(from: URL(string: "DALADA://Collection/Ice_Fishing")!) == "ice_fishing")
+        #expect(CollectionLink.slug(from: URL(string: "dalada://collection/")!) == nil)
+        #expect(CollectionLink.slug(from: URL(string: "dalada://collection/ab")!) == nil, "короче трёх символов")
+        #expect(CollectionLink.slug(from: URL(string: "dalada://place/ice_fishing")!) == nil)
+        #expect(CollectionLink.slug(from: URL(string: "https://example.com/collection/ice_fishing")!) == nil)
+        #expect(CollectionLink.url(slug: "Bad-Slug") == nil)
+    }
 }

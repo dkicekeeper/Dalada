@@ -17,8 +17,11 @@ struct PlacesHomeView: View {
 
     @Environment(SessionStore.self) private var session
     @Environment(PlacesStore.self) private var store
+    @Environment(AppRouter.self) private var router
     @State private var query = PlaceQuery()
     @State private var selected: PlaceSelection?
+    /// Экраны над подборками: «Все» у раздела или подборки, «Сохранённые».
+    @State private var path: [PlaceListRoute] = []
     /// Недавние запросы под полем поиска (DesignKit 3.5.0).
     @AppStorage("places.recentSearches") private var recentSearches = RecentSearches()
 
@@ -40,7 +43,7 @@ struct PlacesHomeView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: AppSpacing.xl) {
                     PlaceTypeChips(selection: $query.types)
@@ -74,10 +77,23 @@ struct PlacesHomeView: View {
             }
             .task(id: viewerID) { await store.load(viewer: viewerID) }
             .refreshable { await store.load(viewer: viewerID) }
+            // Ссылка на подборку (`CollectionLink`): открыть, когда подборки загрузятся.
+            .onChange(of: router.pendingCollection, initial: true) { openPendingCollection() }
+            .onChange(of: store.discovery.recommended.map(\.slug)) { openPendingCollection() }
+            .onChange(of: store.hasLoaded) { openPendingCollection() }
             .sheet(item: $selected, onDismiss: { Task { await store.load(viewer: viewerID) } }) { selection in
                 PlaceCardView(placeID: selection.id, environment: environment)
             }
         }
+    }
+
+    /// Подборка из ссылки — поверх «Мест»; нет такой (снята с публикации) — просто «Места».
+    private func openPendingCollection() {
+        guard let slug = router.pendingCollection, store.hasLoaded else { return }
+        router.pendingCollection = nil
+        guard let collection = store.discovery.recommended.first(where: { $0.slug == slug }) else { return }
+        query = PlaceQuery()
+        path = [.collection(id: collection.id, title: collection.title(language: AppConfig.interfaceLanguage))]
     }
 
     @ViewBuilder

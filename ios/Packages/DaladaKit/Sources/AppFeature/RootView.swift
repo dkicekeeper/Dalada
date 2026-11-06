@@ -133,6 +133,10 @@ public struct RootView: View {
                 commentsLink = CommentsLinkItem(key: key)
             } else if let packingID = PackingLink.packingID(from: url) {
                 packingLink = PackingLinkItem(id: packingID)
+            } else if let slug = CollectionLink.slug(from: url) {
+                // Подборка редакции (событие App Store) — во вкладке «Места».
+                router.pendingCollection = slug
+                router.selection = .places
             } else if LiveLink.matches(url) {
                 // «Сейчас на выезде» — на «Главной».
                 router.selection = .home
