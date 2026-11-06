@@ -9,7 +9,7 @@
   "publishStart": "2026-11-17T10:00:00+05:00",
   "eventStart": "2026-12-01T00:00:00+05:00",
   "eventEnd": "2026-12-31T23:59:00+05:00",
-  "deepLink": null,
+  "deepLink": "dalada://collection/ice_fishing",
   "localizations": {
     "ru": {
       "name": "Первый лёд",

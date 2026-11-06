@@ -190,20 +190,20 @@ def wait_for_media(event_id: str) -> None:
 
 
 def submit_event(app: str, event_id: str) -> None:
-    """Своя заявка на проверку только с событием. Если уже есть неотправленная заявка с чем-то ещё
-    (например, с версией) — не трогаем её: отправить вместе — в App Store Connect."""
+    """Заявка на проверку с событием. Если уже есть неотправленная заявка с чем-то ещё (например, с
+    версией, которую владелец добавил на проверку), событие добавляем в неё, а саму заявку не
+    отправляем: версию на проверку отправляет владелец (docs/05-release/README.md) — вместе с ней
+    уйдёт и событие, и проверять его будут на новой сборке."""
     from testflight_info import call
     open_ones = call("GET", f"/apps/{app}/reviewSubmissions?filter[platform]=IOS&filter[state]=READY_FOR_REVIEW")["data"]
-    submission, has_event = None, False
+    submission, has_event, shared = None, False, False
     for candidate in open_ones:
         items = call("GET", f"/reviewSubmissions/{candidate['id']}/items?include=appEvent")["data"]
         events = [(i.get("relationships", {}).get("appEvent", {}).get("data") or {}).get("id") for i in items]
-        if all(e == event_id for e in events):
-            # Пустая (осталась от прошлой попытки) или уже с этим событием.
-            submission, has_event = candidate, bool(events)
-        else:
-            sys.exit("Есть неотправленная заявка на проверку с другими объектами — отправьте событие вместе с ней "
-                     "в App Store Connect (Distribution → App Review)")
+        submission, has_event = candidate, event_id in events
+        shared = any(e != event_id for e in events)
+        if shared:
+            break
     if submission is None:
         submission = call("POST", "/reviewSubmissions", {"data": {
             "type": "reviewSubmissions", "attributes": {"platform": "IOS"},
@@ -213,6 +213,10 @@ def submit_event(app: str, event_id: str) -> None:
             "type": "reviewSubmissionItems",
             "relationships": {"reviewSubmission": {"data": {"type": "reviewSubmissions", "id": submission["id"]}},
                               "appEvent": {"data": {"type": "appEvents", "id": event_id}}}}})
+    if shared:
+        print("Событие добавлено в неотправленную заявку вместе с версией. Отправьте заявку в App Store Connect "
+              "(Distribution → App Review → Submit for Review) — событие уйдёт вместе с ней")
+        return
     call("PATCH", f"/reviewSubmissions/{submission['id']}", {"data": {
         "type": "reviewSubmissions", "id": submission["id"], "attributes": {"submitted": True}}})
     print("Событие отправлено на проверку Apple")

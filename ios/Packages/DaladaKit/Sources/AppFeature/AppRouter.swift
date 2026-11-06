@@ -22,6 +22,8 @@ final class AppRouter {
     var showsTripStart = false
     /// Экран идущей записи.
     var showsRecording = false
+    /// Подборка из ссылки `dalada://collection/<slug>`: «Места» откроют её, когда подборки загрузятся.
+    var pendingCollection: String?
 
     /// «Начать поездку»: если запись уже идёт — открыть её, иначе выбрать вид поездки.
     func startTrip(isRecording: Bool) {

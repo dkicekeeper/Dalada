@@ -185,6 +185,30 @@ public struct PlaceCollection: Codable, Identifiable, Hashable, Sendable {
     }
 }
 
+/// Ссылка на подборку редакции: `dalada://collection/<slug>` — открывает её во вкладке «Места».
+/// Ею ведут события App Store («Первый лёд» → `ice_fishing`, appstore/events/).
+public enum CollectionLink {
+    static let host = "collection"
+
+    public static func url(slug: String) -> URL? {
+        guard isValid(slug) else { return nil }
+        return URL(string: "\(InviteLink.scheme)://\(host)/\(slug)")
+    }
+
+    /// Slug подборки из ссылки; `nil` — это не ссылка на подборку.
+    public static func slug(from url: URL) -> String? {
+        guard url.scheme?.lowercased() == InviteLink.scheme, url.host?.lowercased() == host,
+              let slug = url.pathComponents.dropFirst().first?.lowercased(), isValid(slug)
+        else { return nil }
+        return slug
+    }
+
+    /// Как в базе: `^[a-z0-9_]{3,40}$`.
+    static func isValid(_ slug: String) -> Bool {
+        (3...40).contains(slug.count) && slug.allSatisfy { $0.isASCII && ($0.isLowercase || $0.isNumber || $0 == "_") }
+    }
+}
+
 /// Подборки вкладки «Места» — ответ `places_discover`.
 public struct PlaceDiscovery: Codable, Hashable, Sendable {
     public var nearby: [PlaceItem]

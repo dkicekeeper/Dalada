@@ -3,6 +3,7 @@ This is version 1.0.1 — the first App Store update. Please check the main thin
 • Profile → Friends → Invite (the QR icon). Point another phone’s camera at the QR code — a “You’re invited to Dalada” page should open with an App Store button and “Open the profile in Dalada”. Share link sends the same page; the text says “across Kazakhstan”.
 • On a friend’s phone that already has Dalada (another account), tap “Open the profile in Dalada” on that page — your profile should open, ready to add as a friend.
 • Tips → any article → Share: the message has a link to the article on the website, and it opens in a browser in your language.
+• The App Store event link: type dalada://collection/ice_fishing in Notes and tap it — Places opens with the Ice fishing collection.
 • Reports (I’m here) and trip recording work as before.
 
 Feedback — the Send Feedback button in TestFlight or dakacom@gmail.com.
