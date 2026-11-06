@@ -77,10 +77,17 @@ def call(method: str, path: str, body: dict | None = None) -> dict:
         details = error.read().decode(errors="replace")
         try:
             errors = json.loads(details).get("errors", [])
-            details = "; ".join(f"{e.get('title', '')}: {e.get('detail', '')}" for e in errors) or details
+            details = "; ".join(f"{e.get('title', '')}: {e.get('detail', '')}" + associated(e) for e in errors) or details
         except ValueError:
             pass
-        raise ApiError(error.code, details[:600]) from None
+        raise ApiError(error.code, details[:1500]) from None
+
+
+def associated(error: dict) -> str:
+    """Причины из meta.associatedErrors (например, почему событие нельзя отправить на проверку)."""
+    groups = (error.get("meta") or {}).get("associatedErrors") or {}
+    reasons = [f"{e.get('code', '')}: {e.get('detail', '')}" for items in groups.values() for e in items or []]
+    return (" [" + "; ".join(reasons) + "]") if reasons else ""
 
 
 def text(name: str) -> str:

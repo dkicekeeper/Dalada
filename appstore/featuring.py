@@ -140,6 +140,8 @@ def event_attributes(event: dict) -> dict:
     }
     if event.get("deepLink"):
         attributes["deepLink"] = event["deepLink"]
+    # Без него событие нельзя отправить на проверку («нужна ли покупка»).
+    attributes["purchaseRequirement"] = event.get("purchaseRequirement", "NO_COST_ASSOCIATED")
     return attributes
 
 
@@ -171,9 +173,10 @@ def upload_media(localization_id: str, kind: str, path: Path) -> None:
 
 
 def wait_for_media(event_id: str) -> None:
-    """Перед отправкой на проверку картинки должны обработаться (до ~3 минут)."""
+    """Перед отправкой на проверку картинки должны обработаться (до ~10 минут)."""
     from testflight_info import call
-    for _ in range(18):
+    states = []
+    for _ in range(60):
         states = []
         for localization in call("GET", f"/appEvents/{event_id}/localizations")["data"]:
             for shot in call("GET", f"/appEventLocalizations/{localization['id']}/appEventScreenshots")["data"]:
@@ -183,7 +186,7 @@ def wait_for_media(event_id: str) -> None:
         if any(s == "FAILED" for s in states):
             sys.exit("Картинка не прошла обработку в App Store Connect — проверьте размер и формат")
         time.sleep(10)
-    print("::warning::Картинки ещё обрабатываются — отправляем как есть")
+    print(f"::warning::Картинки ещё обрабатываются ({', '.join(str(s) for s in states)}) — отправляем как есть")
 
 
 def submit_event(app: str, event_id: str) -> None:
@@ -191,11 +194,13 @@ def submit_event(app: str, event_id: str) -> None:
     (например, с версией) — не трогаем её: отправить вместе — в App Store Connect."""
     from testflight_info import call
     open_ones = call("GET", f"/apps/{app}/reviewSubmissions?filter[platform]=IOS&filter[state]=READY_FOR_REVIEW")["data"]
-    submission = None
+    submission, has_event = None, False
     for candidate in open_ones:
         items = call("GET", f"/reviewSubmissions/{candidate['id']}/items?include=appEvent")["data"]
-        if all((i.get("relationships", {}).get("appEvent", {}).get("data") or {}).get("id") == event_id for i in items):
-            submission = candidate
+        events = [(i.get("relationships", {}).get("appEvent", {}).get("data") or {}).get("id") for i in items]
+        if all(e == event_id for e in events):
+            # Пустая (осталась от прошлой попытки) или уже с этим событием.
+            submission, has_event = candidate, bool(events)
         else:
             sys.exit("Есть неотправленная заявка на проверку с другими объектами — отправьте событие вместе с ней "
                      "в App Store Connect (Distribution → App Review)")
@@ -203,6 +208,7 @@ def submit_event(app: str, event_id: str) -> None:
         submission = call("POST", "/reviewSubmissions", {"data": {
             "type": "reviewSubmissions", "attributes": {"platform": "IOS"},
             "relationships": {"app": {"data": {"type": "apps", "id": app}}}}})["data"]
+    if not has_event:
         call("POST", "/reviewSubmissionItems", {"data": {
             "type": "reviewSubmissionItems",
             "relationships": {"reviewSubmission": {"data": {"type": "reviewSubmissions", "id": submission["id"]}},
@@ -222,13 +228,15 @@ def run_event(name: str, submit: bool) -> None:
         return
     attributes = event_attributes(event)
     if current:
-        call("PATCH", f"/appEvents/{current['id']}", {"data": {"type": "appEvents", "id": current["id"], "attributes": attributes}})
         event_id = current["id"]
-        print(f"Событие «{event['referenceName']}» обновлено")
     else:
-        event_id = call("POST", "/appEvents", {"data": {"type": "appEvents", "attributes": attributes,
+        # purchaseRequirement при создании API не принимает (500) — его задаёт PATCH ниже.
+        created = {k: v for k, v in attributes.items() if k != "purchaseRequirement"}
+        event_id = call("POST", "/appEvents", {"data": {"type": "appEvents", "attributes": created,
                         "relationships": {"app": {"data": {"type": "apps", "id": app}}}}})["data"]["id"]
         print(f"Событие «{event['referenceName']}» создано")
+    call("PATCH", f"/appEvents/{event_id}", {"data": {"type": "appEvents", "id": event_id, "attributes": attributes}})
+    print(f"Событие «{event['referenceName']}»: сроки, значок, цель, «без покупок» — готово")
     localizations = {item["attributes"]["locale"]: item for item in call("GET", f"/appEvents/{event_id}/localizations")["data"]}
     for locale, texts in event["localizations"].items():
         fields = {k: texts[k] for k in LIMITS}
