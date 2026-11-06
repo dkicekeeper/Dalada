@@ -1,3 +1,4 @@
 • Inviting friends is easier: the link and QR code now open even for people who don’t have Dalada yet, with an App Store button. Those who already have it go straight to your profile.
 • Invites now cover all of Kazakhstan, not just Almaty.
+• Sharing an article now sends a link to it, so anyone can read it without the app.
 • Small improvements and fixes.

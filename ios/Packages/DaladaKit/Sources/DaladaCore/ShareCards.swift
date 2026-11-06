@@ -143,6 +143,22 @@ public enum WebLink {
         URL(string: base.absoluteString + "s/?invite=" + token)!
     }
 
+    /// Страница статьи на сайте: `…/a/<id>/`, по-казахски и по-английски — `kk.html` и `en.html`.
+    /// Сайт собирает страницу только на тех языках, где у статьи есть текст, поэтому без перевода —
+    /// русская. `nil` — id не по правилам базы.
+    public static func article(_ article: Article, language: String) -> URL? {
+        guard article.id.range(of: "^[a-z0-9_]{2,60}$", options: .regularExpression) != nil else { return nil }
+        let folder = base.absoluteString + "a/" + article.id + "/"
+        switch language {
+        case "kk" where !article.title.kk.isEmpty && !article.body.kk.isEmpty:
+            return URL(string: folder + "kk.html")
+        case "en" where !article.title.en.isEmpty && !article.body.en.isEmpty:
+            return URL(string: folder + "en.html")
+        default:
+            return URL(string: folder)
+        }
+    }
+
     /// Приглашение в друзья (QR и «Поделиться»): страница «@ник зовёт вас в Dalada» с кнопками
     /// «Открыть профиль в Dalada» и App Store — открывается и у тех, у кого приложения ещё нет.
     /// `nil` — ник не по правилам.

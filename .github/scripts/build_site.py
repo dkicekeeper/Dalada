@@ -7,12 +7,13 @@
 - _site/s/config.js — адрес Supabase и публичный ключ гостя из секретов (в репозитории их нет);
 - после выхода в App Store (APP_STORE_ID) — кнопка App Store вместо приглашения в бету и баннер
   Safari (Smart App Banner) на всех страницах;
-- _site/sitemap.xml — главная, пресс-страница и страницы мест для поисковиков (страницы поездок, уловов и
-  приглашений закрыты от индексации: это записи людей);
+- _site/a/ — статьи редакции, _site/rules/ — запреты на лов по бассейнам (site_content.py);
+- _site/sitemap.xml — главная, пресс-страница, статьи, запреты и страницы мест для поисковиков
+  (страницы поездок, уловов и приглашений закрыты от индексации: это записи людей);
 - метки кампаний App Store Connect в ссылках на App Store (переменная репозитория APP_STORE_PT) и
   метатег Google Search Console (GOOGLE_SITE_VERIFICATION) — docs/05-release/promotion.md.
 
-Без секретов или без сети сайт всё равно собирается — только без страниц мест.
+Без секретов или без сети сайт всё равно собирается — только без страниц мест, статей и запретов.
 Ключ и адрес в журнал не печатаем: репозиторий публичный.
 """
 import html
@@ -22,6 +23,8 @@ import re
 import shutil
 import sys
 import urllib.request
+
+import site_content
 
 SOURCE = "docs/public"
 OUTPUT = "_site"
@@ -203,14 +206,15 @@ def main():
         out.write(generic)
 
     if not config:
-        print("Секретов Supabase нет — страницы мест не собраны")
-        write_sitemap([])
+        print("Секретов Supabase нет — страницы мест, статей и запретов не собраны")
+        write_sitemap([], [])
         return
+    extra = content_pages(url, key)
     try:
         places = fetch_places(url, key)
     except Exception as error:  # noqa: BLE001 — сайт важнее страниц мест
         print("Места не загрузились (" + type(error).__name__ + ") — страницы мест не собраны")
-        write_sitemap([])
+        write_sitemap([], extra)
         return
 
     for place in places:
@@ -238,13 +242,42 @@ def main():
         with open(os.path.join(folder, "index.html"), "w", encoding="utf-8") as out:
             out.write(page)
     print("Страниц мест: " + str(len(places)))
-    write_sitemap(places)
+    write_sitemap(places, extra)
 
 
-def write_sitemap(places):
-    """sitemap.xml: главная, пресс-страница и страницы мест (дата — последнее изменение места). Поисковикам его
-    отдаём сами (Search Console): robots.txt на GitHub Pages проекта не положить — он в корне домена."""
+def content_pages(url, key):
+    """Статьи и запреты на лов (site_content.py). Каждая часть — отдельно: сбой одной не мешает другой.
+    Возвращает адреса для sitemap."""
+    sitemap = []
+    app_id = APP_STORE_ID or ""
+    parts = [
+        ("статьи", lambda: site_content.article_pages(
+            site_content.fetch_articles(url, key), ORIGIN, BASE, app_store_url, app_id)),
+        ("запреты", lambda: site_content.rules_pages(
+            *site_content.fetch_rules(url, key), ORIGIN, BASE, app_store_url, app_id, site_content.almaty_today())),
+    ]
+    for name, build in parts:
+        try:
+            files, entries = build()
+        except Exception as error:  # noqa: BLE001 — сайт важнее этих страниц
+            print("Страницы «" + name + "» не собраны (" + type(error).__name__ + ")")
+            continue
+        for path, text in files.items():
+            target = os.path.join(OUTPUT, path)
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            with open(target, "w", encoding="utf-8") as out:
+                out.write(text)
+        sitemap += entries
+        print("Страниц «" + name + "»: " + str(len(files)))
+    return sitemap
+
+
+def write_sitemap(places, extra):
+    """sitemap.xml: главная, пресс-страница, статьи, запреты и страницы мест (дата — последнее изменение).
+    Поисковикам его отдаём сами (Search Console): robots.txt на GitHub Pages проекта не положить — он в
+    корне домена."""
     entries = [(ORIGIN + BASE, None), (ORIGIN + BASE + "press.html", None)]
+    entries += [(loc, lastmod if lastmod and re.fullmatch(r"\d{4}-\d{2}-\d{2}", lastmod) else None) for loc, lastmod in extra]
     for place in places:
         updated = str(place.get("updated_at") or "")[:10]
         entries.append((ORIGIN + BASE + "p/" + str(place["id"]) + "/", updated if re.fullmatch(r"\d{4}-\d{2}-\d{2}", updated) else None))

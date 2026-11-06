@@ -166,9 +166,14 @@ struct ArticleView: View {
     }
 
     /// Название, кратко и подпись — для «Поделиться».
+    /// Название, кратко, подпись и ссылка на страницу статьи на сайте — её откроют и без приложения.
     private var shareText: String {
-        article.title.text(for: language) + "\n\n" + article.summary.text(for: language)
+        var text = article.title.text(for: language) + "\n\n" + article.summary.text(for: language)
             + "\n\n" + String(localized: "article.shareSignature")
+        if let link = WebLink.article(article, language: language) {
+            text += "\n" + link.absoluteString
+        }
+        return text
     }
 }
 

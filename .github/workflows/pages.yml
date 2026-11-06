@@ -4,6 +4,7 @@ name: Pages
 # (https://dkicekeeper.github.io/Dalada/…). Публикуется только docs/public, не внутренние документы.
 # Плюс страницы «Поделиться» (docs/04-beta/M29-web-share.md): /s/?trip=…, /s/?catch=…, /p/<место>/ —
 # страницы мест собираются из базы раз в день, чтобы новые публичные места получили превью.
+# Статьи и запреты на лов (site_content.py) — тоже из базы, раз в день.
 # Один раз: Settings → Pages → Build and deployment → Source: GitHub Actions.
 on:
   push:
@@ -11,6 +12,7 @@ on:
     paths:
       - "docs/public/**"
       - ".github/scripts/build_site.py"
+      - ".github/scripts/site_content.py"
       - ".github/workflows/pages.yml"
   schedule:
     - cron: "17 2 * * *"
