@@ -4,6 +4,7 @@
     python3 appstore/featuring.py --check                    # проверить все события (CI, без ключа)
     python3 appstore/featuring.py event first_ice            # создать или обновить черновик события
     python3 appstore/featuring.py event first_ice --submit   # …и отправить его на проверку Apple
+    python3 appstore/featuring.py event first_ice --submit --with-version   # вместе с версией 1.0.x
     python3 appstore/featuring.py nominate first_ice         # номинация на рекомендацию — черновик
     python3 appstore/featuring.py nominate first_ice --submit
 
@@ -189,40 +190,72 @@ def wait_for_media(event_id: str) -> None:
     print(f"::warning::Картинки ещё обрабатываются ({', '.join(str(s) for s in states)}) — отправляем как есть")
 
 
-def submit_event(app: str, event_id: str) -> None:
-    """Заявка на проверку с событием. Если уже есть неотправленная заявка с чем-то ещё (например, с
-    версией, которую владелец добавил на проверку), событие добавляем в неё, а саму заявку не
-    отправляем: версию на проверку отправляет владелец (docs/05-release/README.md) — вместе с ней
-    уйдёт и событие, и проверять его будут на новой сборке."""
+def release_version(app: str) -> dict:
+    """Версия MARKETING_VERSION, которая готовится к отправке, со сборкой — иначе выходим с причиной."""
+    from release import EDITABLE as VERSION_EDITABLE, marketing_version
+    from testflight_info import call
+    number = marketing_version()
+    versions = call("GET", f"/apps/{app}/appStoreVersions?filter[platform]=IOS&filter[versionString]={number}")["data"]
+    version = next((v for v in versions if v["attributes"].get("appStoreState") in VERSION_EDITABLE), None)
+    if version is None:
+        sys.exit(f"Версии {number} в подготовке к отправке нет — сначала App Store release")
+    if not call("GET", f"/appStoreVersions/{version['id']}/build").get("data"):
+        sys.exit(f"К версии {number} не привязана сборка — App Store release с номером сборки")
+    print(f"Версия {number} со сборкой — готова к отправке")
+    return version
+
+
+def submit_event(app: str, event_id: str, version_id: str | None = None) -> None:
+    """Заявка на проверку с событием (и с версией, если `version_id`).
+
+    Если уже есть неотправленная заявка (например, владелец добавил версию через Add for Review),
+    кладём событие в неё. С версией (`--with-version`, отправку попросил владелец) заявку отправляем;
+    без неё и при чужих объектах в заявке — не отправляем: решение за владельцем, а проверять событие
+    будут вместе с новой сборкой."""
     from testflight_info import call
     open_ones = call("GET", f"/apps/{app}/reviewSubmissions?filter[platform]=IOS&filter[state]=READY_FOR_REVIEW")["data"]
-    submission, has_event, shared = None, False, False
-    for candidate in open_ones:
-        items = call("GET", f"/reviewSubmissions/{candidate['id']}/items?include=appEvent")["data"]
-        events = [(i.get("relationships", {}).get("appEvent", {}).get("data") or {}).get("id") for i in items]
-        submission, has_event = candidate, event_id in events
-        shared = any(e != event_id for e in events)
-        if shared:
-            break
-    if submission is None:
+    submission = open_ones[0] if open_ones else None
+    events, versions, others = [], [], 0
+    if submission:
+        items = call("GET", f"/reviewSubmissions/{submission['id']}/items?include=appEvent,appStoreVersion")["data"]
+        for item in items:
+            rel = item.get("relationships", {})
+            event = (rel.get("appEvent", {}).get("data") or {}).get("id")
+            version = (rel.get("appStoreVersion", {}).get("data") or {}).get("id")
+            if event:
+                events.append(event)
+            if version:
+                versions.append(version)
+            mine = (event is not None and event == event_id) or (version is not None and version == version_id)
+            if not mine:
+                others += 1
+    else:
         submission = call("POST", "/reviewSubmissions", {"data": {
             "type": "reviewSubmissions", "attributes": {"platform": "IOS"},
             "relationships": {"app": {"data": {"type": "apps", "id": app}}}}})["data"]
-    if not has_event:
+
+    def add(kind: str, type_name: str, item_id: str) -> None:
         call("POST", "/reviewSubmissionItems", {"data": {
             "type": "reviewSubmissionItems",
             "relationships": {"reviewSubmission": {"data": {"type": "reviewSubmissions", "id": submission["id"]}},
-                              "appEvent": {"data": {"type": "appEvents", "id": event_id}}}}})
-    if shared:
+                              kind: {"data": {"type": type_name, "id": item_id}}}}})
+
+    if version_id and version_id not in versions:
+        add("appStoreVersion", "appStoreVersions", version_id)
+        print("Версия добавлена в заявку")
+    if event_id not in events:
+        add("appEvent", "appEvents", event_id)
+        print("Событие добавлено в заявку")
+    if not version_id and others:
         print("Событие добавлено в неотправленную заявку вместе с версией. Отправьте заявку в App Store Connect "
               "(Distribution → App Review → Submit for Review) — событие уйдёт вместе с ней")
         return
     call("PATCH", f"/reviewSubmissions/{submission['id']}", {"data": {
         "type": "reviewSubmissions", "id": submission["id"], "attributes": {"submitted": True}}})
-    print("Событие отправлено на проверку Apple")
+    print("Отправлено на проверку Apple: " + ("версия и событие" if version_id else "событие"))
 
 
-def run_event(name: str, submit: bool) -> None:
+def run_event(name: str, submit: bool, with_version: bool = False) -> None:
     from testflight_info import call, upsert
     event = load(name)
     app = app_id()
@@ -258,7 +291,7 @@ def run_event(name: str, submit: bool) -> None:
             upload_media(localization["id"], kind, EVENTS / name / file)
     if submit:
         wait_for_media(event_id)
-        submit_event(app, event_id)
+        submit_event(app, event_id, release_version(app)["id"] if with_version else None)
 
 
 def run_nomination(name: str, submit: bool) -> None:
@@ -310,6 +343,8 @@ def main() -> None:
     parser.add_argument("action", nargs="?", choices=["event", "nominate"])
     parser.add_argument("name", nargs="?", help="папка события в appstore/events/")
     parser.add_argument("--submit", action="store_true", help="отправить: событие — на проверку, номинацию — Apple")
+    parser.add_argument("--with-version", action="store_true",
+                        help="с --submit: отправить вместе с версией MARKETING_VERSION (решение владельца)")
     args = parser.parse_args()
     problems = check()
     for problem in problems:
@@ -322,7 +357,7 @@ def main() -> None:
     if not args.action or not args.name:
         parser.error("нужно действие (event или nominate) и имя события")
     if args.action == "event":
-        run_event(args.name, args.submit)
+        run_event(args.name, args.submit, args.with_version)
     else:
         run_nomination(args.name, args.submit)
 
