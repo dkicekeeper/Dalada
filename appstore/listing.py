@@ -15,6 +15,10 @@
 Версию берёт ту, что готовится к отправке, или создаёт (номер — MARKETING_VERSION из
 ios/project.yml). Сборку к версии не привязывает и на проверку не отправляет — это
 appstore/release.py (docs/05-release/README.md, R3).
+
+Рекламный текст (promotional_text.txt) Apple разрешает менять и у версии, которая уже в App Store,
+без проверки — его отправляем и туда: так текст под сезон виден сразу, не дожидаясь обновления
+(docs/05-release/promotion.md, «Страница и ключевые слова»).
 Нужны ASC_KEY_ID, ASC_ISSUER_ID и ASC_KEY_PATH — как у appstore/testflight_info.py.
 """
 
@@ -89,6 +93,7 @@ def upload(version_string: str) -> None:
     if not apps:
         sys.exit(f"Приложение {BUNDLE_ID} не найдено в App Store Connect")
     app_id = apps[0]["id"]
+    promote_live(app_id)
     # Версия: та, что готовится к отправке, или новая. Пока версия на проверке, тексты не меняются.
     from release import editable_version, is_update
     version = editable_version(app_id, version_string)
@@ -131,6 +136,29 @@ def upload(version_string: str) -> None:
                ("appStoreVersion", "appStoreVersions", version["id"]))
         print(f"Тексты версии ({locale}): описание, ключевые слова, промотекст, ссылки"
               + (", что нового" if notes else "") + " — готово")
+
+
+def promote_live(app_id: str) -> None:
+    """Рекламный текст версии, которая сейчас в App Store: меняется без проверки."""
+    from testflight_info import call
+    from release import LIVE
+
+    versions = call("GET", f"/apps/{app_id}/appStoreVersions?filter[platform]=IOS&limit=20")["data"]
+    live = next((v for v in versions if v["attributes"].get("appStoreState") in LIVE), None)
+    if live is None:
+        return
+    name = live["attributes"]["versionString"]
+    for item in call("GET", f"/appStoreVersions/{live['id']}/appStoreVersionLocalizations")["data"]:
+        locale = item["attributes"]["locale"]
+        if locale not in LOCALES:
+            continue
+        text = read("promotional_text", locale)
+        if item["attributes"].get("promotionalText") == text:
+            print(f"Рекламный текст {name} в App Store ({locale}) — без изменений")
+            continue
+        call("PATCH", f"/appStoreVersionLocalizations/{item['id']}", {"data": {
+            "type": "appStoreVersionLocalizations", "id": item["id"], "attributes": {"promotionalText": text}}})
+        print(f"Рекламный текст {name} в App Store ({locale}) — обновлён")
 
 
 def main() -> None:

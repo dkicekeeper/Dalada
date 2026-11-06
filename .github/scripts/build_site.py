@@ -7,7 +7,7 @@
 - _site/s/config.js — адрес Supabase и публичный ключ гостя из секретов (в репозитории их нет);
 - после выхода в App Store (APP_STORE_ID) — кнопка App Store вместо приглашения в бету и баннер
   Safari (Smart App Banner) на всех страницах;
-- _site/sitemap.xml — главная и страницы мест для поисковиков (страницы поездок, уловов и
+- _site/sitemap.xml — главная, пресс-страница и страницы мест для поисковиков (страницы поездок, уловов и
   приглашений закрыты от индексации: это записи людей);
 - метки кампаний App Store Connect в ссылках на App Store (переменная репозитория APP_STORE_PT) и
   метатег Google Search Console (GOOGLE_SITE_VERIFICATION) — docs/05-release/promotion.md.
@@ -105,7 +105,9 @@ def release(page):
         return page
     page = re.sub(r"<!-- beta -->.*?<!-- /beta -->\n?", "", page, flags=re.S)
     page = re.sub(r"<!-- appstore\n?(.*?)appstore -->\n?", r"\1", page, flags=re.S)
-    page = page.replace("{{APP_STORE_URL}}", html.escape(app_store_url("site"), quote=True))
+    # {{APP_STORE_URL}} — ссылка с меткой site, {{APP_STORE_URL:press}} — со своей меткой.
+    page = re.sub(r"\{\{APP_STORE_URL(?::([a-z0-9-]{1,30}))?\}\}",
+                  lambda m: html.escape(app_store_url(m.group(1) or "site"), quote=True), page)
     return page.replace("</head>", '  <meta name="apple-itunes-app" content="app-id=' + APP_STORE_ID + '">\n</head>', 1)
 
 
@@ -240,9 +242,9 @@ def main():
 
 
 def write_sitemap(places):
-    """sitemap.xml: главная и страницы мест (дата — последнее изменение места). Поисковикам его
+    """sitemap.xml: главная, пресс-страница и страницы мест (дата — последнее изменение места). Поисковикам его
     отдаём сами (Search Console): robots.txt на GitHub Pages проекта не положить — он в корне домена."""
-    entries = [(ORIGIN + BASE, None)]
+    entries = [(ORIGIN + BASE, None), (ORIGIN + BASE + "press.html", None)]
     for place in places:
         updated = str(place.get("updated_at") or "")[:10]
         entries.append((ORIGIN + BASE + "p/" + str(place["id"]) + "/", updated if re.fullmatch(r"\d{4}-\d{2}-\d{2}", updated) else None))

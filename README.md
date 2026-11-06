@@ -41,7 +41,7 @@
 - [`docs/03-architecture/`](docs/03-architecture/README.md) — архитектура и стек: iOS, бэкенд на Supabase, карты, инфраструктура и переезд в РК
 - [`docs/04-beta/`](docs/04-beta/README.md) — бета: вехи M0–M34 и их спецификации, настройка окружения, TestFlight
 - [`docs/05-release/`](docs/05-release/README.md) — релиз 1.0 и **текущее состояние**: что после выхода, выпуск обновлений, решения, страница App Store и скриншоты
-- [`docs/05-release/promotion.md`](docs/05-release/promotion.md) — продвижение на год: воронка, каналы, календарь по сезонам, бюджет, метрики без слежки, первые 30 дней
+- [`docs/05-release/promotion.md`](docs/05-release/promotion.md) — продвижение на год: воронка, каналы, календарь по сезонам, бюджет, метрики без слежки, первые 30 дней; готовые тексты — [`promotion-texts.md`](docs/05-release/promotion-texts.md)
 - [`docs/naming.md`](docs/naming.md) — название: выбор Dalada и оставшиеся проверки
 
 ## Код
