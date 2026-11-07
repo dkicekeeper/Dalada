@@ -140,7 +140,8 @@ workflow App Store page и App Store release ничего не меняют — 
    осталось (например, нет файла «Что нового»).
 5. **Отправка на проверку** — владелец: App Store Connect → версия → Add for Review → Submit. Если есть
    событие App Store к этой версии, можно одним шагом: Actions → **App Store featuring** с `event`,
-   `submit` и `with_version` (по просьбе владельца это делает и Claude). Выпуск —
+   `submit` и `with_version` (по просьбе владельца это делает и Claude). Выпуск после одобрения —
+   кнопка Release или Actions → **App Store release** с галочкой `release`. Выпуск —
    ручной: после одобрения нажать Release, дальше обновление само доходит до всех за 7 дней
    (приостановить или выпустить сразу всем — на странице версии).
 

@@ -306,9 +306,26 @@ def check_screenshots(version: dict) -> None:
             print(f"Скриншоты ({locale}): {count}")
 
 
+def release_approved(app_id: str, version_string: str) -> None:
+    """Выпустить одобренную версию (выпуск ручной): то же, что кнопка Release в App Store Connect.
+    У обновления дальше — поэтапный выпуск на 7 дней (update_phased_release)."""
+    versions = call("GET", f"/apps/{app_id}/appStoreVersions?filter[platform]=IOS&filter[versionString]={version_string}")["data"]
+    version = versions[0] if versions else None
+    state = version["attributes"].get("appStoreState") if version else "нет"
+    if state != "PENDING_DEVELOPER_RELEASE":
+        print(f"Версия {version_string}: {state} — выпускать нечего (ждём одобрения Apple или уже выпущена)")
+        return
+    call("POST", "/appStoreVersionReleaseRequests", {"data": {
+        "type": "appStoreVersionReleaseRequests",
+        "relationships": {"appStoreVersion": {"data": {"type": "appStoreVersions", "id": version["id"]}}}}})
+    print(f"Версия {version_string} выпущена: обновление дойдёт до всех за 7 дней (поэтапный выпуск)")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--build", help="номер сборки, которую привязать к версии")
+    parser.add_argument("--release", action="store_true",
+                        help="выпустить одобренную версию (решение владельца; то же, что Release в App Store Connect)")
     args = parser.parse_args()
 
     apps = call("GET", f"/apps?filter[bundleId]={BUNDLE_ID}")["data"]
@@ -316,6 +333,9 @@ def main() -> None:
         sys.exit(f"Приложение {BUNDLE_ID} не найдено в App Store Connect")
     app_id = apps[0]["id"]
     version_string = marketing_version()
+    if args.release:
+        release_approved(app_id, version_string)
+        return
     version = editable_version(app_id, version_string)
     # Номер нужен сайту в день выхода (APP_STORE_ID в .github/scripts/build_site.py).
     print(f"Apple ID приложения: {app_id}")

@@ -4,7 +4,8 @@ name: App Store release
 # права, права на контент, возрастной рейтинг, цена (бесплатно), доступность (только Казахстан),
 # данные для проверки Apple и сборка, если указан номер; у обновлений — поэтапный выпуск. Сначала —
 # тексты страницы и «Что нового» (appstore/listing.py). На проверку НЕ отправляет: это решение
-# владельца (docs/05-release/README.md, «Выпуск обновлений»).
+# владельца (docs/05-release/README.md, «Выпуск обновлений»). С галочкой release — только выпускает
+# одобренную версию (как Release в App Store Connect); если она ещё не одобрена — ничего не делает.
 # Запуск вручную из main: Actions → App Store release → Run workflow.
 on:
   workflow_dispatch:
@@ -13,6 +14,10 @@ on:
         description: "Номер сборки, которую привязать к версии (пусто — не привязывать)"
         required: false
         default: ""
+      release:
+        description: "Выпустить одобренную версию (как Release в App Store Connect; решение владельца)"
+        type: boolean
+        default: false
 
 concurrency:
   group: appstore-listing
@@ -39,6 +44,7 @@ jobs:
           DEMO_USER: ${{ secrets.ASC_DEMO_USER }}
           DEMO_PASSWORD: ${{ secrets.ASC_DEMO_PASSWORD }}
           BUILD: ${{ inputs.build }}
+          RELEASE: ${{ inputs.release }}
         run: |
           if [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY_P8" ]; then
             echo "::error::Нет секретов ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8 (docs/04-beta/testflight.md)"
@@ -49,6 +55,10 @@ jobs:
           export ASC_KEY_PATH="$RUNNER_TEMP/asc/AuthKey.p8"
           python3 -m venv "$RUNNER_TEMP/ascenv"
           "$RUNNER_TEMP/ascenv/bin/pip" install --quiet pyjwt cryptography
+          if [ "$RELEASE" = "true" ]; then
+            "$RUNNER_TEMP/ascenv/bin/python" appstore/release.py --release
+            exit 0
+          fi
           "$RUNNER_TEMP/ascenv/bin/python" appstore/listing.py
           args=()
           if [ -n "$BUILD" ]; then args+=(--build "$BUILD"); fi
