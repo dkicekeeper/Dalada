@@ -304,7 +304,14 @@ def run_nomination(name: str, submit: bool) -> None:
         rows = call("GET", f"/nominations?filter[state]={state}&filter[relatedApps]={app}&limit=200")["data"]
         found = found or next((n for n in rows if n["attributes"].get("name") == nomination["name"]), None)
     current_event = find_event(app, event["referenceName"])
-    attach = current_event and current_event["attributes"].get("eventState") in APPROVED
+    event_state = current_event["attributes"].get("eventState") if current_event else "нет"
+    attach = current_event is not None and event_state in APPROVED
+    print(f"Событие «{event['referenceName']}»: {event_state}")
+    state = found["attributes"].get("state") if found else None
+    if state == "SUBMITTED" and not attach:
+        # Отправленную номинацию трогаем, только когда есть что прикрепить.
+        print(f"Номинация «{nomination['name']}» отправлена; событие прикрепим, когда Apple его одобрит")
+        return
     attributes = {
         "name": nomination["name"],
         "type": nomination["type"],
@@ -327,8 +334,8 @@ def run_nomination(name: str, submit: bool) -> None:
         print(f"Номинация «{nomination['name']}» создана" + (" и отправлена" if submit else " (черновик)"))
     else:
         attributes.pop("type")  # после отправки тип не меняется
-        if found["attributes"].get("state") == "DRAFT":
-            attributes["submitted"] = submit
+        # PATCH без submitted (или archived) API не принимает; отправленная остаётся отправленной.
+        attributes["submitted"] = True if state == "SUBMITTED" else submit
         call("PATCH", f"/nominations/{found['id']}", {"data": {"type": "nominations", "id": found["id"],
              "attributes": attributes, "relationships": relationships}})
         print(f"Номинация «{nomination['name']}» обновлена ({found['attributes'].get('state')}"
