@@ -55,7 +55,17 @@ def provider_token(raw):
 APP_STORE_PT_RAW = os.environ.get("APP_STORE_PT", "")
 APP_STORE_PT = provider_token(APP_STORE_PT_RAW)
 # Подтверждение сайта в Google Search Console метатегом на главной (код из Search Console).
-GOOGLE_SITE_VERIFICATION = os.environ.get("GOOGLE_SITE_VERIFICATION", "").strip()
+
+
+def verification_code(raw):
+    """Код Search Console: сам код или весь тег <meta name="google-site-verification" content="…">."""
+    found = re.search(r"content\s*=\s*[\"']([^\"']+)[\"']", raw)
+    code = (found.group(1) if found else raw.strip().strip("\"'")).strip()
+    return code if re.fullmatch(r"[A-Za-z0-9_-]{10,100}", code) else ""
+
+
+GOOGLE_SITE_VERIFICATION_RAW = os.environ.get("GOOGLE_SITE_VERIFICATION", "")
+GOOGLE_SITE_VERIFICATION = verification_code(GOOGLE_SITE_VERIFICATION_RAW)
 # Значения из переменных попадают в HTML — пропускаем только ожидаемый вид.
 if APP_STORE_PT_RAW.strip() and not APP_STORE_PT:
     # Само значение не печатаем: мало ли что туда вставили.
@@ -63,9 +73,10 @@ if APP_STORE_PT_RAW.strip() and not APP_STORE_PT:
           + str(len(APP_STORE_PT_RAW.strip())) + " символов без pt=<цифры> — ссылки без меток")
 elif APP_STORE_PT:
     print("Метки кампаний: включены")
-if GOOGLE_SITE_VERIFICATION and not re.fullmatch(r"[A-Za-z0-9_-]{10,100}", GOOGLE_SITE_VERIFICATION):
-    print("GOOGLE_SITE_VERIFICATION не похож на код Search Console — метатег не добавлен")
-    GOOGLE_SITE_VERIFICATION = ""
+if GOOGLE_SITE_VERIFICATION_RAW.strip() and not GOOGLE_SITE_VERIFICATION:
+    print("GOOGLE_SITE_VERIFICATION: нужен код из тега Search Console (content=\"…\") или весь тег — метатег не добавлен")
+elif GOOGLE_SITE_VERIFICATION:
+    print("Метатег Search Console: добавлен")
 
 TYPES = {
     "base": "База отдыха", "campsite": "Стоянка", "fishing_spot": "Точка ловли",
