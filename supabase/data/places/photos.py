@@ -55,6 +55,8 @@ RADIUS_M = {
     "paid_pond": 500, "base": 500, "parking": 300, "tackle_shop": 200,
 }
 MIN_WIDTH = 1000
+# Снимки с МКС (ISS043-E-64073…): геометка — точка под станцией, на снимке — облака и ночная Земля.
+SKIP_FILES = re.compile(r"^File:ISS\d{3}-E-", re.I)
 # В каком порядке искать фото местам без фото (--missing): сначала то, ради чего едут.
 SEARCH_ORDER = ["water_body", "landmark", "campsite", "base", "paid_pond", "fishing_spot", "spring", "tackle_shop",
                 "parking"]
@@ -319,7 +321,7 @@ def find_candidates(sheets: Path | None, only: set[str] | None, progress: Path |
         found = candidates_for(place, tags)
         usable = []
         for title, (score, reason, meta) in found.items():
-            if meta["mime"] not in ("image/jpeg", "image/png"):
+            if meta["mime"] not in ("image/jpeg", "image/png") or SKIP_FILES.search(title):
                 continue
             if meta["width"] < MIN_WIDTH or not LICENSE.match(meta["license"]) or not meta["author"]:
                 continue

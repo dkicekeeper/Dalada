@@ -340,7 +340,7 @@ yes,water_body,Амангельдинское водохранилище,53.1242
 yes,water_body,Анисимово озеро,51.179118,51.328087,,osm:w283352937,natural=water,Анисимово көлі,https://www.openstreetmap.org/way/283352937,
 yes,water_body,Апсикей,51.895552,68.640205,,osm:w325440889,natural=water,Апсикей,https://www.openstreetmap.org/way/325440889,
 yes,water_body,Арасан,49.537499,86.481899,,osm:r11522982,natural=water,Арасан,https://www.openstreetmap.org/relation/11522982,
-yes,water_body,Арнасайские озёра,40.854715,67.762667,,osm:r1934000,natural=water,Arnasoy koʻllari,https://www.openstreetmap.org/relation/1934000,
+no,water_body,Арнасайские озёра,40.854715,67.762667,,osm:r1934000,natural=water,Arnasoy koʻllari,https://www.openstreetmap.org/relation/1934000,за границей Казахстана: в Казахстане 0–1 % озера
 yes,water_body,Арыкбалык,52.946532,68.213295,,osm:w24949429,natural=water,Арықбалық,https://www.openstreetmap.org/way/24949429,
 yes,water_body,Асубалык,50.418601,69.243168,,osm:w277032681,natural=water,Асубалық,https://www.openstreetmap.org/way/277032681,
 yes,water_body,Атаманское озеро,54.501981,66.256274,,osm:w251775602,natural=water,Атаман көлі,https://www.openstreetmap.org/way/251775602,
@@ -1022,7 +1022,7 @@ yes,water_body,озеро Гусиное,54.809982,69.563557,,osm:w190653804,nat
 yes,water_body,озеро Гусиное,55.033637,70.408321,,osm:w235959647,natural=water,Қаз көлі,https://www.openstreetmap.org/way/235959647,
 yes,water_body,озеро Гусиное,54.795096,69.134183,,osm:w27676714,natural=water,Қаз көлі,https://www.openstreetmap.org/way/27676714,
 yes,water_body,озеро Даулет,52.942443,69.593970,,osm:w320751183,natural=water,Дәулет көлі,https://www.openstreetmap.org/way/320751183,
-yes,water_body,озеро Двойное,54.455394,76.952482,,osm:w1419396269,natural=water,озеро Двойное,https://www.openstreetmap.org/way/1419396269,
+no,water_body,озеро Двойное,54.455394,76.952482,,osm:w1419396269,natural=water,озеро Двойное,https://www.openstreetmap.org/way/1419396269,за границей Казахстана: в Казахстане 0–1 % озера
 yes,water_body,озеро Дед,53.254146,65.046322,,osm:w401714303,natural=water,Ата көлі,https://www.openstreetmap.org/way/401714303,
 yes,water_body,озеро Деревянное,43.842738,79.416750,,osm:w745195676,natural=water,озеро Деревянное,https://www.openstreetmap.org/way/745195676,
 yes,water_body,озеро Домалакколь,45.046127,64.636767,,osm:w1444258786,natural=water,озеро Домалакколь,https://www.openstreetmap.org/way/1444258786,
@@ -1175,7 +1175,7 @@ yes,water_body,озеро Курейное,55.287135,68.784366,,osm:w220266642,n
 yes,water_body,озеро Курколь,53.088056,69.120576,,osm:w150167331,natural=water,Құркөл көлі,https://www.openstreetmap.org/way/150167331,
 yes,water_body,озеро Курколь,54.133731,65.061439,,osm:w1530679954,natural=water,озеро Курколь,https://www.openstreetmap.org/way/1530679954,
 yes,water_body,озеро Курхацкое,47.485893,51.104867,,osm:w1086163923,natural=water,озеро Курхацкое,https://www.openstreetmap.org/way/1086163923,
-yes,water_body,озеро Курья,54.643196,65.807429,,osm:w114639721,natural=water,Курия көлі,https://www.openstreetmap.org/way/114639721,
+no,water_body,озеро Курья,54.643196,65.807429,,osm:w114639721,natural=water,Курия көлі,https://www.openstreetmap.org/way/114639721,за границей Казахстана: в Казахстане 0–1 % озера
 yes,water_body,озеро Кызылколь,51.306193,72.169587,,osm:w162756286,natural=water,озеро Кызылколь,https://www.openstreetmap.org/way/162756286,
 yes,water_body,озеро Кызылтуз,53.160758,76.913561,,osm:w1190771521,natural=water,озеро Кызылтуз,https://www.openstreetmap.org/way/1190771521,
 yes,water_body,озеро Кызылтуз,53.783140,76.820975,,osm:w1374654777,natural=water,Қызылтұз көлі,https://www.openstreetmap.org/way/1374654777,
@@ -1235,7 +1235,7 @@ yes,water_body,озеро Орманши,53.161036,76.745362,,osm:w1190771520,na
 yes,water_body,озеро Павлово,48.245808,51.555665,,osm:w1086499212,natural=water,озеро Павлово,https://www.openstreetmap.org/way/1086499212,
 yes,water_body,озеро Палевское,50.290706,83.970856,,osm:w166154184,natural=water,Палевск көлі,https://www.openstreetmap.org/way/166154184,
 yes,water_body,озеро Пеньковское,54.960633,69.259511,,osm:w176683476,natural=water,Пеньково көлі,https://www.openstreetmap.org/way/176683476,
-yes,water_body,озеро Першино,51.121593,81.164492,,osm:w955975866,natural=water,озеро Першино,https://www.openstreetmap.org/way/955975866,
+no,water_body,озеро Першино,51.121593,81.164492,,osm:w955975866,natural=water,озеро Першино,https://www.openstreetmap.org/way/955975866,за границей Казахстана: в Казахстане 0–1 % озера
 yes,water_body,озеро Пестрое,54.838128,68.217235,соленое.,osm:w527433619,natural=water,озеро Пестрое,https://www.openstreetmap.org/way/527433619,
 yes,water_body,озеро Песчанка,54.533046,66.231585,,osm:w251776040,natural=water,Песчанка көлі,https://www.openstreetmap.org/way/251776040,
 yes,water_body,озеро Питное,54.766867,67.820355,,osm:w117398954,natural=water,Ішетін көлі,https://www.openstreetmap.org/way/117398954,
