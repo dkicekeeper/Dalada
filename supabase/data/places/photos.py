@@ -3,6 +3,8 @@
 
     python3 supabase/data/places/photos.py check                    # проверить таблицу и миграцию (CI)
     python3 supabase/data/places/photos.py candidates [--sheets DIR] [--progress F]  # кандидаты → photo_candidates.csv
+    python3 supabase/data/places/photos.py candidates --place ID,ID          # только эти места
+    python3 supabase/data/places/photos.py candidates --missing [--limit N] --progress F  # места без фото, ещё не искали
     python3 supabase/data/places/photos.py sheets DIR               # листы превью кандидатов для просмотра
     python3 supabase/data/places/photos.py accept                   # include=yes из кандидатов → photos.csv
     python3 supabase/data/places/photos.py migration                # записать миграцию из photos.csv
@@ -10,6 +12,9 @@
 
 Фото — только со свободной лицензией (CC0, CC BY, CC BY-SA, общественное достояние); автор и лицензия
 показываются в приложении под фото. Подробности — README.md рядом.
+
+API Commons отвечает 429 на запросы из облачных контейнеров — кандидатов ищет workflow **Photo candidates**
+на раннере GitHub и коммитит таблицу в ту же ветку; превью (`sheets`) качаются и отсюда.
 """
 
 import csv
@@ -50,6 +55,9 @@ RADIUS_M = {
     "paid_pond": 500, "base": 500, "parking": 300, "tackle_shop": 200,
 }
 MIN_WIDTH = 1000
+# В каком порядке искать фото местам без фото (--missing): сначала то, ради чего едут.
+SEARCH_ORDER = ["water_body", "landmark", "campsite", "base", "paid_pond", "fishing_spot", "spring", "tackle_shop",
+                "parking"]
 LICENSE = re.compile(r"^(CC0|CC BY(-SA)? \d\.\d|CC BY(-SA)? \d\.\d [a-z]{2}|CC BY(-SA)?|Public domain|PD.*)$", re.I)
 
 
@@ -283,6 +291,17 @@ def candidates_for(place: dict, tags: dict) -> dict[str, tuple[float, str, dict]
 def plain(text: str) -> str:
     text = re.sub(r"<[^>]+>", "", text or "")
     return re.sub(r"\s+", " ", html.unescape(text)).strip()
+
+
+def missing_places(limit: int | None, progress: Path | None) -> set[str]:
+    """Места без принятых фото, которых ещё не искали (нет среди кандидатов и в списке progress)."""
+    skip = {r["place_id"] for r in read_csv(TABLE)} | {r["place_id"] for r in read_csv(CANDIDATES)}
+    if progress and progress.exists():
+        skip |= set(progress.read_text().split())
+    places = [p for p in read_csv(PLACES) if p["id"] not in skip]
+    rank = {t: i for i, t in enumerate(SEARCH_ORDER)}
+    places.sort(key=lambda p: rank.get(p["type"], len(rank)))
+    return {p["id"] for p in (places[:limit] if limit else places)}
 
 
 def find_candidates(sheets: Path | None, only: set[str] | None, progress: Path | None) -> None:
@@ -530,6 +549,12 @@ def main(argv: list[str]) -> None:
         sheets = Path(argv[argv.index("--sheets") + 1]) if "--sheets" in argv else None
         only = set(argv[argv.index("--place") + 1].split(",")) if "--place" in argv else None
         progress = Path(argv[argv.index("--progress") + 1]) if "--progress" in argv else None
+        if "--missing" in argv:
+            limit = int(argv[argv.index("--limit") + 1]) if "--limit" in argv else None
+            only = missing_places(limit, progress)
+            print(f"мест без фото, которые ещё не искали: {len(only)}", file=sys.stderr)
+            if not only:
+                return
         find_candidates(sheets, only, progress)
     elif argv[:1] == ["sheets"] and len(argv) >= 2:
         contact_sheets(read_csv(CANDIDATES), Path(argv[1]))
