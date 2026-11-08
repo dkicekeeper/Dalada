@@ -16,5 +16,6 @@
   {"id": "spinning_lures", "category": "tackle", "sort_order": 150, "published_on": "2026-10-05"},
   {"id": "boat_safety", "category": "safety", "sort_order": 160, "published_on": "2026-10-05"},
   {"id": "offline_navigation", "category": "safety", "sort_order": 170, "published_on": "2026-10-05"},
-  {"id": "campfire", "category": "rules_ethics", "sort_order": 180, "published_on": "2026-10-05"}
+  {"id": "campfire", "category": "rules_ethics", "sort_order": 180, "published_on": "2026-10-05"},
+  {"id": "ice_fishing_basics", "category": "technique", "sort_order": 5, "published_on": "2026-11-09"}
 ]
