@@ -249,11 +249,13 @@ def main():
         place_id = str(place["id"])
         kind = TYPES.get(place.get("type"), "Место")
         description = place_description(place)
+        # На странице — описание целиком, в мета-тегах — первые 200 знаков.
+        full = " ".join(str(place.get("description") or "").split()) or description
         photo = place.get("photo_path")
         content = "\n".join([
             "    <h1>" + html.escape(place["name"]) + "</h1>",
             '    <p class="sub">' + html.escape(kind) + "</p>",
-            '    <p class="desc">' + html.escape(description) + "</p>",
+            '    <p class="desc">' + html.escape(full) + "</p>",
         ])
         page = render(
             template,

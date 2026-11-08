@@ -1,0 +1,57 @@
+name: Photo candidates
+
+# Кандидаты в фото мест редакции с Wikimedia Commons (photos.py candidates) — на раннере GitHub: из облачных
+# контейнеров API Commons отвечает 429. Запуск — вручную на рабочей ветке (не на main); результат —
+# коммит photo_candidates.csv и photo_searched.txt в ту же ветку. Дальше — как в README мест: листы превью
+# (`photos.py sheets DIR`), номер в колонке include, `photos.py accept` и `photos.py migration`.
+on:
+  workflow_dispatch:
+    inputs:
+      places:
+        description: "id мест через запятую; пусто — места без фото, которые ещё не искали"
+        required: false
+        default: ""
+      limit:
+        description: "Сколько мест без фото искать за запуск"
+        required: false
+        default: "300"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: photo-candidates-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  candidates:
+    name: Find photo candidates
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Find candidates
+        env:
+          PLACES: ${{ inputs.places }}
+          LIMIT: ${{ inputs.limit }}
+        run: |
+          cd supabase/data/places
+          if [ -n "$PLACES" ]; then
+            python3 photos.py candidates --place "$PLACES"
+          else
+            python3 photos.py candidates --missing --limit "$LIMIT" --progress photo_searched.txt
+          fi
+
+      # Таблица пишется после каждого места — сохраняем и то, что успели найти до сбоя.
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add supabase/data/places/photo_candidates.csv
+          if [ -f supabase/data/places/photo_searched.txt ]; then git add supabase/data/places/photo_searched.txt; fi
+          if git diff --cached --quiet; then echo "Новых кандидатов нет"; exit 0; fi
+          git commit -m "Update editorial photo candidates"
+          git push origin "HEAD:$GITHUB_REF_NAME"

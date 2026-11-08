@@ -6,7 +6,10 @@
     python3 supabase/data/places/places.py migration         # записать миграцию из places.csv
 
 places.csv — единственный источник мест редакции: миграция добавляет новые места, обновляет
-изменённые и скрывает удалённые из таблицы. Подробности — README.md рядом.
+изменённые и скрывает удалённые из таблицы. place_info.csv — сведения о месте для карточки (виды
+рыбы, подъезд, платно ли, способы ловли, удобства, связь, сезон, особенности): миграция кладёт их в
+attributes. Править их в Studio бесполезно — следующая миграция перезапишет. Подробности — README.md
+рядом и docs/05-release/content.md.
 """
 
 import csv
@@ -27,6 +30,19 @@ TABLE = HERE / "places.csv"
 MIGRATIONS = HERE.parent.parent / "migrations"
 SUFFIX = "_editorial_places.sql"
 FIELDS = ["id", "type", "name", "lat", "lon", "access_lat", "access_lon", "description", "source"]
+INFO = HERE / "place_info.csv"
+PHOTOS = HERE / "photos.csv"
+INFO_FIELDS = ["id", "name", "species", "access", "fee", "price_kzt", "price_unit", "contact", "methods",
+               "amenities", "signal", "months", "features", "sources"]
+# Значения — как в приложении (DaladaCore/PlaceInfo.swift); виды рыбы — public.fish_species.
+SPECIES = ["common_carp", "zander", "asp", "wels_catfish", "snakehead", "pike", "perch", "balkhash_perch", "bream",
+           "crucian_carp", "silver_carp", "grass_carp", "marinka", "rainbow_trout", "roach", "tench", "other"]
+ACCESS = ["asphalt", "dirt", "offroad", "foot", "boat"]
+FEES = ["free", "paid"]
+PRICE_UNITS = ["entry", "day", "hour", "kg"]
+METHODS = ["shore", "boat", "spinning", "feeder", "float", "fly", "bottom", "ice"]
+AMENITIES = ["parking", "toilet", "shade", "tent", "fireplace", "drinking_water", "shop", "boat_rental"]
+SIGNALS = ["none", "weak", "good"]
 
 TYPES = [
     "fishing_spot", "water_body", "campsite", "paid_pond", "base", "parking", "spring", "tackle_shop",
@@ -146,8 +162,85 @@ def validate(rows: list[dict]) -> list[str]:
     return errors
 
 
+def read_info() -> list[dict]:
+    if not INFO.exists():
+        return []
+    with INFO.open(encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        if reader.fieldnames != INFO_FIELDS:
+            fail([f"{INFO.name}: колонки должны быть {','.join(INFO_FIELDS)}"])
+        return list(reader)
+
+
+def split(value: str) -> list[str]:
+    """Несколько значений в ячейке — через «;»."""
+    return [v.strip() for v in value.split(";") if v.strip()]
+
+
+def validate_info(rows: list[dict], places: list[dict]) -> list[str]:
+    errors = []
+    names = {p["id"]: p["name"] for p in places}
+    seen = set()
+    allowed = {"species": SPECIES, "access": ACCESS, "methods": METHODS, "amenities": AMENITIES}
+    for n, r in enumerate(rows, start=2):
+        where = f"{INFO.name}:{n} «{r.get('name', '')}»"
+        if r["id"] not in names:
+            errors.append(f"{where}: такого id нет в {TABLE.name}")
+            continue
+        if r["id"] in seen:
+            errors.append(f"{where}: id повторяется")
+        seen.add(r["id"])
+        if r["name"] != names[r["id"]]:
+            errors.append(f"{where}: название не совпадает с {TABLE.name} («{names[r['id']]}»)")
+        for field, values in allowed.items():
+            bad = [v for v in split(r[field]) if v not in values]
+            if bad:
+                errors.append(f"{where}: {field} — {', '.join(bad)} нет среди {', '.join(values)}")
+            if len(set(split(r[field]))) != len(split(r[field])):
+                errors.append(f"{where}: {field} — значение повторяется")
+        if r["fee"] and r["fee"] not in FEES:
+            errors.append(f"{where}: fee — free или paid")
+        if r["price_kzt"] or r["price_unit"]:
+            if r["fee"] != "paid":
+                errors.append(f"{where}: цена — только у платного места (fee=paid)")
+            if not r["price_kzt"].isdigit() or r["price_unit"] not in PRICE_UNITS:
+                errors.append(f"{where}: price_kzt — целое число тенге, price_unit — {', '.join(PRICE_UNITS)}")
+        if r["signal"] and r["signal"] not in SIGNALS:
+            errors.append(f"{where}: signal — {', '.join(SIGNALS)}")
+        if any(not m.isdigit() or not 1 <= int(m) <= 12 for m in split(r["months"])):
+            errors.append(f"{where}: months — номера месяцев 1–12 через «;»")
+        # Те же пределы, что у базы (private.place_attributes_valid) и PlaceInfo в приложении.
+        if len(r["features"]) > 1000 or len(r["contact"]) > 100:
+            errors.append(f"{where}: features — до 1000 символов, contact — до 100")
+        if not r["sources"].strip():
+            errors.append(f"{where}: sources — откуда сведения (ссылки через «;»)")
+    return errors
+
+
+def info_value(r: dict) -> dict:
+    """Сведения из place_info.csv в виде attributes (ключи — как в PlaceInfo.swift)."""
+    value = {}
+    for field in ("species", "access", "methods", "amenities"):
+        if split(r[field]):
+            value[field] = split(r[field])
+    for field in ("fee", "price_unit", "contact", "signal", "features"):
+        if r[field].strip():
+            value[field] = r[field].strip()
+    if r["price_kzt"].strip():
+        value["price_kzt"] = int(r["price_kzt"])
+    if split(r["months"]):
+        value["months"] = sorted({int(m) for m in split(r["months"])})
+    return value
+
+
 def table_hash() -> str:
-    return hashlib.sha256(TABLE.read_bytes()).hexdigest() if TABLE.exists() else ""
+    """Отпечаток places.csv и place_info.csv: миграцию надо пересобрать, если изменился любой."""
+    if not TABLE.exists():
+        return ""
+    digest = hashlib.sha256(TABLE.read_bytes())
+    if INFO.exists():
+        digest.update(INFO.read_bytes())
+    return digest.hexdigest()
 
 
 def latest_migration() -> Path | None:
@@ -157,7 +250,7 @@ def latest_migration() -> Path | None:
 
 def check() -> None:
     rows = read_table()
-    errors = validate(rows)
+    errors = validate(rows) + validate_info(read_info(), rows)
     last = latest_migration()
     if rows and last is None:
         errors.append("нет миграции с местами редакции — выполните `places.py migration`")
@@ -167,6 +260,14 @@ def check() -> None:
         fail(errors)
     counts = {t: sum(1 for r in rows if r["type"] == t) for t in TYPES}
     print(f"{TABLE.name}: {len(rows)} мест — " + ", ".join(f"{t} {c}" for t, c in counts.items() if c))
+    # Сводка для плана наполнения (docs/05-release/content.md, «Метрики»).
+    with_photo = set()
+    if PHOTOS.exists():
+        with PHOTOS.open(encoding="utf-8", newline="") as f:
+            with_photo = {r["place_id"] for r in csv.DictReader(f)}
+    described = sum(1 for r in rows if len(r["description"]) >= 150)
+    print(f"наполнение: описание от 150 знаков — {described}, сведения ({INFO.name}) — {len(read_info())}, "
+          f"фото — {sum(1 for r in rows if r['id'] in with_photo)} мест")
 
 
 # Импорт ----------------------------------------------------------------------------------------
@@ -293,19 +394,22 @@ def point(lat: str, lon: str) -> str:
     return f"'SRID=4326;POINT({float(lon):.6f} {float(lat):.6f})'"
 
 
-def attributes(source: str) -> str:
+def attributes(source: str, info: dict | None = None) -> str:
     if source.startswith("osm:"):
         value = {"source": "osm", "osm": source[4:]}
     else:
         value = {"source": "editorial"}
+    value.update(info_value(info) if info else {})
     return literal(json.dumps(value, ensure_ascii=False, separators=(", ", ": ")))
 
 
 def migration() -> None:
     rows = read_table()
-    errors = validate(rows)
+    infos = read_info()
+    errors = validate(rows) + validate_info(infos, rows)
     if errors:
         fail(errors)
+    info_by_id = {r["id"]: r for r in infos}
     last = latest_migration()
     digest = table_hash()
     if last is not None and f"places.csv sha256: {digest}" in last.read_text(encoding="utf-8"):
@@ -338,7 +442,7 @@ def migration() -> None:
             description = literal(r["description"]) if r["description"] else "null"
             values.append(
                 f"  ({literal(r['id'])}, private.editorial_id(), {literal(r['type'])}, {literal(r['name'])}, "
-                f"{description}, {point(r['lat'], r['lon'])}, {access}, {attributes(r['source'])}, "
+                f"{description}, {point(r['lat'], r['lon'])}, {access}, {attributes(r['source'], info_by_id.get(r['id']))}, "
                 "'public', false, 'published')"
             )
         out.write(",\n".join(values))

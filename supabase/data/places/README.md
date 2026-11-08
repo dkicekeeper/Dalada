@@ -7,7 +7,8 @@
 | Файл | Что |
 |------|-----|
 | `places.csv` | **Все места редакции** — единственный источник. Правки — здесь |
-| `places.py` | Проверка таблицы, импорт из Google My Maps и CSV, сборка миграции |
+| `place_info.csv` | Сведения места: рыба, подъезд, способы ловли, удобства, особенности — с источником |
+| `places.py` | Проверка таблиц, импорт из Google My Maps и CSV, сборка миграции |
 | `osm_candidates.csv` | Кандидаты из OpenStreetMap с решением: `yes` — взято, `?` — посмотреть, `no` — нет |
 | `fetch_osm.py` | Обновить кандидатов из OpenStreetMap (решения в файле сохраняются) |
 
@@ -22,6 +23,31 @@
 | `access_lat`, `access_lon` | Точка подъезда (необязательно), не дальше 20 км |
 | `description` | Описание, до 2000 символов (необязательно) |
 | `source` | Откуда: `osm:w123` — OpenStreetMap, иначе — редакция (например, `import:my_map.kml`) |
+
+Что писать в описании и откуда брать факты — [план наполнения](../../../docs/05-release/content.md)
+(аудит, источники и лицензии, очередь волн).
+
+## Сведения места (place_info.csv)
+
+Блок «Сведения» в карточке места (`places.attributes`, ключи — как в `DaladaCore/PlaceInfo.swift`).
+Миграция мест пишет `attributes` целиком, поэтому правки в Studio потеряются — сведения правим здесь.
+Строка — одно место; списки — через «;».
+
+| Колонка | Что |
+|---------|-----|
+| `id`, `name` | Место из `places.csv` (название сверяется — защита от строки не на том месте) |
+| `species` | Рыба: id из `fish_species` (`pike;zander;bream`) |
+| `access` | Подъезд: `asphalt`, `dirt`, `offroad`, `foot`, `boat` |
+| `fee` | `free` или `paid`; при `paid` — `price_kzt` (тенге), `price_unit` (`entry`, `day`, `hour`, `kg`) |
+| `contact` | Телефон или сайт, до 100 символов |
+| `methods` | Как ловят: `shore`, `boat`, `spinning`, `feeder`, `float`, `fly`, `bottom`, `ice` |
+| `amenities` | `parking`, `toilet`, `shade`, `tent`, `fireplace`, `drinking_water`, `shop`, `boat_rental` |
+| `signal` | Связь: `none`, `weak`, `good` |
+| `months` | Лучшие месяцы: `5;6;9` |
+| `features` | Особенности: размеры, глубины, дно, течение — до 1000 символов |
+| `sources` | **Обязательно**: ссылки на источники через «;» |
+
+После правки — `places.py migration`, как и для `places.csv`.
 
 Места редакции всегда публичные и точные. Не добавляйте «секретные» места рыбаков — только
 общеизвестные: водоёмы, платники, базы, стоянки, родники, магазины.
@@ -75,7 +101,13 @@ python3 supabase/data/places/places.py check       # то же проверяе�
 |------|-----|
 | `photos.csv` | **Принятые фото** — единственный источник: место, файл Commons, автор, лицензия, размер, порядок |
 | `photo_candidates.csv` | Кандидаты: найденные рядом с местом и по тегам OSM (`wikidata`, `wikimedia_commons`, `image`); `include` — номер по порядку (1 — обложка) или `yes` взять, `no` нет |
+| `photo_searched.txt` | Места, у которых уже искали (`candidates --missing` их пропускает) |
 | `photos.py` | Поиск кандидатов, перенос принятых в `photos.csv`, сборка миграции, скачивание файлов для R2 |
+
+Из облачного контейнера Claude API Commons отвечает 429 — там кандидатов ищет workflow **Photo
+candidates** (Actions → Run workflow на рабочей ветке): пусто — места без фото, которые ещё не искали
+(`photo_searched.txt`), или id мест через запятую; результат он коммитит в ту же ветку. Листы превью
+после `git pull` — `photos.py sheets /tmp/sheets`.
 
 ```bash
 python3 supabase/data/places/photos.py candidates --sheets /tmp/sheets   # кандидаты + листы превью
