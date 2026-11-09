@@ -54,4 +54,6 @@ jobs:
           if [ -f supabase/data/places/photo_searched.txt ]; then git add supabase/data/places/photo_searched.txt; fi
           if git diff --cached --quiet; then echo "Новых кандидатов нет"; exit 0; fi
           git commit -m "Update editorial photo candidates"
+          # Пока шёл поиск, в ветку могли запушить другое — встаём поверх (файлы кандидатов трогает только этот workflow).
+          git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"
