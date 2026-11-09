@@ -100,7 +100,7 @@ python3 supabase/data/places/places.py check       # то же проверяе�
 | Файл | Что |
 |------|-----|
 | `photos.csv` | **Принятые фото** — единственный источник: место, файл Commons, автор, лицензия, размер, порядок |
-| `photo_candidates.csv` | Кандидаты: найденные рядом с местом и по тегам OSM (`wikidata`, `wikimedia_commons`, `image`); `include` — номер по порядку (1 — обложка) или `yes` взять, `no` нет |
+| `photo_candidates.csv` | Кандидаты: найденные рядом с местом и по тегам OSM (`wikimedia_commons`, `image`, `wikidata` — снимки с этим элементом и его изображение P18 и категория Commons P373); `include` — номер по порядку (1 — обложка) или `yes` взять, `no` нет |
 | `photo_searched.txt` | Места, у которых уже искали (`candidates --missing` их пропускает) |
 | `photos.py` | Поиск кандидатов, перенос принятых в `photos.csv`, сборка миграции, скачивание файлов для R2 |
 
