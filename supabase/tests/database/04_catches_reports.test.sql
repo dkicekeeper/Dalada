@@ -5,7 +5,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(22);
+select plan(23);
 
 create function pg_temp.act_as(uid uuid) returns void language plpgsql as $$
 begin
@@ -53,6 +53,10 @@ insert into public.friendships (user_id, friend_id) values
 
 select pg_temp.act_as_anon();
 select ok((select count(*) from public.fish_species) >= 16, 'справочник рыб доступен гостю');
+select ok(
+  (select count(*) from public.fish_species where id in ('burbot', 'ide', 'whitefish', 'vendace', 'grayling', 'taimen')) = 6,
+  'в справочнике есть виды севера и горных рек'
+);
 
 -- F: чекин в месте «для друзей» и два улова, у одного скрыт размер.
 select pg_temp.act_as('22222222-2222-2222-2222-222222222222');
