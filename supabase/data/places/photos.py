@@ -47,6 +47,7 @@ CANDIDATE_FIELDS = [
 USER_AGENT = "DaladaEditorialPhotos/1.0 (https://github.com/dkicekeeper/Dalada)"
 COMMONS_API = "https://commons.wikimedia.org/w/api.php"
 OSM_API = "https://api.openstreetmap.org/api/0.6"
+WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 # Фото на место — не больше.
 MAX_PER_PLACE = 5
 # Радиус поиска фото вокруг места по типу, м (у больших водоёмов центр далеко от берега).
@@ -56,7 +57,8 @@ RADIUS_M = {
 }
 MIN_WIDTH = 1000
 # Снимки с МКС (ISS043-E-64073…): геометка — точка под станцией, на снимке — облака и ночная Земля.
-SKIP_FILES = re.compile(r"^File:ISS\d{3}-E-", re.I)
+# Спутниковые снимки (Sentinel-2, MODIS, Landsat) — карта сверху, а не фото места; вид сверху и так есть на карте.
+SKIP_FILES = re.compile(r"^File:ISS\d{3}-E-|Sentinel-?2|MODIS|Landsat", re.I)
 # В каком порядке искать фото местам без фото (--missing): сначала то, что чаще снимают. У малых озёр
 # выход низкий (первая партия — 5 мест из 300), поэтому водоёмы — в конце.
 SEARCH_ORDER = ["landmark", "campsite", "base", "spring", "paid_pond", "fishing_spot", "tackle_shop", "parking",
@@ -185,6 +187,23 @@ def osm_tags(source: str) -> dict:
     return elements[0].get("tags", {})
 
 
+def wikidata_claims(qid: str) -> dict:
+    """Утверждения элемента Wikidata (изображение P18, категория Commons P373); нет элемента — пусто."""
+    if not re.fullmatch(r"Q\d+", qid):
+        return {}
+    time.sleep(1)
+    try:
+        data = get_json(WIKIDATA_API, {"action": "wbgetentities", "format": "json", "props": "claims", "ids": qid})
+    except Exception:  # noqa: BLE001 — Wikidata недоступна: ищем без неё
+        return {}
+    return data.get("entities", {}).get(qid, {}).get("claims", {})
+
+
+def claim_values(claims: dict, prop: str) -> list[str]:
+    return [c["mainsnak"]["datavalue"]["value"] for c in claims.get(prop, [])
+            if isinstance(c.get("mainsnak", {}).get("datavalue", {}).get("value"), str)]
+
+
 def file_title(value: str) -> str | None:
     """«File:X.jpg» из тега OSM (название файла или ссылка на Commons)."""
     value = urllib.parse.unquote(value.strip())
@@ -268,11 +287,22 @@ def candidates_for(place: dict, tags: dict) -> dict[str, tuple[float, str, dict]
                 "generator": "categorymembers", "gcmtitle": value, "gcmtype": "file", "gcmlimit": "15",
             }):
                 add(page, 4, "osm category")
-    if qid := tags.get("wikidata"):
+    if qid := tags.get("wikidata", "").strip():
         for page in pages_with_info({
             "generator": "search", "gsrsearch": f"haswbstatement:P180={qid}", "gsrnamespace": "6", "gsrlimit": "15",
         }):
             add(page, 4, "wikidata depicts")
+        # Изображение и категория Commons из самого элемента: у озёр это часто единственное фото с берега.
+        claims = wikidata_claims(qid)
+        images = ["File:" + v for v in claim_values(claims, "P18")[:5]]
+        if images:
+            for page in pages_with_info({"titles": "|".join(images)}):
+                add(page, 5, "wikidata image")
+        for category in claim_values(claims, "P373")[:1]:
+            for page in pages_with_info({
+                "generator": "categorymembers", "gcmtitle": f"Category:{category}", "gcmtype": "file", "gcmlimit": "15",
+            }):
+                add(page, 4, "wikidata category")
 
     names = [place["name"]] + [tags.get(k, "") for k in ("name", "name:ru", "name:kk", "name:en")]
     words = tokens(*names)
