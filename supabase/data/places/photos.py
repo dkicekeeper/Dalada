@@ -57,9 +57,10 @@ RADIUS_M = {
 MIN_WIDTH = 1000
 # Снимки с МКС (ISS043-E-64073…): геометка — точка под станцией, на снимке — облака и ночная Земля.
 SKIP_FILES = re.compile(r"^File:ISS\d{3}-E-", re.I)
-# В каком порядке искать фото местам без фото (--missing): сначала то, ради чего едут.
-SEARCH_ORDER = ["water_body", "landmark", "campsite", "base", "paid_pond", "fishing_spot", "spring", "tackle_shop",
-                "parking"]
+# В каком порядке искать фото местам без фото (--missing): сначала то, что чаще снимают. У малых озёр
+# выход низкий (первая партия — 5 мест из 300), поэтому водоёмы — в конце.
+SEARCH_ORDER = ["landmark", "campsite", "base", "spring", "paid_pond", "fishing_spot", "tackle_shop", "parking",
+                "water_body"]
 LICENSE = re.compile(r"^(CC0|CC BY(-SA)? \d\.\d|CC BY(-SA)? \d\.\d [a-z]{2}|CC BY(-SA)?|Public domain|PD.*)$", re.I)
 
 
