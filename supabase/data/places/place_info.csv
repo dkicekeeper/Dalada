@@ -124,3 +124,63 @@ b80a5893-ab22-480a-99a3-e33809193217,Озеро Большое Чебачье,pe
 f1a28b10-7e6c-47f8-bbef-98b469ffa4c9,Озеро Зеренда,,,,,,,,,,,"Длина 5,3 км, ширина до 3,5 км, площадь 9,6 км², средняя глубина 4,2 м, наибольшая — 6,8 м; высота 371 м.",https://ru.wikipedia.org/wiki/Зеренди;https://www.openstreetmap.org/way/35143868
 22f00ab8-612c-49f9-bd13-f9fddd9c7b85,Озеро Имантау,roach;ide;perch;pike;common_carp;crucian_carp,,,,,,,,,,"Длина 13,1 км, ширина 4,8 км, средняя глубина 5,7 м, наибольшая — более 10 м.",https://ru.wikipedia.org/wiki/Имантау_(озеро);https://www.openstreetmap.org/relation/947706
 0a3fdc5b-f222-4011-b548-72cb327861de,Озеро Маркаколь,lenok;grayling,,,,,,,,,,"Высота 1447 м; длина 38 км, ширина 19 км, площадь 455 км², средняя глубина 14,3 м, наибольшая — 24–27 м; лёд 60–120 см.",https://ru.wikipedia.org/wiki/Маркаколь;https://www.openstreetmap.org/way/23150388
+40f1733d-5296-44fb-bd6a-c491db2a89c5,Арасан,,,,,,,,,,,Высота около 1750 м.,https://www.openstreetmap.org/relation/11522982;https://ru.wikipedia.org/wiki/Рахмановские_Ключи;https://open-meteo.com/en/docs/elevation-api
+d34eac41-7ce1-4281-9fb9-05a4ee16f48d,Верхний Кольсай,,,,,,,,,,,Высота около 2650 м.,https://www.openstreetmap.org/way/391771355;https://ru.wikipedia.org/wiki/Кольсайские_озёра;https://open-meteo.com/en/docs/elevation-api
+7212279a-50f8-4631-bfec-0ed84b7063e1,Жасыбай,pike;roach;perch;crucian_carp;tench,,,,,,,,,,"Длина 3,5 км, ширина 2,4 км, глубина до 14,7 м; бессточное.",https://www.openstreetmap.org/relation/5992637;https://ru.wikipedia.org/wiki/Жасыбай_(озеро)
+2453fd0f-9b60-4d26-bfff-ac1f3daa5704,Кокколь,,,,,,,,,,,Высота около 2400 м.,https://www.openstreetmap.org/way/333922110;https://open-meteo.com/en/docs/elevation-api
+1a113da6-567b-4025-a4c9-2f6de7f7c932,Малое Аральское море,,,,,,,,,,,Солоноватое: минерализация около 8–9 ‰ (была до 30 ‰ в конце 1980-х).,https://www.openstreetmap.org/relation/8728779;https://ru.wikipedia.org/wiki/Малое_Аральское_море
+ad936c04-5718-4c5d-a16d-f0d2da4e9fcf,Тузколь,,,,,,,,,,,Солёное; высота около 1950 м.,https://www.openstreetmap.org/relation/6334199;https://open-meteo.com/en/docs/elevation-api
+9d42ae3d-fdb0-460c-8130-0c19418025f6,Стоянка у озера Иссык,,,,,,,,tent;drinking_water,,,Высота около 1720 м.,https://www.openstreetmap.org/node/4866071021;https://ru.wikipedia.org/wiki/Иссык_(озеро);https://open-meteo.com/en/docs/elevation-api
+64d685bf-469c-4570-a5a3-f2c8aea43746,Хижина Поляна Терра,,,free,,,,,fireplace;drinking_water,,,Высота около 2650 м; хижина на 3 человек.,https://www.openstreetmap.org/node/12771600707;https://open-meteo.com/en/docs/elevation-api
+4dcddd8d-c461-48e4-aa57-3c02d82800a0,Чарын,,,,,,,,tent,,,Высота около 910 м.,https://www.openstreetmap.org/node/7296624786;https://ru.wikipedia.org/wiki/Чарынский_каньон;https://open-meteo.com/en/docs/elevation-api
+a01fc235-3a77-4fe2-94d0-7056ae502750,Водопад Кокколь,,,,,,,,,,,Высота над уровнем моря около 1900 м.,https://www.openstreetmap.org/node/5741487823;https://open-meteo.com/en/docs/elevation-api
+b18b07be-8517-46cf-b0b0-85b0c4173cd1,Озеро Торайгыр,,,,,,,,,,,"Площадь 0,88 км², средняя глубина 3,1 м.",https://ru.wikipedia.org/wiki/Торайгыр_(озеро);https://www.openstreetmap.org/relation/1111289
+5c4dda40-f5d6-4cce-a001-fa5d3b3c33b2,Озеро Шалкар (ЗКО),bream;common_carp;tench;perch;pike;wels_catfish,,,,,,,,,,"Длина 18,4 км, ширина 14,7 км, площадь 190–206 км², средняя глубина 5 м, наибольшая — 13 м; вода солоноватая.","https://ru.wikipedia.org/wiki/Шалкар_(озеро,_Западно-Казахстанская_область);https://www.openstreetmap.org/relation/7193718"
+36b10762-74f5-4318-b7fc-f3e3e747abb6,Kazakh Camping,,,,,,,,tent,,,,https://www.openstreetmap.org/node/4397815390
+b32918aa-c484-472d-98ec-7443727bd6bb,Shepherds Camp,,,,,,,,tent,,,Высота около 2700 м.,https://www.openstreetmap.org/way/1486206137;https://open-meteo.com/en/docs/elevation-api
+5464dab8-f6d8-4d3e-81d9-5de71fec8532,Альпинград,,,free,,,,,tent,,,Высота около 3450 м.,https://www.openstreetmap.org/way/1553910650;https://open-meteo.com/en/docs/elevation-api
+bdd9dbc2-8173-4442-bc1f-a99ac620776f,Альпинистская база «Тау Намыс»,,,,,,,,tent,,,Высота около 2400 м.,https://www.openstreetmap.org/way/1323202653;https://open-meteo.com/en/docs/elevation-api
+7871e9e3-8dde-4be4-8fbe-5fcac820ecd4,Березовая роща,,,,,,,,tent,,,,https://www.openstreetmap.org/node/6744960428
+84db25bf-d6c9-4ec0-b7a5-fc9fd11ca83e,Вертолётка,,,,,,,,tent,,,,https://www.openstreetmap.org/node/7895724785
+6ded8e14-0447-4ee1-9e17-a0fec3326bac,Династия,,,,,,,,tent,,,,https://www.openstreetmap.org/node/7864383160
+985dae7f-08e2-4563-9fed-1f034cc6bb61,Землянка,,,,,,,,,,,Высота около 2450 м.,https://www.openstreetmap.org/node/13357181317;https://open-meteo.com/en/docs/elevation-api
+27bf8828-aac6-4abe-95b9-c068b125c411,Кресты,,,,,,,,tent,,,Высота около 3450 м.,https://www.openstreetmap.org/node/14039010508;https://open-meteo.com/en/docs/elevation-api
+43db074a-cfec-4bbf-95cf-339250ac5756,Нунатак,,,,,,,,tent,,,Высота около 3500 м.,https://www.openstreetmap.org/node/12804607166;https://open-meteo.com/en/docs/elevation-api
+374031dd-58fa-4402-abeb-106456a95d27,Поляна Высоцкого,,,,,,,,tent,,,Высота около 2750 м.,https://www.openstreetmap.org/node/11511301891;https://open-meteo.com/en/docs/elevation-api
+08ce8d13-bc7d-48c7-b3e0-e0dd21370436,Синегорье,,,,,,,,tent,,,,https://www.openstreetmap.org/node/2883164710
+440ef234-0193-41da-b84b-bd4437df731f,Синий домик,,,,,,,,tent,,,Высота около 2450 м.,https://www.openstreetmap.org/way/255904837;https://open-meteo.com/en/docs/elevation-api
+8128f6e8-13b6-48f3-8e66-8e4f5a871151,Солнечный,,,,,,,,tent,,,,https://www.openstreetmap.org/node/7770031947
+53fc0acd-00e4-4cc3-b82f-9046b05528ac,«Тарелка» поляна,,,,,,,,tent,,,Высота около 1900 м.,https://www.openstreetmap.org/node/14121738849;https://open-meteo.com/en/docs/elevation-api
+5afbdc64-d6d5-4d3c-b7b7-3bbce2949f28,Тау-Тургень,,,,,,,,tent,,,,https://www.openstreetmap.org/node/2883164711
+63dbe759-60d5-4a8b-b095-1078e3b8ac18,Стоянка Текес,,,,,,,,tent,,,Высота около 2550 м.,https://www.openstreetmap.org/node/4922140724;https://open-meteo.com/en/docs/elevation-api
+250d39ab-636a-4d63-88c5-ceae9c600822,Тимерлик орта,,,,,,,,tent,,,,https://www.openstreetmap.org/node/6467593885
+6ac18d11-6bd9-42eb-b0c8-0a5ba5a8d7b0,Туранга,,,,,,,,tent,,,,https://www.openstreetmap.org/node/6984558001
+a6cf1f6f-5409-4f4a-bce5-e73c7b6a6b99,Туристическая база «Черкасай» в ущелье Черкасай,,,,,,,,,,,Высота около 1550 м.,https://www.openstreetmap.org/node/9082263917;https://open-meteo.com/en/docs/elevation-api
+182fd219-3d64-4c05-9465-0dc3786ebbef,Хижина БАУ,,,free,,,,,fireplace;drinking_water,,,Высота около 3100 м.,https://www.openstreetmap.org/node/10016063867;https://open-meteo.com/en/docs/elevation-api
+7a891592-2baf-4404-b052-c3722b051da2,Хижина Бозколь,,,free,,,,,fireplace,,,Высота около 2600 м.,https://www.openstreetmap.org/node/11533425030;https://open-meteo.com/en/docs/elevation-api
+8cbb93d3-2b07-41da-8893-956772affeb4,Хижина Букреева,,,free,,,,,fireplace,,,Высота около 2750 м.,https://www.openstreetmap.org/node/11180468840;https://open-meteo.com/en/docs/elevation-api
+953c94df-dd21-466e-a1e0-f7f23430eb56,Хижина Верхний Горельник,,,free,,,,,fireplace,,,Высота около 3300 м.,https://www.openstreetmap.org/node/9892863378;https://open-meteo.com/en/docs/elevation-api
+9820e8a7-bbc8-4edf-b7e6-651ad591e3a2,Хижина КазСелезащиты,,,,,,,,fireplace;drinking_water,,,Высота около 3500 м.,https://www.openstreetmap.org/node/12942273789;https://open-meteo.com/en/docs/elevation-api
+139ed780-fb60-48c7-8283-6ea42a45b83b,Хижина Кумбель,,,free,,,,,fireplace,,,Высота около 3150 м.,https://www.openstreetmap.org/node/10951183195;https://open-meteo.com/en/docs/elevation-api
+6241535e-bcb2-4060-9144-4427e8177573,Хижина Кызылсай,,,free,,,,,fireplace;drinking_water,,,Высота около 3550 м.,https://www.openstreetmap.org/node/10016062231;https://open-meteo.com/en/docs/elevation-api
+25f5c835-df1a-42e4-8581-7451d5e2cb6e,Хижина Левый Талгар,,,free,,,,,fireplace;drinking_water,,,Высота около 2950 м.,https://www.openstreetmap.org/node/10016058824;https://open-meteo.com/en/docs/elevation-api
+84e93d5f-eff3-434f-9d02-95d2a75897d6,Хижина ледник Корженевского,,,free,,,,,fireplace;drinking_water,,,Высота около 3700 м.,https://www.openstreetmap.org/node/11533425029;https://open-meteo.com/en/docs/elevation-api
+3434b978-a6a9-4be4-a36b-b4aa10aa5570,Хижина Панорама,,,free,,,,,fireplace,,,Высота около 3050 м.,https://www.openstreetmap.org/node/9860370617;https://open-meteo.com/en/docs/elevation-api
+78029111-ebc4-4a26-aa3e-95f4900900cc,Хижина Проходная,,,free,,,,,fireplace;drinking_water,,,Высота около 3050 м.,https://www.openstreetmap.org/node/10016051515;https://open-meteo.com/en/docs/elevation-api
+ce6b06e4-f399-446a-94f9-0602b9ed3e5e,Хижина Солнечная поляна,,,free,,,,,fireplace;drinking_water,,,Высота около 2650 м.,https://www.openstreetmap.org/node/11471968130;https://open-meteo.com/en/docs/elevation-api
+3b94981a-58f1-4759-808d-02c34a9af94b,Хижина Средний Талгар,,,free,,,,,fireplace,,,Высота около 3000 м.,https://www.openstreetmap.org/node/11533425027;https://open-meteo.com/en/docs/elevation-api
+71a28370-e1c9-4972-8925-1ef91219b888,Хижина Туйыксу,,,free,,,,,fireplace,,,Высота около 3400 м.,https://www.openstreetmap.org/node/11247553596;https://open-meteo.com/en/docs/elevation-api
+682a1e7e-db35-4215-b422-98622ab4c7b2,Хижина Тургень,,,free,,,,,fireplace;drinking_water,,,Высота около 2700 м.,https://www.openstreetmap.org/node/11212093347;https://open-meteo.com/en/docs/elevation-api
+2f8b54cb-308e-4f33-a63d-c5ca680d84e0,Хижина Шентургень,,,free,,,,,fireplace,,,Высота около 2850 м.,https://www.openstreetmap.org/node/11533425031;https://open-meteo.com/en/docs/elevation-api
+9e4221e2-34d3-4467-ab17-a25c89e2b849,Хижина Шубарарша,,,free,,,,,fireplace,,,Высота около 2950 м.,https://www.openstreetmap.org/way/1342073243;https://open-meteo.com/en/docs/elevation-api
+983914a8-6edf-4451-9ead-5edab487b022,Хижина Шукыр,,,free,,,,,fireplace,,,Высота около 2400 м.,https://www.openstreetmap.org/node/11149348771;https://open-meteo.com/en/docs/elevation-api
+23edc1b9-695b-4a33-8eee-0c8082deada1,Шлюзавая,,,,,,,,tent;drinking_water,,,Высота около 2900 м.,https://www.openstreetmap.org/node/13103427748;https://open-meteo.com/en/docs/elevation-api
+cb42d5b4-7669-42fd-8060-c0765bd173b2,Ecohouse,,,,,,+7 775 18 139 12,,,,,,https://www.openstreetmap.org/way/1516167188
+6a79315a-b51c-478d-a4e1-08bf219d2be0,Glamping Kolsay,,,,,,+7 776 008 91 34,,,,,,https://www.openstreetmap.org/way/1516194695
+1f382c6a-a02b-4090-9b5d-6c4360571721,Ак-Ерке,,,,,,http://akerke.net/,,,,,,https://www.openstreetmap.org/way/312908808
+19ab0257-343a-4c6c-8c46-cdf3227f38c1,Деревушка,,,,,,https://www.derevushka.kz/,,,,,,https://www.openstreetmap.org/way/503403905
+b1c54642-5338-4c60-ab4e-658ad84803a4,Зона Отдыха Фламинго,,,,,,Flamingos.kz,,,,,,https://www.openstreetmap.org/way/824614332
+196b4649-a956-4a66-9286-5c6f61f35551,Маралсай,,,,,,https://maralsay.kz/,,,,,,https://www.openstreetmap.org/way/1086488009
+d593ff8e-8c98-463e-826c-9fce5b21b6b9,Эко Парк,,,,,,+77772000320,,,,,,https://www.openstreetmap.org/node/5124144642
+6e42c111-6495-4223-aeb8-b6c809aaa24f,Озеро Щучье,pike;perch;roach;whitefish;vendace;tench;zander;common_carp,,,,,,,,,,"Длина 7,5 км, ширина 3 км, площадь 19,6 км², глубина до 31–40 м (средняя 18,5 м); высота 395 м.","https://ru.wikipedia.org/wiki/Щучье_(озеро,_Акмолинская_область);https://www.openstreetmap.org/relation/953632"
+3adc122c-5c71-448f-9c55-51eff6ea311c,Шайтанколь,,,,,,,,,,,Окружено гранитными скалами и сосновым лесом; питание снеговое.,https://ru.wikipedia.org/wiki/Шайтанколь;https://www.openstreetmap.org/way/194260610

@@ -7,8 +7,8 @@ import SwiftUI
 import Sync
 import UIKit
 
-/// Карточка места (RPC `place_card`): тип, название, видимость, описание, автор, маршрут,
-/// «Я здесь», свежие отчёты (RPC `place_reports`) со сводкой за 7 дней и «респектом», «Информация»,
+/// Карточка места (RPC `place_card`): название, под ним одной строкой тип и видимость, фото, описание,
+/// автор, маршрут, «Я здесь», свежие отчёты (RPC `place_reports`) со сводкой за 7 дней и «респектом», «Информация»,
 /// а у публичных мест — отзывы и обсуждения; внизу — похожие места рядом. Своё место можно изменить,
 /// к чужому публичному — предложить правку. Без сети — сохранённая карточка и отчёты,
 /// а свои чекины из очереди — с пометкой «Ожидает отправки».
@@ -290,9 +290,35 @@ struct PlaceCardView: View {
         }
     }
 
+    /// Строка под названием: тип места, видимость, «на проверке», «приблизительно», «сохранённая копия».
+    private func headerFacts(_ place: PlaceDetails) -> [MetaItem] {
+        var facts: [MetaItem] = [
+            .label(Text(LocalizedStringKey(place.type.titleKey)), systemImage: place.type.systemImage),
+            .label(Text(LocalizedStringKey(place.visibility.titleKey)), systemImage: place.visibility.systemImage),
+        ]
+        if place.status == .pending {
+            facts.append(.label(Text("place.status.pending"), systemImage: "hourglass", tint: AppColors.warning))
+        }
+        if place.isApproximate {
+            facts.append(.label(Text("place.card.approximateShort"), systemImage: "circle.dashed"))
+        }
+        if isShowingSavedCopy {
+            facts.append(.label(Text("offline.savedCopy"), systemImage: "icloud.slash"))
+        }
+        return facts
+    }
+
     private func content(_ place: PlaceDetails) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                // Шапка: название, под ним одной строкой — тип, видимость и состояние места.
+                VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                    Text(verbatim: place.name)
+                        .font(AppTypography.h3)
+                    MetaLine(headerFacts(place), separator: .space)
+                }
+
+                // Фото — под названием, а не над ним (без сети галерею не показываем).
                 if !(placePhotos.isEmpty && editorialPhotos.isEmpty) && !isShowingSavedCopy {
                     PlacePhotosHeader(
                         photos: PlaceGalleryPhoto.gallery(editorial: editorialPhotos, visitors: placePhotos),
@@ -301,32 +327,6 @@ struct PlaceCardView: View {
                         placeName: place.name,
                         environment: environment
                     )
-                }
-                VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                    Label(LocalizedStringKey(place.type.titleKey), systemImage: place.type.systemImage)
-                        .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
-                    Text(verbatim: place.name)
-                        .font(AppTypography.h3)
-                }
-
-                HStack(spacing: AppSpacing.sm) {
-                    Label(LocalizedStringKey(place.visibility.titleKey), systemImage: place.visibility.systemImage)
-                    if place.status == .pending {
-                        Label("place.status.pending", systemImage: "hourglass")
-                            .foregroundStyle(AppColors.warning)
-                    }
-                    if place.isApproximate {
-                        Label("place.card.approximateShort", systemImage: "circle.dashed")
-                    }
-                }
-                .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
-
-                if isShowingSavedCopy {
-                    Label("offline.savedCopy", systemImage: "icloud.slash")
-                        .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
                 }
 
                 HStack(spacing: AppSpacing.md) {
