@@ -44,3 +44,56 @@ b877f6c1-2f68-467d-9ac7-e9e75902948b,Бартугуль,,,,,,,,,,,Высота �
 34130c0a-5860-4291-a42b-b6eb5e87d248,Куртинское водохранилище,,,,,,,,,,,"Высота 552 м; площадь 8,3 км² при полном наполнении и 1,3 км² при сработке; объём 120 млн м³.",https://www.openstreetmap.org/way/23716930;https://ru.wikipedia.org/wiki/Куртинское_водохранилище
 3e2ab054-2ab0-471e-acb1-f7ebf58d55b5,Кольсай №1,rainbow_trout,,,,,,,,,,"Высота около 1820 м; длина около 1 км, ширина 400 м, глубина до 39 м.",https://www.openstreetmap.org/way/117881869;https://ru.wikipedia.org/wiki/Кольсайские_озёра
 dfb7fed9-7b09-4222-a716-7123883cadcf,Кольсай №2,rainbow_trout,,,,,,,,,,Высота около 2250 м; самое большое из трёх Кольсайских озёр.,https://www.openstreetmap.org/way/237179072;https://ru.wikipedia.org/wiki/Кольсайские_озёра
+26dba373-0fde-4275-bba8-e52fd425c698,Кок-Жайляу,,,,,,,,tent,,,Высота около 2250 м.,https://www.openstreetmap.org/node/6638544392;https://open-meteo.com/en/docs/elevation-api
+4e1b6728-cb69-4a25-888f-734d82dfc28c,Кемпинг-зона «Казачка»,,,,,,,,tent;drinking_water,,,Высота около 1850 м.,https://www.openstreetmap.org/way/1389747247;https://open-meteo.com/en/docs/elevation-api
+04c4f946-5649-4e05-93d3-4cbb3e1b0f97,Пятипалая ель,,,,,,,,tent;drinking_water,,,Высота около 2000 м.,https://www.openstreetmap.org/node/12864197219;https://open-meteo.com/en/docs/elevation-api
+c6e2cbb3-d5f5-4828-9526-e5a1e6279c0c,Поляна Энтузиастов,,,,,,,,tent,,,Высота около 2750 м.,https://www.openstreetmap.org/node/9888790178;https://open-meteo.com/en/docs/elevation-api
+a0d9de68-2edf-4120-ae72-8a7f10971b0b,Лунная поляна,,,,,,,,tent,,,Высота около 2400 м.,https://www.openstreetmap.org/node/6638561785;https://open-meteo.com/en/docs/elevation-api
+ce76b2e6-bb34-4797-85b5-5d4506f50823,КазПИ,,,,,,,,tent;drinking_water,,,Высота около 2100 м.,https://www.openstreetmap.org/node/12172686657;https://open-meteo.com/en/docs/elevation-api
+2d5e7001-02be-4c67-bcd5-40da822a6e7c,Мынжилки,,,,,,,,tent;drinking_water,,,Высота около 3050 м.,https://www.openstreetmap.org/node/11659583428;https://open-meteo.com/en/docs/elevation-api
+9d692d54-9ecd-4cd1-b15a-e11aee5e13b2,Поляна Терра,,,,,,,,tent;drinking_water,,,Высота около 2600 м.,https://www.openstreetmap.org/node/6717722180;https://open-meteo.com/en/docs/elevation-api
+94c8abce-94d8-4a24-8804-625639eea53d,Ташкентские ночёвки,,,,,,,,tent,,,Высота около 3400 м.,https://www.openstreetmap.org/node/12804560090;https://open-meteo.com/en/docs/elevation-api
+0f9dbe95-d2ee-4c3e-8a99-f145e8f5d09c,Красная поляна,,,free,,,,,tent;drinking_water,,,Высота около 2350 м.,https://www.openstreetmap.org/way/1435044806;https://open-meteo.com/en/docs/elevation-api
+78f8b6c1-d171-4ad8-8a92-db7eceef44c4,Пирамида,,,,,,,,tent;drinking_water,,,Высота около 2750 м.,https://www.openstreetmap.org/node/5867415386;https://open-meteo.com/en/docs/elevation-api
+b2b32356-bb45-477c-830f-4519c64a1b9d,Кемпинг-зона «Солнечная поляна»,,,free,,,,,tent;drinking_water,,,Высота около 2650 м.,https://www.openstreetmap.org/way/1447915202;https://open-meteo.com/en/docs/elevation-api
+e12e8593-aef8-422a-9bce-74f3c1063c64,Кемпинг-зона «Ущелье Левый Талгар»,,,free,,,,,tent;drinking_water,,,Высота около 3000 м.,https://www.openstreetmap.org/way/1435069996;https://open-meteo.com/en/docs/elevation-api
+50b8425e-a4b8-4aa4-9ddc-33a7fca4d8d0,Поляна Горностаев,,,,,,,,tent;drinking_water,,,Высота около 3700 м.,https://www.openstreetmap.org/node/12199154039;https://open-meteo.com/en/docs/elevation-api
+fb68f50f-d0d3-4058-8de2-96fe15c1d32f,Райская поляна,,,,,,,,tent;drinking_water,,,Высота около 3700 м.,https://www.openstreetmap.org/node/12182467080;https://open-meteo.com/en/docs/elevation-api
+824afae4-3527-4182-9c74-58ebfba37e0a,Волчий котел,,,,,,,,tent;drinking_water,,,Высота около 3550 м.,https://www.openstreetmap.org/node/13121357426;https://open-meteo.com/en/docs/elevation-api
+5edbdae7-2909-4be8-ad64-53a1c78c121a,Поляна Сновидений,,,,,,,,tent;drinking_water,,,Высота около 3350 м.,https://www.openstreetmap.org/node/13097972773;https://open-meteo.com/en/docs/elevation-api
+582d7f57-4894-4a9f-8cc7-755020ec9a1c,Beach camping,,,paid,,,,,tent,,,,https://www.openstreetmap.org/node/6755425449;https://open-meteo.com/en/docs/elevation-api
+d447e89a-fba6-48df-aa73-d4649f5edd6d,Рафт-сервис,,,paid,,,,,tent,,,,https://www.openstreetmap.org/node/10744085208;https://open-meteo.com/en/docs/elevation-api
+4b2638fa-9b22-416a-a33e-38289c897fb5,Eco-Park Charyn Canyon Tourist Complex,,,,,,,,tent,,,,https://www.openstreetmap.org/way/437956305;https://open-meteo.com/en/docs/elevation-api
+0b9c2c4e-cc16-433a-b13e-1ae9dce65b21,Топарские озёра,,,,,,,,tent,,,,https://www.openstreetmap.org/node/11981195869;https://open-meteo.com/en/docs/elevation-api
+a1415a37-9484-4ada-b337-f69c87b24dcb,Кумыс Тау,,,,,,,,,,,Высота около 1600 м.,https://www.openstreetmap.org/node/9924581790;https://open-meteo.com/en/docs/elevation-api
+b401b11e-1325-4d63-bba0-15fe5c82783a,Термальный источник Горельник,,,free,,,,,,,,Высота около 1900 м.,https://www.openstreetmap.org/way/1239564555;https://open-meteo.com/en/docs/elevation-api
+4a452973-fc72-496b-af2d-8b10377d03a6,Алма-Арасан,,,free,,,,,,,,Высота около 1800 м.,https://www.openstreetmap.org/way/1239563809;https://open-meteo.com/en/docs/elevation-api
+d3c0bd94-3c49-4632-bcea-dc2a4dadc58d,Кокбастау,,,,,,,,,,,Высота около 2750 м.,https://www.openstreetmap.org/node/2491877193;https://open-meteo.com/en/docs/elevation-api
+14084485-615b-43a6-993b-761f39ecad83,Родник «Ведьмин ручей»,,,,,,,,,,,Высота около 2600 м.,https://www.openstreetmap.org/node/8977682849;https://open-meteo.com/en/docs/elevation-api
+a7120ab1-e61a-4fbd-9997-1232dc678f71,Шүмек Бастау,,,,,,,,drinking_water,,,,https://www.openstreetmap.org/node/9945507683;https://open-meteo.com/en/docs/elevation-api
+9c05e9ba-8fc7-4439-9457-f49ca6b1a0d6,Әулие Бастау,,,,,,,,drinking_water,,,Высота около 1500 м.,https://www.openstreetmap.org/node/12823550040;https://open-meteo.com/en/docs/elevation-api
+f97da09e-a0f7-46c9-8dc9-0f72710077eb,Кұрбатан бастауы,,,,,,,,drinking_water,,,Высота около 1700 м.,https://www.openstreetmap.org/node/12823550031;https://open-meteo.com/en/docs/elevation-api
+c295a6e8-90d9-4b1b-91df-574bff3e0d8c,Родник Шокана Валиханова,,,,,,,,drinking_water,,,,https://www.openstreetmap.org/node/6755420269;https://open-meteo.com/en/docs/elevation-api
+cceb846a-2d71-481b-a64e-c5705ca1af00,Батарейка,,,,,,,,,,,Высота над уровнем моря около 2200 м.,https://www.openstreetmap.org/node/4999671223;https://open-meteo.com/en/docs/elevation-api
+03511330-9ad5-48bc-99ed-554e9a21ebf1,Весенний,,,,,,,,,,,Высота над уровнем моря около 2600 м; высота падения около 10 м.,https://www.openstreetmap.org/node/12138034522;https://open-meteo.com/en/docs/elevation-api
+c43cd854-31d9-4dc7-a674-6e517853175d,Алатас,,,,,,,,,,,Высота над уровнем моря около 2150 м.,https://www.openstreetmap.org/node/10963583505;https://open-meteo.com/en/docs/elevation-api
+6200f310-ca31-46a6-a965-8b2b73f63562,Кимасар,,,,,,,,,,,Высота над уровнем моря около 2300 м; высота падения около 5 м.,https://www.openstreetmap.org/node/11985152042;https://open-meteo.com/en/docs/elevation-api
+6a7d048b-7f29-498e-9095-a48a2b74d1fc,Бутаковский водопад,,,,,,,,,,,Высота над уровнем моря около 2150 м; высота падения около 30 м.,https://www.openstreetmap.org/node/1843570839;https://open-meteo.com/en/docs/elevation-api
+92485445-a653-47cb-b756-bdd09a47b8dc,Аюсай 1,,,,,,,,,,,Высота над уровнем моря около 1750 м; высота падения около 6 м.,https://www.openstreetmap.org/node/5061298381;https://open-meteo.com/en/docs/elevation-api
+def5aebc-981b-47a0-82fd-a2cb1fe8aa04,Аюсай 2,,,,,,,,,,,Высота над уровнем моря около 1800 м; высота падения около 3 м.,https://www.openstreetmap.org/node/9739879536;https://open-meteo.com/en/docs/elevation-api
+68222433-8dbe-4da0-ab3e-5e3c7171a0c8,Нижний водопад Горельника,,,,,,,,,,,Высота над уровнем моря около 2450 м.,https://www.openstreetmap.org/node/9889534511;https://open-meteo.com/en/docs/elevation-api
+6d9fb987-edd2-4b4a-9847-b476c2c5ee82,Верхний водопад Горельника,,,,,,,,,,,Высота над уровнем моря около 2500 м.,https://www.openstreetmap.org/node/4339984191;https://open-meteo.com/en/docs/elevation-api
+093ba0b4-822f-40c5-9127-a1633f2223f8,Аюсай 3,,,,,,,,,,,Высота над уровнем моря около 2050 м; высота падения около 10 м.,https://www.openstreetmap.org/node/9044108817;https://open-meteo.com/en/docs/elevation-api
+2e91bc30-7bdd-4e95-8f2a-b6bfbdf6bc2d,Верхний бутаковский водопад,,,,,,,,,,,Высота над уровнем моря около 2500 м; высота падения около 20 м.,https://www.openstreetmap.org/node/10951332884;https://open-meteo.com/en/docs/elevation-api
+e066ea6e-6269-4231-aa6e-cecfb6758061,Девичьи слёзы,,,,,,,,,,,Высота над уровнем моря около 1850 м; высота падения около 15 м.,https://www.openstreetmap.org/node/1826532293;https://open-meteo.com/en/docs/elevation-api
+93aaf16b-ee25-4fe9-8811-a3346cb7a7fd,Черный водопад,,,,,,,,,,,Высота над уровнем моря около 2750 м; высота падения около 50 м.,https://www.openstreetmap.org/node/4541761389;https://open-meteo.com/en/docs/elevation-api
+ba50f830-2d6b-4237-a328-85292061e972,Водопад Хоббита,,,,,,,,,,,Высота над уровнем моря около 2100 м.,https://www.openstreetmap.org/node/1843664605;https://open-meteo.com/en/docs/elevation-api
+7dc3a999-5b8e-4e52-9e59-e321ac42cfe5,Шукыр,,,,,,,,,,,Высота над уровнем моря около 2650 м; высота падения около 7 м.,https://www.openstreetmap.org/node/2436578672;https://open-meteo.com/en/docs/elevation-api
+d2ab2505-b08b-4d38-9dc4-cf2e0b0ca6b0,Талгарский,,,,,,,,,,,Высота над уровнем моря около 2350 м; высота падения около 40 м.,https://www.openstreetmap.org/node/2491876922;https://open-meteo.com/en/docs/elevation-api
+a8f32c7a-ed06-44d0-a914-d30633a7596c,Водопад «Большой Шымбулак» (Узын-Каргалы),,,,,,,,,,,Высота над уровнем моря около 1400 м; высота падения около 20 м.,https://www.openstreetmap.org/node/2677311606;https://open-meteo.com/en/docs/elevation-api
+072f3ce2-3781-44fa-b2fc-0f364d6f5d2e,Скалистый,,,,,,,,,,,Высота над уровнем моря около 1900 м; высота падения около 25 м.,https://www.openstreetmap.org/node/12880789984;https://open-meteo.com/en/docs/elevation-api
+53e1efa0-e590-4348-a93a-a03605976c3f,Медвежий,,,,,,,,,,,Высота над уровнем моря около 1600 м; высота падения около 30 м.,https://www.openstreetmap.org/node/1843530729;https://open-meteo.com/en/docs/elevation-api
+f3c5e53e-f016-4a89-81dc-a23589a56774,Кайракский водопад,,,,,,,,,,,Высота над уровнем моря около 2200 м; высота падения около 55 м.,https://www.openstreetmap.org/node/2440155576;https://open-meteo.com/en/docs/elevation-api
+fa3b0fc1-1c68-4d9c-ab9d-8f3005d0c46d,Текес,,,,,,,,,,,Высота над уровнем моря около 2650 м.,https://www.openstreetmap.org/node/4922140725;https://open-meteo.com/en/docs/elevation-api
+1c09088c-361b-4590-8e59-bbee286c99c0,Джунгар водопад,,,,,,,,,,,Высота над уровнем моря около 1700 м.,https://www.openstreetmap.org/node/11868171169;https://open-meteo.com/en/docs/elevation-api
+0ab0de4b-6ba3-425b-9f7d-1472bdabcf16,Бурхан-Булак,,,,,,,,,,,Высота над уровнем моря около 2300 м; высота падения около 168 м.,https://www.openstreetmap.org/node/2445583108;https://open-meteo.com/en/docs/elevation-api
