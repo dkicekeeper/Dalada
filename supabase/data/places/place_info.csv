@@ -11,3 +11,36 @@ e0dd6ef9-0956-40c1-8979-3cb9d2ef9367,Селетинское водохранил
 8843e17d-55fb-43ed-97df-959faa0b2e8b,Капчагайское водохранилище,bream;common_carp;asp;perch;wels_catfish;snakehead,asphalt,,,,,shore;boat;ice,,,,"Длина около 180 км, площадь около 1850 км², глубина до 45 м (в среднем около 15 м).",https://ru.wikipedia.org/wiki/Капчагайское_водохранилище
 34727383-fa9e-45a2-b1e3-60676a68275f,Балхаш,marinka;balkhash_perch;common_carp;bream;zander;wels_catfish;crucian_carp;tench,,,,,,shore;boat;ice,,,,"Западная часть озера пресная, восточная — солоноватая.",https://ru.wikipedia.org/wiki/Балхаш
 40db63d1-4f49-4c5f-a994-d08fd3b1d93f,Алаколь,marinka;perch;zander;bream;common_carp,,,,,,shore;boat;ice,,,,"Площадь около 2700 км², глубина до 54 м (в среднем 22 м), солёность около 8 г/л.",https://ru.wikipedia.org/wiki/Алаколь
+0b916712-48e4-4d86-ab0b-940cd4aadfcf,Сайран,,,,,,,,,,,"Средняя глубина около 12 м, наибольшая — 18 м; объём 2,3 млн м³.",https://www.openstreetmap.org/way/208488825;https://ru.wikipedia.org/wiki/Сайран
+c7a67d7f-eebf-4ad7-80d4-b2da5f30f1ad,Озера Титова,,,,,,,,,,,Высота около 3350 м.,https://www.openstreetmap.org/relation/17217831;https://open-meteo.com/en/docs/elevation-api
+890379be-3dfd-4b54-af2f-efe65aca8c13,Большое Алматинское озеро,,,,,,,,,,,"Высота около 2510 м; длина 1,6 км, ширина 0,75–1 км, глубина 30–40 м, площадь 0,9 км².",https://www.openstreetmap.org/relation/3427772;https://ru.wikipedia.org/wiki/Большое_Алматинское_озеро
+25e6b979-9e8b-4eb0-9c52-1ecff8fa7d0b,Озеро Маншук Маметовой,,,,,,,,,,,Высота около 3600 м.,https://www.openstreetmap.org/way/229195776;https://open-meteo.com/en/docs/elevation-api
+4228a656-9be5-4d9a-8334-6c41d306994d,Карнизное,,,,,,,,,,,Высота около 3500 м.,https://www.openstreetmap.org/way/230623875;https://open-meteo.com/en/docs/elevation-api
+6e73abcf-97bc-4805-a815-7425c3591dff,Рыбацкая усадьба,,,paid,,,,,,,,,https://www.openstreetmap.org/way/1144388332
+2da83e65-398a-4645-8bb1-e8f8f793804c,Тимофеева,,,,,,,,,,,Высота около 3600 м.,https://www.openstreetmap.org/way/1064846059;https://open-meteo.com/en/docs/elevation-api
+3ba4ff71-9434-4eb5-9d35-4a74641aa42e,Шотландия,,,,,,,,,,,Высота около 3450 м.,https://www.openstreetmap.org/way/1064801873;https://open-meteo.com/en/docs/elevation-api
+7b59a4eb-379f-43e2-9496-498c3fd5f0ec,Емеген,,,,,,,,,,,Высота около 1850 м.,https://www.openstreetmap.org/way/320018180;https://open-meteo.com/en/docs/elevation-api
+d36956c3-b6fa-45be-b0e7-b5583a0e5ce9,Чаша Армакай,,,,,,,,,,,Высота около 2250 м.,https://www.openstreetmap.org/way/1328188170;https://open-meteo.com/en/docs/elevation-api
+9b3ebb8f-16bc-4fe8-85d4-33ab7d3e76fd,Аксайские озера,,,,,,,,,,,Высота около 3350 м.,https://www.openstreetmap.org/relation/17035153;https://open-meteo.com/en/docs/elevation-api
+f8435051-b886-4480-89bf-9ecd12aeb517,Верхнее Казачье,,,,,,,,,,,Высота около 3300 м.,https://www.openstreetmap.org/way/353693549;https://open-meteo.com/en/docs/elevation-api
+e4f7ec59-ae02-46ff-808e-450cc15d8f69,Нижнее Казачье,,,,,,,,,,,Высота около 3200 м.,https://www.openstreetmap.org/way/353693547;https://open-meteo.com/en/docs/elevation-api
+bb1ab888-0a91-48b6-a4ac-298b379401a6,Нижнее озеро Тогызак,,,,,,,,,,,Высота около 3450 м.,https://www.openstreetmap.org/way/229970713;https://open-meteo.com/en/docs/elevation-api
+393add61-fad2-4924-a1ee-14ee52638423,Изумрудное сердце,,,,,,,,,,,Высота около 3550 м.,https://www.openstreetmap.org/way/392307474;https://open-meteo.com/en/docs/elevation-api
+cf914941-5e91-496b-a142-bad7a3bf4260,Верхнее озеро Тогызак,,,,,,,,,,,Высота около 3700 м.,https://www.openstreetmap.org/way/1081389140;https://open-meteo.com/en/docs/elevation-api
+ce038ed4-02fb-402b-9bea-980a339e39f5,Богатырь,,,,,,,,,,,Высота около 3450 м.,https://www.openstreetmap.org/way/339423133;https://open-meteo.com/en/docs/elevation-api
+a94b5c07-a34a-42c1-9dca-64acd17d11d0,Ушконыр,,,,,,,,,,,Высота около 2100 м.,https://www.openstreetmap.org/way/182958493;https://open-meteo.com/en/docs/elevation-api
+6db70fc0-63a7-4679-8c3f-e8ab76cf6145,Озеро Иссык,,,,,,,,,,,Высота около 1710 м; озеро образовано горным обвалом 8–10 тыс. лет назад.,https://www.openstreetmap.org/way/27106049;https://ru.wikipedia.org/wiki/Иссык_(озеро)
+b78a1939-6eba-4572-bea4-e432e850da34,Акколь,,,,,,,,,,,Высота около 3100 м.,https://www.openstreetmap.org/way/230078064;https://open-meteo.com/en/docs/elevation-api
+5c8dedf0-47e6-4878-987a-f5bbe2610803,Музколь,,,,,,,,,,,Высота около 3400 м.,https://www.openstreetmap.org/way/230078057;https://open-meteo.com/en/docs/elevation-api
+34a36d26-c067-4eba-95f0-7c5032b824c6,Айколь,,,,,,,,,,,Высота около 3400 м.,https://www.openstreetmap.org/way/1064829733;https://open-meteo.com/en/docs/elevation-api
+65eb3455-4697-4a8b-9083-67043bd074df,Макталыколь,,,,,,,,,,,Высота около 3250 м.,https://www.openstreetmap.org/way/393029327;https://open-meteo.com/en/docs/elevation-api
+83aa5ad8-681e-46a4-aebb-9b4154f9772f,Озера Карабастау,,,,,,,,,,,Высота около 3600 м.,https://www.openstreetmap.org/relation/16810739;https://open-meteo.com/en/docs/elevation-api
+914c6827-ca6f-417b-b101-e3540bbb42a8,Жасылколь,,,,,,,,,,,Высота около 1900 м.,https://www.openstreetmap.org/way/314808878;https://open-meteo.com/en/docs/elevation-api
+d2b5ca87-f3d1-4bf1-a3d2-dfcbc1ee1885,Сфагновые озера,,,,,,,,,,,Высота около 3200 м.,https://www.openstreetmap.org/relation/16918875;https://open-meteo.com/en/docs/elevation-api
+bc3f0789-6531-4808-b4f0-4ba152148b1d,Пятнистое,,,,,,,,,,,Высота около 3300 м.,https://www.openstreetmap.org/way/397783295;https://open-meteo.com/en/docs/elevation-api
+861c15be-de92-49e9-80b8-c0e6fd4d92b8,Асылколь,,,paid,,,,,,,,,https://www.openstreetmap.org/node/13590819584;https://open-meteo.com/en/docs/elevation-api
+f69e8203-62d8-4c83-88a8-a621bd33ed57,Шукырганколь,,,,,,,,,,,Высота около 3500 м.,https://www.openstreetmap.org/way/1064835941;https://open-meteo.com/en/docs/elevation-api
+b877f6c1-2f68-467d-9ac7-e9e75902948b,Бартугуль,,,,,,,,,,,Высота около 3200 м.,https://www.openstreetmap.org/way/1232458078;https://open-meteo.com/en/docs/elevation-api
+34130c0a-5860-4291-a42b-b6eb5e87d248,Куртинское водохранилище,,,,,,,,,,,"Высота 552 м; площадь 8,3 км² при полном наполнении и 1,3 км² при сработке; объём 120 млн м³.",https://www.openstreetmap.org/way/23716930;https://ru.wikipedia.org/wiki/Куртинское_водохранилище
+3e2ab054-2ab0-471e-acb1-f7ebf58d55b5,Кольсай №1,rainbow_trout,,,,,,,,,,"Высота около 1820 м; длина около 1 км, ширина 400 м, глубина до 39 м.",https://www.openstreetmap.org/way/117881869;https://ru.wikipedia.org/wiki/Кольсайские_озёра
+dfb7fed9-7b09-4222-a716-7123883cadcf,Кольсай №2,rainbow_trout,,,,,,,,,,Высота около 2250 м; самое большое из трёх Кольсайских озёр.,https://www.openstreetmap.org/way/237179072;https://ru.wikipedia.org/wiki/Кольсайские_озёра
