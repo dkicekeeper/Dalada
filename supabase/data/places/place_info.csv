@@ -100,7 +100,7 @@ fa3b0fc1-1c68-4d9c-ab9d-8f3005d0c46d,Водопад Текес,,,,,,,,,,,Выс�
 0a93d5a4-c890-4c0b-8d1b-535b7ce12f58,Актюбинское водохранилище,common_carp;bream;perch;ide;zander;vendace;roach;crucian_carp,,,,,,,,,,Объём 245 млн м³.,https://ru.wikipedia.org/wiki/Актюбинское_водохранилище;https://www.openstreetmap.org/relation/11949187
 bc99b10b-54ba-48bf-8623-9e53e7fe8fc5,Бартогайское водохранилище,common_carp;crucian_carp;rainbow_trout,,,,,,,,,,"Длина 6 км, ширина 3 км, средняя глубина 25 м, площадь 13 км², объём 320 млн м³.",https://ru.wikipedia.org/wiki/Бартогайское_водохранилище;https://www.openstreetmap.org/relation/19802418
 a59a9707-87a2-4f02-a52f-543f8d8cf3be,Бугуньское водохранилище,,,,,,,,,,,"Длина 13 км, ширина 6 км, площадь 65 км², средняя глубина 6 м, наибольшая — 15 м.",https://ru.wikipedia.org/wiki/Бугуньское_водохранилище;https://www.openstreetmap.org/way/39209867
-82348084-a24b-4430-86b3-305312062c8d,Каргалинское водохранилище,,,,,,,,,,,Объём 280 млн м³.,https://ru.wikipedia.org/wiki/Актюбинское_водохранилище;https://www.openstreetmap.org/way/139118344
+82348084-a24b-4430-86b3-305312062c8d,Каргалинское водохранилище,,,,,,,,,,,Объём 280 млн м³.,https://ru.wikipedia.org/wiki/Актюбинское_водохранилище;https://www.openstreetmap.org/way/139118344;https://ru.wikipedia.org/wiki/Каргалинское_водохранилище
 91ae04d7-6831-4f33-9c1b-83e9fd4884d7,Кировское водохранилище,,,,,,,,,,,"Длина 21,6 км, ширина 4 км, площадь 39,1 км², средняя глубина 1,6 м, наибольшая — около 7 м.",https://ru.wikipedia.org/wiki/Кировское_водохранилище_(Казахстан);https://www.openstreetmap.org/way/298643162
 91103aa3-98a2-4e5a-b807-929e7ee6112a,Коксарайское водохранилище,,,,,,,,,,,"Площадь около 470 км², объём до 3 млрд м³; дамба длиной 44,7 км.",https://ru.wikipedia.org/wiki/Коксарайское_водохранилище;https://www.openstreetmap.org/relation/2195379
 a6830b77-0966-4eab-88f0-365949ac8c92,Саздинское водохранилище,,,,,,,,,,,Объём около 6 млн м³.,https://ru.wikipedia.org/wiki/Актюбинское_водохранилище;https://www.openstreetmap.org/way/203340613
@@ -255,11 +255,11 @@ eba7fa8e-b108-4d90-92b0-fa75f24e1c48,Баямбай,,,,,,,,,,,Площадь о�
 b14aa034-6ff7-4622-9570-ecd135bbf845,Белое озеро (Акмолинская обл.),,,,,,,,,,,Площадь около 21 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/291444326
 c20a05d3-aa2a-4e1f-aa8a-a4cc5829f88e,Белое озеро (СКО),,,,,,,,,,,"Площадь 10,03 км², длина 4,5 км, ширина 3,2 км, высота над уровнем моря 128,9 м.","https://www.openstreetmap.org/way/117302208;https://ru.wikipedia.org/wiki/Большое_Белое_(озеро,_Петропавловск)"
 9cc71308-e437-4108-a4af-7f146bf9e53e,Белоусовское водохранилище,,,,,,,,,,,Площадь около 41 га (по данным OpenStreetMap). Вода пресная (по данным OpenStreetMap).,https://www.openstreetmap.org/way/129447581
-3800c131-d25a-4655-b6b5-a42b9e31406f,Биликоль,,,,,,,,,,,Площадь около 72 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/24970926
+3800c131-d25a-4655-b6b5-a42b9e31406f,Биликоль,,,,,,,,,,,"Площадь 86,9 км² (1985), глубина 6–7 м, высота 439 м, водосбор 5170 км². Две части, соединённые проливом.",https://www.openstreetmap.org/way/24970926;https://ru.wikipedia.org/wiki/Биликоль
 ed0146ae-bed0-4769-9cf2-5edd086a2ebd,Биржанколь,,,,,,,,,,,Площадь около 65 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/122747715
 86811090-bf5b-4c09-b535-d21eb9800d73,Бирказанколь,,,,,,,,,,,"Площадь около 4,7 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap). Временами пересыхает (по данным OpenStreetMap).",https://www.openstreetmap.org/way/1190100920
 188d4d9a-9f88-46f4-a745-214072aec19b,Битикское водохранилище,,,,,,,,,,,"Объём 106,7 млн м³, площадь до 53 км², водосбор 653 км². Построено в 1970 году.",https://www.openstreetmap.org/way/328428579;https://kk.wikipedia.org/wiki/Бітік_бөгені
-a6c07763-5b47-4e38-8bbc-e6ef2f3bacd9,Бозшаколь,,,,,,,,,,,Площадь около 27 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/114823359
+a6c07763-5b47-4e38-8bbc-e6ef2f3bacd9,Бозшаколь,,,,,,,,,,,"Площадь 24,2 км², длина 6 км, ширина 5 км, высота 202 м.",https://www.openstreetmap.org/way/114823359;https://ru.wikipedia.org/wiki/Бозшаколь_(озеро)
 a00adbe9-e67e-408c-949d-af588b303729,Боконское,,,,,,,,,,,Площадь около 51 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/552151197
 1ca5f58c-3b28-4592-b963-c38a2950a277,Болото Сухое,,,,,,,,,,,"Площадь около 1,4 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/176424863
 9bda5177-6d04-4a3c-b9a9-a2a2bcc1087b,Большое Белое озеро,,,,,,,,,,,Площадь около 46 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/322684002
@@ -269,7 +269,7 @@ a00adbe9-e67e-408c-949d-af588b303729,Боконское,,,,,,,,,,,Площадь
 956dad2b-8bc8-4867-b32c-da27454bd4fb,"Большой Косколь (с. Косколь, Костанайская обл.)",,,,,,,,,,,"Площадь около 3,5 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/1531245197
 f223bc20-bcb4-40d7-b3c4-5e85e9a4e0cd,Большой Косколь (СКО),,,,,,,,,,,Площадь около 23 км² (по данным OpenStreetMap). Вода пресная (по данным OpenStreetMap). Временами пересыхает (по данным OpenStreetMap).,https://www.openstreetmap.org/way/249451108
 051fee57-112f-4863-b7eb-b17a7a37d25c,Большой Таволжан,,,,,,,,,,,"Площадь 12,5 км², длина 7,7 км, ширина до 2,1 км, высота над уровнем моря 92 м. Вода солёная, добывают поваренную соль.",https://www.openstreetmap.org/way/80738155;https://kk.wikipedia.org/wiki/Үлкен_Тобылжан
-496f9f0d-ef3c-4496-acdf-92d535c96c66,Большой Теренколь,,,,,,,,,,,Площадь около 44 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/114822361
+496f9f0d-ef3c-4496-acdf-92d535c96c66,Большой Теренколь,,,,,,,,,,,"Площадь около 44 км² (по OSM), водосбор около 2000 км². Пресное, бессточное; канал из Сергеевского водохранилища.",https://www.openstreetmap.org/way/114822361;https://ru.wikipedia.org/wiki/Большой_Таранколь
 ab712b6f-9b65-424b-8ef4-84114c641f88,Большой Тересколь,,,,,,,,,,,"Площадь около 6,7 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/251776417
 b7bd02c6-cfb2-4db7-8543-d5a76dce41b0,Борлыколь,,,,,,,,,,,Площадь около 2 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/324494176
 b5381f04-7648-484d-aa56-591b6279e39f,Боровской озеро,,,,,,,,,,,"Площадь около 2,3 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/121815731
@@ -326,7 +326,7 @@ f6f79486-c17d-4eb7-a334-e121d19d3eb7,Жалжартырколь,,,,,,,,,,,"Пл�
 19b800c5-1748-4ea9-ad65-0fc1fcf1c910,Жалтырколь (Павлодарская обл.),,,,,,,,,,,"Площадь около 1,3 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).",https://www.openstreetmap.org/way/123700940
 21eb9d8f-89ad-46ee-863f-1ca4ec6f2f22,"Жалтырколь (с. Баратай, Акмолинская обл.)",,,,,,,,,,,"Площадь около 2,9 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).",https://www.openstreetmap.org/way/353042344
 a9039f11-a1f9-4a32-8d47-b1f8fa0b8f8e,"Жалтырколь (с. Астраханка, Акмолинская обл.)",,,,,,,,,,,"Площадь около 1,3 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/316177481
-e25b6c19-b5e1-4390-a78f-dad78157d158,Жалтырколь (ЗКО),,,,,,,,,,,Площадь около 20 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/287057558
+e25b6c19-b5e1-4390-a78f-dad78157d158,Жалтырколь (ЗКО),common_carp;crucian_carp;bream;pike,,,,,,,,,,"Площадь 20,6 км², длина 7,4 км, ширина 3,3 км, глубина до 2,5 м (в среднем меньше 1 м). Входит в Жалтыркольский заказник (1967).","https://www.openstreetmap.org/way/287057558;https://ru.wikipedia.org/wiki/Жалтырколь_(озеро,_Жангалинский_район)"
 ef794c56-6ab6-4585-9410-ce0789efe578,"Жалтырколь (с. Спиридоновка, Акмолинская обл.)",,,,,,,,,,,Площадь около 57 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/326910786
 a4e07bf9-5730-4acd-96e8-cde3bc465c49,Жаманке озеро,,,,,,,,,,,"Площадь около 2,7 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/1529431503
 1c5b19d6-5519-4f52-addf-7b5fb7a87d2d,Жамантуз (Павлодарская обл.),,,,,,,,,,,"Площадь около 7,3 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).",https://www.openstreetmap.org/way/533951026
@@ -350,7 +350,7 @@ ed0463fe-e3ed-47e1-bf5b-8e0e6385c293,Жетекши,,,,,,,,,,,Площадь о�
 eddb1e37-ee17-4f4e-b7cd-c4d239fd7f7e,Жетыколь,,,,,,,,,,,Площадь около 11 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).,https://www.openstreetmap.org/way/536308605
 f6e535e9-c238-42cc-a6c5-f1c81f808818,Жиргаин озеро,,,,,,,,,,,"Площадь около 1,1 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/536681265
 d9176359-a969-4294-b429-dfcb22d73df5,Жиренколь,,,,,,,,,,,"Длина и ширина около 3,5 км, береговая линия 10 км. Вода пресная. Ледостав — с ноября по апрель.",https://www.openstreetmap.org/way/169068381;https://kk.wikipedia.org/wiki/Жиренкөл
-bc9391a1-00da-4102-8ad6-f947dd7b0eb3,Жолдыбай,,,,,,,,,,,"Площадь 25,9 км², длина 6,8 км, ширина 5 км, высота над уровнем моря 233 м. Впадает: Сарыозек. Вода солоноватая.",https://www.openstreetmap.org/way/353042345;https://ru.wikipedia.org/wiki/Жолдыбай_(озеро)
+bc9391a1-00da-4102-8ad6-f947dd7b0eb3,Жолдыбай,,,,,,,,,,,"Площадь 25,9 км², длина 6,8 км, ширина 5 км. Вода солоноватая. Ледостав — с ноября по апрель.",https://www.openstreetmap.org/way/353042345;https://ru.wikipedia.org/wiki/Жолдыбай_(озеро)
 13a6d6c0-1334-4b03-aa3d-9c0a0481ee18,Жукей,,,,,,,,,,,"Площадь 19,26 км², длина 5,5 км, ширина 4,6 км, наибольшая глубина 1,8 м, высота над уровнем моря 382 м. Впадает: Сарымсакты. Вытекает: Сарымсакты. Вода горько-солёная.",https://www.openstreetmap.org/way/38078249;https://ru.wikipedia.org/wiki/Жукей_(озеро)
 4f76a981-8be7-45d3-bf17-6397de6486e3,Жулжурган,,,,,,,,,,,Площадь около 10 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/250324900
 e747959f-5e35-4a9d-b39a-1ccedb464fb8,Жынгылдыколь,,,,,,,,,,,Площадь около 12 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/626141676
@@ -459,7 +459,7 @@ b487b6c0-68c9-476d-b0c5-6e96a9474fd2,Костомар,,,,,,,,,,,Площадь �
 cfcfb758-abc6-46b4-a780-f6bb24414847,Кривое,,,,,,,,,,,Площадь около 27 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/322686671
 6b0d98d3-26eb-457e-ba58-24810036b6e6,Кривое озеро (СКО),,,,,,,,,,,"Площадь около 1,9 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).",https://www.openstreetmap.org/way/536851624
 cd5ea0f5-9f19-40a7-82e7-c136a5a622b9,Крутиха,,,,,,,,,,,Площадь около 6 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/398740655
-6067038a-2f09-4581-9719-59ae5bc51e39,Кудайколь,,,,,,,,,,,"Площадь 10,8 км², длина 4,2 км, ширина 3,4 км, высота над уровнем моря 94 м.",https://www.openstreetmap.org/way/42927754;https://ru.wikipedia.org/wiki/Кудайколь_(озеро)
+6067038a-2f09-4581-9719-59ae5bc51e39,Кудайколь,,,,,,,,,,,"Площадь 10,8 км², длина 4,2 км, ширина 3,4 км, высота 88 м. Вода горько-солёная; лёд сходит 27 апреля — 3 мая.",https://www.openstreetmap.org/way/42927754;https://ru.wikipedia.org/wiki/Кудайколь_(озеро)
 d3afb0fe-c18b-4590-9232-3702bbd83a0f,Куйгенколь,,,,,,,,,,,Площадь около 51 га (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).,https://www.openstreetmap.org/way/398770363
 1cd77a50-5906-4aa7-811b-15e49a3c2a38,Кумдыколь (Акмолинская обл.),,,,,,,,,,,Площадь около 94 га (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).,https://www.openstreetmap.org/way/321246394
 4a2593cc-6b97-4e0b-9cb3-4b481959df58,"Кумдыколь (с. Кумдыколь, Акмолинская обл.)",,,,,,,,,,,"Площадь 10,4 км², длина 5,6 км, ширина 3,1 км, глубина 2,9 м. Вода пресная, дно песчаное.","https://www.openstreetmap.org/way/122639048;https://kk.wikipedia.org/wiki/Құмдыкөл_(көл,_Сандықтау_ауданы)"
@@ -476,7 +476,7 @@ d8f2c639-1894-4c83-8905-19c36563eb1f,Курганское озеро,,,,,,,,,,,"
 a0498e35-e924-405a-84aa-6a6521f39817,Куртупколь озеро,,,,,,,,,,,"Площадь около 1,6 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/536806503
 3cfd0849-33f7-42ed-8f64-f2e0032cb34d,Кусколь,,,,,,,,,,,"Площадь около 1,6 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/317239167
 51dbaed1-1961-472e-831a-9e956f344952,"Кусмурын (с. Речное, Костанайская обл.)",perch;bream;common_carp,,,,,,,,,,"Площадь 400–415 км², наибольшая глубина 3,5 м (средняя 2 м), высота над уровнем моря 103 м. Впадает: Убаган. Вытекает: Убаган.",https://www.openstreetmap.org/relation/9344019;https://ru.wikipedia.org/wiki/Кушмурун_(озеро)
-7acfbe45-5c00-4cb4-b6b1-9cbe30bf2f58,"Кусмурын (с. Кирова, Костанайская обл.)",perch;bream;common_carp,,,,,,,,,,"Площадь 400–415 км², наибольшая глубина 3,5 м (средняя 2 м), высота над уровнем моря 103 м. Впадает: Убаган. Вытекает: Убаган.",https://www.openstreetmap.org/relation/9343998;https://ru.wikipedia.org/wiki/Кушмурун_(озеро)
+7acfbe45-5c00-4cb4-b6b1-9cbe30bf2f58,"Кусмурын (с. Кирова, Костанайская обл.)",perch;bream;common_carp,,,,,,,,,,"Площадь 400–415 км², длина котловины 60 км, ширина до 15 км, наибольшая глубина 3,5 м, водосбор 10,5 тыс. км². Минерализация 1–25 г/л.",https://www.openstreetmap.org/relation/9343998;https://ru.wikipedia.org/wiki/Кушмурун_(озеро)
 62d56622-9a4f-4a14-bbc4-f0f603f78598,Куспек,,,,,,,,,,,"Площадь около 8,2 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/257511126
 718e0c82-b13c-4ca8-af44-223200d1a18a,Кызыл,,,,,,,,,,,"Площадь около 5,3 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/1477825532
 9fbd5ec3-ef75-48c9-b34c-6873ae258a1d,Кызылагаш,,,,,,,,,,,"Площадь около 2,3 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/1208353744
@@ -492,7 +492,7 @@ a73bf2d3-9aa4-4a86-b0cf-1d6646322687,Кіші Қараой көлі,,,,,,,,,,,П
 c75310c9-8b4c-42f9-94ae-e12436062f3d,Леверовское водохранилище,,,,,,,,,,,Площадь около 64 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/400387486
 82f1ebf5-36b6-43b3-bc35-9eba927083d3,Логуново,,,,,,,,,,,Площадь около 32 га (по данным OpenStreetMap). Вода пресная (по данным OpenStreetMap). Временами пересыхает (по данным OpenStreetMap).,https://www.openstreetmap.org/way/42114367
 3dd43430-5768-4b48-88df-16a7b022ebec,Лопаш,,,,,,,,,,,Площадь около 2 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/325413746
-70c694f7-e908-4c40-a7f2-84d291ffa874,Майбалык,,,,,,,,,,,Площадь около 26 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/23978425
+70c694f7-e908-4c40-a7f2-84d291ffa874,Майбалык,crucian_carp,,,,,,,,,,"Площадь около 26 км² (по OSM). Толщина льда 0,6–0,8 м, в малоснежные зимы до 1 м. Вода слабо солоноватая.","https://www.openstreetmap.org/way/23978425;https://ru.wikipedia.org/wiki/Майбалык_(озеро,_Астана)"
 dfadf75e-8107-40cc-8131-efe4cfdc7561,Майколь,,,,,,,,,,,Площадь около 76 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/306382023
 17f1a409-480e-4198-a9d8-ca1698b25a18,Майсар,,,,,,,,,,,Площадь около 63 га (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).,https://www.openstreetmap.org/way/428432193
 5290e3d6-47f1-47ae-abff-6eaac38ab3b0,Макпалкол,,,,,,,,,,,Площадь около 11 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/1165287913
@@ -504,7 +504,7 @@ e92589ae-8ed7-441a-bcde-7ff36dec3f3d,Малый Каракамыс,,,,,,,,,,,"П
 09703cb9-41b4-4679-9e6c-58254f472a00,Малый Караколь,,,,,,,,,,,"Площадь около 2,6 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/49748450
 8c9290d8-7128-49b6-9854-e67ccb28e8c0,Малый Косколь,,,,,,,,,,,"Площадь около 8,7 км² (по данным OpenStreetMap). Вода пресная (по данным OpenStreetMap).",https://www.openstreetmap.org/way/22678978
 ebc0cc06-3bdf-491a-9b95-861e155ded0d,Малый Мынколь,,,,,,,,,,,Площадь около 61 га (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).,https://www.openstreetmap.org/way/615321981
-059167da-676e-4054-9649-e42cfd9c2197,Маралды,,,,,,,,,,,Площадь около 55 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/252236373
+059167da-676e-4054-9649-e42cfd9c2197,Маралды,,,,,,,,,,,"Площадь 54,7 км², длина 9,5 км, ширина 8,3 км, высота 63 м. Вода горько-солёная. Ледостав — с начала ноября до начала апреля.",https://www.openstreetmap.org/way/252236373;https://ru.wikipedia.org/wiki/Маралды_(озеро)
 cfd30ae1-6bd5-4fa0-a58a-95ee9ca8ad53,Мармышное озеро,,,,,,,,,,,Площадь около 2 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/121815725
 97d57ce1-3d40-4da0-b0b1-bda5b2daaa77,Метеоритное,,,,,,,,,,,Площадь около 6 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/769057151;https://open-meteo.com/en/docs/elevation-api
 bfac8e89-9fca-4721-a7ff-d9844faba14e,Минкесер озеро,,,,,,,,,,,Площадь около 39 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/114822358
@@ -538,7 +538,7 @@ b9b87a53-1ca6-4f1d-8a1a-bd2c25e85c2e,Озеро Акколь (обл. Абай),
 8400c11b-c799-457a-96bd-e3b2feb569c9,Озеро Акпас,,,,,,,,,,,"Площадь около 2,1 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/1529371202
 6a018c21-87bd-4d6c-874c-59cd842816d1,Озеро Аксуат,,,,,,,,,,,"Площадь около 2,7 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/401714796
 643c1932-e0af-4944-b0c3-0aa95cade1dd,Озеро Актас,,,,,,,,,,,Площадь около 2 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/348212637
-e0687c68-d331-44c2-a692-4921f6257ac3,Озеро Акуш,,,,,,,,,,,Площадь около 23 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/28190411
+e0687c68-d331-44c2-a692-4921f6257ac3,Озеро Акуш,,,,,,,,,,,"Площадь 25,8 км², длина 8,6 км, ширина 3,8 км, высота 120 м. Вода солёная.",https://www.openstreetmap.org/way/28190411;https://ru.wikipedia.org/wiki/Акуш_(озеро)
 682c3167-38cc-4cc3-869c-0dcefb88f84b,Озеро Алабота,,,,,,,,,,,Площадь около 50 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).,https://www.openstreetmap.org/way/1046137228
 20470a82-1829-44a5-8cbd-be66e6bdfc74,"Озеро Алаколь (с. Жанакурылыс, Костанайская обл.)",,,,,,,,,,,Площадь около 2 км² (по данным OpenStreetMap). Временами пересыхает (по данным OpenStreetMap).,https://www.openstreetmap.org/way/152318879
 292ec16e-20fc-4a5e-9bf4-f12c9e6d14ea,"Озеро Алаколь (с. Аралбай, Костанайская обл.)",,,,,,,,,,,Площадь около 51 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/298531606
@@ -887,7 +887,7 @@ b19e49ce-2450-4b83-8f5f-17878b398b96,Озеро Светлица,,,,,,,,,,,"Пл
 bc8b0eb6-baa4-485c-ba85-b0a71e251d16,Озеро Сербай,,,,,,,,,,,Площадь около 53 га (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).,https://www.openstreetmap.org/relation/9349294
 1b80612d-a0f3-4882-acac-fb17a9f5e98d,Озеро Сетово,,,,,,,,,,,Площадь около 66 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/232466297
 f61fb4d2-990a-44c8-8a7e-da6c705072a5,Озеро Сиваш,,,,,,,,,,,"Площадь около 1,7 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).",https://www.openstreetmap.org/way/157587413
-5f965623-3b98-4bbf-b188-00eab5e87aa7,Озеро Сиверга,,,,,,,,,,,"Площадь 53 км², длина 12 км, ширина 5 км, высота над уровнем моря 118 м.",https://www.openstreetmap.org/way/146447463;https://ru.wikipedia.org/wiki/Сиверга
+5f965623-3b98-4bbf-b188-00eab5e87aa7,Озеро Сиверга,,,,,,,,,,,"Площадь 53 км², длина 12 км, ширина 5 км, высота 118 м. Минерализация 62,9 г/л.",https://www.openstreetmap.org/way/146447463;https://ru.wikipedia.org/wiki/Сиверга
 465463dd-0b91-4d3e-bb32-6db33044dccb,Озеро Сивково,,,,,,,,,,,"Площадь 1,48 км², длина 1,5 км, ширина 1,2 км, наибольшая глубина 3,12 м, высота над уровнем моря 129 м.",https://www.openstreetmap.org/way/155025742;https://ru.wikipedia.org/wiki/Сивково_(озеро)
 7f4badd4-4546-4465-9930-f3c02b8c6d69,Озеро Синакколь,,,,,,,,,,,Площадь около 17 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/138215667
 b583ea26-69e4-4510-ae78-ca094e4819df,Озеро Сирень,,,,,,,,,,,"Площадь около 1,2 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap). Временами пересыхает (по данным OpenStreetMap).",https://www.openstreetmap.org/way/247062612
@@ -927,7 +927,7 @@ a1835336-a510-443b-8483-d8c5ba865d20,Озеро Таттыколь,,,,,,,,,,,"П
 661fa5ca-1ed3-405f-9a08-b731bfed5253,Озеро Телекей,,,,,,,,,,,"Площадь около 2,2 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/150332438
 808b09bb-889e-45da-a088-78a889dee00a,Озеро Телесколь,,,,,,,,,,,Площадь около 45 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/62049730
 74ee18f5-2b85-4792-8617-69f853c70349,Озеро Тенгиз,,,,,,,,,,,"Длина 74,4 км, ширина 40,2 км, наибольшая глубина 7,75 м (средняя 2,5 м), высота над уровнем моря 305 м. Впадает: Нура, Куланотпес. Вода горько-солёная.",https://www.openstreetmap.org/relation/403288;https://ru.wikipedia.org/wiki/Тенгиз_(озеро)
-8d6f0159-b155-4f40-a266-2957e23bc5c5,Озеро Тениз (Костанайская обл.),,,,,,,,,,,"Площадь 64,2 км², длина 14,7 км, ширина 7,3 км, высота над уровнем моря 89,4 м.","https://www.openstreetmap.org/way/120543636;https://ru.wikipedia.org/wiki/Тениз_(озеро,_Мендыкаринский_район)"
+8d6f0159-b155-4f40-a266-2957e23bc5c5,Озеро Тениз (Костанайская обл.),,,,,,,,,,,"Площадь 64,2 км², длина 14,7 км, ширина 7,3 км, береговая линия 44 км, высота 89 м.","https://www.openstreetmap.org/way/120543636;https://ru.wikipedia.org/wiki/Тениз_(озеро,_Мендыкаринский_район)"
 98c31124-644d-41eb-a2e6-61d023324945,Озеро Тениз (Акмолинская обл.),,,,,,,,,,,Площадь около 35 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).,https://www.openstreetmap.org/way/183130941
 f21193b5-00b2-4d8f-b53c-654bf7a0cd35,Озеро Терескен,,,,,,,,,,,Площадь около 13 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/138320183
 70f90914-d171-4e02-8983-69f44abb2d9d,Озеро Токсары,,,,,,,,,,,"Площадь около 1,4 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/56313433
@@ -987,7 +987,7 @@ f4ab47b0-4efa-4a1a-b8dd-be8775128170,Озеро Шоптыколь (ВКО),,,,,
 f649ff71-c4b5-482e-a9ab-3eced2d516d0,Озеро Шоптыколь (обл. Абай),,,,,,,,,,,Площадь около 83 га (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).,https://www.openstreetmap.org/way/298743944
 3c4f2fb8-7072-49fd-9577-0f324a546e6c,Озеро Шораякколь,,,,,,,,,,,Площадь около 13 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap). Временами пересыхает (по данным OpenStreetMap).,https://www.openstreetmap.org/way/781506825
 0b71c541-4425-4117-afab-26d27d69ecb2,Озеро Шорман,,,,,,,,,,,"Площадь около 1,9 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/321320816
-e0b7bc1c-dd36-4832-9c96-4f9c22e864fa,Озеро Шошкалы,,,,,,,,,,,"Площадь 22,08 км², длина 6,9 км, ширина 4,1 км, наибольшая глубина 2,2 м (средняя 1,5 м), высота над уровнем моря 314 м. Вода солоноватая.","https://www.openstreetmap.org/way/281149358;https://ru.wikipedia.org/wiki/Шошкалы_(озеро,_Акмолинская_область)"
+e0b7bc1c-dd36-4832-9c96-4f9c22e864fa,Озеро Шошкалы,,,,,,,,,,,"Площадь 22,1 км², длина 6,9 км, ширина 4,1 км, наибольшая глубина 2,2 м (средняя 1,5 м), высота 314 м. Минерализация: весной 0,8–1 г/л, летом 1,5–2, зимой 3–5 г/л.","https://www.openstreetmap.org/way/281149358;https://ru.wikipedia.org/wiki/Шошкалы_(озеро,_Акмолинская_область)"
 2ad1324c-8457-4c33-9356-46037b490950,Озеро Шубарколь,,,,,,,,,,,"Площадь 15 км², длина 4,8 км, ширина 4,4 км, высота над уровнем моря 207 м. Вытекает: Кайрак. Вода пресная.",https://www.openstreetmap.org/way/199357752;https://ru.wikipedia.org/wiki/Шубарколь_(озеро)
 d27fa6c2-f5a4-4345-803b-25017e21cc16,Озеро Шубаркунан,,,,,,,,,,,"Площадь около 1,4 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/309863377
 749e2a1a-a5ad-4f58-88d0-6fd70b504b2c,Озеро Шубартерек,,,,,,,,,,,"Площадь около 1,1 км² (по данным OpenStreetMap).",https://www.openstreetmap.org/way/1190771518
@@ -1023,7 +1023,7 @@ b18af734-4e27-48f8-86ee-f73d0f87892e,Равновесия,,,,,,,,,,,Площад
 d6bae8cd-dc49-4f00-a5ee-6d9a7e24b768,Райхан,,,,,,,,,,,Площадь около 10 га (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).,https://www.openstreetmap.org/way/1181805808
 09e1ccd3-9f3d-430d-a295-b5d0bec99321,Рассыпное,,,,,,,,,,,Площадь около 8 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/166154154;https://open-meteo.com/en/docs/elevation-api
 e546d9c2-eb3c-47a6-8212-66e39e851c23,Рахмановское,,,,,,,,,,,Высота над уровнем моря 1760 м.,https://www.openstreetmap.org/way/117813624;https://ru.wikipedia.org/wiki/Рахмановские_ключи_(источник)
-430b898a-a8d0-4b22-8cf7-8d3bc9aedb6c,Речное озеро,,,,,,,,,,,Площадь около 22 км² (по данным OpenStreetMap).,https://www.openstreetmap.org/way/285455252
+430b898a-a8d0-4b22-8cf7-8d3bc9aedb6c,Речное озеро,,,,,,,,,,,"Площадь 22,7 км², длина 6,2 км, ширина 5,3 км, высота 160 м. Проточное: впадает Карасу, вытекает протока в озеро Бабье.",https://www.openstreetmap.org/way/285455252;https://ru.wikipedia.org/wiki/Речное_(озеро)
 fa560933-149c-40fd-a528-13a2e9d1c4cc,Рудничное,,,,,,,,,,,"Площадь около 6,8 км² (по данным OpenStreetMap). Вода солёная (по данным OpenStreetMap).",https://www.openstreetmap.org/relation/5992325
 700f5f08-4f8f-4628-8d1e-4ae7a64dc11a,Рыбное,,,,,,,,,,,Площадь около 14 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/166154141;https://open-meteo.com/en/docs/elevation-api
 f58fe5ee-6010-4ec1-a732-abe4b8823e4d,Рыбцех,,,,,,,,,,,Площадь около 54 га (по данным OpenStreetMap).,https://www.openstreetmap.org/way/172479894
