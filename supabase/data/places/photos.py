@@ -36,6 +36,8 @@ HERE = Path(__file__).resolve().parent
 PLACES = HERE / "places.csv"
 TABLE = HERE / "photos.csv"
 CANDIDATES = HERE / "photo_candidates.csv"
+# Элемент Wikidata, найденный по координатам и названию, — у мест, где в OSM ссылки на Wikidata нет.
+WIKIDATA = HERE / "wikidata.csv"
 MIGRATIONS = HERE.parent.parent / "migrations"
 SUFFIX = "_editorial_photos.sql"
 FIELDS = ["id", "place_id", "position", "file", "author", "license", "license_url", "width", "height"]
@@ -344,11 +346,14 @@ def find_candidates(sheets: Path | None, only: set[str] | None, progress: Path |
     done = set(progress.read_text().split()) if progress and progress.exists() else set()
     current = read_csv(CANDIDATES)
     previous = {(r["place_id"], r["file"]): r["include"] for r in current}
+    wikidata = {r["id"]: r["wikidata"] for r in read_csv(WIKIDATA)} if WIKIDATA.exists() else {}
     for n, place in enumerate(places, start=1):
         if place["id"] in done:
             continue
         print(f"[{n}/{len(places)}] {place['name']}", file=sys.stderr)
         tags = osm_tags(place["source"])
+        if not tags.get("wikidata") and place["id"] in wikidata:
+            tags = {**tags, "wikidata": wikidata[place["id"]]}
         found = candidates_for(place, tags)
         usable = []
         for title, (score, reason, meta) in found.items():
