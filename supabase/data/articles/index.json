@@ -19,5 +19,6 @@
   {"id": "campfire", "category": "rules_ethics", "sort_order": 180, "published_on": "2026-10-05"},
   {"id": "ice_fishing_basics", "category": "technique", "sort_order": 5, "published_on": "2026-11-09"},
   {"id": "pike_tip_ups", "category": "technique", "sort_order": 6, "published_on": "2026-11-10"},
-  {"id": "zander_winter", "category": "technique", "sort_order": 7, "published_on": "2026-11-10"}
+  {"id": "zander_winter", "category": "technique", "sort_order": 7, "published_on": "2026-11-10"},
+  {"id": "reading_rules", "category": "rules_ethics", "sort_order": 35, "published_on": "2026-11-10"}
 ]
