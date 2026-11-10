@@ -24,6 +24,13 @@ h1 { font-size: 28px; line-height: 1.2; margin-bottom: 4px; overflow-wrap: anywh
 .desc { font-size: 16px; margin-bottom: 16px; white-space: pre-line; overflow-wrap: anywhere; }
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 16px; }
 .fact { background: var(--card); border-radius: 12px; padding: 10px 12px; }
+.info { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin-bottom: 16px; font-size: 15px; }
+.info dt { color: var(--muted); }
+.info dd { overflow-wrap: anywhere; }
+@media (max-width: 480px) {
+  .info { grid-template-columns: 1fr; gap: 0; }
+  .info dd { margin-bottom: 8px; }
+}
 .fact b { display: block; font-size: 20px; }
 .fact span { color: var(--muted); font-size: 13px; }
 #map { width: 100%; height: 280px; border-radius: 16px; overflow: hidden; margin-bottom: 16px; background: var(--card); }

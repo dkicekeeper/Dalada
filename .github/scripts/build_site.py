@@ -112,6 +112,30 @@ DESCRIPTIONS = {
 
 LOADING = '    <p class="muted" id="loading">…</p>'
 
+# «Сведения» места — как в приложении (Localizable.xcstrings, place.info.*). Статическая страница —
+# по-русски; на языке браузера их перерисовывает share.js.
+INFO_LABELS = {
+    "species": "Рыба", "methods": "Способы ловли", "access": "Подъезд", "fee": "Стоимость",
+    "contact": "Контакты", "amenities": "Удобства", "signal": "Связь", "months": "Лучшие месяцы",
+    "features": "Особенности",
+}
+INFO_VALUES = {
+    "access": {"asphalt": "Асфальт", "dirt": "Грунтовка", "offroad": "Только на 4×4", "foot": "Пешком",
+               "boat": "На лодке"},
+    "fee": {"free": "Бесплатно", "paid": "Платно"},
+    "price_unit": {"entry": "за вход", "day": "за сутки", "hour": "в час", "kg": "за кг улова"},
+    "methods": {"shore": "С берега", "boat": "С лодки", "spinning": "Спиннинг", "feeder": "Фидер",
+                "float": "Поплавок", "fly": "Нахлыст", "bottom": "Донка", "ice": "Со льда"},
+    "amenities": {"parking": "Парковка", "toilet": "Туалет", "shade": "Тень", "tent": "Место под палатку",
+                  "fireplace": "Костровище", "drinking_water": "Питьевая вода", "shop": "Магазин рядом",
+                  "boat_rental": "Прокат лодок"},
+    "signal": {"none": "Нет", "weak": "Слабая", "good": "Хорошая"},
+}
+MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь",
+          "ноябрь", "декабрь"]
+# У мест для рыбалки сначала рыба и способы ловли (PlaceType.isFishing в приложении).
+FISHING_TYPES = {"fishing_spot", "water_body", "paid_pond"}
+
 
 def app_store_url(campaign):
     """Ссылка на App Store с меткой кампании `campaign`, если задан токен поставщика."""
@@ -127,6 +151,97 @@ def place_title(place):
 
 def place_description(place):
     return short(place.get("description")) or DESCRIPTIONS.get(place.get("type"), "Место на карте Dalada.")
+
+
+def month_spans(months):
+    """Месяцы отрезками, как PlaceAttributes.monthSpans: [12, 1, 2] → [(12, 2)]."""
+    ordered = sorted({m for m in months if isinstance(m, int) and 1 <= m <= 12})
+    if not ordered:
+        return []
+    if len(ordered) == 12:
+        return [(1, 12)]
+    spans = [[ordered[0], ordered[0]]]
+    for month in ordered[1:]:
+        if month == spans[-1][1] + 1:
+            spans[-1][1] = month
+        else:
+            spans.append([month, month])
+    if len(spans) > 1 and spans[0][0] == 1 and spans[-1][1] == 12:
+        head = spans.pop(0)
+        spans[-1][1] = head[1]
+    return [tuple(span) for span in spans]
+
+
+def as_list(items):
+    """Список в строку, как в предложении: «Сазан, карп, судак» — заглавная только первая буква."""
+    items = [i for i in items if i]
+    return ", ".join([items[0]] + [i[:1].lower() + i[1:] for i in items[1:]]) if items else ""
+
+
+def place_info(place, species):
+    """Строки «Сведений» места: [(подпись, значение)] в порядке приложения. `species` — id → (порядок, название)."""
+    info = place.get("attributes") or {}
+    if not isinstance(info, dict):
+        return []
+
+    def titles(key):
+        values = info.get(key) or []
+        return as_list(INFO_VALUES[key][v] for v in values if v in INFO_VALUES[key])
+
+    fishing, other = [], []
+    fish = [species[s] for s in (info.get("species") or []) if s in species]
+    if fish:
+        fishing.append(("species", as_list(name for _, name in sorted(fish))))
+    if titles("methods"):
+        fishing.append(("methods", titles("methods")))
+    if titles("access"):
+        other.append(("access", titles("access")))
+    fee = INFO_VALUES["fee"].get(info.get("fee"))
+    if fee:
+        price = info.get("price_kzt")
+        if isinstance(price, int) and price > 0:
+            unit = INFO_VALUES["price_unit"].get(info.get("price_unit"))
+            fee += " · " + f"{price:,}".replace(",", "\u00a0") + " ₸" + (" " + unit if unit else "")
+        other.append(("fee", fee))
+    if isinstance(info.get("contact"), str) and info["contact"].strip():
+        other.append(("contact", info["contact"].strip()))
+    if titles("amenities"):
+        other.append(("amenities", titles("amenities")))
+    signal = INFO_VALUES["signal"].get(info.get("signal"))
+    if signal:
+        other.append(("signal", signal))
+    spans = month_spans(info.get("months") or [])
+    if spans:
+        text = ", ".join(MONTHS[a - 1] if a == b else MONTHS[a - 1] + "–" + MONTHS[b - 1] for a, b in spans)
+        other.append(("months", text[:1].upper() + text[1:]))
+    if isinstance(info.get("features"), str) and info["features"].strip():
+        other.append(("features", " ".join(info["features"].split())))
+    rows = fishing + other if place.get("type") in FISHING_TYPES else other + fishing
+    return [(INFO_LABELS[key], value) for key, value in rows]
+
+
+def info_html(rows):
+    if not rows:
+        return ""
+    items = "".join(
+        "\n      <dt>" + html.escape(label) + "</dt><dd>" + html.escape(value) + "</dd>" for label, value in rows
+    )
+    return '\n    <dl class="info">' + items + "\n    </dl>"
+
+
+def fetch_species(url, key):
+    """Справочник рыб: id → (порядок, название по-русски). Не загрузился — страницы без строки «Рыба»."""
+    request = urllib.request.Request(
+        url + "/rest/v1/fish_species?select=id,name_ru,sort_order",
+        headers={"apikey": key, "Authorization": "Bearer " + key},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            rows = json.load(response)
+    except Exception as error:  # noqa: BLE001 — без названий рыб страница всё равно полезна
+        print("Справочник рыб не загрузился (" + type(error).__name__ + ")")
+        return {}
+    return {r["id"]: (r.get("sort_order") or 0, r["name_ru"]) for r in rows if r.get("id") and r.get("name_ru")}
 
 
 def release(page):
@@ -245,6 +360,8 @@ def main():
         write_sitemap([], extra)
         return
 
+    species = fetch_species(url, key)
+    with_info = 0
     for place in places:
         place_id = str(place["id"])
         kind = TYPES.get(place.get("type"), "Место")
@@ -252,11 +369,13 @@ def main():
         # На странице — описание целиком, в мета-тегах — первые 200 знаков.
         full = " ".join(str(place.get("description") or "").split()) or description
         photo = place.get("photo_path")
+        rows = place_info(place, species)
+        with_info += bool(rows)
         content = "\n".join([
             "    <h1>" + html.escape(place["name"]) + "</h1>",
             '    <p class="sub">' + html.escape(kind) + "</p>",
             '    <p class="desc">' + html.escape(full) + "</p>",
-        ])
+        ]) + info_html(rows)
         page = render(
             template,
             place_title(place),
@@ -271,7 +390,7 @@ def main():
         os.makedirs(folder, exist_ok=True)
         with open(os.path.join(folder, "index.html"), "w", encoding="utf-8") as out:
             out.write(page)
-    print("Страниц мест: " + str(len(places)))
+    print("Страниц мест: " + str(len(places)) + ", со сведениями: " + str(with_info))
     write_sitemap(places, extra)
 
 
