@@ -1,9 +1,9 @@
-This is version 1.0.1 — the first App Store update. Please check the main things:
+This is version 1.0.2. Please check the main things:
 
-• Profile → Friends → Invite (the QR icon). Point another phone’s camera at the QR code — a “You’re invited to Dalada” page should open with an App Store button and “Open the profile in Dalada”. Share link sends the same page; the text says “across Kazakhstan”.
-• On a friend’s phone that already has Dalada (another account), tap “Open the profile in Dalada” on that page — your profile should open, ready to add as a friend.
-• Tips → any article → Share: the message has a link to the article on the website, and it opens in a browser in your language.
-• The App Store event link: type dalada://collection/ice_fishing in Notes and tap it — Places opens with the Ice fishing collection.
-• Reports (I’m here) and trip recording work as before.
+• Any place card: the name on top, then one line with the place type and visibility (your own place under review says so), then the photos, then everything as before.
+• Record a trip longer than half an hour or 500 m and finish it. A second later “Share your trip” appears → “Picture for Stories” opens a picture with the track (without a connection it shows an error, that’s expected). “Not now” — the next offer comes no sooner than in three days.
+• A report (I’m here) with a catch heavier or longer than your record for that species: the congratulation has “Share the record”, which opens the catch picture.
+• The rating window or the notifications prompt shouldn’t pop up right after these sheets.
+• Reports and trip recording work as before.
 
 Feedback — the Send Feedback button in TestFlight or dakacom@gmail.com.

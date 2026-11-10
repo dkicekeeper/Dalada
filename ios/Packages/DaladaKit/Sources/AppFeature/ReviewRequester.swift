@@ -31,10 +31,11 @@ final class ReviewRequester {
         ReviewPromptPolicy.noteMoment(&state, now: now)
         save(state)
         guard ReviewPromptPolicy.shouldPrompt(state, now: now, version: Self.version) else { return }
-        // Даём закрыться форме; лист про уведомления появляется через 0,7 с — ему уступаем,
-        // момент не теряется: попросим после следующего отчёта.
+        // Даём закрыться форме; лист про уведомления и предложение поделиться появляются через 0,7 с —
+        // им уступаем, момент не теряется: попросим после следующего отчёта.
         try? await Task.sleep(for: .milliseconds(1500))
-        guard !NotificationPrimer.shared.isShowing, let scene = Self.activeScene() else { return }
+        guard !NotificationPrimer.shared.isShowing, !ShareOffer.shared.isShowing,
+              let scene = Self.activeScene() else { return }
         AppStore.requestReview(in: scene)
         var shown = load()
         ReviewPromptPolicy.notePrompted(&shown, now: Date(), version: Self.version)

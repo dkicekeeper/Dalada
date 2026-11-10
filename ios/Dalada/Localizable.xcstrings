@@ -18465,6 +18465,29 @@
         }
       }
     },
+    "records.new.share" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share the record"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Рекордпен бөлісу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поделиться рекордом"
+          }
+        }
+      }
+    },
     "records.new.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -20987,6 +21010,75 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ — моя поездка в Dalada %2$@"
+          }
+        }
+      }
+    },
+    "share.offer.later" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not now"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Қазір емес"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не сейчас"
+          }
+        }
+      }
+    },
+    "share.offer.trip.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A picture with your track and numbers for Stories and Telegram. The start and end of the track aren’t shown."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трегі мен көрсеткіштері бар сурет — Stories пен Telegram үшін. Тректің басы мен соңы онда көрінбейді."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Картинка с треком и цифрами — для Stories и Telegram. Начало и конец трека на ней не видны."
+          }
+        }
+      }
+    },
+    "share.offer.trip.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share your trip"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сапарыңызбен бөлісіңіз"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поделитесь поездкой"
           }
         }
       }

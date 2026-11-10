@@ -30,7 +30,8 @@ final class NotificationPrimer {
         else { return }
         // Даём закрыться листу, из которого пришли (форма чекина и т. п.).
         try? await Task.sleep(for: .milliseconds(700))
-        guard presented == nil, let top = Self.topViewController() else { return }
+        // Картинка рекорда важнее: уведомления предложим в следующий раз.
+        guard presented == nil, !ShareOffer.shared.isShowing, let top = Self.topViewController() else { return }
         let host = UIHostingController(rootView: PromptSheet(
             systemImage: "bell.badge",
             title: String(localized: "push.primer.title"),
