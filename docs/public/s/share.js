@@ -193,7 +193,135 @@
     return { type: "Feature", geometry: { type: "Polygon", coordinates: [points] } };
   }
 
-  function renderPlace(place, photo) {
+  // Казахские названия месяцев есть не во всех браузерах — пишем сами: «2026 жылғы 6 қазан».
+  var monthsKK = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
+
+  // «Сведения» места — подписи как в приложении (Localizable.xcstrings, place.info.*).
+  var INFO = {
+    ru: {
+      species: "Рыба", methods: "Способы ловли", access: "Подъезд", fee: "Стоимость", contact: "Контакты",
+      amenities: "Удобства", signal: "Связь", months: "Лучшие месяцы", features: "Особенности",
+      access_: { asphalt: "Асфальт", dirt: "Грунтовка", offroad: "Только на 4×4", foot: "Пешком", boat: "На лодке" },
+      fee_: { free: "Бесплатно", paid: "Платно" },
+      unit_: { entry: "за вход", day: "за сутки", hour: "в час", kg: "за кг улова" },
+      methods_: { shore: "С берега", boat: "С лодки", spinning: "Спиннинг", feeder: "Фидер", float: "Поплавок",
+        fly: "Нахлыст", bottom: "Донка", ice: "Со льда" },
+      amenities_: { parking: "Парковка", toilet: "Туалет", shade: "Тень", tent: "Место под палатку",
+        fireplace: "Костровище", drinking_water: "Питьевая вода", shop: "Магазин рядом", boat_rental: "Прокат лодок" },
+      signal_: { none: "Нет", weak: "Слабая", good: "Хорошая" },
+      months_: ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]
+    },
+    kk: {
+      species: "Балық", methods: "Аулау тәсілдері", access: "Жол", fee: "Құны", contact: "Байланыс",
+      amenities: "Жайлылықтар", signal: "Байланыс сапасы", months: "Ең жақсы айлар", features: "Ерекшеліктері",
+      access_: { asphalt: "Асфальт", dirt: "Топырақ жол", offroad: "Тек 4×4 көлігімен", foot: "Жаяу", boat: "Қайықпен" },
+      fee_: { free: "Тегін", paid: "Ақылы" },
+      unit_: { entry: "кіру үшін", day: "тәулігіне", hour: "сағатына", kg: "олжаның 1 кг үшін" },
+      methods_: { shore: "Жағадан", boat: "Қайықтан", spinning: "Спиннинг", feeder: "Фидер", float: "Қалтқы",
+        fly: "Нахлыст", bottom: "Түптік қармақ", ice: "Мұздан" },
+      amenities_: { parking: "Тұрақ", toilet: "Дәретхана", shade: "Көлеңке", tent: "Шатыр орны",
+        fireplace: "От жағатын орын", drinking_water: "Ауыз су", shop: "Жақын маңда дүкен", boat_rental: "Қайық жалға беру" },
+      signal_: { none: "Жоқ", weak: "Әлсіз", good: "Жақсы" },
+      months_: monthsKK
+    },
+    en: {
+      species: "Fish", methods: "Fishing methods", access: "Access", fee: "Price", contact: "Contact",
+      amenities: "Amenities", signal: "Mobile signal", months: "Best months", features: "Details",
+      access_: { asphalt: "Paved road", dirt: "Dirt road", offroad: "4×4 only", foot: "On foot", boat: "By boat" },
+      fee_: { free: "Free", paid: "Paid" },
+      unit_: { entry: "per entry", day: "per day", hour: "per hour", kg: "per kg of catch" },
+      methods_: { shore: "From shore", boat: "From a boat", spinning: "Spinning", feeder: "Feeder", float: "Float",
+        fly: "Fly fishing", bottom: "Bottom rig", ice: "Ice fishing" },
+      amenities_: { parking: "Parking", toilet: "Toilet", shade: "Shade", tent: "Tent pitch", fireplace: "Fire pit",
+        drinking_water: "Drinking water", shop: "Shop nearby", boat_rental: "Boat rental" },
+      signal_: { none: "None", weak: "Weak", good: "Good" },
+      months_: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    }
+  }[lang];
+  var FISHING_TYPES = { fishing_spot: true, water_body: true, paid_pond: true };
+
+  // Список как в предложении: «Сазан, карп, судак» — заглавная только первая буква.
+  function asList(items) {
+    items = items.filter(Boolean);
+    return items.map(function (item, i) { return i === 0 ? item : item.charAt(0).toLowerCase() + item.slice(1); }).join(", ");
+  }
+
+  // Месяцы отрезками, как PlaceAttributes.monthSpans: [12, 1, 2] → [[12, 2]].
+  function monthSpans(months) {
+    var sorted = (months || []).filter(function (m, i, all) {
+      return m >= 1 && m <= 12 && m % 1 === 0 && all.indexOf(m) === i;
+    }).sort(function (a, b) { return a - b; });
+    if (!sorted.length) return [];
+    if (sorted.length === 12) return [[1, 12]];
+    var spans = [[sorted[0], sorted[0]]];
+    sorted.slice(1).forEach(function (m) {
+      var last = spans[spans.length - 1];
+      if (m === last[1] + 1) last[1] = m; else spans.push([m, m]);
+    });
+    if (spans.length > 1 && spans[0][0] === 1 && spans[spans.length - 1][1] === 12) {
+      spans[spans.length - 1][1] = spans.shift()[1];
+    }
+    return spans;
+  }
+
+  // Строки «Сведений»: у мест для рыбалки сначала рыба и способы ловли — как в приложении.
+  function infoRows(place, fish) {
+    var info = place.attributes || {};
+    function titles(key) {
+      var names = INFO[key + "_"];
+      return asList((info[key] || []).map(function (v) { return names[v]; }));
+    }
+    var fishing = [], other = [];
+    var known = (info.species || []).filter(function (id) { return fish[id]; })
+      .sort(function (a, b) { return fish[a].order - fish[b].order; })
+      .map(function (id) { return fish[id].name; });
+    if (known.length) fishing.push([INFO.species, asList(known)]);
+    if (titles("methods")) fishing.push([INFO.methods, titles("methods")]);
+    if (titles("access")) other.push([INFO.access, titles("access")]);
+    var fee = INFO.fee_[info.fee];
+    if (fee) {
+      if (info.price_kzt > 0) {
+        var unit = INFO.unit_[info.price_unit];
+        fee += " · " + Number(info.price_kzt).toLocaleString(lang === "en" ? "en" : "ru") + " ₸" + (unit ? " " + unit : "");
+      }
+      other.push([INFO.fee, fee]);
+    }
+    if (typeof info.contact === "string" && info.contact.trim()) other.push([INFO.contact, info.contact.trim()]);
+    if (titles("amenities")) other.push([INFO.amenities, titles("amenities")]);
+    if (INFO.signal_[info.signal]) other.push([INFO.signal, INFO.signal_[info.signal]]);
+    var months = monthSpans(info.months).map(function (span) {
+      return span[0] === span[1] ? INFO.months_[span[0] - 1] : INFO.months_[span[0] - 1] + "–" + INFO.months_[span[1] - 1];
+    }).join(", ");
+    if (months) other.push([INFO.months, months.charAt(0).toUpperCase() + months.slice(1)]);
+    if (typeof info.features === "string" && info.features.trim()) other.push([INFO.features, info.features.trim()]);
+    return FISHING_TYPES[place.type] ? fishing.concat(other) : other.concat(fishing);
+  }
+
+  function infoList(rows) {
+    if (!rows.length) return null;
+    var children = [];
+    rows.forEach(function (row) {
+      children.push(el("dt", { text: row[0] }));
+      children.push(el("dd", { text: row[1] }));
+    });
+    return el("dl", { class: "info" }, children);
+  }
+
+  // Справочник рыб на языке страницы: id → { name, order }. Не загрузился — без строки «Рыба».
+  function fishNames() {
+    var column = "name_" + lang;
+    return fetch(config.url + "/rest/v1/fish_species?select=id,sort_order," + column, {
+      headers: { apikey: config.key, Authorization: "Bearer " + config.key }
+    }).then(function (response) { return response.ok ? response.json() : []; })
+      .then(function (rows) {
+        var names = {};
+        (rows || []).forEach(function (row) { if (row[column]) names[row.id] = { name: row[column], order: row.sort_order || 0 }; });
+        return names;
+      })
+      .catch(function () { return {}; });
+  }
+
+  function renderPlace(place, photo, fish) {
     // У статической страницы /p/<id>/ заголовок уже собран для поиска (build_site.py) — не трогаем.
     if (!/\/p\/[0-9a-f-]{36}\/?$/i.test(location.pathname)) setTitle(place.name);
     var nodes = [];
@@ -201,6 +329,7 @@
     nodes.push(el("h1", { text: place.name }));
     nodes.push(el("p", { class: "sub", text: T.types[place.type] || "" }));
     if (place.description) nodes.push(el("p", { class: "desc", text: place.description }));
+    nodes.push(infoList(infoRows(place, fish || {})));
     nodes.push(map(function (instance) {
       var center = [place.lon, place.lat];
       if (place.approximate) {
@@ -230,8 +359,6 @@
     return hours > 0 ? hours + " " + T.hours + " " + minutes + " " + T.minutes : minutes + " " + T.minutes;
   }
 
-  // Казахские названия месяцев есть не во всех браузерах — пишем сами: «2026 жылғы 6 қазан».
-  var monthsKK = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
 
   function day(value) {
     var date = new Date(value);
@@ -340,13 +467,14 @@
   if (target.kind === "place") {
     load = Promise.all([
       rpc("place_card", { p_id: target.id }),
-      rpc("place_editorial_photos", { p_place: target.id }).catch(function () { return null; })
+      rpc("place_editorial_photos", { p_place: target.id }).catch(function () { return null; }),
+      fishNames()
     ]).then(function (results) {
       var place = results[0];
       if (!place || place.visibility !== "public") return message(T.notFound, T.notFoundHint);
       var editorial = results[1];
       var photo = editorial && editorial.path && config.photos ? config.photos + "/" + editorial.path : null;
-      renderPlace(place, photo);
+      renderPlace(place, photo, results[2]);
     });
   } else if (target.kind === "invite") {
     load = rpc("web_trip_invite", { p_token: target.id }).then(function (row) {

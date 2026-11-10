@@ -63,8 +63,13 @@ Store с меткой `press` (`{{APP_STORE_URL:press}}` в HTML — так лю
 
 ## Как устроено
 
-- `20261118100000_web_share.sql`: `web_places()`, `web_trip(id)`, `web_catch(id)` для гостя.
+- `20261118100000_web_share.sql`: `web_places()`, `web_trip(id)`, `web_catch(id)` для гостя;
+  `20261219100000_web_places_attributes.sql` — `web_places()` отдаёт и «Сведения» места (рыба, способы
+  ловли, подъезд, плата, удобства, связь, лучшие месяцы, особенности; без служебных ключей редакции).
+  Статическая страница `/p/<id>/` показывает их по-русски, `share.js` — на языке браузера, подписи — как
+  в приложении (`place.info.*`), названия рыб — из `fish_species`.
 - Сайт: `docs/public/s/` (шаблон, `share.js`, `share.css`, `og.png`), сборка —
   `.github/scripts/build_site.py`, публикация — `pages.yml` (по изменениям и раз в день).
 - iOS: `WebLink`; «Поделиться» места, «Ссылка на поездку», сообщения к картинкам.
-- Тесты: pgTAP `52_web_share` (12), `ShareCardsTests`; страницу проверял в Chromium на локальной базе.
+- Тесты: pgTAP `52_web_share` (12), `65_web_places_attributes` (5), `ShareCardsTests`; страницу проверял в
+  Chromium на локальной базе.
