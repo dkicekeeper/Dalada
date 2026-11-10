@@ -66,7 +66,8 @@ public struct CheckinConditions: Codable, Equatable, Sendable {
     }
 
     public enum Water: String, Codable, CaseIterable, Sendable, Identifiable {
-        case clear, muddy
+        /// Лёд — отчёт со льда (значок «Подлёдник», `ice_reports_3`).
+        case clear, muddy, ice
         public var id: String { rawValue }
         public var titleKey: String { "conditions.water.\(rawValue)" }
     }

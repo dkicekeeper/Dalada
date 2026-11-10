@@ -328,6 +328,7 @@ enum AchievementText {
         case .firstPublicPlace: "achievement.first_public_place.title"
         case .reviews5: "achievement.reviews_5.title"
         case .acceptedEdit: "achievement.accepted_edit.title"
+        case .iceReports3: "achievement.ice_reports_3.title"
         }
     }
 
@@ -343,6 +344,7 @@ enum AchievementText {
         case .firstPublicPlace: "achievement.first_public_place.detail"
         case .reviews5: "achievement.reviews_5.detail"
         case .acceptedEdit: "achievement.accepted_edit.detail"
+        case .iceReports3: "achievement.ice_reports_3.detail"
         }
     }
 

@@ -484,6 +484,52 @@
         }
       }
     },
+    "achievement.ice_reports_3.detail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Post reports from the ice on 3 different days — mark “Water: Ice” in the report."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 түрлі күні мұздан есеп қалдырыңыз — есепте «Су: мұз» деп белгілеңіз."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оставьте отчёты со льда в 3 разных дня — в отчёте отметьте «Вода: лёд»."
+          }
+        }
+      }
+    },
+    "achievement.ice_reports_3.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ice angler"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мұз балықшысы"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подлёдник"
+          }
+        }
+      }
+    },
     "achievement.nights_5.detail" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4566,6 +4612,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Чистая"
+          }
+        }
+      }
+    },
+    "conditions.water.ice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ice"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Мұз"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Лёд"
           }
         }
       }
