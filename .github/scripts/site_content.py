@@ -63,14 +63,14 @@ T = {
         "minutes": "мин чтения", "back": "Все статьи",
         "rules_title": "Запреты на рыбалку в Казахстане {year}: сроки по бассейнам",
         "rules_h1": "Запреты на рыбалку в Казахстане — {year}",
-        "rules_lead": "Сроки нерестовых запретов, зоны покоя и запрещённые способы лова по всем бассейнам — по приказу "
-                      "Минсельхоза РК. Проверено {verified}. Границы зон и что действует у конкретного места — на "
+        "rules_lead": "Сроки нерестовых запретов, зоны покоя, запрещённые способы лова и промысловая мера по всем "
+                      "бассейнам — по приказу Минсельхоза РК и Правилам рыболовства. Проверено {verified}. Границы зон и что действует у конкретного места — на "
                       "карте в приложении Dalada.",
         "rules_desc": "Нерестовые запреты {year} по всем бассейнам Казахстана: сроки, водоёмы, зоны покоя и источники.",
         "now": "Что действует сегодня, {day}", "now_none": "Сезонных запретов сегодня нет — круглогодичные "
                "правила ниже действуют всегда.",
         "all_year": "круглый год", "amateur": "касается удочек, спиннингов и других любительских орудий",
-        "source": "Источник", "verified": "проверено",
+        "source": "Источник", "verified": "проверено", "size": "{name} — {cm} см",
         "disclaimer": "Сведения справочные: перед поездкой сверяйтесь с первоисточником. Границы зон в приложении "
                       "приблизительные — текст правила важнее линии на карте.",
     },
@@ -83,14 +83,15 @@ T = {
         "minutes": "мин оқу", "back": "Барлық мақалалар",
         "rules_title": "Қазақстандағы балық аулауға тыйымдар {year}: бассейндер бойынша мерзімдер",
         "rules_h1": "Қазақстандағы балық аулауға тыйымдар — {year}",
-        "rules_lead": "Барлық бассейндер бойынша уылдырық шашу кезеңіндегі тыйымдар, тыныштық аймақтары және тыйым "
-                      "салынған аулау тәсілдері — ҚР Ауыл шаруашылығы министрлігінің бұйрығы бойынша. Тексерілді: "
+        "rules_lead": "Барлық бассейндер бойынша уылдырық шашу кезеңіндегі тыйымдар, тыныштық аймақтары, тыйым "
+                      "салынған аулау тәсілдері және кәсіптік өлшем — ҚР Ауыл шаруашылығы министрлігінің бұйрығы мен "
+                      "Балық аулау қағидалары бойынша. Тексерілді: "
                       "{verified}. Аймақ шекаралары мен нақты орында не әрекет ететіні — Dalada қосымшасының картасында.",
         "rules_desc": "Қазақстанның барлық бассейндеріндегі {year} жылғы тыйымдар: мерзімдер, су айдындары, дереккөздер.",
         "now": "Бүгін не әрекет етеді, {day}", "now_none": "Бүгін маусымдық тыйымдар жоқ — төмендегі жыл бойғы "
                "ережелер әрқашан әрекет етеді.",
         "all_year": "жыл бойы", "amateur": "қармақтарға, спиннингтерге және басқа әуесқойлық құралдарға қатысты",
-        "source": "Дереккөз", "verified": "тексерілді",
+        "source": "Дереккөз", "verified": "тексерілді", "size": "{name} — {cm} см",
         "disclaimer": "Мәліметтер анықтамалық: сапар алдында дереккөзбен салыстырыңыз. Қосымшадағы аймақ шекаралары "
                       "шамамен — ереже мәтіні картадағы сызықтан маңыздырақ.",
     },
@@ -103,14 +104,14 @@ T = {
         "minutes": "min read", "back": "All articles",
         "rules_title": "Fishing bans in Kazakhstan {year}: dates by basin",
         "rules_h1": "Fishing bans in Kazakhstan — {year}",
-        "rules_lead": "Spawning bans, rest zones and banned methods in every basin, from the order of the Ministry of "
-                      "Agriculture of Kazakhstan. Checked on {verified}. Zone borders and what applies at a given place "
+        "rules_lead": "Spawning bans, rest zones, banned methods and minimum sizes in every basin, from the order of the "
+                      "Ministry of Agriculture of Kazakhstan and the Fishing Rules. Checked on {verified}. Zone borders and what applies at a given place "
                       "are on the map in the Dalada app.",
         "rules_desc": "Spawning bans {year} in every basin of Kazakhstan: dates, waters, rest zones and sources.",
         "now": "In force today, {day}", "now_none": "No seasonal bans today — the year-round rules below always "
                "apply.",
         "all_year": "all year", "amateur": "applies to rods, spinning and other amateur gear",
-        "source": "Source", "verified": "checked on",
+        "source": "Source", "verified": "checked on", "size": "{name}: {cm} cm",
         "disclaimer": "For reference only: check the original source before a trip. Zone borders in the app are "
                       "approximate — the text of a rule matters more than a line on the map.",
     },
@@ -155,7 +156,8 @@ def fetch_articles(url, key):
 def fetch_rules(url, key):
     regulations = get(url, key, "regulations?select=*&order=sort_order,id")
     zones = get(url, key, "rule_zones?select=id,name_ru,name_kk,name_en")
-    return regulations, {zone["id"]: zone for zone in zones}
+    species = get(url, key, "fish_species?select=id,name_ru,name_kk,name_en,sort_order")
+    return regulations, {zone["id"]: zone for zone in zones}, {item["id"]: item for item in species}
 
 
 # --- Разметка статей (как в приложении) ----------------------------------------------------------
@@ -370,7 +372,19 @@ def where(lang, rule, zones):
     return ", ".join(zone_names(lang, rule, zones)) or basin_name(lang, rule["basin"])
 
 
-def rule_block(lang, rule, zones):
+def sizes_html(lang, rule, species):
+    """Промысловая мера правила списком «вид — см» в порядке справочника рыб."""
+    sizes = rule.get("min_sizes") or {}
+    known = sorted((s for s in sizes if s in species), key=lambda s: (species[s].get("sort_order") or 0, s))
+    if not known:
+        return ""
+    return '<ul class="sizes">' + "".join(
+        "<li>" + html.escape(T[lang]["size"].format(
+            name=localized(species[s], "name", lang) or species[s]["name_ru"], cm=sizes[s])) + "</li>"
+        for s in known) + "</ul>"
+
+
+def rule_block(lang, rule, zones, species):
     names = zone_names(lang, rule, zones)
     meta = [period_text(lang, rule)] if rule["kind"] == "fishing_ban" or rule.get("start_month") is not None else []
     if names:
@@ -385,10 +399,10 @@ def rule_block(lang, rule, zones):
               + T[lang]["verified"] + " " + date_text(lang, rule["verified_on"]) + "</p>")
     return ('<div class="rule"><h3>' + html.escape(title) + "</h3>"
             + ('<p class="meta">' + html.escape(" · ".join(meta)) + "</p>" if meta else "")
-            + paragraphs + source + "</div>")
+            + paragraphs + sizes_html(lang, rule, species) + source + "</div>")
 
 
-def rules_pages(regulations, zones, origin, base, app_store_url_for, app_store_id, today):
+def rules_pages(regulations, zones, species, origin, base, app_store_url_for, app_store_id, today):
     files, sitemap = {}, []
     if not regulations:
         return files, sitemap
@@ -415,7 +429,7 @@ def rules_pages(regulations, zones, origin, base, app_store_url_for, app_store_i
             if not rows:
                 continue
             parts.append('<h2 id="' + html.escape(code) + '">' + html.escape(names[lang]) + "</h2>")
-            parts.extend(rule_block(lang, r, zones) for r in rows)
+            parts.extend(rule_block(lang, r, zones, species) for r in rows)
         parts.append('<p class="note">' + html.escape(T[lang]["disclaimer"]) + "</p>")
         files["rules/" + page_name(lang)] = page(
             lang, T[lang]["rules_title"].format(year=year), T[lang]["rules_desc"].format(year=year), alternates[lang],
