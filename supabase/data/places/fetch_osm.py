@@ -46,6 +46,10 @@ QUERIES = [
     ("waterfall", 'nwr["natural"="waterfall"]["name"]', False),
     ("water", 'way["natural"="water"]["name"]["water"~"^(lake|reservoir|oxbow|pond)$"]', True),
     ("water", 'rel["natural"="water"]["name"]["water"~"^(lake|reservoir|oxbow|pond)$"]', True),
+    # Водоёмы без типа (natural=water без water=…): так в OSM отмечены и крупные водохранилища —
+    # Шерубайнуринское, Самаркандское, Кенгирское, Желкуарское — и озеро Кошкарколь.
+    ("water_untyped", 'way["natural"="water"]["name"][!"water"]', True),
+    ("water_untyped", 'rel["natural"="water"]["name"][!"water"]', True),
     ("camp", 'node["tourism"="camp_site"]', False),
     ("camp", 'way["tourism"="camp_site"]', False),
     ("resort", 'nwr["leisure"="resort"]', False),
@@ -66,6 +70,8 @@ WELL = re.compile(r"скважин|колод[еи]ц|құдық|кудук|well
 # Солёные и горько-солёные озёра, солончаки (сор, тұз, ащы): для рыбалки бесполезны. Водохранилища
 # с такими словами в названии (Терс-Ащыбулак) — пресные.
 SALT = re.compile(r"солон|солён|солен|сор\b|тұз|\bтуз|ащы|ащи|шор\b", re.I)
+# Без типа водоёма в OSM под тем же тегом лежат протоки, заливы и куски рек — их не берём.
+NOT_STANDING = re.compile(r"проток|арна|шығанағ|залив|култук|қолтық|канал|^река\b|өзені", re.I)
 # Название — только слово «озеро», «пруд» и т. п.
 GENERIC_WATER = re.compile(r"^(озеро|lake озеро|lake|пруд|водохранилище|старица|котлован|карьер|солончаковое озеро|көл|су)$", re.I)
 
@@ -157,7 +163,7 @@ def decide(label: str, name: str, tags: dict) -> tuple[str, str, str]:
     """Тип места, предварительное решение и причина."""
     place_type = {
         "shop": "tackle_shop", "fishing": "fishing_spot", "spring": "spring", "hot_spring": "spring",
-        "waterfall": "landmark", "water": "water_body", "camp": "campsite", "resort": "base",
+        "waterfall": "landmark", "water": "water_body", "water_untyped": "water_body", "camp": "campsite", "resort": "base",
         "hut": "campsite",
     }[label]
     if label == "fishing" and (tags.get("fee") == "yes" or re.search(r"платн|форел|хозяйств|усадьб", name, re.I)):
@@ -184,6 +190,14 @@ def decide(label: str, name: str, tags: dict) -> tuple[str, str, str]:
         return (place_type, "no", "не база отдыха") if NOT_BASE.search(name) else (place_type, "?", "")
     if label == "hut":
         return place_type, "?", "приют"
+    if label == "water_untyped":
+        if NOT_STANDING.search(name) or NOT_STANDING.search(tags.get("name", "")):
+            return place_type, "no", "протока, залив или участок реки"
+        if tags.get("salt") == "yes" or (SALT.search(name) and "водохранилище" not in name.lower()):
+            return place_type, "no", "солёное озеро"
+        if GENERIC_WATER.match(name.removeprefix("озеро ").strip() or name):
+            return place_type, "no", "общее название"
+        return place_type, "?", "в OSM без типа водоёма"
     if label == "water" and SALT.search(name) and "водохранилище" not in name.lower():
         return place_type, "no", "солёное озеро"
     if label == "water" and GENERIC_WATER.match(name.removeprefix("озеро ").strip() or name):
