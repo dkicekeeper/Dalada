@@ -38,7 +38,9 @@ INFO_FIELDS = ["id", "name", "species", "access", "fee", "price_kzt", "price_uni
 SPECIES = ["common_carp", "zander", "asp", "wels_catfish", "snakehead", "pike", "perch", "balkhash_perch", "bream",
            "crucian_carp", "silver_carp", "grass_carp", "marinka", "rainbow_trout", "roach", "tench", "other",
            # …_fish_species_more.sql
-           "burbot", "ide", "ruffe", "rudd", "sabrefish", "whitefish", "vendace", "grayling", "taimen", "lenok"]
+           "burbot", "ide", "ruffe", "rudd", "sabrefish", "whitefish", "vendace", "grayling", "taimen", "lenok",
+           # …_fish_species_min_sizes.sql
+           "dace", "chub", "silver_bream", "white_eye_bream", "caspian_roach", "shemaya", "volga_zander", "peled", "rotan"]
 ACCESS = ["asphalt", "dirt", "offroad", "foot", "boat"]
 FEES = ["free", "paid"]
 PRICE_UNITS = ["entry", "day", "hour", "kg"]
