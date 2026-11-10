@@ -1,0 +1,52 @@
+{
+  "referenceName": "Ice season 2027",
+  "badge": "CHALLENGE",
+  "purpose": "APPROPRIATE_FOR_ALL_USERS",
+  "priority": "NORMAL",
+  "purchaseRequirement": "NO_COST_ASSOCIATED",
+  "primaryLocale": "ru",
+  "territories": [
+    "KAZ"
+  ],
+  "publishStart": "2027-01-01T10:00:00+05:00",
+  "eventStart": "2027-01-15T00:00:00+05:00",
+  "eventEnd": "2027-02-14T23:59:00+05:00",
+  "deepLink": "dalada://collection/ice_fishing",
+  "localizations": {
+    "ru": {
+      "name": "Подлёдный сезон",
+      "shortDescription": "Три дня со льда — значок «Подлёдник»",
+      "longDescription": "Отметьте «Лёд» в отчёте в три разных дня — и значок ваш. Водоёмы для подлёдной рыбалки и запреты — на карте."
+    },
+    "en-US": {
+      "name": "Ice season",
+      "shortDescription": "Three days on the ice earn a badge",
+      "longDescription": "Mark “Ice” in your report on three different days to earn a badge. Ice fishing waters and bans are on the map."
+    }
+  },
+  "media": {
+    "EVENT_CARD": "card.jpg",
+    "EVENT_DETAILS_PAGE": "details.jpg"
+  },
+  "nomination": {
+    "name": "Ice season — a winter challenge for anglers in Kazakhstan",
+    "type": "NEW_CONTENT",
+    "publishStart": "2027-01-15T00:00:00+05:00",
+    "publishEnd": "2027-02-14T23:59:00+05:00",
+    "deviceFamilies": [
+      "IPHONE"
+    ],
+    "locales": [
+      "ru",
+      "en-US"
+    ],
+    "territories": [
+      "KAZ"
+    ],
+    "supplementalMaterialsUris": [
+      "https://dkicekeeper.github.io/Dalada/press.html"
+    ],
+    "description": "Dalada is a free, ad-free map for fishing and the outdoors across Kazakhstan, in Kazakh, Russian and English. From 15 January to 14 February we run “Ice season”, an in-app challenge for the peak of ice fishing: anglers who post reports from the ice on three different days earn the “Ice angler” badge. Reports now have an “Ice” water option, so others see where the ice is holding and the fish are biting. The challenge comes with a curated collection of waters for ice fishing from Bukhtarma and Zaysan in the east to Vyacheslavskoye near Astana and Kapshagay in the south, the fishing bans of all eight basins on the map, an offline map for places without a signal and a guide to ice safety. Places people mark stay private unless they choose to share them; the app has no behavioural analytics.",
+    "notes": "Independent developer from Kazakhstan. The app is fully localized in Kazakh (Cyrillic). Privacy-first: approximate places, privacy zones and per-item visibility."
+  }
+}

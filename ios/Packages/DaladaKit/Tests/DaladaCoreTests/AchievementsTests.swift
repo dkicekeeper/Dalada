@@ -23,11 +23,12 @@ struct AchievementsTests {
     @Test func catalogMatchesServerCodes() {
         #expect(AchievementKind.allCases.map(\.rawValue) == [
             "first_trip", "distance_100", "nights_5", "first_catch", "species_5",
-            "trophy_3kg", "places_5", "first_public_place", "reviews_5", "accepted_edit",
+            "trophy_3kg", "places_5", "first_public_place", "reviews_5", "accepted_edit", "ice_reports_3",
         ])
         #expect(AchievementKind.distance100.unit == .kilometers)
         #expect(AchievementKind.trophy3kg.unit == .grams)
         #expect(AchievementKind.reviews5.unit == .count)
+        #expect(AchievementKind.iceReports3.unit == .count)
     }
 
     @Test func fractionIsClamped() {

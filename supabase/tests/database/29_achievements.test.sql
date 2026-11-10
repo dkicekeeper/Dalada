@@ -37,12 +37,12 @@ insert into auth.users (id, email) values
 select pg_temp.act_as('11111111-1111-1111-1111-111111111111');
 select is(
   (select count(*)::integer from public.my_achievements() where earned_at is null),
-  10,
-  'у нового человека 10 значков, ни одного не получено'
+  11,
+  'у нового человека 11 значков, ни одного не получено'
 );
 select is(
   (select string_agg(achievement, ',') from public.my_achievements()),
-  'first_trip,distance_100,nights_5,first_catch,species_5,trophy_3kg,places_5,first_public_place,reviews_5,accepted_edit',
+  'first_trip,distance_100,nights_5,first_catch,species_5,trophy_3kg,places_5,first_public_place,reviews_5,accepted_edit,ice_reports_3',
   'порядок показа'
 );
 

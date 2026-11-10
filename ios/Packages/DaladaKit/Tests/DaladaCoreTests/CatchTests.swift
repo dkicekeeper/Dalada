@@ -65,6 +65,15 @@ struct CatchTests {
         #expect(try JSONDecoder().decode(CheckinConditions.self, from: Data("{}".utf8)).isEmpty)
     }
 
+    @Test func iceWaterRoundTrips() throws {
+        let conditions = try JSONDecoder().decode(CheckinConditions.self, from: Data(#"{"water": "ice"}"#.utf8))
+        #expect(conditions.water == .ice)
+        #expect(CheckinConditions.Water.allCases.map(\.rawValue) == ["clear", "muddy", "ice"])
+        #expect(CheckinConditions.Water.ice.titleKey == "conditions.water.ice")
+        let data = try JSONEncoder().encode(CheckinConditions(water: .ice))
+        #expect(String(decoding: data, as: UTF8.self) == #"{"water":"ice"}"#)
+    }
+
     @Test func emptyConditionsEncodeAsEmptyObject() throws {
         let data = try JSONEncoder().encode(CheckinConditions())
         #expect(String(decoding: data, as: UTF8.self) == "{}")

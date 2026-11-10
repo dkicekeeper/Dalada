@@ -55,6 +55,8 @@ public enum AchievementKind: String, CaseIterable, Sendable {
     case firstPublicPlace = "first_public_place"
     case reviews5 = "reviews_5"
     case acceptedEdit = "accepted_edit"
+    /// Отчёты со льда в три разных дня — к событию App Store «Подлёдный сезон».
+    case iceReports3 = "ice_reports_3"
 
     public var systemImage: String {
         switch self {
@@ -68,6 +70,7 @@ public enum AchievementKind: String, CaseIterable, Sendable {
         case .firstPublicPlace: "mappin.and.ellipse"
         case .reviews5: "star.bubble.fill"
         case .acceptedEdit: "checkmark.seal.fill"
+        case .iceReports3: "snowflake"
         }
     }
 
