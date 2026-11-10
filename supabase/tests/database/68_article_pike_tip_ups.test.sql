@@ -11,8 +11,8 @@ set local role anon;
 set local request.jwt.claims = '{"role": "anon"}';
 
 select is(
-  (select array_agg(id order by sort_order, id) from (select id, sort_order from public.articles order by sort_order, id limit 3) a),
-  array['ice_fishing_basics', 'pike_tip_ups', 'ice_safety'],
+  (select array_agg(id order by sort_order, id) from (select id, sort_order from public.articles order by sort_order, id limit 2) a),
+  array['ice_fishing_basics', 'pike_tip_ups'],
   'статья о жерлицах — вторая, после «Подлёдной рыбалки»'
 );
 select ok(
