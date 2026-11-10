@@ -96,9 +96,15 @@
   // каждого вида (docs/05-release/promotion.md, «Метки кампаний»). Только суммы, без слежки.
   var campaigns = { place: "site-place", trip: "site-share", "catch": "site-share", invite: "trip-invite", friend: "invite" };
 
+  // Своя метка из адреса страницы — для QR-табличек и постов: …/p/<id>/?ct=qr-<место>.
+  var urlCampaign = (function () {
+    var value = new URLSearchParams(location.search).get("ct");
+    return value && /^[a-z0-9-]{1,30}$/.test(value) ? value : null;
+  })();
+
   function appStoreURL() {
     if (!config.appStorePt) return config.appStore;
-    var campaign = (target && campaigns[target.kind]) || "site-share";
+    var campaign = urlCampaign || (target && campaigns[target.kind]) || "site-share";
     return config.appStore + "?pt=" + encodeURIComponent(config.appStorePt) + "&ct=" + campaign;
   }
 
