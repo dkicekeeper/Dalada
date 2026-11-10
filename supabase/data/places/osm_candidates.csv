@@ -484,7 +484,6 @@ yes,water_body,Жалтырколь,51.017870,69.268404,,osm:w326910786,natural=
 yes,water_body,Жалтырколь,53.376997,68.662538,,osm:w353042344,natural=water,Жалтыркөл,https://www.openstreetmap.org/way/353042344,
 yes,water_body,Жаманке озеро,53.962361,64.851302,,osm:w1529431503,natural=water,Жаманке көлі,https://www.openstreetmap.org/way/1529431503,
 yes,water_body,Жаманкуль,43.593091,76.801090,,osm:w663256207,natural=water,Жаманкуль,https://www.openstreetmap.org/way/663256207,
-yes,water_body,Жаманкум,43.673026,76.873646,Сайт: https://almatysu.kz/?lang=ru,osm:w49745667,natural=water,Жаманқұм,https://www.openstreetmap.org/way/49745667,в OSM без типа водоёма; площадь по габаритам ~10.3 км²
 yes,water_body,Жамантуз,52.970540,73.130434,,osm:w132576171,natural=water,Жамантұз,https://www.openstreetmap.org/way/132576171,
 yes,water_body,Жамантуз,50.959207,77.778673,,osm:w533951026,natural=water,Жамантұз,https://www.openstreetmap.org/way/533951026,
 yes,water_body,Жамантуз,53.779342,76.529858,,osm:w615321984,natural=water,Жамантұз,https://www.openstreetmap.org/way/615321984,
@@ -1529,7 +1528,6 @@ yes,water_body,территория водокачки,51.971044,61.789247,,osm:
 yes,water_body,Қанбақкөл,47.727181,60.799686,,osm:w1273809352,natural=water,Қанбақкөл,https://www.openstreetmap.org/way/1273809352,
 yes,water_body,Қарасу,54.136753,67.713403,,osm:w1457427799,natural=water,Қарасу,https://www.openstreetmap.org/way/1457427799,
 yes,water_body,Қарақұс көлі,49.597206,86.389111,,osm:w183349030,natural=water,Қарақұс көлі,https://www.openstreetmap.org/way/183349030,
-yes,water_body,Қауынды ойысы,42.921309,52.889086,,osm:w327222344,natural=water,Қауынды ойысы,https://www.openstreetmap.org/way/327222344,
 yes,water_body,Үлкен көлі,49.381242,75.516665,,osm:w27448141,natural=water,Үлкен көлі,https://www.openstreetmap.org/way/27448141,
 yes,water_body,Үлкен Қамқалы көлі,44.803699,69.996586,,osm:w465865024,natural=water,Үлкен Қамқалы көлі,https://www.openstreetmap.org/way/465865024,в OSM без типа водоёма; площадь по габаритам ~6.2 км²
 yes,water_body,Үлкен Қобыл көлі - озеро Большое Кобылье,54.707829,66.387237,,osm:w121101961,natural=water,Үлкен Қобыл көлі,https://www.openstreetmap.org/way/121101961,
@@ -2854,6 +2852,7 @@ no,water_body,Енбекши К-28,43.281868,76.532478,,osm:w239255211,natural=w
 no,water_body,Ешкибайская плотина,49.021260,83.318633,,osm:r11308101,natural=water,Ешкибайская плотина,https://www.openstreetmap.org/relation/11308101,технический объект
 no,water_body,Жалпақсор,47.947283,60.982063,,osm:w1271996101,natural=water,Жалпақсор,https://www.openstreetmap.org/way/1271996101,солёное озеро
 no,water_body,Жаман Туз,52.920828,75.367425,,osm:w553414540,natural=water,Жаман Тұз,https://www.openstreetmap.org/way/553414540,солёное озеро
+no,water_body,Жаманкум,43.673026,76.873646,Сайт: https://almatysu.kz/?lang=ru,osm:w49745667,natural=water,Жаманқұм,https://www.openstreetmap.org/way/49745667,"накопитель сточных вод Алматы, как Сорбулак — по решению владельца"
 no,water_body,Жантайсор,53.585373,71.768843,,osm:w61450202,natural=water,Жантайсор,https://www.openstreetmap.org/way/61450202,солёное озеро
 no,water_body,Жарсор,51.835210,70.947245,,osm:w150289419,natural=water,Жарсор,https://www.openstreetmap.org/way/150289419,солёное озеро
 no,water_body,Жарсор,49.928928,65.333781,,osm:w625924873,natural=water,Жарсор,https://www.openstreetmap.org/way/625924873,солёное озеро
@@ -3107,6 +3106,7 @@ no,water_body,урочище Соленое,52.589903,62.876058,,osm:w148821501,
 no,water_body,хвостохранилище,52.504735,71.958737,,osm:w297120756,natural=water,қалдықтар,https://www.openstreetmap.org/way/297120756,хвостохранилище
 no,water_body,хвостохранилище,52.503208,71.940809,,osm:w297120863,natural=water,қалдықтар,https://www.openstreetmap.org/way/297120863,хвостохранилище
 no,water_body,хвостохранилище,52.501750,71.919936,,osm:w297120916,natural=water,қалдықтар,https://www.openstreetmap.org/way/297120916,хвостохранилище
+no,water_body,Қауынды ойысы,42.921309,52.889086,,osm:w327222344,natural=water,Қауынды ойысы,https://www.openstreetmap.org/way/327222344,"впадина с солёными колодцами, а не озеро"
 no,water_body,№1,42.043094,70.321257,,osm:w141076601,natural=water,№1,https://www.openstreetmap.org/way/141076601,номер вместо названия
 no,water_body,№1,41.934408,70.222656,,osm:w1428999149,natural=water,№1,https://www.openstreetmap.org/way/1428999149,номер вместо названия
 no,water_body,№1,42.114429,70.498708,,osm:w1429002874,natural=water,№1,https://www.openstreetmap.org/way/1429002874,номер вместо названия
