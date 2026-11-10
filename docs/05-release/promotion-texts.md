@@ -78,6 +78,35 @@ Connect через `appstore/featuring.py` — руками в App Store Connect
 **Helpful details:** independent developer from Kazakhstan; the app is fully localized in Kazakh
 (Cyrillic); privacy-first: approximate places, privacy zones, per-item visibility.
 
+## Событие App Store «Подлёдный сезон»
+
+Файлы — `appstore/events/ice_season/` (`event.json`, `card.jpg`, `details.jpg`), картинки нарисованы
+(`appstore/events/art/ice_season.html`, `node appstore/events/render.mjs ice_season`): морозный день, три
+лунки в ряд, жерлица с флажком, окунь на льду, палатки вдали — без текста и логотипов. Событие обещает
+значок «Подлёдник» (`ice_reports_3`) и вариант воды «Лёд» в отчёте — они выходят в **1.0.3**, поэтому
+событие уходит на проверку вместе с ней (workflow **App Store featuring**: `event ice_season` с
+`--submit --with-version`), не позже ~15 декабря: анонс — с 1 января, начало — 15 января.
+
+| Поле App Store Connect | Значение |
+|------------------------|----------|
+| Reference name | Ice season 2027 |
+| Badge | Challenge |
+| Purpose | Appropriate for all users |
+| Начало / конец | 15 января 2027, 00:00 — 14 февраля 2027, 23:59 (Алматы; больше 31 дня нельзя) |
+| Публикация (анонс) | 1 января 2027 |
+| Страны | Казахстан |
+| Deep link | `dalada://collection/ice_fishing` — подборка «Подлёдная рыбалка» (ссылки на экран значков в приложении нет) |
+
+| | RU | EN |
+|--|----|----|
+| Название (30) | Подлёдный сезон | Ice season |
+| Короткое описание (50) | Три дня со льда — значок «Подлёдник» | Three days on the ice earn a badge |
+| Длинное описание (120) | Отметьте «Лёд» в отчёте в три разных дня — и значок ваш. Водоёмы для подлёдной рыбалки и запреты — на карте. | Mark “Ice” in your report on three different days to earn a badge. Ice fishing waters and bans are on the map. |
+
+Номинация «New Content» — в `event.json` (`nomination`, по-английски): челлендж, вариант «Лёд» в отчётах,
+подборка, запреты, карта без сети. Отправить `nominate ice_season --submit` можно сразу, событие к ней
+прикрепить после одобрения Apple.
+
 ## Telegram-канал
 
 **Название:** Dalada — рыбалка и природа Казахстана

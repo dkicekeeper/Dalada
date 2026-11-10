@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<!-- Картинка события App Store «Подлёдный сезон»: морозный день, три лунки в ряд (три отчёта со льда —
+     значок «Подлёдник»), жерлица с флажком, окунь на льду, палатки вдали. Без текста и логотипов (так
+     просит Apple). Размер — из адреса: ice_season.html?w=1920&h=1080. Снимок делает
+     appstore/events/render.mjs ice_season. Настоящее фото со льда лучше — тогда положите его вместо JPEG. -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>html, body { margin: 0; padding: 0; overflow: hidden; background: #dfeaf1; } svg { display: block; }</style>
+</head>
+<body>
+<script>
+const params = new URLSearchParams(location.search);
+const W = Number(params.get("w") || 1920), H = Number(params.get("h") || 1080);
+const portrait = H > W;
+let seed = 11;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const horizon = H * (portrait ? 0.36 : 0.44);
+const ice = H - horizon;
+const parts = [];
+const add = s => parts.push(s);
+
+add(`<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#5E9BC9"/><stop offset="0.6" stop-color="#A9CDE6"/><stop offset="1" stop-color="#E4F0F7"/>
+  </linearGradient>
+  <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0" stop-color="#FFFFFF"/><stop offset="0.3" stop-color="#F2F8FC" stop-opacity="0.85"/><stop offset="1" stop-color="#DCEBF5" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="ice" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#D3E3EC"/><stop offset="0.5" stop-color="#E7F0F5"/><stop offset="1" stop-color="#F7FAFC"/>
+  </linearGradient>
+  <radialGradient id="water" cx="0.45" cy="0.4" r="0.7">
+    <stop offset="0" stop-color="#2C6F84"/><stop offset="0.6" stop-color="#174A5C"/><stop offset="1" stop-color="#0C2F3C"/>
+  </radialGradient>
+  <linearGradient id="hills" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#A9BFD0"/><stop offset="1" stop-color="#8EA7BA"/>
+  </linearGradient>
+  <filter id="soft"><feGaussianBlur stdDeviation="${W * 0.004}"/></filter>
+</defs>`);
+
+// Небо и солнце у горизонта.
+add(`<rect width="${W}" height="${horizon + 2}" fill="url(#sky)"/>`);
+const sunR = Math.min(W, H) * 0.32;
+add(`<circle cx="${W * 0.8}" cy="${horizon * 0.42}" r="${sunR * 0.8}" fill="url(#sun)"/>`);
+add(`<circle cx="${W * 0.8}" cy="${horizon * 0.42}" r="${sunR * 0.1}" fill="#FFFFFF"/>`);
+
+// Дальние горы и холмы.
+function ridge(base, amp, steps, fill, opacity) {
+  let d = `M0 ${base}`;
+  for (let i = 0; i <= steps; i++) {
+    const x = (W / steps) * i;
+    const y = base - amp * (0.35 + 0.65 * Math.abs(Math.sin(i * 1.7 + amp))) * (0.6 + rnd() * 0.4);
+    d += ` L${x.toFixed(1)} ${y.toFixed(1)}`;
+  }
+  d += ` L${W} ${horizon + 2} L0 ${horizon + 2} Z`;
+  add(`<path d="${d}" fill="${fill}" opacity="${opacity}"/>`);
+}
+ridge(horizon - H * 0.03, H * 0.12, 9, "url(#hills)", 0.75);
+ridge(horizon - H * 0.005, H * 0.05, 16, "#7E98AC", 0.85);
+
+// Берег с соснами слева.
+const shoreY = horizon + 2;
+add(`<path d="M0 ${shoreY - H * 0.012} Q ${W * 0.25} ${shoreY - H * 0.02} ${W * 0.48} ${shoreY} L0 ${shoreY + H * 0.008} Z" fill="#5D7C8A"/>`);
+for (let i = 0; i < (portrait ? 14 : 26); i++) {
+  const x = W * 0.02 + rnd() * W * 0.42;
+  const h = H * (0.025 + rnd() * 0.035);
+  const w = h * 0.42;
+  const y = shoreY - H * 0.006;
+  add(`<path d="M${x} ${y - h} L${x + w / 2} ${y} L${x - w / 2} ${y} Z" fill="${rnd() > 0.5 ? "#3E6A5F" : "#47705F"}"/>`);
+}
+
+// Лёд.
+add(`<rect y="${horizon}" width="${W}" height="${ice}" fill="url(#ice)"/>`);
+for (let i = 0; i < 4; i++) {
+  const y = horizon + ice * (0.15 + i * 0.2);
+  add(`<path d="M0 ${y} L${W} ${y - ice * 0.08} L${W} ${y - ice * 0.03} L0 ${y + ice * 0.04} Z" fill="#FFFFFF" opacity="0.22"/>`);
+}
+// Трещины.
+for (let i = 0; i < (portrait ? 5 : 8); i++) {
+  let x = rnd() * W, y = horizon + ice * (0.2 + rnd() * 0.7);
+  let d = `M${x.toFixed(1)} ${y.toFixed(1)}`;
+  for (let k = 0; k < 5; k++) {
+    x += (rnd() - 0.3) * W * 0.06;
+    y += (rnd() - 0.5) * ice * 0.04;
+    d += ` L${x.toFixed(1)} ${y.toFixed(1)}`;
+  }
+  add(`<path d="${d}" fill="none" stroke="#B4CBD9" stroke-width="${Math.max(1, W * 0.0012)}" opacity="0.7"/>`);
+}
+// Сугробы у берега.
+for (let i = 0; i < 6; i++) {
+  const x = rnd() * W, y = horizon + ice * (0.05 + rnd() * 0.12), rx = W * (0.05 + rnd() * 0.08);
+  add(`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${rx * 0.12}" fill="#FFFFFF" opacity="0.8"/>`);
+}
+
+// Палатки вдали — на льду уже людно.
+for (const [k, color, dark] of [[0.16, "#E0763A", "#B8552A"], [0.34, "#2E8B57", "#22694A"], [0.47, "#3D7BC4", "#2C5C95"]]) {
+  const tentX = W * (portrait ? k * 1.1 : k), tentY = horizon + ice * (0.12 + k * 0.08), tentW = W * (portrait ? 0.07 : 0.04) * (0.8 + k), tentH = tentW * 0.75;
+  add(`<ellipse cx="${tentX + tentW * 0.1}" cy="${tentY + tentH * 0.02}" rx="${tentW * 0.8}" ry="${tentH * 0.12}" fill="#9DB5C4" opacity="0.6"/>`);
+  add(`<path d="M${tentX - tentW / 2} ${tentY} L${tentX - tentW * 0.28} ${tentY - tentH} L${tentX + tentW * 0.28} ${tentY - tentH} L${tentX + tentW / 2} ${tentY} Z" fill="${color}"/>`);
+  add(`<path d="M${tentX} ${tentY} L${tentX - tentW * 0.12} ${tentY - tentH * 0.7} L${tentX + tentW * 0.12} ${tentY - tentH * 0.7} Z" fill="${dark}"/>`);
+}
+
+// Три лунки в ряд — три отчёта со льда; ближняя — с поплавком.
+const u = W * (portrait ? 0.2 : 0.1);
+function hole(hx, hy, scale) {
+  const rx = u * 0.68 * scale, ry = rx * 0.36;
+  add(`<ellipse cx="${hx + rx * 0.08}" cy="${hy + ry * 0.35}" rx="${rx * 1.5}" ry="${ry * 1.35}" fill="#C7D9E4" opacity="0.7" filter="url(#soft)"/>`);
+  add(`<ellipse cx="${hx}" cy="${hy}" rx="${rx * 1.28}" ry="${ry * 1.32}" fill="#FFFFFF"/>`);
+  for (let i = 0; i < 22; i++) {
+    const a = rnd() * Math.PI * 2, r = 1.1 + rnd() * 0.35;
+    const x = hx + Math.cos(a) * rx * r, y = hy + Math.sin(a) * ry * r * 1.05, s = rx * (0.04 + rnd() * 0.05);
+    add(`<path d="M${x} ${y - s * 0.6} L${x + s} ${y} L${x + s * 0.2} ${y + s * 0.5} L${x - s * 0.8} ${y + s * 0.1} Z" fill="${rnd() > 0.5 ? "#EAF3F8" : "#D2E3EC"}"/>`);
+  }
+  add(`<ellipse cx="${hx}" cy="${hy}" rx="${rx}" ry="${ry}" fill="url(#water)"/>`);
+  add(`<ellipse cx="${hx}" cy="${hy - ry * 0.12}" rx="${rx * 0.98}" ry="${ry * 0.86}" fill="none" stroke="#7FB2C4" stroke-width="${rx * 0.02}" opacity="0.5"/>`);
+  return { rx, ry };
+}
+const far = { x: W * (portrait ? 0.74 : 0.86), y: horizon + ice * (portrait ? 0.3 : 0.28) };
+const mid = { x: W * (portrait ? 0.62 : 0.72), y: horizon + ice * (portrait ? 0.44 : 0.42) };
+hole(far.x, far.y, 0.45);
+const midHole = hole(mid.x, mid.y, 0.65);
+// Жерлица у средней лунки: стойка и поднятый красный флажок — клюнуло.
+const px = mid.x + midHole.rx * (portrait ? -1.6 : 1.5), py = mid.y + midHole.ry * 0.4, ph = u * (portrait ? 0.6 : 0.75);
+add(`<line x1="${px}" y1="${py}" x2="${px}" y2="${py - ph}" stroke="#3B4249" stroke-width="${u * 0.025}" stroke-linecap="round"/>`);
+add(`<line x1="${px}" y1="${py - ph * 0.55}" x2="${px - u * 0.25}" y2="${py - ph * 0.95}" stroke="#3B4249" stroke-width="${u * 0.018}" stroke-linecap="round"/>`);
+add(`<path d="M${px - u * 0.25} ${py - ph * 0.95} L${px - u * 0.25 + u * 0.22} ${py - ph * 0.95 - u * 0.06} L${px - u * 0.25 + u * 0.03} ${py - ph * 0.95 - u * 0.17} Z" fill="#D9463B"/>`);
+add(`<ellipse cx="${px + u * 0.1}" cy="${py + u * 0.02}" rx="${u * 0.25}" ry="${u * 0.035}" fill="#BCD1DE" opacity="0.7"/>`);
+
+const hx = W * (portrait ? 0.46 : 0.54), hy = horizon + ice * (portrait ? 0.64 : 0.62);
+const { rx, ry } = hole(hx, hy, 1);
+
+// Поплавок и круги на воде.
+const fx = hx + rx * 0.12, fy = hy + ry * 0.05, fs = rx * 0.15;
+for (let i = 1; i <= 3; i++) {
+  add(`<ellipse cx="${fx}" cy="${fy + fs * 0.2}" rx="${fs * (1 + i * 0.9)}" ry="${fs * (0.3 + i * 0.27)}" fill="none" stroke="#9CCBDA" stroke-width="${fs * 0.08}" opacity="${0.6 - i * 0.15}"/>`);
+}
+add(`<ellipse cx="${fx}" cy="${fy + fs * 0.2}" rx="${fs * 0.55}" ry="${fs * 0.35}" fill="#F4F4F2"/>`);
+add(`<path d="M${fx - fs * 0.5} ${fy + fs * 0.1} Q ${fx} ${fy - fs * 1.1} ${fx + fs * 0.5} ${fy + fs * 0.1} Z" fill="#D9463B"/>`);
+add(`<rect x="${fx - fs * 0.05}" y="${fy - fs * 1.35}" width="${fs * 0.1}" height="${fs * 0.75}" fill="#D9463B"/>`);
+
+// Зимняя удочка: леска к поплавку, хлыст, ручка.
+const tipX = hx + u * 0.6, tipY = hy - u * 0.5;
+const handX = hx + u * (portrait ? 1.45 : 1.75), handY = hy + u * (portrait ? 0.32 : 0.4);
+add(`<path d="M${tipX} ${tipY} Q ${fx + rx * 0.2} ${fy - ry} ${fx} ${fy - fs * 1.3}" fill="none" stroke="#4A4F55" stroke-width="${Math.max(1, rx * 0.008)}" opacity="0.8"/>`);
+add(`<line x1="${tipX}" y1="${tipY}" x2="${handX - (handX - tipX) * 0.3}" y2="${handY - (handY - tipY) * 0.3}" stroke="#2A2F35" stroke-width="${u * 0.035}" stroke-linecap="round"/>`);
+add(`<line x1="${handX - (handX - tipX) * 0.3}" y1="${handY - (handY - tipY) * 0.3}" x2="${handX}" y2="${handY}" stroke="#C99A66" stroke-width="${u * 0.09}" stroke-linecap="round"/>`);
+add(`<ellipse cx="${handX - (handX - tipX) * 0.18}" cy="${handY - (handY - tipY) * 0.18}" rx="${u * 0.09}" ry="${u * 0.065}" fill="#3B4249"/>`);
+add(`<ellipse cx="${(handX + hx) / 2 + u * 0.4}" cy="${handY + u * 0.12}" rx="${u * 0.9}" ry="${u * 0.06}" fill="#BCD1DE" opacity="0.6"/>`);
+
+// Окунь на льду: зелёная спина с тёмными полосами, красные плавники.
+const ox = hx - u * (portrait ? 1.25 : 1.5), oy = hy + u * 0.35, ol = u * 0.95, oh = ol * 0.3;
+add(`<ellipse cx="${ox}" cy="${oy + oh * 0.55}" rx="${ol * 0.6}" ry="${oh * 0.18}" fill="#BCD1DE" opacity="0.7"/>`);
+add(`<path d="M${ox + ol * 0.42} ${oy} L${ox + ol * 0.62} ${oy - oh * 0.38} L${ox + ol * 0.6} ${oy + oh * 0.38} Z" fill="#D9603B"/>`);
+add(`<path d="M${ox - ol * 0.5} ${oy} Q ${ox - ol * 0.2} ${oy - oh * 0.75} ${ox + ol * 0.2} ${oy - oh * 0.45} Q ${ox + ol * 0.4} ${oy - oh * 0.25} ${ox + ol * 0.44} ${oy} Q ${ox + ol * 0.4} ${oy + oh * 0.25} ${ox + ol * 0.2} ${oy + oh * 0.4} Q ${ox - ol * 0.2} ${oy + oh * 0.62} ${ox - ol * 0.5} ${oy} Z" fill="#9DAA3C"/>`);
+add(`<path d="M${ox - ol * 0.46} ${oy + oh * 0.08} Q ${ox - ol * 0.1} ${oy + oh * 0.5} ${ox + ol * 0.42} ${oy + oh * 0.08} Q ${ox} ${oy + oh * 0.2} ${ox - ol * 0.46} ${oy + oh * 0.08} Z" fill="#E7E2B8"/>`);
+for (let i = 0; i < 6; i++) {
+  const x = ox - ol * 0.28 + i * ol * 0.11;
+  add(`<path d="M${x} ${oy - oh * 0.4} L${x + ol * 0.035} ${oy + oh * 0.18} L${x - ol * 0.02} ${oy + oh * 0.18} Z" fill="#3E4A2A" opacity="0.75"/>`);
+}
+add(`<path d="M${ox - ol * 0.15} ${oy - oh * 0.5} L${ox - ol * 0.05} ${oy - oh * 0.95} L${ox + ol * 0.12} ${oy - oh * 0.42} Z" fill="#5C6A30"/>`);
+add(`<path d="M${ox - ol * 0.05} ${oy + oh * 0.35} L${ox} ${oy + oh * 0.7} L${ox + ol * 0.08} ${oy + oh * 0.33} Z" fill="#D9603B"/>`);
+add(`<circle cx="${ox - ol * 0.38}" cy="${oy - oh * 0.1}" r="${oh * 0.11}" fill="#F2E6A0"/>`);
+add(`<circle cx="${ox - ol * 0.38}" cy="${oy - oh * 0.1}" r="${oh * 0.06}" fill="#1C2024"/>`);
+
+// Снежинки.
+for (let i = 0; i < (portrait ? 90 : 120); i++) {
+  const x = rnd() * W, y = rnd() * H, r = Math.max(1, W * (0.0008 + rnd() * 0.0022));
+  add(`<circle cx="${x}" cy="${y}" r="${r}" fill="#FFFFFF" opacity="${0.35 + rnd() * 0.5}"/>`);
+}
+
+document.body.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${parts.join("")}</svg>`;
+</script>
+</body>
+</html>
