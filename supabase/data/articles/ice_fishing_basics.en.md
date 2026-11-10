@@ -25,7 +25,7 @@ Ice comes first: which ice holds and what to do if you fall through — see "Ice
 
 - **The jig (mormyshka)** is the main winter lure for perch, roach and bream. Lower it to the bottom and lift it with small, quick twitches of the spring tip, sometimes with pauses. Bait — bloodworms or maggots.
 - **Spoons and balance lures** — for perch, zander and pike. A sharp lift of 20–40 cm, a free fall, a pause; most bites come on the pause.
-- **A tip-up (zherlitsa)** — for pike and zander: live bait on a hook and a flag that pops up on a bite. Set tip-ups where the depth changes. How many you may set is stated in the fishing rules.
+- **A tip-up (zherlitsa)** — for pike and zander: live bait on a hook and a flag that pops up on a bite. Set tip-ups where the depth changes. The Fishing Rules do not limit how many you may set; how to catch pike with them — see “Tip-ups: catching pike through the ice”.
 
 ## How to stay warm
 
