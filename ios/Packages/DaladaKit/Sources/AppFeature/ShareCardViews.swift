@@ -217,16 +217,43 @@ struct TripShareCardButton: View {
                 .accessibilityLabel(Text("share.title"))
         }
         .sheet(isPresented: $showsSheet) {
-            ShareCardSheet(
-                previewTitle: "Dalada",
-                load: { try? await environment.backend?.tripShareCard(tripID) },
-                message: { card in
-                    let link = isPublic ? WebLink.trip(tripID) : ShareCardLink.site
-                    return String(localized: "share.message.trip \(card.title) \(link.absoluteString)")
+            TripShareCardSheet(tripID: tripID, environment: environment, isPublic: isPublic)
+        }
+    }
+}
+
+/// Только что сохранённая поездка или отчёт может ещё лежать в очереди отправки, а картинку собирает
+/// сервер: ждём до ~20 с (обычно хватает одной-двух попыток); без сети лист покажет ошибку.
+enum UploadWait {
+    static let pause = Duration.seconds(2)
+
+    static func attempts(_ waits: Bool) -> Int { waits ? 10 : 1 }
+}
+
+/// Лист картинки поездки: из кнопки на странице поездки и из предложения после её завершения
+/// (`ShareOffer`). `waitsForUpload` — поездка только что завершена (`UploadWait`).
+struct TripShareCardSheet: View {
+    let tripID: UUID
+    let environment: AppEnvironment
+    var isPublic = false
+    var waitsForUpload = false
+
+    var body: some View {
+        ShareCardSheet(
+            previewTitle: "Dalada",
+            load: {
+                for attempt in 0..<UploadWait.attempts(waitsForUpload) {
+                    if attempt > 0 { try? await Task.sleep(for: UploadWait.pause) }
+                    if let card = try? await environment.backend?.tripShareCard(tripID) { return card }
                 }
-            ) { card, format in
-                TripShareCardView(card: card, format: format)
+                return nil
+            },
+            message: { card in
+                let link = isPublic ? WebLink.trip(tripID) : ShareCardLink.site
+                return String(localized: "share.message.trip \(card.title) \(link.absoluteString)")
             }
+        ) { card, format in
+            TripShareCardView(card: card, format: format)
         }
     }
 }
@@ -237,15 +264,7 @@ struct CatchShareCardButton: View {
     /// Публичный улов можно открыть в браузере — в сообщении ссылка на его страницу.
     var isPublic = false
 
-    @Environment(SessionStore.self) private var session
-    @Environment(SpeciesStore.self) private var speciesStore
     @State private var showsSheet = false
-
-    private struct Loaded {
-        let card: CatchShareCard
-        let speciesName: String
-        let photo: UIImage?
-    }
 
     var body: some View {
         Button {
@@ -260,23 +279,48 @@ struct CatchShareCardButton: View {
         }
         .buttonStyle(.borderless)
         .sheet(isPresented: $showsSheet) {
-            ShareCardSheet(
-                previewTitle: "Dalada",
-                load: { await load() },
-                message: { loaded in
-                    let link = isPublic ? WebLink.catchPage(catchID) : ShareCardLink.site
-                    return String(localized: "share.message.catch \(loaded.speciesName) \(link.absoluteString)")
-                }
-            ) { loaded, format in
-                CatchShareCardView(card: loaded.card, speciesName: loaded.speciesName, photo: loaded.photo, format: format)
+            CatchShareCardSheet(catchID: catchID, isPublic: isPublic)
+        }
+    }
+}
+
+/// Лист картинки улова: из кнопки в строке улова и из поздравления с новым рекордом. `waitsForUpload` —
+/// отчёт только что сохранён (`UploadWait`).
+struct CatchShareCardSheet: View {
+    let catchID: UUID
+    var isPublic = false
+    var waitsForUpload = false
+
+    @Environment(SessionStore.self) private var session
+    @Environment(SpeciesStore.self) private var speciesStore
+
+    private struct Loaded {
+        let card: CatchShareCard
+        let speciesName: String
+        let photo: UIImage?
+    }
+
+    var body: some View {
+        ShareCardSheet(
+            previewTitle: "Dalada",
+            load: { await load() },
+            message: { loaded in
+                let link = isPublic ? WebLink.catchPage(catchID) : ShareCardLink.site
+                return String(localized: "share.message.catch \(loaded.speciesName) \(link.absoluteString)")
             }
+        ) { loaded, format in
+            CatchShareCardView(card: loaded.card, speciesName: loaded.speciesName, photo: loaded.photo, format: format)
         }
     }
 
     private func load() async -> Loaded? {
-        guard let backend = session.backend,
-              let card = try? await backend.catchShareCard(catchID)
-        else { return nil }
+        guard let backend = session.backend else { return nil }
+        var found: CatchShareCard?
+        for attempt in 0..<UploadWait.attempts(waitsForUpload) where found == nil {
+            if attempt > 0 { try? await Task.sleep(for: UploadWait.pause) }
+            found = try? await backend.catchShareCard(catchID)
+        }
+        guard let card = found else { return nil }
         await speciesStore.loadIfNeeded()
         var photo: UIImage?
         if let path = card.photoPath,

@@ -22,6 +22,7 @@ struct CheckinFormView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(SpeciesStore.self) private var speciesStore
+    @Environment(SessionStore.self) private var session
     @Environment(RulesStore.self) private var rules
     @Environment(SyncEngine.self) private var sync
     @State private var draft: CheckinDraft
@@ -34,6 +35,8 @@ struct CheckinFormView: View {
     @State private var photoFailed = false
     /// Отчёт сохранён и побил рекорды: поздравление, потом форма закрывается.
     @State private var newRecords: [NewRecord] = []
+    /// Улов с новым рекордом — для «Поделиться рекордом» в поздравлении.
+    @State private var recordCatch: (id: UUID, isPublic: Bool)?
     @State private var showsNewRecords = false
 
     enum LocationState: Equatable {
@@ -236,6 +239,16 @@ struct CheckinFormView: View {
             Task { await addPhotos(items) }
         }
         .alert("records.new.title", isPresented: $showsNewRecords) {
+            if let recordCatch {
+                Button("records.new.share") {
+                    Task {
+                        await ShareOffer.shared.shareCatch(
+                            id: recordCatch.id, isPublic: recordCatch.isPublic, session: session, species: speciesStore
+                        )
+                    }
+                    close()
+                }
+            }
             Button("common.ok") { close() }
         } message: {
             Text(verbatim: NewRecordText.lines(newRecords, species: speciesStore))
@@ -330,10 +343,23 @@ struct CheckinFormView: View {
         let found = await records?.check(checkin.catches, at: checkin.at) ?? []
         if !found.isEmpty {
             newRecords = found
+            recordCatch = Self.recordCatch(found, in: checkin)
             showsNewRecords = true
             return
         }
         close()
+    }
+
+    /// Улов, который побил рекорд (первый из найденных): его картинку и предложим.
+    private static func recordCatch(_ records: [NewRecord], in checkin: CheckinDraft) -> (id: UUID, isPublic: Bool)? {
+        for record in records {
+            let match = checkin.catches.first { draft in
+                draft.speciesID == record.speciesID
+                    && (record.measure == .weight ? draft.weightGrams : draft.lengthMillimeters) == record.value
+            }
+            if let match { return (match.id, checkin.visibility == .public) }
+        }
+        return nil
     }
 
     private func close() {

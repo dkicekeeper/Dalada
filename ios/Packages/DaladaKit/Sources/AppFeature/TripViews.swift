@@ -450,6 +450,8 @@ struct TripFinishView: View {
         }
         isSaving = true
         defer { isSaving = false }
+        // После finish запись сбрасывается — id поездки берём заранее.
+        let tripID = recorder.tripID
         do {
             try await recorder.finish(
                 owner: owner,
@@ -461,8 +463,12 @@ struct TripFinishView: View {
                 participants: Array(participants)
             )
             await sync.enqueued()
-            // Настоящая поездка (как для праздника) — счёт к запросу оценки.
+            // Настоящая поездка (как для праздника) — момент поделиться картинкой и счёт к запросу оценки
+            // (оценку не просим, пока открыто предложение).
             if isWorthCelebrating {
+                if let tripID {
+                    Task { await ShareOffer.shared.offerTrip(id: tripID, isPublic: visibility == .public, environment: environment) }
+                }
                 Task { await ReviewRequester.shared.noteSuccess() }
             }
             onClose(true)
