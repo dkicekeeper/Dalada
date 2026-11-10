@@ -1657,7 +1657,7 @@ no,base,Самрук,52.949223,70.395112,"Адрес: Юго-западный б
 no,base,Саржайлау,46.994693,54.156334,,osm:w983545258,leisure=resort,Саржайлау,https://www.openstreetmap.org/way/983545258,"не у воды (Overpass, 300 м)"
 no,base,Сары-Арка,47.435084,74.765247,,osm:r20190746,leisure=resort,Sary-Arka,https://www.openstreetmap.org/relation/20190746,"не у воды (Overpass, 300 м)"
 no,base,Связист,43.304164,77.196612,,osm:n14081635589,leisure=resort,Связист,https://www.openstreetmap.org/node/14081635589,"не у воды (Overpass, 300 м)"
-?,base,Связист,43.303267,77.196572,,osm:w1548261202,leisure=resort,Связист,https://www.openstreetmap.org/way/1548261202,"не проверено, у воды ли (Overpass был недоступен)"
+no,base,Связист,43.303267,77.196572,,osm:w1548261202,leisure=resort,Связист,https://www.openstreetmap.org/way/1548261202,удалено из OSM
 yes,base,Семейная зона отдыха LAFA,46.811400,75.007455,,osm:n11991854157,leisure=resort,Семейная зона отдыха LAFA,https://www.openstreetmap.org/node/11991854157,"у воды (до 300 м), волна 8б"
 yes,base,"Семейный пансионат ""Досжан""",46.775539,74.708372,"Адрес: Центральная улица, 23. Часы работы: 24/7. Телефон: +7-710-3657610.",osm:w249579907,leisure=resort,"Семейный пансионат ""Досжан""",https://www.openstreetmap.org/way/249579907,"у воды (до 300 м), волна 8б"
 yes,base,Сибины,49.444011,82.613143,,osm:w605338813,leisure=resort,Сибины,https://www.openstreetmap.org/way/605338813,"у воды (до 300 м), волна 8б"
@@ -1901,7 +1901,7 @@ no,water_body,Karatyu,47.152669,51.641958,,osm:w425904270,natural=water,Karatyu,
 ?,water_body,Абдираш,44.775801,63.370671,,osm:w698516769,natural=water,Абдираш,https://www.openstreetmap.org/way/698516769,в OSM без типа водоёма
 ?,water_body,Адауколь,44.930562,64.446336,,osm:w698581291,natural=water,Адауколь,https://www.openstreetmap.org/way/698581291,в OSM без типа водоёма
 ?,water_body,Акбалык,54.338721,66.299088,,osm:w536844298,natural=water,Ақбалық,https://www.openstreetmap.org/way/536844298,в OSM без типа водоёма
-?,water_body,Аккайнар 2,43.576851,75.444627,,osm:w487479183,natural=water,Аккайнар 2,https://www.openstreetmap.org/way/487479183,ирригационное водохранилище
+yes,water_body,Аккайнар 2,43.576851,75.444627,,osm:w487479183,natural=water,Аккайнар 2,https://www.openstreetmap.org/way/487479183,волна 4г: ирригационное водохранилище (OSM API)
 ?,water_body,Аксай,43.533098,76.957620,,osm:w1133052770,natural=water,Аксай,https://www.openstreetmap.org/way/1133052770,в OSM без типа водоёма
 ?,water_body,Актобе,46.592250,49.090219,,osm:w638572418,natural=water,Актобе,https://www.openstreetmap.org/way/638572418,в OSM без типа водоёма
 ?,water_body,Актобе,46.594659,49.079113,,osm:w638572423,natural=water,Актобе,https://www.openstreetmap.org/way/638572423,в OSM без типа водоёма
@@ -1986,8 +1986,8 @@ yes,water_body,Лужники озеро,43.289194,76.872280,,osm:w23650852,natu
 yes,water_body,Озеро Пархач,43.295317,76.969237,,osm:w218877634,natural=water,Пархач көлі,https://www.openstreetmap.org/way/218877634,волна 4г: городской пруд
 yes,water_body,Озеро Узынколь,54.476308,70.494550,,osm:w1386064409,natural=water,Озеро Узынколь,https://www.openstreetmap.org/way/1386064409,волна 4г: пруд
 ?,water_body,Озеро Шустрое,54.638147,69.582780,,osm:w1550825106,natural=water,Озеро Шустрое,https://www.openstreetmap.org/way/1550825106,в OSM без типа водоёма
-?,water_body,Октябрьское -1,43.340283,76.695202,,osm:w332141867,natural=water,Қазан-3,https://www.openstreetmap.org/way/332141867,ирригационное водохранилище
-?,water_body,Октябрьское-3,43.354344,76.696393,,osm:w262276939,natural=water,Қазан-3,https://www.openstreetmap.org/way/262276939,ирригационное водохранилище
+no,water_body,Октябрьское -1,43.340283,76.695202,,osm:w332141867,natural=water,Қазан-3,https://www.openstreetmap.org/way/332141867,"в OSM теперь «Юбилейное», рыбалка частная (fishing=private)"
+yes,water_body,Октябрьское-3,43.354344,76.696393,,osm:w262276939,natural=water,Қазан-3,https://www.openstreetmap.org/way/262276939,волна 4г: ирригационное водохранилище (OSM API)
 no,water_body,Падающих звезд,42.961416,76.811432,,osm:w1064801872,natural=water,Падающих звезд,https://www.openstreetmap.org/way/1064801872,очень маленькое
 ?,water_body,Пенс,53.765128,63.752773,,osm:w178925980,natural=water,Пенс,https://www.openstreetmap.org/way/178925980,в OSM без типа водоёма
 ?,water_body,Пляж за Каменной,51.327900,71.850602,,osm:w162750819,natural=water,Пляж за Каменной,https://www.openstreetmap.org/way/162750819,в OSM без типа водоёма
