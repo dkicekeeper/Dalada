@@ -730,7 +730,7 @@ struct ReportRow: View {
                         .accessibilityLabel(Text("report.verified"))
                 }
                 Spacer(minLength: 0)
-                Text(report.at, style: .relative)
+                RelativeTime(report.at)
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textTertiary)
                 if report.isOwn, onEdit != nil || onDelete != nil {

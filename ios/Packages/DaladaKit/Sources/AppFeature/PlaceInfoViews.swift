@@ -606,6 +606,7 @@ struct PlaceEditView: View {
         do {
             try await backend.updatePlace(id: placeID, draft)
             HapticManager.play(.confirm)
+            AccessibilityAnnouncer.announce(String(localized: "common.saved"))
             onSaved()
             dismiss()
         } catch {

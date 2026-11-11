@@ -86,6 +86,7 @@ struct ReportEditView: View {
         do {
             try await backend.updateReport(edit)
             HapticManager.play(.confirm)
+            AccessibilityAnnouncer.announce(String(localized: "common.saved"))
             onSaved()
             dismiss()
         } catch {
