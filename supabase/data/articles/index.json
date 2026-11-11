@@ -22,5 +22,6 @@
   {"id": "zander_winter", "category": "technique", "sort_order": 7, "published_on": "2026-11-10"},
   {"id": "perch_ice", "category": "technique", "sort_order": 8, "published_on": "2026-11-10"},
   {"id": "burbot_winter", "category": "technique", "sort_order": 9, "published_on": "2026-11-11"},
+  {"id": "roach_bream_ice", "category": "technique", "sort_order": 9, "published_on": "2026-11-11"},
   {"id": "reading_rules", "category": "rules_ethics", "sort_order": 35, "published_on": "2026-11-10"}
 ]

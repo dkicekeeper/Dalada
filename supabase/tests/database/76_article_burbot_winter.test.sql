@@ -1,5 +1,4 @@
--- Статья «Налим зимой» (миграция …_article_burbot_winter.sql): пятая в списке, перед «Безопасностью на
--- льду», на трёх языках, с ночным запретом в Жайык-Каспийском бассейне и мерой налима. И правка «Как читать
+-- Статья «Налим зимой» (миграция …_article_burbot_winter.sql): пятая в списке, после «Окуня со льда», на трёх языках, с ночным запретом в Жайык-Каспийском бассейне и мерой налима. И правка «Как читать
 -- запрет» (…_article_reading_rules_night_ban.sql): ночной запрет — во всём бассейне, на трёх языках.
 
 begin;
@@ -12,9 +11,9 @@ set local role anon;
 set local request.jwt.claims = '{"role": "anon"}';
 
 select is(
-  (select array_agg(id order by sort_order, id) from (select id, sort_order from public.articles order by sort_order, id limit 6) a),
-  array['ice_fishing_basics', 'pike_tip_ups', 'zander_winter', 'perch_ice', 'burbot_winter', 'ice_safety'],
-  'налим — пятый, перед «Безопасностью на льду»'
+  (select array_agg(id order by sort_order, id) from (select id, sort_order from public.articles order by sort_order, id limit 5) a),
+  array['ice_fishing_basics', 'pike_tip_ups', 'zander_winter', 'perch_ice', 'burbot_winter'],
+  'налим — пятый, после «Окуня со льда»'
 );
 select ok(
   (select title_kk <> '' and title_en <> '' and body_kk <> '' and body_en <> ''
