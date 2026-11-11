@@ -334,6 +334,7 @@ struct CheckinFormView: View {
             // Сохраняется на телефоне сразу; на сервер — когда получится.
             try await sync.submit(checkin, placeName: placeName)
             HapticManager.play(.confirm)
+            AccessibilityAnnouncer.announce(String(localized: "common.saved"))
         } catch {
             saveError = String(localized: "checkin.save.failed")
             HapticManager.play(.fail)

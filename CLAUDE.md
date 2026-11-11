@@ -86,26 +86,30 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 | Остальное | картинки для Stories — `ShareCardSheet` / `ShareCardFrame` со стилем `ShareCard.Style.dalada`; мини-плеер записи — `LiveSessionBar`; офлайн-карты — `DownloadRow`; вопрос и праймер перед системным запросом разрешения — `PromptSheet`; онбординг — `OnboardingPager` / `OnboardingPage`; меню «+» на карте — `GlassActionMenu` |
 | Цвета на карте | `AppColors.Palette` (3.7.0): глубокие оттенки с `UIColor`, одинаковые в обеих темах, белый символ на них читается; какой тип места или слой какого цвета — `MapEngine/MapColors.swift`. Зоны запретов — токены статусов (`AppColors.Status`). Системные цвета (`.systemTeal` и т. п.) на карте не используем |
 | Эффекты | `docs/motion.md` DesignKit: `.celebration`, `.completionMoment`, `.holographic` + `.interactiveTilt`, `.dissolve`, `AuroraBackground`, `.spotlight` и другие |
+| Время, пояснения, озвучивание (8.9.0) | когда было — `RelativeTime(date)` («5 мин назад» обновляется само, давнее — датой; текстом — `Formatting.relativeTime`), сколько идёт — `RelativeTime(start, style: .clock)`; ⓘ с пояснением к показателю — `.infoTip(текст, title:)`; выбор из длинного списка с поиском и «Создать» — `SearchablePicker`; итог действия для VoiceOver — `AccessibilityAnnouncer.announce(String(localized: "common.saved"))`; текст статуса на бледной подложке — `AppColors.Status.*Text` / `AppColors.readable(цвет)` |
 
 Своё — только если в DesignKit нет подходящего (и тогда — сначала PR в DesignKit, см. ниже).
 
 Значения дизайна — только токены DesignKit: `AppColors` (и `AppColors.Palette` для карты),
 `AppTypography`, `AppSpacing`, `AppRadius`, `AppIconSize`, `AppAnimation`. Литералы (`Color(red:)`,
 `.orange`, `.font(.title2)`, `.font(.system(size: 14))`, `.padding(12)`, `spacing: 6`,
-`cornerRadius: 8`, `.easeInOut(duration:)`) ловит `python3 scripts/design_lint.py`, задача
-«Design lint» в CI (`ios.yml`). Падает только на значениях сверх
+`cornerRadius: 8`, `.easeInOut(duration:)`), а также `.swipeActions` и системный `Form` ловит
+`scripts/designkit_lint.sh` (проверки DesignKit той версии, на которой собрано приложение; с
+8.9.0 вместо своих `design_lint.py` и `section_rows_lint.py`), задача «Design lint» в CI
+(`ios.yml`). Падает только на значениях сверх
 `scripts/design-lint-baseline.json`; в базе намеренно два файла: картинка для Stories
 (`ShareCardViews`, холст фиксированного размера) и Live Activity (`TripLiveActivity`, системные
 стили текста по HIG). Оправданное исключение — `// design-lint:ignore <причина>` в той же
-строке (символ размером с текст, прицел поверх карты). Стало меньше — `--update-baseline`.
+строке (символ размером с текст, прицел поверх карты). Стало меньше —
+`scripts/designkit_lint.sh tokens --update-baseline`.
 
 Строки стеклянной секции (`FormSection`, `CardList(layout: .section)`) стоят вплотную, поэтому
 каждая отступает сама: строки DesignKit — да (`UniversalRow`; `ItemRow` 12 pt и `ChecklistRow`
 8 pt с DesignKit 8.1.0, в стопке со своими промежутками — `verticalPadding: 0`), своя строка —
 `.padding(.vertical, AppSpacing.md)`. Кнопка или ссылка вокруг строки со значком слева несёт
 `.rowDividerInset(_:)` (метка не передаёт отступ наружу; для `ItemRow` с `.symbol` —
-`ItemRowStyle.standard.symbolDividerInset`). Это проверяет `python3 scripts/section_rows_lint.py`
-в той же задаче «Design lint»; исключение — `// section-rows-lint:ignore <причина>` на первой
+`ItemRowStyle.standard.symbolDividerInset`). Это проверяет тот же `scripts/designkit_lint.sh`
+в задаче «Design lint»; исключение — `// section-rows-lint:ignore <причина>` на первой
 строке ряда (сводка погоды «сейчас»).
 
 Движение по правилам DesignKit (`docs/motion.md`): анимации — пружинами `AppAnimation.snappy`
@@ -145,3 +149,80 @@ DesignKit (тот же текст: её release notes и экран Updates в G
 
 `ios/Config/Secrets.xcconfig` (хост и publishable key Supabase) — не в git, пример —
 `Secrets.example.xcconfig`. Service role key — никогда в приложении и в репозитории.
+
+<!-- designkit:agents:start -->
+<!-- From DesignKit 8.9.0, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
+
+## DesignKit for an app's agent
+
+The short version of DesignKit's rules for a session working in Tenra or Dalada (8.9.0, benchmark
+round 4: Astryx's `init`, which writes such a block into an app's AGENTS.md). Each app's
+**DesignKit update** workflow puts this file into the app's CLAUDE.md between the
+`designkit:agents` markers when it moves the pin (`scripts/sync_agents_block.py`), so it always
+matches the version the app builds with. Do not edit the block in the app; change it here.
+
+### Look a component up
+
+- `docs/components.md` in the DesignKit checkout: one entry per component (`### Name`), what it is
+  for, its initialisers, rules, do and don't, its skeleton. `docs/components.json` is the same as
+  data. The full rules: `docs/design-system.md`.
+- The Gallery app (TestFlight) shows every component with its parameters and states.
+- A missing component goes to DesignKit by PR (CLAUDE.md, "Porting a component"); the app keeps a
+  thin adapter over its model.
+
+### The rules
+
+1. Tokens, never raw values: `AppColors`, `AppTypography`, `AppSpacing`, `AppRadius`,
+   `AppIconSize`, `AppAnimation` / `AppMotion`. Status text is `AppColors.Status.*Text` (4.5:1);
+   a colour of your own as text is `AppColors.readable(color)` on `AppColors.pale(color)`.
+2. Every symbol is an `Icon`: a glyph under 44 pt, a tile on its plate from 44 pt. iOS's own bars,
+   menus, tabs and segments, and a symbol inside a line of text, stay `Image` / `Label`.
+3. A form or settings list is `FormSection` glass cards of `UniversalRow(_:icon:accessory:)`; the
+   section draws the dividers. No system `Form`.
+4. A list of things a person keeps is a `CardList`: a tap opens, a long press shows Edit and
+   Delete, the toolbar selects, reorders and adds. No swipe actions.
+5. Every view that shows data has a skeleton (`<Name>Skeleton`); a list that loads pages ends in
+   `LoadMoreFooter`.
+6. An outcome that comes and goes is spoken: `MessageBanner` and the failure states of
+   DesignKit's components do it; an app's own outcome calls `AccessibilityAnnouncer.announce(_:)`.
+7. Motion through DesignKit (`AppMotion` springs, `.popIn`, `.riseIn`, effects); everything stops
+   under Reduce Motion and `.designKitMotion(false)`.
+
+### What a screen needs → the component
+
+| Need | Component |
+|---|---|
+| A button | `DSButton` (`.dsButton` for a custom label) |
+| A form, settings | `FormSection` + `UniversalRow(accessory: .toggle / .menu / .picker / .date / .stepper / .slider / .navigation / .action / .info)` |
+| A list of the person's things | `CardList` (a card per item, or rows in one card), `ItemRow` + `MetaLine` |
+| Pick from a long list, with search and "Create" | `SearchablePicker` |
+| Pick from a few | `UniversalRow(accessory: .menu)`, `ChipPicker`, `SegmentedPicker` |
+| A section title | `SectionHeader` |
+| Money | `FormattedAmountText`, `AmountRow`, `AmountInput` / `CurrencyAmountInput`, `LiveAmountText` |
+| When something happened, how long it runs | `RelativeTime` (`.relative`, `.elapsed`, `.clock`) |
+| Explain a number | `InfoTip` / `.infoTip(_:title:)` |
+| A value over what was tapped, a coachmark | `Tooltip`, `.spotlight` |
+| A state that lasts | `StatusBanner` |
+| An outcome that comes and goes | `MessageBanner` |
+| Nothing here, or loading failed | `EmptyState` (`.error` with Retry) |
+| Loading | the component's `<Name>Skeleton`, `.skeletonReveal` when it gives way |
+| A chat | `MessageBubble` (`markdown:`, `time:`, `status:`), `ConversationDivider`, `MessageComposer`, `TypingIndicator`, `SuggestionChips` |
+| Charts | `LineChart`, `BarChart`, `ChartSwitcher`, `Sparkline`, `OrbChart`, `CalendarHeatmap` (docs/charts.md) |
+| Progress | `ProgressRing`, `LinearProgressBar`, `LimitProgressCard`, `StepTracker` |
+| People | `Avatar`, `AvatarGroup`, `PersonRow`, `CommentRow` |
+| Photos | `RemotePhoto`, `PhotoTile`, `PhotoGrid`, `PhotoCarousel`, `PhotoViewer` |
+| Edit sheet | `EditSheetContainer`, `EditableHero`, `AmountEntrySheet` |
+| A moment of success | `.celebration`, `.completionMoment` |
+
+### Check before pushing
+
+```bash
+python3 <DesignKit>/scripts/designkit_lint.py all --source <the app's Swift folders>
+```
+
+`tokens` finds raw design values, swipe actions and the system `Form` (against the app's
+`scripts/design-lint-baseline.json`); `section-rows` finds section rows without their own padding
+or divider inset. A major DesignKit version: `scripts/migrate.py --from <old> --to <new> --source …`
+rewrites what it can and leaves `TODO(DesignKit X.0)` where `docs/migration-X.0.md` needs a person.
+
+<!-- designkit:agents:end -->

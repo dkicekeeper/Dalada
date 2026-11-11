@@ -8,16 +8,14 @@ on:
     branches: [main, "claude/**"]
     paths:
       - "ios/**"
-      - "scripts/design_lint.py"
+      - "scripts/designkit_lint.sh"
       - "scripts/design-lint-baseline.json"
-      - "scripts/section_rows_lint.py"
       - ".github/workflows/ios.yml"
   pull_request:
     paths:
       - "ios/**"
-      - "scripts/design_lint.py"
+      - "scripts/designkit_lint.sh"
       - "scripts/design-lint-baseline.json"
-      - "scripts/section_rows_lint.py"
       - ".github/workflows/ios.yml"
   workflow_dispatch:
 
@@ -26,21 +24,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Без сырых значений дизайна (цвета, шрифты, отступы, скругления, анимации) вне токенов
-  # DesignKit. Падает только на значениях сверх scripts/design-lint-baseline.json (CLAUDE.md,
-  # «Компоненты интерфейса»).
+  # Проверки дизайна DesignKit той версии, на которой собрано приложение (scripts/designkit_lint.sh
+  # берёт её scripts/designkit_lint.py): без сырых значений вне токенов сверх
+  # scripts/design-lint-baseline.json, без .swipeActions и системного Form; строки стеклянных
+  # секций отступают сами и ставят разделитель под текстом (CLAUDE.md, «Компоненты интерфейса»).
   design-lint:
     name: Design lint
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
-      - name: Нет сырых значений сверх базы
-        run: python3 scripts/design_lint.py
-      # Строки стеклянных секций отступают сами и ставят разделитель под текстом (DesignKit 8.1.0;
-      # CLAUDE.md, «Компоненты интерфейса»).
-      - name: Строки стеклянных секций
-        run: python3 scripts/section_rows_lint.py
+      - name: Правила дизайна DesignKit
+        run: bash scripts/designkit_lint.sh
 
   build:
     name: Build app and run package tests

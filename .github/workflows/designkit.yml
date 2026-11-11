@@ -113,11 +113,21 @@ jobs:
             -derivedDataPath build \
             -quiet
 
+      # Блок DesignKit в CLAUDE.md (правила и «что нужно экрану → компонент») — из новой версии
+      # (scripts/sync_agents_block.py DesignKit, с 8.9.0), чтобы он не отставал от неё.
+      - name: Update the DesignKit block in CLAUDE.md
+        run: |
+          git clone --depth 1 --branch "$LATEST" https://github.com/dkicekeeper/DesignKit "$RUNNER_TEMP/designkit"
+          python3 "$RUNNER_TEMP/designkit/scripts/sync_agents_block.py" CLAUDE.md
+
+      - name: Design lint with the new DesignKit
+        run: bash scripts/designkit_lint.sh
+
       - name: Commit to main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ios/Packages/DaladaKit/Package.swift
+          git add ios/Packages/DaladaKit/Package.swift CLAUDE.md
           git commit -m "Update DesignKit to $LATEST" \
             -m "Automatic update (workflow DesignKit update): the app builds and the DaladaKit tests pass with DesignKit $LATEST. Release notes: https://github.com/dkicekeeper/DesignKit/releases/tag/$LATEST"
           # main мог уйти вперёд за время сборки — докатываем поверх, конфликт = остановка.

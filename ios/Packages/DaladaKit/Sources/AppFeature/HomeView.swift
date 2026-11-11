@@ -2,6 +2,7 @@ import Backend
 import DaladaCore
 import DaladaUI
 import DesignComponents
+import DesignSupport
 import DesignTokens
 import Persistence
 import SwiftUI
@@ -263,7 +264,7 @@ struct FeedPostCard: View {
                     .font(AppTypography.bodyEmphasis)
                     .foregroundStyle(AppColors.textPrimary)
                     .lineLimit(1)
-                Text(verbatim: kindTitle + " · " + item.at.formatted(.relative(presentation: .named)))
+                Text(verbatim: kindTitle + " · " + Formatting.relativeTime(item.at))
                     .font(AppTypography.caption)
                     .foregroundStyle(AppColors.textSecondary)
                     .lineLimit(1)

@@ -439,6 +439,7 @@ struct ReviewFormView: View {
             // Не загрузились фото — отзыв уже сохранён; «Сохранить» ещё раз догрузит их.
             try await backend.addReviewPhotos(photos, reviewID: reviewID)
             HapticManager.play(.confirm)
+            AccessibilityAnnouncer.announce(String(localized: "common.saved"))
             dismiss()
         } catch {
             saveError = CommunityMessage.text(for: error)
@@ -878,7 +879,8 @@ struct ThreadView: View {
                         .font(AppTypography.h3)
                     HStack(spacing: AppSpacing.sm) {
                         Text(verbatim: thread.isOwn ? String(localized: "report.you") : thread.author.label)
-                        Text(verbatim: thread.createdAt.formatted(.relative(presentation: .named)))
+                        // DesignKit 8.9.0: «5 мин назад» обновляется само, давнее — датой.
+                        RelativeTime(thread.createdAt)
                         if thread.editedAt != nil {
                             Text("reviews.edited")
                         }
