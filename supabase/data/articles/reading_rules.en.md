@@ -7,7 +7,7 @@ Fishing bans in Kazakhstan are set by the Ministry of Agriculture. Dates and pla
 ## Kinds of rules
 
 - **Spawning ban** — in spring and summer, while fish spawn. Each water has its own dates: on Kapshagay from 5 April to 20 May, on the waters of the Esil basin from 10 April to 20 May, in Kostanay Region from 20 April to 10 June.
-- **“All fishing”** and **“with amateur gear”** are not the same. In the first case you may not fish at all. In the second, rods, spinning and other amateur gear are banned: on the Zhaiyk in West Kazakhstan Region from 10 April to 15 June, and at night, from 22:00 to 06:00, all year.
+- **“All fishing”** and **“with amateur gear”** are not the same. In the first case you may not fish at all. In the second, rods, spinning and other amateur gear are banned: on the Zhaiyk in West Kazakhstan Region from 10 April to 15 June, and at night, from 22:00 to 06:00, all year across the Zhaiyk-Caspian basin: in West Kazakhstan and Atyrau regions, on the Kigash and in the North Caspian.
 - **Rest zone** — a place where fishing is banned all year: for example, the Kara Ertis, the Arys and Keles rivers, the mouth of the Zhaiyk.
 - **Species ban** — all year or for a season: sturgeon may not be caught anywhere, whitefish in the east from 10 November to 10 December, crayfish in spring.
 - **Banned methods** — everywhere: spears, self-catching gear, trotlines, electric current, snagging.

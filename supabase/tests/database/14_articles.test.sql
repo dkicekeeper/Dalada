@@ -61,8 +61,8 @@ select pg_temp.act_as_anon();
 
 select is(
   (select count(*)::integer from public.articles),
-  23,
-  'гость видит 23 опубликованные статьи'
+  25,
+  'гость видит 25 опубликованных статей'
 );
 select is_empty(
   $$ select id from public.articles where id = 'draft_article' $$,
@@ -82,7 +82,7 @@ select pg_temp.act_as('11111111-1111-1111-1111-111111111111');
 
 select is(
   (select count(*)::integer from public.articles),
-  23,
+  25,
   'вошедший видит те же статьи'
 );
 select is_empty(

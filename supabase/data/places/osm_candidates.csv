@@ -82,7 +82,7 @@ yes,base,Этно-аул Гунны,43.273585,77.331275,,osm:w1306896621,leisure
 yes,base,"турбаза ""Балхаш""",46.365109,78.912269,Вместимость 400 Вход 3 000 кзт. Сайт: https://www.onyxtour.kz/content/init/311/,osm:w360098905,leisure=resort,"турбаза ""Балхаш""",https://www.openstreetmap.org/way/360098905,
 yes,campsite,"""Тарелка"" поляна",43.158259,77.014940,Питьевой воды нет (по данным OpenStreetMap).,osm:n14121738849,tourism=camp_site,"""Тарелка"" поляна",https://www.openstreetmap.org/node/14121738849,
 yes,campsite,Beach camping,43.905786,77.254327,Часы работы: 7:00 - 23:00.,osm:n6755425449,tourism=camp_site,Beach camping,https://www.openstreetmap.org/node/6755425449,отобрано вручную
-yes,campsite,Eco-Park Charyn Canyon Tourist Complex,43.350497,79.081198,,osm:w437956305,tourism=camp_site,Eco-Park Charyn Canyon Tourist Complex,https://www.openstreetmap.org/way/437956305,отобрано вручную
+no,campsite,Eco-Park Charyn Canyon Tourist Complex,43.350497,79.081198,,osm:w437956305,tourism=camp_site,Eco-Park Charyn Canyon Tourist Complex,https://www.openstreetmap.org/way/437956305,дубль стоянки «Чарын» (32 м)
 yes,campsite,Kazakh Camping,45.405326,79.967494,,osm:n4397815390,tourism=camp_site,Kazakh Camping,https://www.openstreetmap.org/node/4397815390,
 yes,campsite,Shepherds Camp,42.590497,79.895874,,osm:w1486206137,tourism=camp_site,Shepherds Camp,https://www.openstreetmap.org/way/1486206137,
 yes,campsite,Альпинград,43.079419,77.090187,Питьевой воды нет (по данным OpenStreetMap).,osm:w1553910650,tourism=camp_site,Альпинград,https://www.openstreetmap.org/way/1553910650,
@@ -268,7 +268,7 @@ yes,spring,Шүмек Бастау,43.279983,77.690154,Вода питьевая
 yes,spring,Эмбулак (лечебный источник Гульсара),48.651634,66.985610,,osm:n12759196840,natural=spring,Ембұлақ (Гүлсара шипалы бұлақ),https://www.openstreetmap.org/node/12759196840,
 yes,spring,исток реки Кия,50.919938,57.760878,,osm:n5528374265,natural=spring,исток реки Кия,https://www.openstreetmap.org/node/5528374265,
 yes,spring,киелі Жылқайдар бұлағы,49.715395,82.035240,,osm:n13142274222,natural=spring,Sacred spring of Zhylqaidar,https://www.openstreetmap.org/node/13142274222,
-yes,spring,озеро Атыгай,51.747235,75.628083,Вода не питьевая (по данным OpenStreetMap).,osm:n10187709090,natural=spring,озеро Атыгай,https://www.openstreetmap.org/node/10187709090,
+no,spring,озеро Атыгай,51.747235,75.628083,Вода не питьевая (по данным OpenStreetMap).,osm:n10187709090,natural=spring,озеро Атыгай,https://www.openstreetmap.org/node/10187709090,дубль родника «Атыгай» (350 м)
 yes,spring,озеро Балыкты,42.567081,70.157259,,osm:n6986711185,natural=spring,Балықты көлі,https://www.openstreetmap.org/node/6986711185,
 yes,spring,радоны,43.350601,51.337596,Горячий источник.,osm:n4403343892,natural=hot_spring,радоны,https://www.openstreetmap.org/node/4403343892,
 yes,spring,род.Шоклар,42.750079,73.403558,Вода питьевая (по данным OpenStreetMap).,osm:n11750415028,natural=spring,род.Шоклар,https://www.openstreetmap.org/node/11750415028,
