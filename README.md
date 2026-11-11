@@ -5,8 +5,8 @@
 с Алматы, Алматинской области и Жетісу), дальше другие активности. Языки: русский, казахский,
 английский.
 
-**Версия 1.0.0 в [App Store Казахстана](https://apps.apple.com/kz/app/dalada/id6817603558)** с
-2026-11-01, бесплатно, для iPhone. Сайт — [dkicekeeper.github.io/Dalada](https://dkicekeeper.github.io/Dalada/).
+**В [App Store Казахстана](https://apps.apple.com/kz/app/dalada/id6817603558)** с 2026-11-01,
+бесплатно, для iPhone. Какая версия сейчас и что на проверке — [`docs/05-release/README.md`](docs/05-release/README.md). Сайт — [dkicekeeper.github.io/Dalada](https://dkicekeeper.github.io/Dalada/).
 
 Формула продукта: **Strava** (профиль, поездки, статистика, друзья) + **Foursquare/Swarm**
 (места, чекины, краудсорсинг) + локальная специфика Казахстана (водоёмы, запреты, нацпарки,
@@ -42,6 +42,8 @@
 - [`docs/04-beta/`](docs/04-beta/README.md) — бета: вехи M0–M34 и их спецификации, настройка окружения, TestFlight
 - [`docs/05-release/`](docs/05-release/README.md) — релиз 1.0 и **текущее состояние**: что после выхода, выпуск обновлений, решения, страница App Store и скриншоты
 - [`docs/05-release/promotion.md`](docs/05-release/promotion.md) — продвижение на год: воронка, каналы, календарь по сезонам, бюджет, метрики без слежки, первые 30 дней; готовые тексты — [`promotion-texts.md`](docs/05-release/promotion-texts.md)
+- [`docs/05-release/content.md`](docs/05-release/content.md) — наполнение мест: аудит, процесс, очередь и журнал волн, метрики
+- [`docs/05-release/kk-proofreading.md`](docs/05-release/kk-proofreading.md) — что на казахском ещё ждёт вычитки носителем
 - [`docs/naming.md`](docs/naming.md) — название: выбор Dalada и оставшиеся проверки
 
 ## Код
