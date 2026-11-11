@@ -1,9 +1,7 @@
-This is version 1.0.2. Please check the main things:
+This is version 1.0.3. Please check the main things:
 
-• Any place card: the name on top, then one line with the place type and visibility (your own place under review says so), then the photos, then everything as before.
-• Record a trip longer than half an hour or 500 m and finish it. A second later “Share your trip” appears → “Picture for Stories” opens a picture with the track (without a connection it shows an error, that’s expected). “Not now” — the next offer comes no sooner than in three days.
-• A report (I’m here) with a catch heavier or longer than your record for that species: the congratulation has “Share the record”, which opens the catch picture.
-• The rating window or the notifications prompt shouldn’t pop up right after these sheets.
-• Reports and trip recording work as before.
+• A report (I’m here) and editing a report: “Water” has three options — “Clear”, “Muddy”, “Ice”. A report from the ice shows “Water: Ice” in the report card and in the “Waiting to upload” list.
+• Profile → “Achievements”: a new “Ice angler” badge with a snowflake and “0 of 3” progress. Reports from the ice on three different days earn the badge and a congratulation; three reports on one day count as one day.
+• Everything else as in 1.0.2: the place card, “Share your trip”, “Share the record”, reports and trip recording.
 
 Feedback — the Send Feedback button in TestFlight or dakacom@gmail.com.
