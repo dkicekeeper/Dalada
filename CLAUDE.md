@@ -151,7 +151,7 @@ DesignKit (тот же текст: её release notes и экран Updates в G
 `Secrets.example.xcconfig`. Service role key — никогда в приложении и в репозитории.
 
 <!-- designkit:agents:start -->
-<!-- From DesignKit 8.10.0, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
+<!-- From DesignKit 8.11.0, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
 
 ## DesignKit for an app's agent
 
