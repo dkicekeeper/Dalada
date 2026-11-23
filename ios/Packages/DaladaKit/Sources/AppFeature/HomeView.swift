@@ -526,7 +526,7 @@ struct TrackPreviewView: View {
             .stroke(AppColors.accent, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
             .frame(maxWidth: .infinity)
             .frame(height: 160)
-            .background(AppColors.bgMuted, in: RoundedRectangle(cornerRadius: AppRadius.md))
+            .background(.surfaceNeutral2, in: RoundedRectangle(cornerRadius: AppRadius.md))
             .accessibilityHidden(true)
     }
 }

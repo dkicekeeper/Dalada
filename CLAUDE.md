@@ -69,14 +69,15 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 
 | Нужно | В DesignKit |
 |---|---|
+| Поверхности | с DesignKit 8.12.0 карточки, секции, чипы, плитки и плашки иконок — **серая заливка**, а не Liquid Glass: `DesignKitTheme.surface = .fill` в `AppEnvironment` (решение владельца 2026-11-23: меньше стекла). Кнопки, таб-бар, меню «+» на карте (`GlassActionMenu`) и поле сообщения остаются стеклом; панель записи поездки поверх карты — материал. Страница под карточками — белая (`AppColors.Background.base`), иначе серое сольётся. Своё серое внутри карточки — `.surfaceNeutral1` / `.surfaceNeutral2` или `surface.neutral1` из `@Environment(\.surfaceStyle)`, не `AppColors.bgCard` / `bgMuted` (на серой карточке пропадают) |
 | Кнопки, карточки, строки | `DSButton` (иконка, загрузка, роль, размер), `cardStyle`, `UniversalRow` (деталь — `config: .info, accessory: .info(…)`), `DisclosureChevron` |
 | Строка своего предмета | `ItemRow` (3.6.0): значок в кружке (`.symbol`) или сверху (`.glyph`), заголовок, описание, строки фактов `MetaLine` («12 окт. · 14,2 км · 3 ч», через «·»; ярлыки со значками — `separator: .space`), аксессуар справа; так нарисованы поездки, места, статьи, снаряжение. Факты под заголовком в других местах — тоже `MetaLine` |
 | Очередь отправки | `PendingItemCard` (3.6.0): «ждёт отправки» / «не удалось отправить» с «Повторить» и «Удалить», содержимое — слотом; `discardConfirmation:` — свой вопрос перед удалением (поездки) |
 | Бейджи, оценки, числа | `Badge`, `TrendBadge`, `StatTile`, `StatsStrip`, `StreakCard`, `Rating` / `RatingPicker`, сводка оценок `RatingSummary` (4.1.0: средняя, звёзды, полоски по звёздам) |
 | Выбор | `ChipPicker` (`allTitle:` — чип «Все», `inset: AppSpacing.lg` — в карточке формы), `SegmentedPicker`, `SelectionIndicator` |
 | Загрузка, пусто, ошибка | скелетоны (ниже), `EmptyState`, `RecommendationBox`, `LinearProgressBar(value:)`; низ списка, который грузится страницами, — `LoadMoreFooter(state:onLoad:)` (4.1.0: сам просит следующую страницу, скелетоны, «Повторить», конец), раньше конца — `.onReachEnd(of:in:threshold:)` |
-| Формы | `EditSheetContainer(wrapInForm: false)` (✕ и ✓ в тулбаре, `isSaving:` — индикатор вместо ✓, `saveTitle:` — имя ✓ для VoiceOver) поверх `ScrollView` с карточками `FormSection` (с DesignKit 8.0.0 — стекло, разделители под текстом строк рисует сама секция, `Divider()` между строками не ставим; чипы с `inset:` и ленты фото с `.fullWidthRow()` идут под край карточки); строки `FormTextField(style: .row / .rowMultiline)` и `UniversalRow` с аксессуаром (7.0.0, одна строка вместо двенадцати): `.menu`, `.picker` (длинный список с поиском), `.stepper`, `.date`, `.slider`, `.toggle`, `.action`, `.checkmark`, `role: .destructive` для удаления; `config` по умолчанию `.standard` (карточка); подпись-строка для `PhotosPicker` — `UniversalRow` без аксессуара с `.contentShape(Rectangle())`; ошибки — `InlineStatusText`; у поля с лимитом в модели — `limit:` (4.1.0, `FormTextField` и `MessageComposer`: «980/1000» с 80% лимита). Системный `Form` в новых экранах не используем |
-| Экраны и списки | с DesignKit 8.0.0 — один вид: белая страница, `ScrollView` из стеклянных `FormSection` и карточек (`List` не используем, кроме лент карточек: отзывы, обсуждения, комментарии). Свои вещи (экипировка, чеклисты, зоны) — `CardList(layout: .section)` с одним набором действий: тап открывает, долгое нажатие — «Изменить» и «Удалить» (`common.edit` / `common.delete`, удаление с подтверждением), в панели `.cardListToolbar` — выбор нескольких (`common.deleteSelectedConfirm`), свой порядок и «+». Смахиваний нет. Свой порядок — `sort_order` у `gear_items` и `checklists` (`ListsStore.moveGear` / `moveOwnLists`). Строка-кнопка или ссылка в секции ставит `.rowDividerInset(…)` на себя (метка не передаёт отступ наружу; `ItemRowMetrics.symbolInset` — после кружка `ItemRow` или аватара) |
+| Формы | `EditSheetContainer(wrapInForm: false)` (✕ и ✓ в тулбаре, `isSaving:` — индикатор вместо ✓, `saveTitle:` — имя ✓ для VoiceOver) поверх `ScrollView` с карточками `FormSection` (с DesignKit 8.0.0 — одна карточка, с 8.12.0 у Dalada серая, разделители под текстом строк рисует сама секция, `Divider()` между строками не ставим; чипы с `inset:` и ленты фото с `.fullWidthRow()` идут под край карточки); строки `FormTextField(style: .row / .rowMultiline)` и `UniversalRow` с аксессуаром (7.0.0, одна строка вместо двенадцати): `.menu`, `.picker` (длинный список с поиском), `.stepper`, `.date`, `.slider`, `.toggle`, `.action`, `.checkmark`, `role: .destructive` для удаления; `config` по умолчанию `.standard` (карточка); подпись-строка для `PhotosPicker` — `UniversalRow` без аксессуара с `.contentShape(Rectangle())`; ошибки — `InlineStatusText`; у поля с лимитом в модели — `limit:` (4.1.0, `FormTextField` и `MessageComposer`: «980/1000» с 80% лимита). Системный `Form` в новых экранах не используем |
+| Экраны и списки | с DesignKit 8.0.0 — один вид: белая страница, `ScrollView` из карточек `FormSection` и карточек (`List` не используем, кроме лент карточек: отзывы, обсуждения, комментарии). Свои вещи (экипировка, чеклисты, зоны) — `CardList(layout: .section)` с одним набором действий: тап открывает, долгое нажатие — «Изменить» и «Удалить» (`common.edit` / `common.delete`, удаление с подтверждением), в панели `.cardListToolbar` — выбор нескольких (`common.deleteSelectedConfirm`), свой порядок и «+». Смахиваний нет. Свой порядок — `sort_order` у `gear_items` и `checklists` (`ListsStore.moveGear` / `moveOwnLists`). Строка-кнопка или ссылка в секции ставит `.rowDividerInset(…)` на себя (метка не передаёт отступ наружу; `ItemRowMetrics.symbolInset` — после кружка `ItemRow` или аватара) |
 | Поиск | системный `.searchable`; недавние запросы и подсказки под полем — `.dsSearchSuggestions` (3.5.0), недавние запросы экран хранит в `@AppStorage` под своим ключом (`places.recentSearches`, `friends.recentSearches`) |
 | Заголовки разделов | `SectionHeader`; с 3.2.0 он рисует `systemImage` в любом стиле (раньше только в `.large`), поэтому заголовки Dalada — без значка, пока он не нужен на экране |
 | Люди и сообщество | `Avatar`, `PersonRow` (`style: .card` — шапка профиля), `CommentRow`, `ThreadCard`, `ReviewCard`, `ReactionButton`, поле сообщения `MessageComposer` |
@@ -103,7 +104,7 @@ iOS собирается только на Mac (Xcode 26, iOS 26): `cd ios && xc
 строке (символ размером с текст, прицел поверх карты). Стало меньше —
 `scripts/designkit_lint.sh tokens --update-baseline`.
 
-Строки стеклянной секции (`FormSection`, `CardList(layout: .section)`) стоят вплотную, поэтому
+Строки секции (`FormSection`, `CardList(layout: .section)`) стоят вплотную, поэтому
 каждая отступает сама: строки DesignKit — да (`UniversalRow`; `ItemRow` 12 pt и `ChecklistRow`
 8 pt с DesignKit 8.1.0, в стопке со своими промежутками — `verticalPadding: 0`), своя строка —
 `.padding(.vertical, AppSpacing.md)`. Кнопка или ссылка вокруг строки со значком слева несёт
@@ -151,7 +152,7 @@ DesignKit (тот же текст: её release notes и экран Updates в G
 `Secrets.example.xcconfig`. Service role key — никогда в приложении и в репозитории.
 
 <!-- designkit:agents:start -->
-<!-- From DesignKit 8.11.0, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
+<!-- From DesignKit 8.12.0, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
 
 ## DesignKit for an app's agent
 
@@ -174,11 +175,13 @@ matches the version the app builds with. Do not edit the block in the app; chang
 
 1. Tokens, never raw values: `AppColors`, `AppTypography`, `AppSpacing`, `AppRadius`,
    `AppIconSize`, `AppAnimation` / `AppMotion`. Status text is `AppColors.Status.*Text` (4.5:1);
-   a colour of your own as text is `AppColors.readable(color)` on `AppColors.pale(color)`.
+   a colour of your own as text is `AppColors.readable(color)` on `AppColors.pale(color)`; a grey
+   shape of your own inside a card is `.surfaceNeutral1` / `.surfaceNeutral2`.
 2. Every symbol is an `Icon`: a glyph under 44 pt, a tile on its plate from 44 pt. iOS's own bars,
    menus, tabs and segments, and a symbol inside a line of text, stay `Image` / `Label`.
-3. A form or settings list is `FormSection` glass cards of `UniversalRow(_:icon:accessory:)`; the
-   section draws the dividers. No system `Form`.
+3. A form or settings list is `FormSection` cards of `UniversalRow(_:icon:accessory:)`; the
+   section draws the dividers. No system `Form`. The cards are Liquid Glass, or a grey fill when
+   the app sets `DesignKitTheme.surface = .fill` (8.12.0); no glass or grey of your own.
 4. A list of things a person keeps is a `CardList`: a tap opens, a long press shows Edit and
    Delete, the toolbar selects, reorders and adds. No swipe actions.
 5. Every view that shows data has a skeleton (`<Name>Skeleton`); a list that loads pages ends in

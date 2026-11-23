@@ -8,6 +8,8 @@ import SwiftUI
 struct SignInCard: View {
     @Environment(SessionStore.self) private var session
     @Environment(\.colorScheme) private var colorScheme
+    /// Серый поля пароля — как у `FormTextField` над ним: на серой карточке он полупрозрачный.
+    @Environment(\.surfaceStyle) private var surface
     @State private var showsEmail = false
     @State private var email = ""
     @State private var password = ""
@@ -82,7 +84,7 @@ struct SignInCard: View {
                 .textContentType(.password)
                 .font(AppTypography.body)
                 .padding(AppSpacing.lg)
-                .background(AppColors.bgCard.opacity(0.5))
+                .background(surface.neutral1.opacity(0.5))
                 .clipShape(.rect(cornerRadius: AppRadius.lg))
 
             Button {
