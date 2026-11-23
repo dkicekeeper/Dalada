@@ -1,7 +1,9 @@
-This is version 1.0.3. Please check the main things:
+This is version 1.0.4. Please check the main things:
 
-• A report (I’m here) and editing a report: “Water” has three options — “Clear”, “Muddy”, “Ice”. A report from the ice shows “Water: Ice” in the report card and in the “Waiting to upload” list.
-• Profile → “Achievements”: a new “Ice angler” badge with a snowflake and “0 of 3” progress. Reports from the ice on three different days earn the badge and a congratulation; three reports on one day count as one day.
-• Everything else as in 1.0.2: the place card, “Share your trip”, “Share the record”, reports and trip recording.
+• A new look: cards and sections on every screen are grey on the white page, with no “glass” (the places map, the feed, the profile, the report, trip and place forms, settings). Check that everything reads in light and dark mode: icons, text fields, progress bars, place photos and the track preview in posts. Buttons, the tab bar, the “+” menu on the map and the message field stay glass.
+• Email sign-in: the password field shows on the grey card just like the email field.
+• Times such as “5 min ago” in a thread’s header and in a place’s reports update by themselves; older ones show a date. With VoiceOver, “Saved” is spoken after a review, a report or a place is saved.
+• Green buttons (and the message send button) are a shade deeper, so white text on them reads better.
+• Everything else as in 1.0.3: “Ice” in a report, the “Ice angler” badge, the place card, reports and trip recording.
 
 Feedback — the Send Feedback button in TestFlight or dakacom@gmail.com.
