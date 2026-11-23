@@ -151,7 +151,7 @@ DesignKit (тот же текст: её release notes и экран Updates в G
 `Secrets.example.xcconfig`. Service role key — никогда в приложении и в репозитории.
 
 <!-- designkit:agents:start -->
-<!-- From DesignKit 8.11.0, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
+<!-- From DesignKit 8.12.0, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
 
 ## DesignKit for an app's agent
 
@@ -174,11 +174,13 @@ matches the version the app builds with. Do not edit the block in the app; chang
 
 1. Tokens, never raw values: `AppColors`, `AppTypography`, `AppSpacing`, `AppRadius`,
    `AppIconSize`, `AppAnimation` / `AppMotion`. Status text is `AppColors.Status.*Text` (4.5:1);
-   a colour of your own as text is `AppColors.readable(color)` on `AppColors.pale(color)`.
+   a colour of your own as text is `AppColors.readable(color)` on `AppColors.pale(color)`; a grey
+   shape of your own inside a card is `.surfaceNeutral1` / `.surfaceNeutral2`.
 2. Every symbol is an `Icon`: a glyph under 44 pt, a tile on its plate from 44 pt. iOS's own bars,
    menus, tabs and segments, and a symbol inside a line of text, stay `Image` / `Label`.
-3. A form or settings list is `FormSection` glass cards of `UniversalRow(_:icon:accessory:)`; the
-   section draws the dividers. No system `Form`.
+3. A form or settings list is `FormSection` cards of `UniversalRow(_:icon:accessory:)`; the
+   section draws the dividers. No system `Form`. The cards are Liquid Glass, or a grey fill when
+   the app sets `DesignKitTheme.surface = .fill` (8.12.0); no glass or grey of your own.
 4. A list of things a person keeps is a `CardList`: a tap opens, a long press shows Edit and
    Delete, the toolbar selects, reorders and adds. No swipe actions.
 5. Every view that shows data has a skeleton (`<Name>Skeleton`); a list that loads pages ends in
