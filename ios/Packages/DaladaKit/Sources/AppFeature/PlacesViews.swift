@@ -304,7 +304,7 @@ private struct PlaceItemImage: View {
     var body: some View {
         if let path = item.photoPath {
             RemotePhoto(path: path, url: photoURL)
-                .background(AppColors.bgMuted)
+                .background(.surfaceNeutral2)
         } else {
             ThumbnailPlaceholder(systemImage: item.type.systemImage)
         }

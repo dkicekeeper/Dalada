@@ -69,6 +69,10 @@ public enum AppBootstrap {
         // Акцент Dalada — зелёный из AccentColor приложения (светлая #2E8B57, тёмная #3CB371):
         // один цвет и для AppColors.accent, и для системных элементов. До первого экрана.
         DesignKitTheme.accent = Color("AccentColor")
+        // Карточки и секции — серая заливка на белой странице, а не Liquid Glass (DesignKit 8.12.0,
+        // решение владельца 2026-11-23: меньше стекла). Кнопки, таб-бар, меню «+» на карте и поле
+        // сообщения остаются стеклом. Тоже до первого экрана.
+        DesignKitTheme.surface = .fill
         // Шрифт Inter из DesignKit должен быть зарегистрирован до первого экрана.
         DesignKitFonts.registerIfNeeded()
         // Фото по ссылке (`RemotePhoto` DesignKit) грузит и держит кэш Dalada: ключ — путь в

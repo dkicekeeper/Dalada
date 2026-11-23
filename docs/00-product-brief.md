@@ -82,7 +82,7 @@
 
 **Что это.** SwiftUI-пакет (SPM), вынесенный из финансового приложения Tenra. Три таргета:
 `DesignTokens` → `DesignSupport` → `DesignComponents`. Требования: **iOS 26+, Xcode 26+**,
-Swift 5 language mode. Визуальный язык — Liquid Glass (`glassEffect`, `.glassProminent`),
+Swift 5 language mode. Визуальный язык — Liquid Glass (`glassEffect`, `.glassProminent`; с DesignKit 8.12.0 карточки и секции Dalada — серая заливка, стекло у кнопок и панелей),
 шрифт Inter (variable, Dynamic Type), 4pt-сетка отступов; акцент задаёт приложение (у Tenra `indigo`, у Dalada зелёный).
 
 **Переиспользуем как есть:**
