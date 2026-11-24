@@ -152,11 +152,11 @@ DesignKit (тот же текст: её release notes и экран Updates в G
 `Secrets.example.xcconfig`. Service role key — никогда в приложении и в репозитории.
 
 <!-- designkit:agents:start -->
-<!-- From DesignKit 8.12.0, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
+<!-- From DesignKit 8.15.0, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
 
 ## DesignKit for an app's agent
 
-The short version of DesignKit's rules for a session working in Tenra or Dalada (8.9.0, benchmark
+The short version of DesignKit's rules for a session working in Tenra, Dalada or Platina (8.9.0, benchmark
 round 4: Astryx's `init`, which writes such a block into an app's AGENTS.md). Each app's
 **DesignKit update** workflow puts this file into the app's CLAUDE.md between the
 `designkit:agents` markers when it moves the pin (`scripts/sync_agents_block.py`), so it always
@@ -174,7 +174,7 @@ matches the version the app builds with. Do not edit the block in the app; chang
 ### The rules
 
 1. Tokens, never raw values: `AppColors`, `AppTypography`, `AppSpacing`, `AppRadius`,
-   `AppIconSize`, `AppAnimation` / `AppMotion`. Status text is `AppColors.Status.*Text` (4.5:1);
+   `AppIconSize`, `AppLayout`, `AppAnimation` / `AppMotion`. Status text is `AppColors.Status.*Text` (4.5:1);
    a colour of your own as text is `AppColors.readable(color)` on `AppColors.pale(color)`; a grey
    shape of your own inside a card is `.surfaceNeutral1` / `.surfaceNeutral2`.
 2. Every symbol is an `Icon`: a glyph under 44 pt, a tile on its plate from 44 pt. iOS's own bars,
@@ -190,6 +190,10 @@ matches the version the app builds with. Do not edit the block in the app; chang
    DesignKit's components do it; an app's own outcome calls `AccessibilityAnnouncer.announce(_:)`.
 7. Motion through DesignKit (`AppMotion` springs, `.popIn`, `.riseIn`, effects); everything stops
    under Reduce Motion and `.designKitMotion(false)`.
+8. On an iPad or a Mac a scrolling screen keeps to a column: `.readableWidth()` after
+   `.screenPadding()` (8.13.0); a detail screen puts its summaries beside the main column in
+   `AdaptiveColumns`, the phone's layout in `narrow:` (8.15.0). No checks for the device or the
+   screen size: the width the view gets decides.
 
 ### What a screen needs → the component
 
@@ -216,6 +220,7 @@ matches the version the app builds with. Do not edit the block in the app; chang
 | Photos | `RemotePhoto`, `PhotoTile`, `PhotoGrid`, `PhotoCarousel`, `PhotoViewer` |
 | Edit sheet | `EditSheetContainer`, `EditableHero`, `AmountEntrySheet` |
 | A moment of success | `.celebration`, `.completionMoment` |
+| A screen on an iPad or a Mac | `.readableWidth()`; cards side by side in `CardList(layout: .grid)` (8.15.0) or `LazyVGrid(columns: AppLayout.cardColumns())` under `.readableWidth(AppLayout.wideWidth)`; a main column with summaries beside it in `AdaptiveColumns` (the phone's layout in `narrow:`); list and detail in `NavigationSplitView` |
 
 ### Check before pushing
 
