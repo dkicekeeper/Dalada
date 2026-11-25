@@ -441,7 +441,7 @@ struct TripInviteLinkSheet: View {
                 } else if let errorText {
                     Text(verbatim: errorText)
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.destructive)
+                        .foregroundStyle(AppColors.Status.negativeText)
                         .multilineTextAlignment(.center)
                     Button("common.retry") {
                         Task { await load() }

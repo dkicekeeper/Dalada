@@ -90,6 +90,17 @@ enum WeatherText {
             : String(localized: "weather.pressureDelta.hpa \(signed)")
     }
 
+    /// Пояснение к изменению давления за сутки (ⓘ у «Давления»): за какой срок оно считается и
+    /// когда давление «стабильное» — порог `PressureTrend.threshold` в единицах интерфейса
+    /// («меньше 1,5 мм» или «меньше 2 гПа»).
+    static var pressureTrendInfo: String {
+        let threshold = pressureValue(PressureTrend.threshold).formatted(.number.precision(.fractionLength(0...1)))
+        let amount = usesMillimeters
+            ? String(localized: "weather.pressureDelta.mmhg \(threshold)")
+            : String(localized: "weather.pressureDelta.hpa \(threshold)")
+        return String(localized: "weather.pressure.info \(amount)")
+    }
+
     /// «+18° · 3 м/с СВ · 689 мм» — для строки погоды и отчёта.
     static func summary(_ snapshot: WeatherSnapshot) -> String? {
         let parts = [
@@ -257,10 +268,11 @@ struct PlaceWeatherSheet: View {
                 .padding(.vertical, AppSpacing.md)
             }
             if let pressure = current.pressure {
-                LabeledContent("weather.pressure") {
+                let delta = forecast.pressureChange(before: .now)
+                LabeledContent {
                     VStack(alignment: .trailing, spacing: AppSpacing.xxs) {
                         Text(verbatim: WeatherText.pressure(pressure))
-                        if let delta = forecast.pressureChange(before: .now) {
+                        if let delta {
                             let trend = PressureTrend(delta: delta)
                             Label {
                                 Text("weather.trend.day \(WeatherText.pressureDelta(delta)) \(String(localized: String.LocalizationValue(trend.titleKey)))")
@@ -270,6 +282,14 @@ struct PlaceWeatherSheet: View {
                             .font(AppTypography.caption)
                             .foregroundStyle(AppColors.textSecondary)
                         }
+                    }
+                } label: {
+                    if delta != nil {
+                        // ⓘ: за какой срок «за сутки» и когда давление «стабильное» (InfoTip, DesignKit 8.9.0).
+                        Text("weather.pressure")
+                            .infoTip(WeatherText.pressureTrendInfo, title: String(localized: "weather.pressure"))
+                    } else {
+                        Text("weather.pressure")
                     }
                 }
                 .font(AppTypography.body)

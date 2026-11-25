@@ -166,12 +166,12 @@ struct FollowRouteView: View {
         if session.isLocationDenied {
             Label("route.follow.denied", systemImage: "location.slash")
                 .font(AppTypography.bodyEmphasis)
-                .foregroundStyle(AppColors.destructive)
+                .foregroundStyle(AppColors.Status.negativeText)
         } else if let progress = session.progress {
             if progress.isFinished {
                 Label("route.follow.finished", systemImage: "flag.checkered")
                     .font(AppTypography.h3)
-                    .foregroundStyle(AppColors.success)
+                    .foregroundStyle(AppColors.Status.positiveText)
             } else if progress.isApproaching {
                 VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                     Text("route.follow.approach \(TripFormat.distance(progress.distanceToRoute))")
@@ -189,7 +189,7 @@ struct FollowRouteView: View {
                             Image(systemName: "exclamationmark.triangle.fill")
                         }
                         .font(AppTypography.bodyEmphasis)
-                        .foregroundStyle(AppColors.destructive)
+                        .foregroundStyle(AppColors.Status.negativeText)
                     }
                     Text("route.follow.remaining \(TripFormat.distance(progress.remaining))")
                         .font(AppTypography.h3)

@@ -660,9 +660,9 @@ struct BackendStatusCard: View {
 
     private var color: Color {
         switch state {
-        case .connected: AppColors.success
+        case .connected: AppColors.Status.positiveText
         case .checking: AppColors.textSecondary
-        case .notConfigured, .failed: AppColors.warning
+        case .notConfigured, .failed: AppColors.Status.warningText
         }
     }
 }

@@ -88,23 +88,23 @@ struct UsernameOnboardingView: View {
             Text(verbatim: " ")
         case .invalidFormat:
             Label("onboarding.username.invalid", systemImage: "xmark.circle")
-                .foregroundStyle(AppColors.destructive)
+                .foregroundStyle(AppColors.Status.negativeText)
         case .checking:
             Label("onboarding.username.checking", systemImage: "hourglass")
                 .foregroundStyle(AppColors.textSecondary)
         case .available:
             Label("onboarding.username.available", systemImage: "checkmark.circle.fill")
-                .foregroundStyle(AppColors.success)
+                .foregroundStyle(AppColors.Status.positiveText)
         case .unavailable:
             Label("onboarding.username.taken", systemImage: "xmark.circle.fill")
-                .foregroundStyle(AppColors.destructive)
+                .foregroundStyle(AppColors.Status.negativeText)
         case .failed:
             Label("onboarding.username.failed", systemImage: "wifi.slash")
-                .foregroundStyle(AppColors.warning)
+                .foregroundStyle(AppColors.Status.warningText)
         }
         if let saveError {
             Text(saveError)
-                .foregroundStyle(AppColors.destructive)
+                .foregroundStyle(AppColors.Status.negativeText)
         }
     }
 

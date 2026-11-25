@@ -7157,6 +7157,52 @@
         }
       }
     },
+    "infoTip.about" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About %@"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Түсіндірме: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пояснение: %@"
+          }
+        }
+      }
+    },
+    "infoTip.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More information"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Түсіндірме"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пояснение"
+          }
+        }
+      }
+    },
     "intro.language %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -13271,6 +13317,75 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Удалить фото"
+          }
+        }
+      }
+    },
+    "picker.create" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create “%@”"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» жасау"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создать «%@»"
+          }
+        }
+      }
+    },
+    "picker.noResults" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing found"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ештеңе табылмады"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ничего не найдено"
+          }
+        }
+      }
+    },
+    "picker.search" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search"
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Іздеу"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поиск"
           }
         }
       }
@@ -25610,6 +25725,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld гПа"
+          }
+        }
+      }
+    },
+    "weather.pressure.info %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How much the pressure has changed over the last 24 hours. Under %@ up or down, it is steady."
+          }
+        },
+        "kk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Қысымның соңғы 24 сағаттағы өзгерісі. Өзгеріс %@ шегінен аз болса — тұрақты."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Насколько давление изменилось за последние 24 часа. Меньше %@ вверх или вниз — стабильное."
           }
         }
       }

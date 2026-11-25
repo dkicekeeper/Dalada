@@ -261,7 +261,7 @@ struct RelationshipBadge: View {
         if profile.isFriend {
             Label("person.friends", systemImage: "checkmark")
                 .labelStyle(.iconOnly)
-                .foregroundStyle(AppColors.success)
+                .foregroundStyle(AppColors.Status.positiveText)
                 .accessibilityLabel(Text("person.friends"))
         } else if profile.requestStatus == .outgoing {
             Text("person.requested")
@@ -432,7 +432,7 @@ struct UserProfileView: View {
         Group {
             if profile.isFriend {
                 Label("person.friends", systemImage: "person.2.fill")
-                    .foregroundStyle(AppColors.success)
+                    .foregroundStyle(AppColors.Status.positiveText)
                     .font(AppTypography.bodyEmphasis)
             } else if profile.requestStatus == .outgoing {
                 Button {
