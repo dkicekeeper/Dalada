@@ -364,7 +364,7 @@ struct ZoneBanCalendar: View {
         ) { _ in
             Image(systemName: "nosign")
                 .font(.system(size: 11, weight: .bold)) // design-lint:ignore значок в клетке календаря, размер под клетку
-                .foregroundStyle(AppColors.destructive)
+                .foregroundStyle(AppColors.Status.negativeText)
         }
         .task(id: bans.map(\.id)) {
             let calendar = range.calendar

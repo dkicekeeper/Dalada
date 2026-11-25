@@ -212,11 +212,11 @@ struct TripRecordingView: View {
                 if recorder.phase == .paused {
                     Label("trip.paused", systemImage: "pause.circle.fill")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.warning)
+                        .foregroundStyle(AppColors.Status.warningText)
                 } else if recorder.isAutoPaused {
                     Label("trip.autoPaused", systemImage: "pause.circle")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.warning)
+                        .foregroundStyle(AppColors.Status.warningText)
                 }
             }
             if recorder.isAutoPaused {
@@ -1104,7 +1104,7 @@ struct TripCheckinRow: View {
                 }
                 if checkin.verified {
                     Image(systemName: "checkmark.seal.fill")
-                        .foregroundStyle(AppColors.success)
+                        .foregroundStyle(AppColors.Status.positiveText)
                         .accessibilityLabel(Text("report.verified"))
                 }
                 Spacer(minLength: 0)

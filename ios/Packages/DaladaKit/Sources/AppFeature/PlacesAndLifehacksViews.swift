@@ -25,7 +25,7 @@ struct PlaceRow: View {
             .label(Text(LocalizedStringKey(place.visibility.titleKey)), systemImage: place.visibility.systemImage),
         ]
         if place.status == .pending {
-            labels.append(.label(Text("place.status.pending"), systemImage: "hourglass", tint: AppColors.warning))
+            labels.append(.label(Text("place.status.pending"), systemImage: "hourglass", tint: AppColors.Status.warningText))
         }
         return labels
     }

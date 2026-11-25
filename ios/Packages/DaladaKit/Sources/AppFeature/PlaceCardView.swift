@@ -297,7 +297,7 @@ struct PlaceCardView: View {
             .label(Text(LocalizedStringKey(place.visibility.titleKey)), systemImage: place.visibility.systemImage),
         ]
         if place.status == .pending {
-            facts.append(.label(Text("place.status.pending"), systemImage: "hourglass", tint: AppColors.warning))
+            facts.append(.label(Text("place.status.pending"), systemImage: "hourglass", tint: AppColors.Status.warningText))
         }
         if place.isApproximate {
             facts.append(.label(Text("place.card.approximateShort"), systemImage: "circle.dashed"))
@@ -726,7 +726,7 @@ struct ReportRow: View {
                 }
                 if report.verified {
                     Image(systemName: "checkmark.seal.fill")
-                        .foregroundStyle(AppColors.success)
+                        .foregroundStyle(AppColors.Status.positiveText)
                         .accessibilityLabel(Text("report.verified"))
                 }
                 Spacer(minLength: 0)

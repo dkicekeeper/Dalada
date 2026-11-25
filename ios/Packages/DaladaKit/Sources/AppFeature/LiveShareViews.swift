@@ -102,7 +102,7 @@ struct LiveShareRow: View {
                     HStack(spacing: AppSpacing.sm) {
                         // Трансляция идёт — значок «дышит» (DesignKit; без движения под Reduce Motion).
                         Image(systemName: "dot.radiowaves.left.and.right")
-                            .foregroundStyle(AppColors.success)
+                            .foregroundStyle(AppColors.Status.positiveText)
                             .symbolPulse(.breathe)
                         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                             Text("live.sharing \(share.viewerIDs.count)")

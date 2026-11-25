@@ -191,7 +191,7 @@ struct GearSummaryView: View {
                 HStack(spacing: AppSpacing.md) {
                     if repairCount > 0 {
                         Label("gear.summary.repair \(repairCount)", systemImage: GearStatus.repair.systemImage)
-                            .foregroundStyle(AppColors.warning)
+                            .foregroundStyle(AppColors.Status.warningText)
                     }
                     if buyCount > 0 {
                         Label("gear.summary.buy \(buyCount)", systemImage: GearStatus.buy.systemImage)
@@ -239,7 +239,7 @@ struct GearRow: View {
             if item.status != .ok {
                 Label(LocalizedStringKey(item.status.titleKey), systemImage: item.status.systemImage)
                     .labelStyle(.iconOnly)
-                    .foregroundStyle(item.status == .repair ? AppColors.warning : AppColors.accent)
+                    .foregroundStyle(item.status == .repair ? AppColors.Status.warningText : AppColors.accent)
             }
         }
     }
@@ -476,7 +476,9 @@ struct PopularGearView: View {
     }
 }
 
-/// Выбор предметов своей экипировки для чеклиста.
+/// Выбор предметов своей экипировки для чеклиста: поиск по названию, категории и бренду, несколько
+/// сразу и «Создать «…»» для того, чего в экипировке ещё нет (`SearchablePicker`, DesignKit 8.9.0).
+/// Предметы, которые уже в чеклисте, не предлагаются.
 struct GearPickerView: View {
     /// Уже есть в чеклисте.
     let excluded: Set<UUID>
@@ -486,62 +488,66 @@ struct GearPickerView: View {
     @Environment(ListsStore.self) private var lists
     @State private var selected: Set<UUID> = []
 
-    var body: some View {
-        NavigationStack {
-            // DesignKit 8.0.0: стеклянные секции на странице (до этого List).
-            ScrollView {
-                VStack(alignment: .leading, spacing: AppSpacing.xl) {
-                    ForEach(GearCategorySummary.make(lists.gear)) { summary in
-                        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                            GearCategoryHeader(category: summary.category)
-                            FormSection {
-                                ForEach(lists.gear.filter { $0.category == summary.category }) { item in
-                                    row(item)
-                                }
-                            }
-                        }
-                    }
-                }
-                .screenPadding()
-                .padding(.vertical, AppSpacing.md)
-            }
-            .navigationTitle("checklist.addFromGear")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("common.cancel") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("gear.addSelected \(selected.count)") {
-                        onPick(lists.gear.filter { selected.contains($0.id) })
-                        dismiss()
-                    }
-                    .disabled(selected.isEmpty)
-                }
-            }
+    /// В порядке экипировки (по категориям, внутри — свой порядок); под названием — категория,
+    /// бренд, количество, вес и «починить» / «купить», поиск смотрит и в эту строку.
+    private var options: [SearchablePickerOption<UUID>] {
+        lists.gear.filter { !excluded.contains($0.id) }.map { item in
+            SearchablePickerOption(
+                item.name,
+                value: item.id,
+                subtitle: Self.details(item),
+                systemImage: item.category.systemImage
+            )
         }
     }
 
-    private func row(_ item: GearItem) -> some View {
-        let isAdded = excluded.contains(item.id)
-        let isSelected = selected.contains(item.id)
-        return Button {
-            if isSelected {
-                selected.remove(item.id)
-            } else {
-                selected.insert(item.id)
-            }
-        } label: {
-            HStack(spacing: AppSpacing.md) {
-                SelectionIndicator(isSelected: isAdded || isSelected, tint: isSelected ? AppColors.accent : AppColors.textTertiary)
-                GearRow(item: item)
-            }
-            .contentShape(Rectangle())
+    /// Отмеченные, которых ещё нет в чеклисте.
+    private var picked: [GearItem] {
+        lists.gear.filter { selected.contains($0.id) && !excluded.contains($0.id) }
+    }
+
+    var body: some View {
+        NavigationStack {
+            SearchablePicker(options, selection: $selected) { name in create(name) }
+                .navigationTitle("checklist.addFromGear")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("common.cancel") { dismiss() }
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("gear.addSelected \(picked.count)") {
+                            onPick(picked)
+                            dismiss()
+                        }
+                        .disabled(picked.isEmpty)
+                    }
+                }
         }
-        .buttonStyle(.plain)
-        // Под текстом: после круга выбора и промежутка (метка кнопки не передаёт отступ).
-        .rowDividerInset(AppIconSize.lg + AppSpacing.md)
-        .accessibilityAddTraits(isAdded || isSelected ? .isSelected : [])
-        .disabled(isAdded)
+    }
+
+    /// «Создать «…»»: новый предмет экипировки в «Прочем» (категорию, вес и остальное можно
+    /// поправить в «Экипировке»), он сразу отмечен. Предмет с таким названием уже в чеклисте —
+    /// ничего не создаётся.
+    private func create(_ name: String) -> UUID? {
+        if let existing = lists.gear.first(where: {
+            $0.name.compare(name, options: [.caseInsensitive, .diacriticInsensitive]) == .orderedSame
+        }) {
+            return excluded.contains(existing.id) ? nil : existing.id
+        }
+        let item = GearItem(name: name)
+        guard item.isValid else { return nil }
+        lists.save(item)
+        return item.id
+    }
+
+    /// «Удилища · Shimano · ×2 · 620 г · Починить».
+    private static func details(_ item: GearItem) -> String {
+        var parts = [String(localized: String.LocalizationValue(item.category.titleKey))]
+        if let brand = item.brand { parts.append(brand) }
+        if item.quantity > 1 { parts.append("×\(item.quantity)") }
+        if let total = item.totalWeightGrams { parts.append(GearFormat.weight(total)) }
+        if item.status != .ok { parts.append(String(localized: String.LocalizationValue(item.status.titleKey))) }
+        return parts.joined(separator: " · ")
     }
 }

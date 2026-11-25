@@ -149,7 +149,7 @@ struct IntroOnboardingView: View {
                 case .downloaded:
                     Text(verbatim: "·")
                     Label("intro.offline.done", systemImage: "checkmark.circle.fill")
-                        .foregroundStyle(AppColors.success)
+                        .foregroundStyle(AppColors.Status.positiveText)
                 default:
                     EmptyView()
                 }

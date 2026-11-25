@@ -47,9 +47,7 @@ struct ConsentView: View {
                     .toggleStyle(.switch)
 
                     if let error {
-                        Text(verbatim: error)
-                            .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.destructive)
+                        InlineStatusText(message: error, type: .error)
                     }
 
                     Button {

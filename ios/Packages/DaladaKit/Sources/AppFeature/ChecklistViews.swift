@@ -415,7 +415,9 @@ struct ChecklistDetailView: View {
                         .disabled(newItemTitle.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
                     .padding(.vertical, AppSpacing.lg)
-                    if !lists.gear.isEmpty {
+                    // Пока в экипировке есть то, чего нет в чеклисте: уже добавленное выбор не
+                    // предлагает, и пустой список открывать незачем.
+                    if lists.gear.contains(where: { gear in !checklist.items.contains { $0.gearID == gear.id } }) {
                         UniversalRow(String(localized: "checklist.addFromGear"), icon: "backpack", accessory: .action {
                             picksGear = true
                         })
@@ -535,7 +537,7 @@ struct ChecklistProgressHeader: View {
                     if checklist.isComplete {
                         Label("packing.complete", systemImage: "checkmark.seal.fill")
                             .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.success)
+                            .foregroundStyle(AppColors.Status.positiveText)
                     }
                 }
                 LinearProgressBar(

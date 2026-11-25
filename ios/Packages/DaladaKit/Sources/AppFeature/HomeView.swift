@@ -453,7 +453,7 @@ struct FeedPostCard: View {
                 .foregroundStyle(AppColors.textPrimary)
                 if verified {
                     Image(systemName: "checkmark.seal.fill")
-                        .foregroundStyle(AppColors.success)
+                        .foregroundStyle(AppColors.Status.positiveText)
                         .accessibilityLabel(Text("report.verified"))
                 }
                 Spacer(minLength: 0)
