@@ -1,4 +1,4 @@
-"""Страницы сайта из данных Dalada для поиска и ссылок из постов (docs/05-release/promotion.md,
+"""Страницы сайта из данных Dalada для поиска и ссылок из постов (docs/promotion.md,
 «Сайт и поиск»):
 
 - a/ — статьи редакции (public.articles): a/<id>/ по-русски, a/<id>/kk.html и en.html; список — a/,

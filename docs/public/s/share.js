@@ -93,7 +93,7 @@
   })();
 
   // Метка кампании App Store Connect (ct) по виду страницы — видно, сколько установок дали ссылки
-  // каждого вида (docs/05-release/promotion.md, «Метки кампаний»). Только суммы, без слежки.
+  // каждого вида (docs/promotion.md, «Метки кампаний»). Только суммы, без слежки.
   var campaigns = { place: "site-place", trip: "site-share", "catch": "site-share", invite: "trip-invite", friend: "invite" };
 
   // Своя метка из адреса страницы — для QR-табличек и постов: …/p/<id>/?ct=qr-<место>.

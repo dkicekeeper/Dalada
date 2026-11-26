@@ -5,7 +5,7 @@ import DesignTokens
 import SwiftUI
 import Sync
 
-/// Корень приложения: Главная, Карта, Места, Лайфхаки, Профиль (docs/04-beta/M10-home.md).
+/// Корень приложения: Главная, Карта, Места, Лайфхаки, Профиль (docs/archive/plans/M10-home.md).
 public struct RootView: View {
     private let environment: AppEnvironment
     private let background: BackgroundSync

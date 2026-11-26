@@ -4,7 +4,7 @@ import Foundation
 ///
 /// Значения приходят из Info.plist, куда их подставляет сборка из `Config/Secrets.xcconfig`.
 /// Позже сюда добавится удалённая конфигурация (`config.json`), чтобы переезд бэкенда
-/// не требовал обновления приложения — см. docs/03-architecture/01-ios-app.md.
+/// не требовал обновления приложения — см. docs/architecture-ios-app.md.
 public struct AppConfig: Sendable, Equatable {
     /// Адрес Supabase; `nil`, если ключи не настроены.
     public let supabaseURL: URL?

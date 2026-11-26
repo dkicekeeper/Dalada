@@ -10,7 +10,7 @@
 
 Файлы события: event.json (сроки, тексты RU и EN, номинация) и картинки card.jpg (1920 × 1080) и
 details.jpg (1080 × 1920) — рисует appstore/events/render.mjs по appstore/events/art/<событие>.html.
-Тексты и порядок — docs/05-release/promotion-texts.md, план — docs/05-release/promotion.md.
+Тексты и порядок — docs/promotion-texts.md, план — docs/promotion.md.
 
 Повторный запуск не плодит копий: событие ищется по referenceName, номинация — по name. Пока событие
 на проверке или уже одобрено, его тексты не трогаем. Номинация прикрепляет событие, когда Apple его

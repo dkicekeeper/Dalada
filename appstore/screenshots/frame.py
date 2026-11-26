@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Скриншоты для App Store: снимок экрана в рамке с подписью (docs/05-release/README.md#скриншоты).
+"""Скриншоты для App Store: снимок экрана в рамке с подписью (docs/release.md#скриншоты).
 
     python3 appstore/screenshots/frame.py <снимки> <готовые> --font Inter.ttf [--language ru]
 

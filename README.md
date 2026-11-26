@@ -6,7 +6,7 @@
 английский.
 
 **В [App Store Казахстана](https://apps.apple.com/kz/app/dalada/id6817603558)** с 2026-11-01,
-бесплатно, для iPhone. Какая версия сейчас и что на проверке — [`docs/05-release/README.md`](docs/05-release/README.md). Сайт — [dkicekeeper.github.io/Dalada](https://dkicekeeper.github.io/Dalada/).
+бесплатно, для iPhone. Какая версия сейчас и что на проверке — [`docs/release.md`](docs/release.md). Сайт — [dkicekeeper.github.io/Dalada](https://dkicekeeper.github.io/Dalada/).
 
 Формула продукта: **Strava** (профиль, поездки, статистика, друзья) + **Foursquare/Swarm**
 (места, чекины, краудсорсинг) + локальная специфика Казахстана (водоёмы, запреты, нацпарки,
@@ -26,24 +26,24 @@
 
 | Этап | Результат | Статус |
 |------|-----------|--------|
-| 1. Анализ рынка и конкурентов | [`docs/01-market-analysis.md`](docs/01-market-analysis.md) | ✅ готово |
-| 2. План по каждому разделу | [`docs/02-plan/`](docs/02-plan/README.md) | ✅ готово, решения приняты |
-| 3. Архитектура и стек | [`docs/03-architecture/`](docs/03-architecture/README.md) | ✅ готово, решения приняты (Supabase, TypeScript, MapLibre) |
-| 4–5. Спецификации и реализация по вехам | [`docs/04-beta/`](docs/04-beta/README.md) | ✅ бета завершена: вехи M0–M34 вошли в 1.0 |
-| 6. Релиз 1.0 в App Store | [`docs/05-release/`](docs/05-release/README.md) | ✅ 2026-11-01 версия 1.0.0 в App Store Казахстана; дальше — R4 «После выхода» |
+| 1. Анализ рынка и конкурентов | [`docs/market-analysis.md`](docs/market-analysis.md) | ✅ готово |
+| 2. План по каждому разделу | [`docs/product-plan.md`](docs/product-plan.md) | ✅ готово, решения приняты |
+| 3. Архитектура и стек | [`docs/architecture.md`](docs/architecture.md) | ✅ готово, решения приняты (Supabase, TypeScript, MapLibre) |
+| 4–5. Спецификации и реализация по вехам | [`docs/archive/plans/beta-milestones.md`](docs/archive/plans/beta-milestones.md) | ✅ бета завершена: вехи M0–M34 вошли в 1.0 |
+| 6. Релиз 1.0 в App Store | [`docs/release.md`](docs/release.md) | ✅ 2026-11-01 версия 1.0.0 в App Store Казахстана; дальше — R4 «После выхода» |
 
 ## Документы
 
-- [`docs/00-product-brief.md`](docs/00-product-brief.md) — бриф продукта, принятые решения, дизайн-система
-- [`docs/01-market-analysis.md`](docs/01-market-analysis.md) — рынок, конкуренты, сегменты, риски, монетизация
-- [`docs/02-plan/`](docs/02-plan/README.md) — план продукта: принципы, навигация, модель данных, релизы,
+- [`docs/product-brief.md`](docs/product-brief.md) — бриф продукта, принятые решения, дизайн-система
+- [`docs/market-analysis.md`](docs/market-analysis.md) — рынок, конкуренты, сегменты, риски, монетизация
+- [`docs/product-plan.md`](docs/product-plan.md) — план продукта: принципы, навигация, модель данных, релизы,
   планы по вкладкам и сквозным темам
-- [`docs/03-architecture/`](docs/03-architecture/README.md) — архитектура и стек: iOS, бэкенд на Supabase, карты, инфраструктура и переезд в РК
-- [`docs/04-beta/`](docs/04-beta/README.md) — бета: вехи M0–M34 и их спецификации, настройка окружения, TestFlight
-- [`docs/05-release/`](docs/05-release/README.md) — релиз 1.0 и **текущее состояние**: что после выхода, выпуск обновлений, решения, страница App Store и скриншоты
-- [`docs/05-release/promotion.md`](docs/05-release/promotion.md) — продвижение на год: воронка, каналы, календарь по сезонам, бюджет, метрики без слежки, первые 30 дней; готовые тексты — [`promotion-texts.md`](docs/05-release/promotion-texts.md)
-- [`docs/05-release/content.md`](docs/05-release/content.md) — наполнение мест: аудит, процесс, очередь и журнал волн, метрики
-- [`docs/05-release/kk-proofreading.md`](docs/05-release/kk-proofreading.md) — что на казахском ещё ждёт вычитки носителем
+- [`docs/architecture.md`](docs/architecture.md) — архитектура и стек: iOS, бэкенд на Supabase, карты, инфраструктура и переезд в РК
+- [`docs/archive/plans/beta-milestones.md`](docs/archive/plans/beta-milestones.md) — бета: вехи M0–M34 и их спецификации, настройка окружения, TestFlight
+- [`docs/release.md`](docs/release.md) — релиз 1.0 и **текущее состояние**: что после выхода, выпуск обновлений, решения, страница App Store и скриншоты
+- [`docs/promotion.md`](docs/promotion.md) — продвижение на год: воронка, каналы, календарь по сезонам, бюджет, метрики без слежки, первые 30 дней; готовые тексты — [`promotion-texts.md`](docs/promotion-texts.md)
+- [`docs/content.md`](docs/content.md) — наполнение мест: аудит, процесс, очередь и журнал волн, метрики
+- [`docs/kk-proofreading.md`](docs/kk-proofreading.md) — что на казахском ещё ждёт вычитки носителем
 - [`docs/naming.md`](docs/naming.md) — название: выбор Dalada и оставшиеся проверки
 
 ## Код
@@ -53,11 +53,11 @@
 - [`map/`](map) — своя карта: стили, сборка тайлов и рельефа для Cloudflare R2
 - [`appstore/`](appstore) — тексты App Store и TestFlight, скрипты App Store Connect API, рамки скриншотов
 - [`docs/public/`](docs/public) — сайт на GitHub Pages: главная, политика, условия, поддержка, страницы «Поделиться»
-- [`.github/workflows/`](.github/workflows) — CI, сборки, выпуск, карта, сайт, бэкапы ([список](docs/03-architecture/04-infra.md#cicd))
-- Как собрать и проверить — в [`docs/04-beta/README.md`](docs/04-beta/README.md#настройка-окружения-сделано) и [`CLAUDE.md`](CLAUDE.md)
+- [`.github/workflows/`](.github/workflows) — CI, сборки, выпуск, карта, сайт, бэкапы ([список](docs/architecture-infra.md#cicd))
+- Как собрать и проверить — в [`docs/archive/plans/beta-milestones.md`](docs/archive/plans/beta-milestones.md#настройка-окружения-сделано) и [`CLAUDE.md`](CLAUDE.md)
 
 ## Дизайн-система
 
 UI строится на [DesignKit](https://github.com/dkicekeeper/DesignKit) — SwiftUI-дизайн-системе,
 вынесенной из приложения Tenra (iOS 26+, Liquid Glass, шрифт Inter). Заметки о том, что из неё
-переиспользуем и что придётся добавить, — в [брифе](docs/00-product-brief.md#дизайн-система-designkit).
+переиспользуем и что придётся добавить, — в [брифе](docs/product-brief.md#дизайн-система-designkit).

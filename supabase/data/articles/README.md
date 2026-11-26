@@ -59,4 +59,4 @@ Studio — приложение подхватит их в течение час
 (места и сезоны).
 
 Казахский и английский тексты статей — черновик на вычитку носителем (список —
-[docs/05-release/kk-proofreading.md](../../../docs/05-release/kk-proofreading.md)).
+[docs/kk-proofreading.md](../../../docs/kk-proofreading.md)).

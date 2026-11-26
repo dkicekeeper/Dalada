@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Сборка сайта для GitHub Pages: docs/public и страницы «Поделиться» (docs/04-beta/M29-web-share.md).
+"""Сборка сайта для GitHub Pages: docs/public и страницы «Поделиться» (docs/archive/plans/M29-web-share.md).
 
 - _site/s/index.html и _site/404.html — страница места, поездки, улова (данные грузит браузер);
 - _site/p/<id>/index.html — статическая страница каждого публичного места с превью для Telegram
@@ -11,7 +11,7 @@
 - _site/sitemap.xml — главная, пресс-страница, статьи, запреты и страницы мест для поисковиков
   (страницы поездок, уловов и приглашений закрыты от индексации: это записи людей);
 - метки кампаний App Store Connect в ссылках на App Store (переменная репозитория APP_STORE_PT) и
-  метатег Google Search Console (GOOGLE_SITE_VERIFICATION) — docs/05-release/promotion.md.
+  метатег Google Search Console (GOOGLE_SITE_VERIFICATION) — docs/promotion.md.
 
 Без секретов или без сети сайт всё равно собирается — только без страниц мест, статей и запретов.
 Ключ и адрес в журнал не печатаем: репозиторий публичный.
@@ -33,10 +33,10 @@ ORIGIN = os.environ.get("SITE_ORIGIN", "https://dkicekeeper.github.io")
 PHOTOS = "https://pub-06c03b3c9f2e4de7b1a196206e04c258.r2.dev"
 TEMPLATE = os.path.join(SOURCE, "s", "page.template.html")
 # Apple ID приложения в App Store (вышло 2026-11-01): кнопка App Store и баннер Safari вместо
-# приглашения в бету (docs/05-release/README.md, R3). Пустой APP_STORE_ID в окружении — снова бета.
+# приглашения в бету (docs/release.md, R3). Пустой APP_STORE_ID в окружении — снова бета.
 APP_STORE_ID = os.environ.get("APP_STORE_ID", "6817603558")
 APP_STORE_URL = "https://apps.apple.com/kz/app/dalada/id" + APP_STORE_ID if APP_STORE_ID else ""
-# Метки кампаний (docs/05-release/promotion.md, «Метки кампаний»): pt — токен поставщика, один на
+# Метки кампаний (docs/promotion.md, «Метки кампаний»): pt — токен поставщика, один на
 # аккаунт разработчика (App Store Connect → Analytics → Acquisition → Campaigns → Generate Campaign
 # Link), ct — вид ссылки. App Store Connect показывает по ним только суммы. Без pt — ссылки без меток.
 

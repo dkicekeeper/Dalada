@@ -96,7 +96,7 @@ targets:
         ENABLE_USER_SCRIPT_SANDBOXING: YES
 
   # Скриншоты для App Store: UI-тест снимает экраны под демо-аккаунтом (workflow Screenshots,
-  # docs/05-release/README.md#скриншоты). В обычной сборке и архиве не участвует.
+  # docs/release.md#скриншоты). В обычной сборке и архиве не участвует.
   DaladaScreenshots:
     type: bundle.ui-testing
     platform: iOS
