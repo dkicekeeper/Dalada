@@ -146,7 +146,7 @@ struct FriendsView: View {
             InviteView()
         }
         .task { await load() }
-        .refreshable { await load() }
+        .dsRefreshable { await load() }
     }
 
     private func load() async {
@@ -424,7 +424,7 @@ struct UserProfileView: View {
             .screenPadding()
             .padding(.vertical, AppSpacing.xl)
         }
-        .refreshable { await load() }
+        .dsRefreshable { await load() }
     }
 
     @ViewBuilder

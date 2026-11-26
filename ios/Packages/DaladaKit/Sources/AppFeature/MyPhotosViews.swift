@@ -119,7 +119,7 @@ struct MyPhotosView: View {
         .navigationTitle(Text("profile.photos.title"))
         .navigationBarTitleDisplayMode(.inline)
         .task { await reload() }
-        .refreshable { await reload() }
+        .dsRefreshable { await reload() }
         .fullScreenCover(item: $opened) { photo in
             PhotoViewer(media: photos.map(\.reportMedia), urls: urls, selection: photo.id)
         }

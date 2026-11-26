@@ -123,7 +123,7 @@ struct CommentsView: View {
             }
         }
         .task { await load() }
-        .refreshable { await load() }
+        .dsRefreshable { await load() }
         .safeAreaBar(edge: .bottom) {
             composer
         }
