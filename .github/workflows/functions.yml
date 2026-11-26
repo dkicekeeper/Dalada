@@ -3,7 +3,7 @@ name: Edge Functions
 # Деплой Edge Functions (supabase/functions) в облачный проект при изменениях в main.
 # Секреты репозитория: SUPABASE_ACCESS_TOKEN (supabase.com → Account → Access Tokens) и
 # SUPABASE_PROJECT_REF (id проекта из адреса дашборда). Секреты самих функций (APNs и т. п.) —
-# в Supabase → Edge Functions → Secrets, см. docs/archive/plans/M6-beta-readiness.md.
+# в Supabase → Edge Functions → Secrets, см. docs/04-beta/M6-beta-readiness.md.
 on:
   push:
     branches: [main]
@@ -42,7 +42,7 @@ jobs:
       - name: Deploy push
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_PROJECT_REF" ]; then
-            echo "::warning::Нет секретов SUPABASE_ACCESS_TOKEN / SUPABASE_PROJECT_REF — функция не задеплоена (docs/archive/plans/M6-beta-readiness.md)."
+            echo "::warning::Нет секретов SUPABASE_ACCESS_TOKEN / SUPABASE_PROJECT_REF — функция не задеплоена (docs/04-beta/M6-beta-readiness.md)."
             exit 0
           fi
           supabase functions deploy push --project-ref "$SUPABASE_PROJECT_REF" --no-verify-jwt

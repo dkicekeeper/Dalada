@@ -14,11 +14,11 @@
 
 Версию берёт ту, что готовится к отправке, или создаёт (номер — MARKETING_VERSION из
 ios/project.yml). Сборку к версии не привязывает и на проверку не отправляет — это
-appstore/release.py (docs/release.md, R3).
+appstore/release.py (docs/05-release/README.md, R3).
 
 Рекламный текст (promotional_text.txt) Apple разрешает менять и у версии, которая уже в App Store,
 без проверки — его отправляем и туда: так текст под сезон виден сразу, не дожидаясь обновления
-(docs/promotion.md, «Страница и ключевые слова»).
+(docs/05-release/promotion.md, «Страница и ключевые слова»).
 Нужны ASC_KEY_ID, ASC_ISSUER_ID и ASC_KEY_PATH — как у appstore/testflight_info.py.
 """
 
