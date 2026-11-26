@@ -1,7 +1,7 @@
 name: App Store featuring
 
 # События App Store (In-App Events) и номинации на рекомендацию из appstore/events/<событие>/
-# (appstore/featuring.py, docs/05-release/promotion-texts.md). На любой ветке — проверка файлов;
+# (appstore/featuring.py, docs/promotion-texts.md). На любой ветке — проверка файлов;
 # вручную из main — отправка в App Store Connect: Actions → App Store featuring → Run workflow.
 # Ключ — те же секреты ASC_*, что у TestFlight (роль ключа: Admin, App Manager или Marketing).
 on:
@@ -56,7 +56,7 @@ jobs:
           WITH_VERSION: ${{ inputs.with_version }}
         run: |
           if [ -z "$ASC_KEY_ID" ] || [ -z "$ASC_ISSUER_ID" ] || [ -z "$ASC_KEY_P8" ]; then
-            echo "::error::Нет секретов ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8 (docs/04-beta/testflight.md)"
+            echo "::error::Нет секретов ASC_KEY_ID / ASC_ISSUER_ID / ASC_KEY_P8 (docs/testflight.md)"
             exit 1
           fi
           if ! [[ "$EVENT" =~ ^[a-z0-9_]{1,40}$ ]]; then

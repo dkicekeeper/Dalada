@@ -1,0 +1,64 @@
+# Стандарт ведения проекта Warehouse: проверка дерева docs/ и блок правил в CLAUDE.md.
+# Копия standard/workflow.yml из https://github.com/dkicekeeper/Warehouse; править там.
+name: Standard
+
+on:
+  pull_request:
+  push:
+    branches: [main, 'claude/**']
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: standard-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Docs follow the standard
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with:
+          repository: dkicekeeper/Warehouse
+          ref: main
+          path: .warehouse
+          sparse-checkout: standard
+          persist-credentials: false
+      - run: python3 -I .warehouse/standard/lint.py --root .
+
+  sync:
+    name: Rules block in CLAUDE.md
+    if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
+        with:
+          repository: dkicekeeper/Warehouse
+          ref: main
+          path: .warehouse
+          sparse-checkout: standard
+          persist-credentials: false
+      - run: python3 -I .warehouse/standard/sync_block.py CLAUDE.md
+      - name: Commit the block if it changed
+        run: |
+          if git diff --quiet -- CLAUDE.md; then
+            echo "The block is current." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CLAUDE.md
+          git commit -m "Update the Warehouse standard block"
+          git push origin HEAD:main

@@ -1,6 +1,6 @@
 import XCTest
 
-/// Скриншоты для App Store (workflow Screenshots, docs/05-release/README.md#скриншоты).
+/// Скриншоты для App Store (workflow Screenshots, docs/release.md#скриншоты).
 ///
 /// Запускает приложение под демо-аккаунтом (вход сам, в отладочной сборке — `SessionStore.start`) и
 /// снимает экраны; каждый снимок — вложение с именем экрана в результатах теста. Окружение — от

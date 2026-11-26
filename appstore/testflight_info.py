@@ -120,7 +120,7 @@ def update_app_information(app_id: str) -> bool:
 
     detail = call("GET", f"/apps/{app_id}/betaAppReviewDetail")["data"]
     attributes = {"notes": text("review_notes.txt")}
-    # Демо-аккаунт для проверяющих Apple (почта и пароль, см. docs/04-beta/testflight.md) — из
+    # Демо-аккаунт для проверяющих Apple (почта и пароль, см. docs/testflight.md) — из
     # секретов; в лог не выводится. Без секретов поля входа не трогаем.
     demo_user = os.environ.get("DEMO_USER", "").strip()
     demo_password = os.environ.get("DEMO_PASSWORD", "")
@@ -140,7 +140,7 @@ def update_app_information(app_id: str) -> bool:
         detail["attributes"].get("demoAccountRequired") and detail["attributes"].get("demoAccountName"))
     if not demo_ready:
         print("::warning::Демо-аккаунт для бета-проверки не задан (секреты ASC_DEMO_USER и ASC_DEMO_PASSWORD) — "
-              "без него Apple не проверит бету (Guideline 2.1(a)). См. docs/04-beta/testflight.md.")
+              "без него Apple не проверит бету (Guideline 2.1(a)). См. docs/testflight.md.")
     if missing:
         print(f"::warning::Контакт для бета-проверки: не заполнено — {', '.join(missing)}. "
               "App Store Connect → TestFlight → Test Information → Beta App Review Information.")
@@ -316,7 +316,7 @@ def main(argv: list[str]) -> None:
     update_build(build)
     if "--submit" in argv and not demo_ready:
         sys.exit("::error::Не отправляю на бета-проверку: нет демо-аккаунта (Guideline 2.1(a)). "
-                 "Задайте секреты ASC_DEMO_USER и ASC_DEMO_PASSWORD (docs/04-beta/testflight.md).")
+                 "Задайте секреты ASC_DEMO_USER и ASC_DEMO_PASSWORD (docs/testflight.md).")
     if "--submit" in argv:
         submit(app_id, build)
     report(app_id)

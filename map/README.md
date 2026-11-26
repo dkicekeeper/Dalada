@@ -6,7 +6,7 @@
 
 | Что | Где в бакете | Откуда |
 |-----|--------------|--------|
-| Тайлы `{z}/{x}/{y}.pbf`, масштабы 0–14 | `tiles/` | Planetiler (схема OpenMapTiles) из выгрузок Geofabrik: Казахстан + Кыргызстан, обрезка по `bounds` из `config.json` — весь Казахстан ([M34](../docs/04-beta/M34-kazakhstan-map.md)) |
+| Тайлы `{z}/{x}/{y}.pbf`, масштабы 0–14 | `tiles/` | Planetiler (схема OpenMapTiles) из выгрузок Geofabrik: Казахстан + Кыргызстан, обрезка по `bounds` из `config.json` — весь Казахстан ([M34](../docs/archive/plans/M34-kazakhstan-map.md)) |
 | Стили `liberty.ru.json`, `liberty.kk.json`, `liberty.en.json` | `styles/` | `build_style.py` из `style/liberty.json`: подписи на языке приложения |
 | Значки | `sprites/v1/` | `style/sprites/` |
 | Шрифты Noto Sans | `fonts/` | [maplibre/demotiles](https://github.com/maplibre/demotiles) |

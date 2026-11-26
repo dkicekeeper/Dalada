@@ -15,7 +15,7 @@
   - сборку с --build (её версия должна совпадать с версией в App Store Connect);
   - у обновлений — поэтапный выпуск за 7 дней и проверку «Что нового» (сам текст отправляет
     listing.py из listing/<локаль>/whats_new/<версия>.txt).
-На проверку не отправляет — это решение владельца (docs/05-release/README.md, R3). В конце
+На проверку не отправляет — это решение владельца (docs/release.md, R3). В конце
 печатает, что осталось сделать руками: имя и телефон для связи, скриншоты, сборка; анкету
 приватности (в API её нет) — напоминает.
 
@@ -36,7 +36,7 @@ ROOT = Path(__file__).resolve().parent
 LISTING = ROOT / "listing"
 PROJECT = ROOT.parent / "ios" / "project.yml"
 LOCALES = ["ru", "en-US"]
-# Витрина — только Казахстан (docs/05-release/README.md, решение 2).
+# Витрина — только Казахстан (docs/release.md, решение 2).
 TERRITORY = "KAZ"
 EDITABLE = {"PREPARE_FOR_SUBMISSION", "DEVELOPER_REJECTED", "REJECTED", "METADATA_REJECTED", "INVALID_BINARY"}
 
@@ -262,7 +262,7 @@ def attach_build(app_id: str, version: dict, version_string: str, number: str) -
 
 
 def update_phased_release(version: dict) -> None:
-    """Обновление выходит поэтапно, за 7 дней (docs/05-release/README.md, R4): ошибка в новой версии
+    """Обновление выходит поэтапно, за 7 дней (docs/release.md, R4): ошибка в новой версии
     не дойдёт сразу до всех. Включаем до отправки — начнётся, когда владелец нажмёт Release; в App Store
     Connect его можно приостановить или выпустить сразу всем."""
     try:
@@ -367,7 +367,7 @@ def main() -> None:
     check_screenshots(version)
     # Анкеты приватности в API нет: опубликована ли она, отсюда не видно.
     print("Анкета приватности (App Privacy): в API её нет — опубликована ли, смотреть в App Store Connect "
-          "(ответы — docs/05-release/README.md, «Анкеты»)")
+          "(ответы — docs/release.md, «Анкеты»)")
 
     lines = (["Осталось до отправки на проверку:"] + [f"- {item}" for item in todo] if todo
              else ["Всё, что есть в API, заполнено: версию можно отправлять на проверку (владелец)."])

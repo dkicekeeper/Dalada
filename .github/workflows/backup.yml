@@ -1,13 +1,13 @@
 name: Backup
 
-# Резервные копии рабочей базы и фото (docs/03-architecture/04-infra.md, «Бэкапы»).
+# Резервные копии рабочей базы и фото (docs/architecture-infra.md, «Бэкапы»).
 #
 # База — каждую ночь: роли, схема и данные через Supabase CLI (как в инструкции Supabase «Backup and
 # restore using the CLI») + расписание pg_cron → проверка восстановлением в чистую локальную базу →
 # шифрование age → закрытый бакет R2. Фото — раз в неделю: копия бакета Storage `media` в тот же бакет.
 # Политика конфиденциальности обещает, что копии перезаписываются в течение 30 дней: храним 29.
 #
-# Настройка (один раз, владелец, docs/03-architecture/04-infra.md#бэкапы):
+# Настройка (один раз, владелец, docs/architecture-infra.md#бэкапы):
 #   секреты  SUPABASE_DB_URL — строка подключения Session pooler (с паролем базы);
 #            BACKUP_R2_ACCESS_KEY_ID / BACKUP_R2_SECRET_ACCESS_KEY — токен R2 на бакет бэкапов
 #              (если нет — берём R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY, им нужен доступ к бакету);
@@ -57,7 +57,7 @@ jobs:
           [ -n "$SUPABASE_DB_URL" ] || missing+=("секрет SUPABASE_DB_URL")
           [[ "$AGE_RECIPIENT" =~ ^age1[0-9a-z]{58}$ ]] || missing+=("переменная BACKUP_AGE_RECIPIENT (age1…, 62 символа)")
           if [ ${#missing[@]} -gt 0 ]; then
-            for m in "${missing[@]}"; do echo "::warning::Бэкап базы не настроен: нет $m (docs/03-architecture/04-infra.md#бэкапы)"; done
+            for m in "${missing[@]}"; do echo "::warning::Бэкап базы не настроен: нет $m (docs/architecture-infra.md#бэкапы)"; done
             echo "ready=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi

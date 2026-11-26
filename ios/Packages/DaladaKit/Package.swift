@@ -3,7 +3,7 @@ import PackageDescription
 
 // Модули приложения Dalada. Зависимости идут только сверху вниз:
 // AppFeature → (DaladaUI, MapEngine, Backend, Sync → Persistence) → DaladaCore.
-// См. docs/03-architecture/01-ios-app.md.
+// См. docs/architecture-ios-app.md.
 let package = Package(
     name: "DaladaKit",
     defaultLocalization: "ru",

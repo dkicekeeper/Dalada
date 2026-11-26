@@ -7,7 +7,7 @@ name: TestFlight
 # Секреты репозитория (Settings → Secrets and variables → Actions):
 #   ASC_KEY_ID, ASC_ISSUER_ID, ASC_KEY_P8 — ключ App Store Connect API (роль Admin),
 #   SUPABASE_HOST, SUPABASE_KEY — как в ios/Config/Secrets.xcconfig.
-# Пошагово — docs/04-beta/testflight.md.
+# Пошагово — docs/testflight.md.
 on:
   workflow_dispatch:
 
@@ -41,7 +41,7 @@ jobs:
             [ -n "${!name}" ] || missing="$missing $name"
           done
           if [ -n "$missing" ]; then
-            echo "::error::Не заданы секреты:$missing (см. docs/04-beta/testflight.md)"
+            echo "::error::Не заданы секреты:$missing (см. docs/testflight.md)"
             exit 1
           fi
 
@@ -105,7 +105,7 @@ jobs:
                         + error.read().decode(errors="replace")[:500])
                   if error.code in (401, 403):
                       print("::error::Ключ не может регистрировать идентификаторы: нужна роль Admin "
-                            "(docs/04-beta/testflight.md, шаг 2) или регистрация вручную на developer.apple.com.")
+                            "(docs/testflight.md, шаг 2) или регистрация вручную на developer.apple.com.")
                   sys.exit(1)
 
           # Каждая облачная сборка создаёт сертификат «Apple Development: Created via API» (ключа от

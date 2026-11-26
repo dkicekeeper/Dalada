@@ -4,7 +4,7 @@ import Foundation
 import SwiftUI
 import UIKit
 
-/// Предложить картинку для Stories в момент гордости (docs/05-release/promotion.md, этап 0, п. 0.4):
+/// Предложить картинку для Stories в момент гордости (docs/promotion.md, этап 0, п. 0.4):
 /// после настоящей поездки — вопросом (`PromptSheet` из DesignKit), когда — решает `SharePromptPolicy`;
 /// после нового личного рекорда — кнопкой «Поделиться рекордом» в самом поздравлении.
 ///

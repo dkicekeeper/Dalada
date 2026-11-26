@@ -1,6 +1,6 @@
 name: Screenshots
 
-# Скриншоты для App Store (docs/05-release/README.md#скриншоты): UI-тест DaladaScreenshots на
+# Скриншоты для App Store (docs/release.md#скриншоты): UI-тест DaladaScreenshots на
 # симуляторе iPhone 6,9″ под демо-аккаунтом — по-русски и по-английски → рамки с подписями
 # (appstore/screenshots/frame.py, captions.json) → артефакт «screenshots» (готовые и сырые снимки);
 # с галочкой «upload» (из main) — ещё и в App Store Connect, вместо прежних (appstore/screenshots_upload.py).

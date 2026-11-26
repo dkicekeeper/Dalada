@@ -9,7 +9,7 @@ places.csv — единственный источник мест редакци
 изменённые и скрывает удалённые из таблицы. place_info.csv — сведения о месте для карточки (виды
 рыбы, подъезд, платно ли, способы ловли, удобства, связь, сезон, особенности): миграция кладёт их в
 attributes. Править их в Studio бесполезно — следующая миграция перезапишет. Подробности — README.md
-рядом и docs/05-release/content.md.
+рядом и docs/content.md.
 """
 
 import csv
@@ -264,7 +264,7 @@ def check() -> None:
         fail(errors)
     counts = {t: sum(1 for r in rows if r["type"] == t) for t in TYPES}
     print(f"{TABLE.name}: {len(rows)} мест — " + ", ".join(f"{t} {c}" for t, c in counts.items() if c))
-    # Сводка для плана наполнения (docs/05-release/content.md, «Метрики»).
+    # Сводка для плана наполнения (docs/content.md, «Метрики»).
     with_photo = set()
     if PHOTOS.exists():
         with PHOTOS.open(encoding="utf-8", newline="") as f:
