@@ -195,7 +195,7 @@ struct RulesListView: View {
         .navigationTitle("rules.title")
         .task { await rules.loadIfNeeded() }
         .task { await speciesStore.loadIfNeeded() }
-        .refreshable { await rules.loadIfNeeded() }
+        .dsRefreshable { await rules.loadIfNeeded() }
     }
 
     private func zoneSection(_ title: String, zones: [RuleZone], pack: RulesPack, today: CalendarDay) -> some View {

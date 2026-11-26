@@ -67,7 +67,7 @@ struct HomeView: View {
             .navigationDestination(isPresented: $showsFindPeople) {
                 FindPeopleView(environment: environment)
             }
-            .refreshable {
+            .dsRefreshable {
                 refreshCount += 1
                 await reload()
             }

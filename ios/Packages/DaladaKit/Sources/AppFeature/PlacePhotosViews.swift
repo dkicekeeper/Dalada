@@ -101,7 +101,7 @@ struct PlacePhotosGrid: View {
         .navigationTitle(Text(verbatim: placeName))
         .navigationBarTitleDisplayMode(.inline)
         .task(id: kind) { await reload() }
-        .refreshable { await reload() }
+        .dsRefreshable { await reload() }
         .fullScreenCover(item: $opened) { photo in
             PlacePhotoViewer(photos: gallery, urls: urls, selection: photo.id, environment: environment)
         }

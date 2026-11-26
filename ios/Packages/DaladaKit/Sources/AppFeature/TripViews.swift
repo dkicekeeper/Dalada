@@ -668,7 +668,7 @@ struct TripsListView: View {
             trips = await TripsLoader(environment: environment, userID: userID).load(limit: 200)
             isLoaded = true
         }
-        .refreshable {
+        .dsRefreshable {
             trips = await TripsLoader(environment: environment, userID: userID).load(limit: 200)
         }
         .onReceive(NotificationCenter.default.publisher(for: .daladaTripChanged)) { _ in

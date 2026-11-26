@@ -76,7 +76,7 @@ struct PlacesHomeView: View {
                 PlaceListScreen(route: route, environment: environment)
             }
             .task(id: viewerID) { await store.load(viewer: viewerID) }
-            .refreshable { await store.load(viewer: viewerID) }
+            .dsRefreshable { await store.load(viewer: viewerID) }
             // Ссылка на подборку (`CollectionLink`): открыть, когда подборки загрузятся.
             .onChange(of: router.pendingCollection, initial: true) { openPendingCollection() }
             .onChange(of: store.discovery.recommended.map(\.slug)) { openPendingCollection() }
@@ -598,7 +598,7 @@ struct PlaceListScreen: View {
             }
             .padding(.vertical, AppSpacing.md)
         }
-        .refreshable { await load() }
+        .dsRefreshable { await load() }
     }
 
     private var mapContent: some View {
@@ -681,7 +681,7 @@ struct MyPlacesView: View {
         content
             .navigationTitle("places.mine.title")
             .task(id: session.profile?.id) { await load() }
-            .refreshable { await load() }
+            .dsRefreshable { await load() }
             .sheet(item: $selected, onDismiss: { Task { await load() } }) { selection in
                 PlaceCardView(placeID: selection.id, environment: environment)
             }

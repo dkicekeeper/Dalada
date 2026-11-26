@@ -71,7 +71,7 @@ struct SharedPackingsView: View {
             }
         }
         .task { await load() }
-        .refreshable { await load() }
+        .dsRefreshable { await load() }
     }
 
     /// С сервера, а без сети — последний сохранённый список.
@@ -388,7 +388,7 @@ struct SharedPackingView: View {
         } message: {
             Text(verbatim: errorText ?? "")
         }
-        .refreshable { await load() }
+        .dsRefreshable { await load() }
         .task {
             // Пока экран открыт — раз в 30 секунд: видно, кто что взял.
             while !Task.isCancelled {

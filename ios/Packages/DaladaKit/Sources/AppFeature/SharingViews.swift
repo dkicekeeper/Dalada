@@ -169,7 +169,7 @@ struct UserTripsListView: View {
         }
         .navigationTitle("person.trips")
         .task { await reload() }
-        .refreshable { await reload() }
+        .dsRefreshable { await reload() }
     }
 
     private func reload() async {
@@ -301,7 +301,7 @@ struct PrivacyZonesView: View {
             onDeleteSelected: { pendingDelete = zones.filter { selection.contains($0.id) } }
         )
         .task { await load() }
-        .refreshable { await load() }
+        .dsRefreshable { await load() }
         .sheet(item: $editing, onDismiss: { Task { await load() } }) { request in
             PrivacyZoneEditorView(zone: request.zone, environment: environment)
         }

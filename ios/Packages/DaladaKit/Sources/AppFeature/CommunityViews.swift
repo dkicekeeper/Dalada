@@ -242,7 +242,7 @@ struct ReviewsListView: View {
         .navigationTitle(Text(verbatim: placeName))
         .navigationBarTitleDisplayMode(.inline)
         .task(id: sort) { await reload() }
-        .refreshable { await reload() }
+        .dsRefreshable { await reload() }
     }
 
     private func reload() async {
@@ -643,7 +643,7 @@ struct ThreadsListView: View {
             ThreadFormView(placeID: placeID, placeName: placeName, environment: environment)
         }
         .task { await reload() }
-        .refreshable { await reload() }
+        .dsRefreshable { await reload() }
     }
 
     private func reload() async {
@@ -914,7 +914,7 @@ struct ThreadView: View {
             .screenPadding()
             .padding(.vertical, AppSpacing.lg)
         }
-        .refreshable { await load() }
+        .dsRefreshable { await load() }
         .safeAreaBar(edge: .bottom) {
             if session.profile != nil {
                 composer

@@ -217,7 +217,7 @@ struct SuggestionReviewView: View {
         }
         .navigationTitle("review.title")
         .task { await load() }
-        .refreshable { await load() }
+        .dsRefreshable { await load() }
         .sheet(item: $openedPlace) { selection in
             PlaceCardView(placeID: selection.id, environment: environment)
         }
