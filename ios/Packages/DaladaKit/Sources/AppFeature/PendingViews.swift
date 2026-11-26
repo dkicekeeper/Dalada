@@ -46,7 +46,7 @@ struct PendingReportRow: View {
             if let conditions = ConditionsText.make(item.conditions) {
                 Text(verbatim: conditions)
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
 
             let note = item.note.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -72,7 +72,7 @@ struct PendingReportRow: View {
                     Image(systemName: "photo.on.rectangle")
                 }
                 .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
             }
         }
     }

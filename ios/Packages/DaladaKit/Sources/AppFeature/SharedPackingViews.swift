@@ -95,10 +95,10 @@ struct SharedPackingRow: View {
         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
             Text(verbatim: packing.title)
                 .font(AppTypography.bodyEmphasis)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(AppColors.Text.primary)
             Text(verbatim: subtitle)
                 .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
             if packing.itemsCount > 0 {
                 LinearProgressBar(value: Double(packing.doneCount) / Double(packing.itemsCount))
             }
@@ -149,7 +149,7 @@ struct SharePackingSheet: View {
                         .safeAreaInset(edge: .bottom) {
                             Text("sharedPacking.pickHint")
                                 .font(AppTypography.caption)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.Text.secondary)
                                 .screenPadding()
                                 .padding(.vertical, AppSpacing.sm)
                         }
@@ -207,10 +207,10 @@ struct SharePackingSheet: View {
                                 VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                                     Text(verbatim: checklist.title)
                                         .font(AppTypography.bodyEmphasis)
-                                        .foregroundStyle(AppColors.textPrimary)
+                                        .foregroundStyle(AppColors.Text.primary)
                                     Text("sharedPacking.itemsCount \(checklist.items.count)")
                                         .font(AppTypography.caption)
-                                        .foregroundStyle(AppColors.textSecondary)
+                                        .foregroundStyle(AppColors.Text.secondary)
                                 }
                                 Spacer(minLength: 0)
                                 DisclosureChevron()
@@ -301,7 +301,7 @@ struct SharedPackingView: View {
                                 LinearProgressBar(value: Double(done) / Double(items.count))
                                 Text("sharedPacking.summary \(done) \(items.count) \(SharedPacking.unassignedCount(items))")
                                     .font(AppTypography.caption)
-                                    .foregroundStyle(AppColors.textSecondary)
+                                    .foregroundStyle(AppColors.Text.secondary)
                             }
                             .padding(.horizontal, AppSpacing.lg)
                         }
@@ -403,18 +403,18 @@ struct SharedPackingView: View {
             Button {
                 Task { await act { try await $0.setPackingItemDone(item.id, done: !item.done) } }
             } label: {
-                SelectionIndicator(isSelected: item.done, tint: AppColors.success)
+                SelectionIndicator(isSelected: item.done, tint: AppColors.Status.positive)
             }
             .buttonStyle(.borderless)
             .accessibilityLabel(Text(LocalizedStringKey(item.done ? "sharedPacking.packed" : "sharedPacking.notPacked")))
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: item.title)
                     .strikethrough(item.done)
-                    .foregroundStyle(item.done ? AppColors.textSecondary : AppColors.textPrimary)
+                    .foregroundStyle(item.done ? AppColors.Text.secondary : AppColors.Text.primary)
                 if let assignee = item.assigneeID, assignee != me {
                     Text("sharedPacking.takenBy \(name(of: assignee))")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
             }
             Spacer(minLength: 0)

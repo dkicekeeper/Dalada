@@ -78,7 +78,7 @@ struct CatchFormView: View {
                     if isUndersized, let minSize {
                         RecommendationBox(
                             text: String(localized: "rules.catch.undersized \(minSize)"),
-                            color: AppColors.warning,
+                            color: AppColors.Status.warning,
                             icon: "ruler"
                         )
                     }
@@ -155,7 +155,7 @@ struct CatchFormView: View {
                     UniversalRow(
                         String(localized: "catch.form.addPhoto"),
                         icon: "camera",
-                        titleColor: AppColors.textPrimary
+                        titleColor: AppColors.Text.primary
                     )
                     .contentShape(Rectangle())
                 }
@@ -177,7 +177,7 @@ struct CatchFormView: View {
             .keyboardType(.decimalPad)
             .multilineTextAlignment(.trailing)
             .font(AppTypography.body)
-            .foregroundStyle(AppColors.textPrimary)
+            .foregroundStyle(AppColors.Text.primary)
     }
 
     private func loadPhoto(_ item: PhotosPickerItem) async {

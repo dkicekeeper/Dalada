@@ -27,7 +27,7 @@ struct ConsentView: View {
                     }
                     Text("consent.body")
                         .font(AppTypography.body)
-                        .foregroundStyle(AppColors.textPrimary)
+                        .foregroundStyle(AppColors.Text.primary)
 
                     VStack(alignment: .leading, spacing: AppSpacing.sm) {
                         Link(destination: LegalDocuments.terms(language: language)) {
@@ -42,7 +42,7 @@ struct ConsentView: View {
                     Toggle(isOn: $accepts) {
                         Text("consent.checkbox")
                             .font(AppTypography.bodySmall)
-                            .foregroundStyle(AppColors.textPrimary)
+                            .foregroundStyle(AppColors.Text.primary)
                     }
                     .toggleStyle(.switch)
 
@@ -136,17 +136,17 @@ struct LinkRow: View {
             UniversalRow(leadingIcon: .sfSymbol(icon, color: AppColors.accent, size: AppIconSize.lg)) {
                 Text(verbatim: title)
                     .font(AppTypography.body)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
             } trailing: {
                 HStack(spacing: AppSpacing.sm) {
                     if let value {
                         Text(verbatim: value)
                             .font(AppTypography.body)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                             .lineLimit(1)
                     }
                     Icon("arrow.up.right", size: AppIconSize.sm)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
             }
         }
@@ -181,13 +181,13 @@ struct NotificationsSection: View {
             UniversalRow(leadingIcon: .sfSymbol("bell", color: AppColors.accent, size: AppIconSize.lg)) {
                 Text("notifications.title")
                     .font(AppTypography.body)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
             } trailing: {
                 switch status {
                 case .some(let current) where PushRegistrar.isAllowed(current):
                     Text("notifications.on")
                         .font(AppTypography.body)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 case .some(.denied):
                     Button("notifications.openSettings") {
                         if let url = URL(string: UIApplication.openNotificationSettingsURLString) {

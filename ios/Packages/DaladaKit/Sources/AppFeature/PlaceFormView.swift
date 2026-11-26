@@ -87,7 +87,7 @@ struct PlaceFormView: View {
                     Text(verbatim: String(format: "%.5f, %.5f", draft.coordinate.latitude, draft.coordinate.longitude))
                         .font(AppTypography.body)
                         .monospacedDigit()
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
             }
         }

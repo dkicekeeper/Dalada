@@ -194,7 +194,7 @@ struct ProfileSectionHint: View {
     var body: some View {
         Text(verbatim: text)
             .font(AppTypography.bodySmall)
-            .foregroundStyle(AppColors.textSecondary)
+            .foregroundStyle(AppColors.Text.secondary)
     }
 }
 
@@ -219,9 +219,9 @@ struct MyFriendsSection: View {
                     UniversalRow(config: .info, leadingIcon: .sfSymbol("person.badge.plus", color: AppColors.accent)) {
                         Text("friends.requests")
                             .font(AppTypography.bodyEmphasis)
-                            .foregroundStyle(AppColors.textPrimary)
+                            .foregroundStyle(AppColors.Text.primary)
                     } trailing: {
-                        Badge("\(incomingCount)", color: AppColors.destructive, style: .filled)
+                        Badge("\(incomingCount)", color: AppColors.Status.negative, style: .filled)
                         DisclosureChevron()
                     }
                     .contentShape(Rectangle())
@@ -269,7 +269,7 @@ struct MyFriendsSection: View {
             PersonAvatar(name: friend.displayName ?? friend.username, path: friend.avatarPath, size: AppIconSize.Tile.md)
             Text(verbatim: shortName(friend))
                 .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(AppColors.Text.primary)
                 .lineLimit(1)
         }
         .frame(width: AppIconSize.Tile.xxxl)
@@ -633,7 +633,7 @@ struct BackendStatusCard: View {
                     .font(AppTypography.bodyEmphasis)
                 Text(message)
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             Spacer(minLength: 0)
         }
@@ -661,7 +661,7 @@ struct BackendStatusCard: View {
     private var color: Color {
         switch state {
         case .connected: AppColors.Status.positiveText
-        case .checking: AppColors.textSecondary
+        case .checking: AppColors.Text.secondary
         case .notConfigured, .failed: AppColors.Status.warningText
         }
     }

@@ -151,16 +151,16 @@ struct PlaceWeatherRow: View {
             if let temperature = current.temperature {
                 Text(verbatim: WeatherText.temperature(temperature))
                     .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
             }
             Text(verbatim: details(current))
                 .font(AppTypography.bodySmall)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
                 .lineLimit(1)
             if let trend {
                 Image(systemName: trend.systemImage)
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     .accessibilityLabel(Text(LocalizedStringKey(trend.titleKey)))
             }
             Spacer(minLength: 0)
@@ -214,7 +214,7 @@ struct PlaceWeatherSheet: View {
                         }
                     }
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     .padding(.horizontal, AppSpacing.lg)
                 }
                 .screenPadding()
@@ -247,7 +247,7 @@ struct PlaceWeatherSheet: View {
                     if let kind {
                         Text(LocalizedStringKey(kind.titleKey))
                             .font(AppTypography.bodySmall)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                     }
                 }
                 Spacer(minLength: 0)
@@ -260,7 +260,7 @@ struct PlaceWeatherSheet: View {
                         if let gusts = current.windGusts, gusts >= (current.windSpeed ?? 0) + 2 {
                             Text("weather.gusts \(String(Int(gusts.rounded())))")
                                 .font(AppTypography.caption)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.Text.secondary)
                         }
                     }
                 }
@@ -280,7 +280,7 @@ struct PlaceWeatherSheet: View {
                                 Image(systemName: trend.systemImage)
                             }
                             .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                         }
                     }
                 } label: {
@@ -309,7 +309,7 @@ struct PlaceWeatherSheet: View {
                 .foregroundStyle(AppColors.accent)
             }
             RuleMark(x: .value("now", Date.now))
-                .foregroundStyle(AppColors.textTertiary)
+                .foregroundStyle(AppColors.Text.tertiary)
                 .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 4]))
         }
         .chartYScale(domain: .automatic(includesZero: false))
@@ -337,14 +337,14 @@ struct PlaceWeatherSheet: View {
                         if let wind = day.windMax {
                             Text("weather.windSpeed \(String(Int(wind.rounded())))")
                                 .font(AppTypography.caption)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.Text.secondary)
                         }
                     }
                     .font(AppTypography.bodySmall)
                     if let precipitation = day.precipitation, precipitation >= 0.5 {
                         Text("weather.precipitation \(precipitation.formatted(.number.precision(.fractionLength(0...1))))")
                             .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                     }
                 }
                 .padding(.vertical, AppSpacing.md)

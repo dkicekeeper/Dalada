@@ -59,26 +59,26 @@ struct PersonalRecordsSection: View {
     private func row(_ record: PersonalRecord) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: AppSpacing.sm) {
             Icon("trophy", size: AppIconSize.md)
-                .foregroundStyle(AppColors.warning)
+                .foregroundStyle(AppColors.Status.warning)
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: speciesStore.name(for: record.speciesID))
                     .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                 if let best = bestLine(record) {
                     Text(verbatim: best)
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textPrimary)
+                        .foregroundStyle(AppColors.Text.primary)
                 }
                 if let detail = detailLine(record) {
                     Text(verbatim: detail)
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
             }
             Spacer(minLength: 0)
             Text("records.caught \(record.totalCount)")
                 .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
         }
     }
 

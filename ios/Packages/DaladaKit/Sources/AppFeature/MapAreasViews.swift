@@ -45,7 +45,7 @@ struct MapAreaView: View {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 Label(LocalizedStringKey(area.kind.titleKey), systemImage: area.kind.systemImage)
                     .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
 
                 Text(verbatim: area.info.text(for: language))
                     .font(AppTypography.body)
@@ -76,7 +76,7 @@ struct MapAreaView: View {
                 VStack(alignment: .leading, spacing: AppSpacing.xs) {
                     Text("mapArea.source")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                     if let url = area.sourceURL {
                         Link(destination: url) {
                             Text(verbatim: area.sourceTitle)
@@ -89,10 +89,10 @@ struct MapAreaView: View {
                     }
                     Text("mapArea.verified \(Self.date(area.verifiedOn))")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
+                        .foregroundStyle(AppColors.Text.tertiary)
                     Text("mapArea.approximate")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
+                        .foregroundStyle(AppColors.Text.tertiary)
                 }
             }
             .screenPadding()
@@ -124,7 +124,7 @@ struct MapAreaView: View {
             if let tenge = pack.mrpTenge(year: year) {
                 Text("mapArea.fees.footer \(tenge.formatted(.number))")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
         }
         .cardContentPadding()
@@ -176,14 +176,14 @@ struct PlaceParksSection: View {
                         } label: {
                             HStack(spacing: AppSpacing.sm) {
                                 Image(systemName: park.kind.systemImage)
-                                    .foregroundStyle(AppColors.success)
+                                    .foregroundStyle(AppColors.Status.positive)
                                 VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                                     Text(verbatim: park.name.text(for: RulesStore.language))
                                         .font(AppTypography.bodyEmphasis)
-                                        .foregroundStyle(AppColors.textPrimary)
+                                        .foregroundStyle(AppColors.Text.primary)
                                     Text(park.kind == .natureReserve ? "mapArea.place.reserve" : "mapArea.place.park")
                                         .font(AppTypography.caption)
-                                        .foregroundStyle(AppColors.textSecondary)
+                                        .foregroundStyle(AppColors.Text.secondary)
                                 }
                                 Spacer(minLength: 0)
                                 DisclosureChevron()

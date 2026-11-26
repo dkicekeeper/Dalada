@@ -111,7 +111,7 @@ struct PlaceReviewsSection: View {
             } else {
                 Label("reviews.checkinFirst", systemImage: "mappin.circle")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
         }
     }
@@ -178,7 +178,7 @@ struct ReviewRow: View {
             if review.editedAt != nil {
                 Text("reviews.edited")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
+                    .foregroundStyle(AppColors.Text.tertiary)
             }
         }
     }
@@ -886,7 +886,7 @@ struct ThreadView: View {
                         }
                     }
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     Text(MentionText.attributed(thread.body))
                         .font(AppTypography.body)
                         .textSelection(.enabled)
@@ -895,7 +895,7 @@ struct ThreadView: View {
                 if posts.isEmpty {
                     Text("threads.noReplies")
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
 
                 ForEach(posts) { post in
@@ -1112,7 +1112,7 @@ struct PostRow: View {
             }
             if post.editedAt != nil {
                 Text("reviews.edited")
-                    .foregroundStyle(AppColors.textTertiary)
+                    .foregroundStyle(AppColors.Text.tertiary)
             }
         }
         .confirmationDialog("threads.deletePostConfirm", isPresented: $confirmsDelete, titleVisibility: .visible) {

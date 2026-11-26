@@ -33,10 +33,10 @@ struct PlaceStewardRow: View {
                     .foregroundStyle(AppColors.accent)
                 Text(verbatim: steward.name ?? String(localized: "profile.noName"))
                     .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                 Text("steward.count \(steward.checkins) \(PlaceSteward.windowDays)")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             Spacer(minLength: 0)
         }
@@ -66,12 +66,12 @@ struct PlaceRecordsView: View {
                     VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                         Text(verbatim: speciesStore.name(for: record.speciesID) + " · " + CatchFormat.weight(grams: record.weightGrams))
                             .font(AppTypography.bodySmall)
-                            .foregroundStyle(AppColors.textPrimary)
+                            .foregroundStyle(AppColors.Text.primary)
                         Text(verbatim: [record.authorName, record.caughtAt.formatted(date: .abbreviated, time: .omitted)]
                             .compactMap { $0 }
                             .joined(separator: " · "))
                             .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                     }
                     Spacer(minLength: 0)
                 }
@@ -79,7 +79,7 @@ struct PlaceRecordsView: View {
             }
             Text("records.place.hint")
                 .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textTertiary)
+                .foregroundStyle(AppColors.Text.tertiary)
         }
         .cardContentPadding()
         .cardStyle()

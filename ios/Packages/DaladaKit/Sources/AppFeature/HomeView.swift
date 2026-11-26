@@ -262,11 +262,11 @@ struct FeedPostCard: View {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: authorName)
                     .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                     .lineLimit(1)
                 Text(verbatim: kindTitle + " · " + Formatting.relativeTime(item.at))
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     .lineLimit(1)
             }
             Spacer(minLength: 0)
@@ -318,7 +318,7 @@ struct FeedPostCard: View {
                 if let body = review.body, !body.isEmpty {
                     Text(verbatim: body)
                         .font(AppTypography.body)
-                        .foregroundStyle(AppColors.textPrimary)
+                        .foregroundStyle(AppColors.Text.primary)
                 }
                 placeButton(id: review.placeID, name: review.placeName, type: review.placeType)
             }
@@ -338,12 +338,12 @@ struct FeedPostCard: View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             Text(verbatim: trip.title)
                 .font(AppTypography.h4)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(AppColors.Text.primary)
                 .multilineTextAlignment(.leading)
             if let note = trip.note, !note.isEmpty {
                 Text(verbatim: note)
                     .font(AppTypography.body)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                     .lineLimit(4)
                     .multilineTextAlignment(.leading)
             }
@@ -369,7 +369,7 @@ struct FeedPostCard: View {
             if let note = checkin.note, !note.isEmpty {
                 Text(verbatim: note)
                     .font(AppTypography.body)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
             }
             if !checkin.catches.isEmpty {
                 VStack(alignment: .leading, spacing: AppSpacing.xs) {
@@ -387,7 +387,7 @@ struct FeedPostCard: View {
             if let conditions = ConditionsText.make(checkin.conditions) {
                 Text(verbatim: conditions)
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             placeButton(id: checkin.placeID, name: checkin.placeName, type: checkin.placeType, verified: checkin.verified)
         }
@@ -402,15 +402,15 @@ struct FeedPostCard: View {
                 Image(systemName: thread.placeType.systemImage)
             }
             .font(AppTypography.caption)
-            .foregroundStyle(AppColors.textSecondary)
+            .foregroundStyle(AppColors.Text.secondary)
             Text(verbatim: thread.title)
                 .font(AppTypography.h4)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(AppColors.Text.primary)
                 .multilineTextAlignment(.leading)
             if !thread.body.isEmpty {
                 Text(verbatim: thread.body)
                     .font(AppTypography.body)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                     .lineLimit(4)
                     .multilineTextAlignment(.leading)
             }
@@ -425,10 +425,10 @@ struct FeedPostCard: View {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: name)
                     .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                 Text(LocalizedStringKey(type.titleKey))
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
         } trailing: {
             DisclosureChevron()
@@ -450,7 +450,7 @@ struct FeedPostCard: View {
                         .foregroundStyle(AppColors.accent)
                 }
                 .font(AppTypography.bodySmall)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(AppColors.Text.primary)
                 if verified {
                     Image(systemName: "checkmark.seal.fill")
                         .foregroundStyle(AppColors.Status.positiveText)
@@ -481,7 +481,7 @@ struct FeedPostCard: View {
                 } icon: {
                     Image(systemName: "bubble.left")
                 }
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
                 Spacer(minLength: 0)
                 // Ответить — сразу из ленты, а не искать, куда нажать.
                 NavigationLink {
@@ -526,7 +526,7 @@ struct TrackPreviewView: View {
             .stroke(AppColors.accent, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
             .frame(maxWidth: .infinity)
             .frame(height: 160)
-            .background(.surfaceNeutral2, in: RoundedRectangle(cornerRadius: AppRadius.md))
+            .background(AppColors.Background.containerStrong, in: RoundedRectangle(cornerRadius: AppRadius.md))
             .accessibilityHidden(true)
     }
 }

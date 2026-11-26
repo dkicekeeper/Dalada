@@ -89,7 +89,7 @@ struct AchievementsSection: View {
         }
         Text("achievements.count \(earned.count) \(known.count)")
             .font(AppTypography.caption)
-            .foregroundStyle(AppColors.textSecondary)
+            .foregroundStyle(AppColors.Text.secondary)
     }
 
     private func load() async {
@@ -168,7 +168,7 @@ private struct AchievementTile: View {
             DesignComponents.AchievementTile(
                 title: String(localized: AchievementText.title(kind)),
                 systemImage: kind.systemImage,
-                color: CategoryColors.color(for: achievement.id),
+                color: AppColors.Data.color(for: achievement.id),
                 isEarned: achievement.isEarned,
                 medalSize: medalSize,
                 progressText: showsProgress ? AchievementText.progress(achievement, kind: kind) : nil
@@ -188,7 +188,7 @@ struct AchievementMedal: View {
     var body: some View {
         DesignComponents.AchievementMedal(
             systemImage: achievement.kind?.systemImage ?? "rosette",
-            color: CategoryColors.color(for: achievement.id),
+            color: AppColors.Data.color(for: achievement.id),
             isEarned: achievement.isEarned,
             size: size
         )
@@ -207,7 +207,7 @@ private struct AchievementProgressRow: View {
                 progressText: AchievementText.progress(achievement, kind: kind),
                 fraction: achievement.fraction,
                 systemImage: kind.systemImage,
-                color: CategoryColors.color(for: achievement.id),
+                color: AppColors.Data.color(for: achievement.id),
                 isEarned: achievement.isEarned
             )
         }
@@ -231,19 +231,19 @@ private struct AchievementDetailSheet: View {
                         .font(AppTypography.h3)
                     Text(AchievementText.detail(kind))
                         .font(AppTypography.body)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                         .multilineTextAlignment(.center)
                 }
                 if let earnedAt = achievement.earnedAt {
                     Text("achievements.earnedOn \(earnedAt.formatted(date: .long, time: .omitted))")
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 } else {
                     VStack(spacing: AppSpacing.xs) {
                         LinearProgressBar(value: achievement.fraction)
                         Text(verbatim: AchievementText.progress(achievement, kind: kind))
                             .font(AppTypography.bodySmall)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                             .monospacedDigit()
                     }
                 }
@@ -294,7 +294,7 @@ private struct NewAchievementsSheet: View {
                                         .font(AppTypography.bodyEmphasis)
                                     Text(AchievementText.detail(kind))
                                         .font(AppTypography.bodySmall)
-                                        .foregroundStyle(AppColors.textSecondary)
+                                        .foregroundStyle(AppColors.Text.secondary)
                                 }
                                 Spacer(minLength: 0)
                             }

@@ -48,12 +48,12 @@ struct ExportSheet: View {
                     ProgressView()
                     Text(verbatim: progress ?? String(localized: "export.preparing"))
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
                 Spacer(minLength: 0)
                 Text(footer)
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
+                    .foregroundStyle(AppColors.Text.tertiary)
                     .multilineTextAlignment(.center)
             }
             .screenPadding()

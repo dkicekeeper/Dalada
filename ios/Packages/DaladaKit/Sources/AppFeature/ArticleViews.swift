@@ -20,7 +20,7 @@ struct ArticleRow: View {
         ItemRow(
             article.title.text(for: language),
             detail: article.summary.text(for: language),
-            meta: [MetaLine(meta, tint: AppColors.textTertiary)],
+            meta: [MetaLine(meta, tint: AppColors.Text.tertiary)],
             leading: .glyph(article.category.systemImage),
             // Статьи плотнее других строк (описание под названием): sm и xxs, как до DesignKit 8.1.0.
             verticalPadding: AppSpacing.sm
@@ -82,7 +82,7 @@ struct ArticlesListView: View {
                 if shown.isEmpty {
                     Text(filter == .saved ? LocalizedStringKey("articles.saved.empty") : LocalizedStringKey("articles.empty"))
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 } else {
                     CardList(shown, layout: .section) { article in
                         NavigationLink {
@@ -137,10 +137,10 @@ struct ArticleView: View {
                     .foregroundStyle(AppColors.accent)
                 Text(verbatim: article.title.text(for: language))
                     .font(AppTypography.h3)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                 Text("article.minutes \(article.readingMinutes(language: language))")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
 
                 ArticleBody(blocks.map(\.designKitBlock))
             }

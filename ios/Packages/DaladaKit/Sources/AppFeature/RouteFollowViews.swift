@@ -178,7 +178,7 @@ struct FollowRouteView: View {
                         .font(AppTypography.h3)
                     Text("route.follow.approach.hint")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
             } else {
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
@@ -196,7 +196,7 @@ struct FollowRouteView: View {
                     LinearProgressBar(value: progress.fraction, animatesOnAppear: false)
                     Text("route.follow.traveled \(TripFormat.distance(progress.traveled)) \(TripFormat.distance(progress.total))")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
             }
         } else {

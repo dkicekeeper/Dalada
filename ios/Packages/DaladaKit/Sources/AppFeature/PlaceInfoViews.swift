@@ -18,7 +18,7 @@ struct PlaceReportsSummaryView: View {
             Image(systemName: "chart.bar.xaxis")
         }
         .font(AppTypography.bodySmall)
-        .foregroundStyle(AppColors.textSecondary)
+        .foregroundStyle(AppColors.Text.secondary)
     }
 
     private var text: String {
@@ -58,7 +58,7 @@ struct PlaceInfoSection: View {
                 if info.isEmpty {
                     Text(LocalizedStringKey(canEdit ? "place.info.empty.own" : "place.info.empty"))
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 } else {
                     VStack(alignment: .leading, spacing: AppSpacing.sm) {
                         ForEach(rows, id: \.titleKey) { row in
@@ -100,7 +100,7 @@ struct PlaceInfoSection: View {
             if !pendingSuggestions.isEmpty {
                 Label("place.suggest.pending", systemImage: "hourglass")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
         }
     }
@@ -225,7 +225,7 @@ private struct PlaceInfoRow: View {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(LocalizedStringKey(row.titleKey))
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                 if !row.tags.isEmpty {
                     FlowLayout(spacing: AppSpacing.xs, lineSpacing: AppSpacing.xs) {
                         ForEach(row.tags, id: \.self) { tag in
@@ -331,11 +331,11 @@ struct PlaceAttributesFields: View {
                         TextField("place.info.price", text: priceText)
                             .keyboardType(.numberPad)
                             .font(AppTypography.body)
-                            .foregroundStyle(AppColors.textPrimary)
+                            .foregroundStyle(AppColors.Text.primary)
                     } trailing: {
                         Text(verbatim: "₸")
                             .font(AppTypography.body)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                     }
                     ChipPicker(options: PlaceAttributes.PriceUnit.allCases, selection: $attributes.priceUnit, inset: AppSpacing.lg) { $0.title }
                         .padding(.bottom, AppSpacing.md)
@@ -391,7 +391,7 @@ struct PlaceAttributesFields: View {
                         }
                     }
                     .font(AppTypography.body)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     DisclosureChevron()
                 }
             }
