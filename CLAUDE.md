@@ -167,7 +167,7 @@ DesignKit (тот же текст: её release notes и экран Updates в G
 Строку читает сервис Warehouse и показывает владельцу; без неё сессия попадает в список «без статуса».
 
 <!-- designkit:agents:start -->
-<!-- From DesignKit 8.21.1, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
+<!-- From DesignKit 8.22.0, docs/agents.md. Do not edit here: the DesignKit update workflow rewrites it. -->
 
 ## DesignKit for an app's agent
 
