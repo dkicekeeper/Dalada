@@ -42,7 +42,7 @@ struct CloseFriendsView: View {
                             } label: {
                                 PersonRow(displayName: friend.displayName, username: friend.username, avatarPath: friend.avatarPath) {
                                     Image(systemName: close.contains(friend.id) ? "star.circle.fill" : "circle")
-                                        .foregroundStyle(close.contains(friend.id) ? AppColors.accent : AppColors.textTertiary)
+                                        .foregroundStyle(close.contains(friend.id) ? AppColors.accent : AppColors.Text.tertiary)
                                         .font(AppTypography.bodyEmphasis)
                                 }
                                 .padding(.vertical, AppSpacing.md)

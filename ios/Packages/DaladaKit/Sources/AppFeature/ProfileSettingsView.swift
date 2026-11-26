@@ -110,7 +110,7 @@ struct ProfileSettingsView: View {
                             ProgressView()
                             Text("account.delete.progress")
                                 .font(AppTypography.body)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.Text.secondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, AppSpacing.lg)

@@ -101,7 +101,7 @@ struct PlacesHomeView: View {
         if store.isShowingSavedCopy {
             Label("offline.savedCopy", systemImage: "icloud.slash")
                 .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
                 .screenPadding()
         }
 
@@ -201,7 +201,7 @@ private struct PlaceShortcutRow: View {
         UniversalRow(config: .standard, leadingIcon: .sfSymbol(systemImage, color: AppColors.accent)) {
             Text(titleKey)
                 .font(AppTypography.bodyEmphasis)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(AppColors.Text.primary)
         } trailing: {
             DisclosureChevron()
         }
@@ -248,7 +248,7 @@ private struct PlaceCarousel: View {
             HStack {
                 Label(title, systemImage: systemImage)
                     .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                 Spacer(minLength: AppSpacing.sm)
                 if let seeAll {
                     NavigationLink(value: seeAll) {
@@ -304,7 +304,7 @@ private struct PlaceItemImage: View {
     var body: some View {
         if let path = item.photoPath {
             RemotePhoto(path: path, url: photoURL)
-                .background(.surfaceNeutral2)
+                .background(AppColors.Background.containerStrong)
         } else {
             ThumbnailPlaceholder(systemImage: item.type.systemImage)
         }
@@ -329,7 +329,7 @@ private struct PlaceItemMeta: View {
             }
         }
         .font(AppTypography.caption)
-        .foregroundStyle(AppColors.textSecondary)
+        .foregroundStyle(AppColors.Text.secondary)
     }
 
     /// «Озеро · 12 км · ★ 4,5» (`MetaLine` из DesignKit).
@@ -564,7 +564,7 @@ struct PlaceListScreen: View {
                 if isShowingSavedCopy {
                     Label("offline.savedCopy", systemImage: "icloud.slash")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                         .screenPadding()
                 }
                 if visibleItems.isEmpty {

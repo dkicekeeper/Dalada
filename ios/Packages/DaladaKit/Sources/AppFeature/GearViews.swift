@@ -185,7 +185,7 @@ struct GearSummaryView: View {
             if hasUnknownWeight {
                 Text("gear.summary.unknownWeight")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             if repairCount > 0 || buyCount > 0 {
                 HStack(spacing: AppSpacing.md) {
@@ -323,7 +323,7 @@ struct GearFormView: View {
                                 .keyboardType(.numberPad)
                                 .multilineTextAlignment(.trailing)
                                 .font(AppTypography.body)
-                                .foregroundStyle(AppColors.textPrimary)
+                                .foregroundStyle(AppColors.Text.primary)
                         }
                         UniversalRow(
                             String(localized: "gear.form.quantity"),
@@ -406,7 +406,7 @@ struct PopularGearView: View {
                     if items.isEmpty {
                         Text("checklists.templates.unavailable")
                             .font(AppTypography.bodySmall)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                     }
                     ForEach(GearCategory.allCases) { category in
                         let inCategory = items.filter { $0.category == category }
@@ -455,14 +455,14 @@ struct PopularGearView: View {
             }
         } label: {
             HStack(spacing: AppSpacing.md) {
-                SelectionIndicator(isSelected: isOwned || isSelected, tint: isOwned ? AppColors.textTertiary : AppColors.accent)
+                SelectionIndicator(isSelected: isOwned || isSelected, tint: isOwned ? AppColors.Text.tertiary : AppColors.accent)
                 Text(verbatim: title)
-                    .foregroundStyle(isOwned ? AppColors.textSecondary : AppColors.textPrimary)
+                    .foregroundStyle(isOwned ? AppColors.Text.secondary : AppColors.Text.primary)
                 Spacer(minLength: 0)
                 if isOwned {
                     Text("gear.popular.owned")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
+                        .foregroundStyle(AppColors.Text.tertiary)
                 }
             }
             .padding(.vertical, AppSpacing.lg)

@@ -31,7 +31,7 @@ struct OwnCatchActions: ViewModifier {
                 deleteButton
             } label: {
                 Image(systemName: "ellipsis")
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     .frame(width: 32, height: 32)
                     .contentShape(Rectangle())
                     .accessibilityLabel(Text("catch.ownMenu"))

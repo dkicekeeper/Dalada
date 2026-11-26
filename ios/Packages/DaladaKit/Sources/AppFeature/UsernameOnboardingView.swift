@@ -34,11 +34,11 @@ struct UsernameOnboardingView: View {
                     .frame(maxWidth: .infinity)
                 Text("onboarding.username.subtitle")
                     .font(AppTypography.body)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
 
                 HStack(spacing: AppSpacing.xs) {
                     Text(verbatim: "@")
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                     TextField("onboarding.username.placeholder", text: $username)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
@@ -50,7 +50,7 @@ struct UsernameOnboardingView: View {
                 }
                 .font(AppTypography.bodyEmphasis)
                 .padding(AppSpacing.md)
-                .background(AppColors.bgMuted, in: RoundedRectangle(cornerRadius: AppRadius.md))
+                .background(AppColors.Background.containerStrong, in: RoundedRectangle(cornerRadius: AppRadius.md))
 
                 statusLine
                     .font(AppTypography.caption)
@@ -91,7 +91,7 @@ struct UsernameOnboardingView: View {
                 .foregroundStyle(AppColors.Status.negativeText)
         case .checking:
             Label("onboarding.username.checking", systemImage: "hourglass")
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
         case .available:
             Label("onboarding.username.available", systemImage: "checkmark.circle.fill")
                 .foregroundStyle(AppColors.Status.positiveText)

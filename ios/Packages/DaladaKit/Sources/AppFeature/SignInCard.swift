@@ -23,7 +23,7 @@ struct SignInCard: View {
                     .multilineTextAlignment(.center)
                 Text("auth.subtitle")
                     .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     .multilineTextAlignment(.center)
             }
 
@@ -84,7 +84,7 @@ struct SignInCard: View {
                 .textContentType(.password)
                 .font(AppTypography.body)
                 .padding(AppSpacing.lg)
-                .background(surface.neutral1.opacity(0.5))
+                .background(surface.container.opacity(0.5))
                 .clipShape(.rect(cornerRadius: AppRadius.lg))
 
             Button {
@@ -98,7 +98,7 @@ struct SignInCard: View {
 
             Text("auth.email.hint")
                 .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
         }
     }
 }

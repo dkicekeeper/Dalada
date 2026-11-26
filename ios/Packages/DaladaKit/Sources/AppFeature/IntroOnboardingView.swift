@@ -53,7 +53,7 @@ struct IntroOnboardingView: View {
         // а приглушённая яркость оставляет текст читаемым.
         .background {
             ZStack {
-                AppColors.bgCard
+                AppColors.Background.card
                 AuroraBackground(intensity: 0.5)
             }
             .ignoresSafeArea()
@@ -126,7 +126,7 @@ struct IntroOnboardingView: View {
                     SignInCard()
                     Text("intro.signIn.guest.hint")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                         .multilineTextAlignment(.center)
                 }
                 .screenPadding()
@@ -155,7 +155,7 @@ struct IntroOnboardingView: View {
                 }
             }
             .font(AppTypography.caption)
-            .foregroundStyle(AppColors.textSecondary)
+            .foregroundStyle(AppColors.Text.secondary)
         }
         .padding(AppSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)

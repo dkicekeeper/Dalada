@@ -451,12 +451,12 @@ struct PlaceCardView: View {
             if let hint = currentTab(place).hintKey {
                 Text(String(localized: hint))
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             } else if currentTab(place) == .notes {
                 // Кто увидит заметки — по видимости места.
                 Text(LocalizedStringKey(place.visibility == .private ? "place.tab.notes.hint.private" : "place.tab.notes.hint.friends"))
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
         }
     }
@@ -503,14 +503,14 @@ struct PlaceCardView: View {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 if place.isEditorial {
                     Label("place.card.editorial", systemImage: "checkmark.seal")
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 } else if let username = place.ownerUsername, !place.isOwn {
                     Text("place.card.addedBy \(username)")
-                        .foregroundStyle(AppColors.textTertiary)
+                        .foregroundStyle(AppColors.Text.tertiary)
                 }
                 if place.source == .osm {
                     Text("place.card.osm")
-                        .foregroundStyle(AppColors.textTertiary)
+                        .foregroundStyle(AppColors.Text.tertiary)
                 }
             }
             .font(AppTypography.caption)
@@ -732,7 +732,7 @@ struct ReportRow: View {
                 Spacer(minLength: 0)
                 RelativeTime(report.at)
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
+                    .foregroundStyle(AppColors.Text.tertiary)
                 if report.isOwn, onEdit != nil || onDelete != nil {
                     Menu {
                         if let onEdit {
@@ -743,7 +743,7 @@ struct ReportRow: View {
                         }
                     } label: {
                         Image(systemName: "ellipsis")
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                             .frame(width: 28, height: 28)
                             .contentShape(Rectangle())
                             .accessibilityLabel(Text("report.ownMenu"))
@@ -763,7 +763,7 @@ struct ReportRow: View {
             if let conditionsText {
                 Text(verbatim: conditionsText)
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
 
             if let note = report.note {
@@ -817,7 +817,7 @@ struct PlaceNotesSection: View {
             if reactions.commentCount(for: key) == 0 {
                 Text("place.notes.empty")
                     .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             CommentsButton(key: key, isProminent: true)
         }

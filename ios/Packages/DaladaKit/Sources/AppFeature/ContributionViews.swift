@@ -30,10 +30,10 @@ struct ContributionCard: View {
                             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                                 Text(LocalizedStringKey(contribution.level.titleKey))
                                     .font(AppTypography.bodyEmphasis)
-                                    .foregroundStyle(AppColors.textPrimary)
+                                    .foregroundStyle(AppColors.Text.primary)
                                 Text(verbatim: subtitle(contribution))
                                     .font(AppTypography.caption)
-                                    .foregroundStyle(AppColors.textSecondary)
+                                    .foregroundStyle(AppColors.Text.secondary)
                             }
                             Spacer(minLength: 0)
                             DisclosureChevron()
@@ -111,16 +111,16 @@ struct ContributionDetailsSheet: View {
                         ForEach(ContributorLevel.allCases, id: \.self) { level in
                             HStack(spacing: AppSpacing.md) {
                                 Icon(level.systemImage, size: AppIconSize.lg)
-                                    .foregroundStyle(level == contribution.level ? AppColors.accent : AppColors.textTertiary)
+                                    .foregroundStyle(level == contribution.level ? AppColors.accent : AppColors.Text.tertiary)
                                 Text(LocalizedStringKey(level.titleKey))
                                     .font(AppTypography.body)
                                     .fontWeight(level == contribution.level ? .semibold : .regular)
-                                    .foregroundStyle(AppColors.textPrimary)
+                                    .foregroundStyle(AppColors.Text.primary)
                                 Spacer(minLength: 0)
                                 Text(verbatim: String(level.threshold))
                                     .font(AppTypography.body)
                                     .monospacedDigit()
-                                    .foregroundStyle(AppColors.textSecondary)
+                                    .foregroundStyle(AppColors.Text.secondary)
                             }
                             .padding(.vertical, AppSpacing.lg)
                             .rowDividerInset(AppIconSize.lg + AppSpacing.md)
@@ -144,12 +144,12 @@ struct ContributionDetailsSheet: View {
         UniversalRow {
             Text(titleKey)
                 .font(AppTypography.body)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(AppColors.Text.primary)
         } trailing: {
             Text(verbatim: "\(count) × \(each) = \(count * each)")
                 .font(AppTypography.body)
                 .monospacedDigit()
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
         }
     }
 }
@@ -189,7 +189,7 @@ struct SuggestionReviewView: View {
                         if let note = item.note, !note.isEmpty {
                             Text(verbatim: "«" + note + "»")
                                 .font(AppTypography.bodySmall)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.Text.secondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.vertical, AppSpacing.md)
                         }
@@ -246,10 +246,10 @@ struct SuggestionReviewView: View {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text("review.field.description")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                 Text(verbatim: description.isEmpty ? String(localized: "review.field.descriptionRemoved") : description)
                     .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, AppSpacing.md)

@@ -198,12 +198,12 @@ struct FindPeopleView: View {
                 if trimmed.count < 2 {
                     Text("friends.search.hint")
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                     PeopleSuggestionsSection(environment: environment, suggestions: $suggestions)
                 } else if results.isEmpty && searched {
                     Text("friends.search.empty")
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
                 let found = results.filter { $0.username != nil }
                 if !found.isEmpty {
@@ -266,7 +266,7 @@ struct RelationshipBadge: View {
         } else if profile.requestStatus == .outgoing {
             Text("person.requested")
                 .font(AppTypography.caption)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
         } else if profile.requestStatus == .incoming {
             Text("person.wantsToBeFriends")
                 .font(AppTypography.caption)
@@ -392,12 +392,12 @@ struct UserProfileView: View {
                         if profile.displayName != nil {
                             Text(verbatim: "@" + username)
                                 .font(AppTypography.bodySmall)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.Text.secondary)
                         }
                         if let city = profile.city {
                             Text(verbatim: city)
                                 .font(AppTypography.caption)
-                                .foregroundStyle(AppColors.textTertiary)
+                                .foregroundStyle(AppColors.Text.tertiary)
                         }
                     }
                     if profile.id != session.profile?.id {
@@ -542,7 +542,7 @@ struct InviteView: View {
                         .font(AppTypography.h3)
                     Text("invite.hint")
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                         .multilineTextAlignment(.center)
                     ShareLink(
                         item: url,
@@ -555,7 +555,7 @@ struct InviteView: View {
                 } else {
                     Text("invite.needsUsername")
                         .font(AppTypography.body)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
                 Spacer(minLength: 0)
             }
@@ -599,7 +599,7 @@ struct BlockedUsersView: View {
                 if blocked.isEmpty && isLoaded {
                     Text("friends.blocked.empty")
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 } else if !blocked.isEmpty {
                     FormSection {

@@ -41,9 +41,9 @@ enum RuleFormat {
 
     static func statusColor(_ status: RuleStatus) -> Color {
         switch status {
-        case .yearRound, .active: AppColors.destructive
-        case .soon: AppColors.warning
-        case .later: AppColors.textSecondary
+        case .yearRound, .active: AppColors.Status.negative
+        case .soon: AppColors.Status.warning
+        case .later: AppColors.Text.secondary
         }
     }
 }
@@ -90,12 +90,12 @@ struct RegulationCard: View {
             if regulation.kind == .fishingBan, let window = regulation.window {
                 Text("rules.everyYear \(RuleFormat.window(window))")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             if regulation.gear == .amateur {
                 Label("rules.gear.amateur", systemImage: "figure.fishing")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             Text(verbatim: regulation.body.text(for: RulesStore.language))
                 .font(AppTypography.bodySmall)
@@ -130,7 +130,7 @@ struct RegulationCard: View {
                 }
                 if let verified = regulation.verifiedOn {
                     Text("rules.verified \(verified.date(calendar: RulesStore.almatyCalendar).formatted(.dateTime.day().month(.wide).year()))")
-                        .foregroundStyle(AppColors.textTertiary)
+                        .foregroundStyle(AppColors.Text.tertiary)
                 }
             }
             .font(AppTypography.caption)
@@ -186,7 +186,7 @@ struct RulesListView: View {
                 } else {
                     Text("rules.unavailable")
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
             }
             .screenPadding()
@@ -226,12 +226,12 @@ struct RulesListView: View {
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
                 Text(verbatim: zone.name.text(for: RulesStore.language))
                     .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                 if let ban = mainBan(in: zone, pack: pack, today: today) {
                     HStack(spacing: AppSpacing.sm) {
                         Text(verbatim: ban.title.text(for: RulesStore.language))
                             .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                             .lineLimit(1)
                         Spacer(minLength: 0)
                         RuleStatusBadge(status: pack.status(of: ban, on: today))
@@ -328,7 +328,7 @@ struct RuleZoneView: View {
                 if let note = zone.note {
                     Text(verbatim: note.text(for: RulesStore.language))
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
                 let bans = pack.regulations(inZone: zone.id).filter { $0.kind == .fishingBan && $0.window != nil }
                 if !bans.isEmpty {
@@ -427,7 +427,7 @@ struct PlaceRulesSection: View {
                         RecommendationBox(
                             text: ban.title.text(for: RulesStore.language) + ": "
                                 + RuleFormat.statusText(pack.status(of: ban, on: today)).lowercased(),
-                            color: AppColors.destructive,
+                            color: AppColors.Status.negative,
                             icon: "nosign"
                         )
                     }
@@ -435,7 +435,7 @@ struct PlaceRulesSection: View {
                         RecommendationBox(
                             text: ban.title.text(for: RulesStore.language) + ": "
                                 + RuleFormat.statusText(pack.status(of: ban, on: today)).lowercased(),
-                            color: AppColors.warning,
+                            color: AppColors.Status.warning,
                             icon: "calendar.badge.exclamationmark"
                         )
                     }
@@ -443,7 +443,7 @@ struct PlaceRulesSection: View {
                     if !sizes.isEmpty {
                         Text("rules.minSize.summary \(sizesText(sizes))")
                             .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                     }
                     NavigationLink {
                         RuleZoneView(zoneID: zone.id, environment: environment)
@@ -488,12 +488,12 @@ struct FishGuideView: View {
                         VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                             Text(verbatim: species.name(for: SpeciesStore.languageCode))
                                 .font(AppTypography.bodyEmphasis)
-                                .foregroundStyle(AppColors.textPrimary)
+                                .foregroundStyle(AppColors.Text.primary)
                             if let latin = species.nameLatin {
                                 Text(verbatim: latin)
                                     .font(AppTypography.caption)
                                     .italic()
-                                    .foregroundStyle(AppColors.textSecondary)
+                                    .foregroundStyle(AppColors.Text.secondary)
                             }
                         }
                         Spacer(minLength: 0)
@@ -538,7 +538,7 @@ struct FishDetailView: View {
                     if sizes.isEmpty {
                         Text("fish.minSize.none")
                             .font(AppTypography.bodySmall)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.vertical, AppSpacing.lg)
                     }

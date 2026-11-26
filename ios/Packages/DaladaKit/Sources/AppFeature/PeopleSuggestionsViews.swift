@@ -53,11 +53,11 @@ struct PeopleSuggestionsSection: View {
                     VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                         Text(verbatim: suggestion.displayName ?? suggestion.username.map { "@" + $0 } ?? "")
                             .font(AppTypography.bodyEmphasis)
-                            .foregroundStyle(AppColors.textPrimary)
+                            .foregroundStyle(AppColors.Text.primary)
                             .lineLimit(1)
                         Text(verbatim: reason(suggestion))
                             .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                             .lineLimit(1)
                     }
                     Spacer(minLength: 0)
@@ -68,7 +68,7 @@ struct PeopleSuggestionsSection: View {
             if requested.contains(suggestion.id) {
                 Label("friends.suggestion.requested", systemImage: "clock")
                     .labelStyle(.iconOnly)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             } else {
                 DSButton(String(localized: "friends.suggestion.add"), appearance: .secondary, size: .small) {
                     Task { await add(suggestion) }

@@ -49,11 +49,11 @@ private struct LifehackRow: View {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(titleKey)
                     .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                 if let subtitle {
                     Text(verbatim: subtitle)
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
             }
         } trailing: {
@@ -181,7 +181,7 @@ struct LifehacksHomeView: View {
                         if articles.articles.isEmpty {
                             Text("articles.empty")
                                 .font(AppTypography.bodySmall)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.Text.secondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.vertical, AppSpacing.lg)
                         } else {

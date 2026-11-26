@@ -105,11 +105,11 @@ struct StartTripView: View {
                                 Text(LocalizedStringKey(item.titleKey))
                                     .font(AppTypography.bodyEmphasis)
                             }
-                            .foregroundStyle(activity == item ? AppColors.accent : AppColors.textPrimary)
+                            .foregroundStyle(activity == item ? AppColors.accent : AppColors.Text.primary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, AppSpacing.lg)
                             .background(
-                                activity == item ? AppColors.accent.opacity(0.15) : AppColors.bgCard,
+                                activity == item ? AppColors.accent.opacity(0.15) : AppColors.Background.card,
                                 in: RoundedRectangle(cornerRadius: AppRadius.lg)
                             )
                             .overlay {
@@ -124,7 +124,7 @@ struct StartTripView: View {
 
                 Text("trip.start.hint")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
 
                 Button {
                     onStart(activity)
@@ -201,7 +201,7 @@ struct TripRecordingView: View {
             if recorder.isLocationDenied {
                 RecommendationBox(
                     text: String(localized: "trip.location.denied"),
-                    color: AppColors.warning,
+                    color: AppColors.Status.warning,
                     icon: "location.slash"
                 )
             }
@@ -222,7 +222,7 @@ struct TripRecordingView: View {
             if recorder.isAutoPaused {
                 Text("trip.autoPaused.hint")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             // Показывать друзьям, где я, пока идёт запись.
             LiveShareRow(environment: environment)
@@ -368,7 +368,7 @@ struct TripFinishView: View {
                                             }
                                         }
                                         .font(AppTypography.body)
-                                        .foregroundStyle(AppColors.textSecondary)
+                                        .foregroundStyle(AppColors.Text.secondary)
                                         DisclosureChevron()
                                     }
                                 }
@@ -545,7 +545,7 @@ struct TripRow: View {
         if let host {
             let name = host.username.map { "@" + $0 } ?? host.displayName ?? ""
             lines.append(MetaLine([.label(Text("trips.joined.with \(name)"), systemImage: "person.2")],
-                                  tint: AppColors.textTertiary))
+                                  tint: AppColors.Text.tertiary))
         }
         return lines
     }
@@ -600,7 +600,7 @@ struct MyTripsSection: View {
             } else if isLoaded {
                 Text("trips.empty.description")
                     .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     .transition(.skeletonReveal)
             } else {
                 ForEach(0..<3, id: \.self) { _ in
@@ -870,20 +870,20 @@ struct TripDetailView: View {
                         systemImage: "eye.slash"
                     )
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                 }
 
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
                     Label(LocalizedStringKey(trip.summary.activity.titleKey), systemImage: trip.summary.activity.systemImage)
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                     Text(verbatim: trip.summary.startedAt.formatted(.dateTime.day().month(.wide).year().hour().minute()))
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
+                        .foregroundStyle(AppColors.Text.tertiary)
                     if trip.isOwn {
                         Label(LocalizedStringKey(trip.summary.visibility.titleKey), systemImage: trip.summary.visibility.systemImage)
                             .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                     }
                     ReactionButton(key: ReactionKey(.trip, trip.summary.id), isOwn: trip.isOwn)
                 }
@@ -905,10 +905,10 @@ struct TripDetailView: View {
                     if trip.summary.maxSpeedMps != nil {
                         HStack {
                             Text("trip.stat.maxSpeed")
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.Text.secondary)
                             Spacer(minLength: 0)
                             Text(verbatim: TripFormat.speed(trip.summary.maxSpeedMps))
-                                .foregroundStyle(AppColors.textPrimary)
+                                .foregroundStyle(AppColors.Text.primary)
                         }
                         .font(AppTypography.bodySmall)
                     }
@@ -933,7 +933,7 @@ struct TripDetailView: View {
                         // Чекины по порядку на линии поездки: подтверждённые — зелёной печатью.
                         ActivityTimeline(checkins) { checkin in
                             checkin.verified
-                                ? TimelineMarker(systemImage: "checkmark.seal.fill", color: AppColors.success)
+                                ? TimelineMarker(systemImage: "checkmark.seal.fill", color: AppColors.Status.positive)
                                 : TimelineMarker(systemImage: "mappin")
                         } content: { checkin in
                             TripCheckinRow(checkin: checkin, photoURLs: photoURLs) {
@@ -1094,13 +1094,13 @@ struct TripCheckinRow: View {
                     } label: {
                         Text(verbatim: placeName)
                             .font(AppTypography.bodyEmphasis)
-                            .foregroundStyle(AppColors.textPrimary)
+                            .foregroundStyle(AppColors.Text.primary)
                     }
                     .buttonStyle(.plain)
                 } else {
                     Label("trip.detail.placeHidden", systemImage: "lock")
                         .font(AppTypography.bodyEmphasis)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
                 if checkin.verified {
                     Image(systemName: "checkmark.seal.fill")
@@ -1110,12 +1110,12 @@ struct TripCheckinRow: View {
                 Spacer(minLength: 0)
                 Text(verbatim: checkin.at.formatted(.dateTime.hour().minute()))
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
+                    .foregroundStyle(AppColors.Text.tertiary)
             }
             if let conditions = ConditionsText.make(checkin.conditions) {
                 Text(verbatim: conditions)
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             if let note = checkin.note, !note.isEmpty {
                 Text(verbatim: note)

@@ -88,7 +88,7 @@ struct CheckinFormView: View {
                         ForEach(activeBans) { ban in
                             RecommendationBox(
                                 text: String(localized: "rules.checkin.banWarning \(ban.title.text(for: RulesStore.language)) \(RuleFormat.statusText(pack.status(of: ban, on: CalendarDay(draft.at, calendar: RulesStore.almatyCalendar))).lowercased())"),
-                                color: AppColors.destructive,
+                                color: AppColors.Status.negative,
                                 icon: "nosign"
                             )
                         }
@@ -275,7 +275,7 @@ struct CheckinFormView: View {
                 .symbolPulse(.working, isActive: isWorking)
         }
         .font(AppTypography.caption)
-        .foregroundStyle(AppColors.textSecondary)
+        .foregroundStyle(AppColors.Text.secondary)
         .padding(.horizontal, AppSpacing.lg)
     }
 
@@ -407,12 +407,12 @@ struct CatchSummaryRow: View {
                 .accessibilityHidden(true)
             Text(verbatim: summary)
                 .font(AppTypography.bodySmall)
-                .foregroundStyle(AppColors.textPrimary)
+                .foregroundStyle(AppColors.Text.primary)
             Spacer(minLength: 0)
             if hasPhoto {
                 Image(systemName: "camera.fill")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
+                    .foregroundStyle(AppColors.Text.tertiary)
                     .accessibilityLabel(Text("catch.form.photo"))
             }
         }

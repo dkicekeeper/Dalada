@@ -38,7 +38,7 @@ struct ModerationMenu: View {
             } label: {
                 Image(systemName: isToolbar ? "ellipsis.circle" : "ellipsis")
                     .font(isToolbar ? nil : AppTypography.caption)
-                    .foregroundStyle(isToolbar ? AppColors.accent : AppColors.textTertiary)
+                    .foregroundStyle(isToolbar ? AppColors.accent : AppColors.Text.tertiary)
                     .frame(minWidth: 28, minHeight: 28)
                     .contentShape(Rectangle())
                     .accessibilityLabel(Text("moderation.actions"))

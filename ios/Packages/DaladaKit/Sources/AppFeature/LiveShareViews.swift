@@ -109,7 +109,7 @@ struct LiveShareRow: View {
                                 .font(AppTypography.bodySmall)
                             Text("live.until \(share.expiresAt.formatted(date: .omitted, time: .shortened))")
                                 .font(AppTypography.caption)
-                                .foregroundStyle(AppColors.textSecondary)
+                                .foregroundStyle(AppColors.Text.secondary)
                         }
                         Spacer(minLength: 0)
                         Button("live.stop", role: .destructive) {
@@ -142,7 +142,7 @@ struct LiveShareRow: View {
                     .safeAreaInset(edge: .bottom) {
                         Text("live.pickHint")
                             .font(AppTypography.caption)
-                            .foregroundStyle(AppColors.textSecondary)
+                            .foregroundStyle(AppColors.Text.secondary)
                             .screenPadding()
                             .padding(.vertical, AppSpacing.sm)
                     }
@@ -233,10 +233,10 @@ struct FriendLiveRow: View {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: friend.name ?? String(localized: "profile.noName"))
                     .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                 Text(verbatim: LiveText.status(friend))
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             Spacer(minLength: 0)
             DisclosureChevron()
@@ -273,11 +273,11 @@ struct FriendLiveMapView: View {
                 }
                 Text(verbatim: LiveText.status(friend))
                     .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                 if let accuracy = friend.accuracyM, accuracy >= 50 {
                     Text("live.accuracy \(String(Int(accuracy.rounded())))")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textTertiary)
+                        .foregroundStyle(AppColors.Text.tertiary)
                 }
                 if let point = friend.coordinate {
                     RouteButton(destination: point)

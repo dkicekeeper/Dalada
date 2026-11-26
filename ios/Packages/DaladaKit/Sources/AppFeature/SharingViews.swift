@@ -83,7 +83,7 @@ struct UserContentSections: View {
             if isLoaded && trips.isEmpty && places.isEmpty {
                 Text(LocalizedStringKey(isFriend ? "person.nothingShared" : "person.friendsOnlyHint"))
                     .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
             }
@@ -279,7 +279,7 @@ struct PrivacyZonesView: View {
                         ? LocalizedStringKey("privacyZones.limit")
                         : LocalizedStringKey("privacyZones.explanation"))
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                         .padding(.horizontal, AppSpacing.lg)
                         .padding(.top, AppSpacing.xs)
                     if let loadError {
@@ -343,10 +343,10 @@ struct PrivacyZonesView: View {
                 VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                     Text(verbatim: zone.name)
                         .font(AppTypography.bodyEmphasis)
-                        .foregroundStyle(AppColors.textPrimary)
+                        .foregroundStyle(AppColors.Text.primary)
                     Text("privacyZones.radius \(TripFormat.distance(Double(zone.radiusM)))")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                 }
                 Spacer(minLength: 0)
             }
@@ -471,7 +471,7 @@ struct PrivacyZoneEditorView: View {
                         )
                         Image(systemName: "plus")
                             .font(.system(size: 28, weight: .light)) // design-lint:ignore прицел поверх карты, не растёт с текстом
-                            .foregroundStyle(AppColors.textPrimary)
+                            .foregroundStyle(AppColors.Text.primary)
                             .allowsHitTesting(false)
                             .accessibilityHidden(true)
                     }
@@ -480,7 +480,7 @@ struct PrivacyZoneEditorView: View {
 
                     Text("privacyZones.editor.hint")
                         .font(AppTypography.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                         .padding(.horizontal, AppSpacing.lg)
                 }
 

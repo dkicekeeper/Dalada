@@ -81,7 +81,7 @@ struct GearCategoryHeader: View {
             if let trailing {
                 Text(verbatim: trailing)
                     .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
         }
     }
@@ -194,7 +194,7 @@ struct ChecklistsView: View {
             if items.isEmpty {
                 Text(emptyText)
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     .padding(.horizontal, AppSpacing.lg)
             } else {
                 CardList(items, layout: .section, mode: mode, selection: $selection, onMove: onMove) { checklist in
@@ -224,7 +224,7 @@ struct ChecklistsView: View {
             if lists.templates.isEmpty {
                 Text("checklists.templates.unavailable")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     .padding(.horizontal, AppSpacing.lg)
             } else {
                 CardList(lists.templates, layout: .section) { template in
@@ -235,10 +235,10 @@ struct ChecklistsView: View {
                             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                                 Text(verbatim: template.title.text(for: PackingFormat.language))
                                     .font(AppTypography.bodyEmphasis)
-                                    .foregroundStyle(AppColors.textPrimary)
+                                    .foregroundStyle(AppColors.Text.primary)
                                 Text("checklist.itemCount \(template.items.count)")
                                     .font(AppTypography.caption)
-                                    .foregroundStyle(AppColors.textSecondary)
+                                    .foregroundStyle(AppColors.Text.secondary)
                             }
                             Spacer(minLength: 0)
                             DisclosureChevron()
@@ -304,7 +304,7 @@ struct TemplateDetailView: View {
                             ForEach(group.items) { item in
                                 Text(verbatim: item.title.text(for: PackingFormat.language))
                                     .font(AppTypography.body)
-                                    .foregroundStyle(AppColors.textPrimary)
+                                    .foregroundStyle(AppColors.Text.primary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.vertical, AppSpacing.lg)
                             }
@@ -528,7 +528,7 @@ struct ChecklistProgressHeader: View {
             if checklist.items.isEmpty {
                 Text("checklist.empty.hint")
                     .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             } else {
                 HStack {
                     Text("packing.progress \(checklist.checkedCount) \(checklist.items.count)")
@@ -542,19 +542,19 @@ struct ChecklistProgressHeader: View {
                 }
                 LinearProgressBar(
                     value: checklist.progress,
-                    color: checklist.isComplete ? AppColors.success : AppColors.accent,
+                    color: checklist.isComplete ? AppColors.Status.positive : AppColors.accent,
                     height: 6
                 )
             }
             if let day = checklist.tripDate {
                 Label(PackingFormat.tripDay(day), systemImage: "calendar")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
             if checklist.kind == .packing, checklist.tripDate != nil, let minutes = checklist.remindMinutes {
                 Label("packing.reminder.at \(PackingFormat.time(minutes: minutes))", systemImage: "bell")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
             }
         }
         .padding(.vertical, AppSpacing.xxs)

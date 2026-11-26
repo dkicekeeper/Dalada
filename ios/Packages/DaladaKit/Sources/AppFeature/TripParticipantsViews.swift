@@ -195,12 +195,12 @@ struct TripParticipantsSection: View {
                 AvatarGroup(names: visible.map { $0.displayName ?? $0.username })
                 Text(verbatim: Self.names(visible))
                     .font(AppTypography.bodySmall)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                     .lineLimit(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Image(systemName: "chevron.down")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
+                    .foregroundStyle(AppColors.Text.tertiary)
                     .rotationEffect(.degrees(isExpanded ? 180 : 0))
             }
             .contentShape(Rectangle())
@@ -252,7 +252,7 @@ struct TripParticipantsSection: View {
                 .font(AppTypography.bodyEmphasis)
             Text("trip.invitation.message")
                 .font(AppTypography.bodySmall)
-                .foregroundStyle(AppColors.textSecondary)
+                .foregroundStyle(AppColors.Text.secondary)
             HStack(spacing: AppSpacing.md) {
                 Button {
                     Task { await respond(accept: true) }
@@ -281,7 +281,7 @@ struct TripParticipantsSection: View {
             if participant.status == .pending {
                 Text("trip.participants.pending")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
+                    .foregroundStyle(AppColors.Text.tertiary)
             }
             if isOwn {
                 Menu {
@@ -380,11 +380,11 @@ struct TripInvitationsSection: View {
             VStack(alignment: .leading, spacing: AppSpacing.xxs) {
                 Text(verbatim: invitation.title)
                     .font(AppTypography.bodyEmphasis)
-                    .foregroundStyle(AppColors.textPrimary)
+                    .foregroundStyle(AppColors.Text.primary)
                     .lineLimit(1)
                 Text(verbatim: hostLine(invitation))
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     .lineLimit(1)
             }
             Spacer(minLength: 0)
@@ -452,7 +452,7 @@ struct TripInviteLinkSheet: View {
                 }
                 Text("trip.inviteLink.footer")
                     .font(AppTypography.caption)
-                    .foregroundStyle(AppColors.textTertiary)
+                    .foregroundStyle(AppColors.Text.tertiary)
                     .multilineTextAlignment(.center)
             }
             .screenPadding()

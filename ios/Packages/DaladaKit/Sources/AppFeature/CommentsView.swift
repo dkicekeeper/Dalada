@@ -45,7 +45,7 @@ struct CommentsButton: View {
                     } icon: {
                         Image(systemName: "bubble.left")
                     }
-                    .foregroundStyle(AppColors.textSecondary)
+                    .foregroundStyle(AppColors.Text.secondary)
                     // Зона нажатия — не меньше 44 pt, как советует Apple.
                     .frame(minWidth: 44, minHeight: 44, alignment: .leading)
                     .contentShape(Rectangle())
@@ -95,7 +95,7 @@ struct CommentsView: View {
                 } else {
                     Text(verbatim: loadError ?? String(localized: "comments.empty"))
                         .font(AppTypography.bodySmall)
-                        .foregroundStyle(AppColors.textSecondary)
+                        .foregroundStyle(AppColors.Text.secondary)
                         .listRowSeparator(.hidden)
                         .transition(.skeletonReveal)
                 }
