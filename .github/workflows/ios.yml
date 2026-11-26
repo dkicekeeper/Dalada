@@ -37,8 +37,41 @@ jobs:
       - name: Правила дизайна DesignKit
         run: bash scripts/designkit_lint.sh
 
+  # macOS-раннеров у аккаунта несколько на всех (Dalada, Tenra, Platina, DesignKit). Коммит,
+  # запушенный в ветку и открытый PR'ом (или запушенный и в ветку, и в main), запускает workflow
+  # не один раз: собирает первый не отменённый прогон коммита, следующий пропускает сборку и
+  # называет его в итоге. Ручной запуск собирает всегда; если API не ответил, прогон собирает.
+  once:
+    name: First run of this commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    steps:
+      - name: Look for an earlier run of this commit
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          EARLIER=""
+          if [ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]; then
+            EARLIER=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ios.yml/runs?head_sha=$SHA&per_page=100" \
+              --jq "[.workflow_runs[] | select(.id < $GITHUB_RUN_ID and .conclusion != \"cancelled\")] | min_by(.id) | .html_url // empty") || EARLIER=""
+          fi
+          if [ -n "$EARLIER" ]; then
+            echo "build=false" >> "$GITHUB_OUTPUT"
+            echo "**Build skipped:** $EARLIER builds this commit." | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "build=true" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
     name: Build app and run package tests
+    needs: once
+    if: needs.once.outputs.build == 'true'
     runs-on: macos-26
     timeout-minutes: 60
     steps:
