@@ -9,22 +9,34 @@ again, so a request the owner has just answered stops waiting for them.
 It must never get in the session's way: it prints nothing, always exits 0, and gives up after
 five seconds whatever happens.
 
+A session that starts in the folder above several repositories has no repository settings, so
+the hook is also installed for the user: `python3 warehouse-report.py --install` adds it to
+~/.claude/settings.json (an environment's setup script does it). When both copies fire for one
+turn, the first reports and the second stays quiet. The repository it reports is the session's
+own, or, from a folder above repositories, the one touched last.
+
 Configuration (environment):
   WAREHOUSE_URL           base URL of the service; defaults to DEFAULT_URL below, empty = off
   WAREHOUSE_REPORT_TOKEN  bearer token; in cloud sessions leave it unset — the environment's
                           network proxy puts the real token into the request
 """
+import hashlib
 import json
 import os
 import re
 import signal
 import subprocess
 import sys
+import tempfile
+import time
 
 # The deployed service. Empty would make the hook stay silent and send nothing anywhere.
 DEFAULT_URL = "https://warehouse-henna-pi.vercel.app"
 TAIL_CHARS = 2000
 TRANSCRIPT_BYTES = 400_000
+# The same turn reported twice within this many seconds (the repository's hook and the user's) goes once.
+DEDUP_SECONDS = 60
+HOOK_EVENTS = ("Stop", "UserPromptSubmit")
 
 
 def git(cwd, *args):
@@ -42,6 +54,34 @@ def repo_of(cwd):
     url = git(cwd, "remote", "get-url", "origin")
     m = re.search(r"([\w.-]+)/([\w.-]+?)(?:\.git)?/?$", url.replace(":", "/"))
     return f"{m.group(1)}/{m.group(2)}" if m else None
+
+
+def work_dir(cwd):
+    """The repository the session works in.
+
+    A session with several repositories starts in the folder that holds them, which is not a
+    repository itself: then it is the one among them touched last (a commit, a checkout, a
+    status refreshes .git/index or .git/logs/HEAD).
+    """
+    if git(cwd, "rev-parse", "--show-toplevel"):
+        return cwd
+    best, newest = cwd, 0.0
+    try:
+        names = os.listdir(cwd)
+    except Exception:
+        return cwd
+    for name in names:
+        dot_git = os.path.join(cwd, name, ".git")
+        if not os.path.isdir(dot_git):
+            continue
+        for marker in ("index", "HEAD", os.path.join("logs", "HEAD")):
+            try:
+                t = os.path.getmtime(os.path.join(dot_git, marker))
+            except OSError:
+                continue
+            if t > newest:
+                best, newest = os.path.join(cwd, name), t
+    return best
 
 
 def last_message_from_transcript(path):
@@ -72,6 +112,52 @@ def last_message_from_transcript(path):
     return ""
 
 
+def first_to_report(session_id, kind, message):
+    """True for the first hook to report this turn; a second copy of the hook stays quiet."""
+    key = hashlib.sha256(f"{session_id}|{kind}|{message}".encode("utf-8")).hexdigest()[:20]
+    path = os.path.join(tempfile.gettempdir(), f"warehouse-report-{key}")
+    try:
+        os.close(os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600))
+        return True
+    except FileExistsError:
+        try:
+            if time.time() - os.path.getmtime(path) < DEDUP_SECONDS:
+                return False
+            os.utime(path)
+            return True
+        except OSError:
+            return True
+    except OSError:
+        return True
+
+
+def install(settings_path):
+    """Adds this script to a Claude Code settings file for both events, once, keeping the rest."""
+    me = os.path.abspath(__file__)
+    command = f'python3 "{me}" >/dev/null 2>&1 || true'
+    try:
+        with open(settings_path, encoding="utf-8") as f:
+            settings = json.load(f)
+        if not isinstance(settings, dict):
+            settings = {}
+    except (OSError, ValueError):
+        settings = {}
+    hooks = settings.setdefault("hooks", {})
+    for event in HOOK_EVENTS:
+        groups = hooks.setdefault(event, [])
+        present = any(
+            isinstance(h, dict) and h.get("command") == command
+            for g in groups if isinstance(g, dict)
+            for h in g.get("hooks", [])
+        )
+        if not present:
+            groups.append({"hooks": [{"type": "command", "command": command, "timeout": 10}]})
+    os.makedirs(os.path.dirname(os.path.abspath(settings_path)), exist_ok=True)
+    with open(settings_path, "w", encoding="utf-8") as f:
+        json.dump(settings, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+
+
 def main():
     # An explicitly empty WAREHOUSE_URL switches the hook off (tests, or a machine that should stay quiet).
     base = os.environ.get("WAREHOUSE_URL", DEFAULT_URL).rstrip("/")
@@ -100,7 +186,11 @@ def main():
     else:
         return
 
+    if not first_to_report(session_id, kind, message[-TAIL_CHARS:]):
+        return
+
     cwd = event.get("cwd") if isinstance(event.get("cwd"), str) and os.path.isdir(event.get("cwd")) else os.getcwd()
+    cwd = work_dir(cwd)
     body = {
         "session_id": session_id[:200],
         "repo": repo_of(cwd),
@@ -130,6 +220,10 @@ def main():
 
 
 if __name__ == "__main__":
+    if len(sys.argv) >= 2 and sys.argv[1] == "--install":
+        # Set-up, run by hand or by an environment's setup script: here errors may be seen.
+        install(sys.argv[2] if len(sys.argv) > 2 else os.path.expanduser("~/.claude/settings.json"))
+        sys.exit(0)
     # Whatever happens below, the session sees silence and success.
     try:
         devnull = os.open(os.devnull, os.O_WRONLY)
